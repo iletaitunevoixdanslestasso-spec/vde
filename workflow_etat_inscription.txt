@@ -1,0 +1,55 @@
+je suis admin nouvelle saison
+j'associe le chanteur à la saison
+-> creation siason_chanteur etat 5 (je n'ai pas envoye le lien) 
+j'envoie le token au chanteur
+-> creation "acces"  etat 4 ( j'attends que le chateur acce et reponde au formualaire)
+le chanteur utilise le lien
+il envoi sa réponse
+-> acces.siason_chanteur.etat=3 (attente de validation de l'inscription et de paiement)
+je valide l'inscription
+-> acces.siason_chanteur.etat=2 (attente de  paiement)
+je reçois son paiement
+-> acces.siason_chanteur.etat=1 (l'inscription)
+
+
+un table referentiel_etat
+0 = saison_inscription archivée
+1 = inscrit (payiement réçu)
+2 = attente de paiement (donc inscription validée)
+3 = demande inscription
+4 = attente de réponse
+5 = attente d'envoi lien vers formulaire
+
+
+
+
+
+
+dans la table
+create table public.saison_chanteurs (
+  id uuid not null default gen_random_uuid (),
+  saison_id uuid null,
+  chanteur_id uuid null,
+  created_at timestamp without time zone null default now(),
+  updated_at timestamp without time zone null default now(),
+  deleted_at timestamp without time zone null,
+  constraint saison_chanteurs_pkey primary key (id),
+  constraint saison_chanteurs_saison_id_chanteur_id_key unique (saison_id, chanteur_id),
+  constraint unique_saison_chanteur unique (saison_id, chanteur_id),
+  constraint saison_chanteurs_chanteur_id_fkey foreign KEY (chanteur_id) references chanteurs (id) on delete CASCADE,
+  constraint saison_chanteurs_saison_id_fkey foreign KEY (saison_id) references saisons (id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists idx_saison_chanteurs_saison on public.saison_chanteurs using btree (saison_id) TABLESPACE pg_default;
+
+create index IF not exists idx_saison_chanteurs_chanteur on public.saison_chanteurs using btree (chanteur_id) TABLESPACE pg_default;
+
+create trigger trg_create_acces_saison
+after INSERT on saison_chanteurs for EACH row
+execute FUNCTION create_acces_for_saison ();
+
+create trigger trg_saison_chanteurs_updated_at BEFORE
+update on saison_chanteurs for EACH row
+execute FUNCTION set_updated_at ();
+
+ajouter un champ eta qui fait reference a referetiel etat
