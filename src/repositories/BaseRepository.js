@@ -68,7 +68,7 @@ export class BaseRepository {
         return await this.softDelete(id)
         // return this.supabase.from(this.table).delete().eq("id", id);
     }
-    
+
     async softDelete(id) {
         return this.supabase
             .from(this.table)
@@ -76,6 +76,20 @@ export class BaseRepository {
                 deleted_at: new Date().toISOString()
             })
             .eq("id", id)
+            .select("*")
+            .single();
+    }
+    async updateByCriteria(criteria, data) {
+
+        let query = this.supabase
+            .from(this.table)
+            .update(data);
+
+        Object.entries(criteria).forEach(([field, value]) => {
+            query = query.eq(field, value);
+        });
+
+        return query
             .select("*")
             .single();
     }

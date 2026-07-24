@@ -5,10 +5,11 @@ export async function getChanteurByToken(token) {
     .from("acces")
     .select(`
         *,
-        saison_chanteurs (
+        saison_chanteurs!inner (
             etat (*),
             saison_id,
             chanteur_id,
+            deleted_at,
             chanteurs (*),
             saisons (*)
         )
@@ -16,14 +17,14 @@ export async function getChanteurByToken(token) {
     .eq("token", token)
     .eq("actif", true)
     .is("deleted_at", null)
+    .is("saison_chanteurs.deleted_at", null)
+    .maybeSingle();
 
-  console.log(error)
-  console.log(data)
   if (error || !data) {
     return null;
-  }  
+  }
+
   return {
     chanteur: data.saison_chanteurs,
-    chorale_id: data.chorale_id
   };
 }

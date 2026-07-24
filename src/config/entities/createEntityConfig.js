@@ -43,9 +43,7 @@ export function createEntityConfig({
 
 
     const controller = new Controller(service);
-console.log("Validator utilisé :", Validator.name);
-console.log("Mapper utilisé :", Mapper.name);
-console.log("Controller utilisé :", Controller.name);
+
 
     return {
 

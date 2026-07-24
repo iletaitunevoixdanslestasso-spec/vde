@@ -81,52 +81,23 @@ export class ChanteurSaisonService extends BaseService {
      */
     async getAvailableChanteurs(saisonId) {
 
+        const { data: chanteurs, error } =
+            await this.chanteurRepository.findAllAndSaison(saisonId);
 
-        // 1 - tous les chanteurs actifs
-        const {
-            data: chanteurs,
-            error: errorChanteurs
-        } = await this.chanteurRepository.findAll();
-
-
-        if (errorChanteurs) {
-            return BaseResponse.error([], errorChanteurs.message);
+        if (error) {
+            return BaseResponse.error([], error.message);
         }
 
-
-        // 2 - chanteurs déjà dans la saison
-        const {
-            data: existants,
-            error: errorExistants
-        } = await this.repository.findBySaison(saisonId);
-
-
-        if (errorExistants) {
-            return BaseResponse.error([], errorExistants.message);
-        }
-
-
-        const idsExistants = existants.map(
-            item => item.chanteur_id
+        const disponibles = chanteurs.filter(chanteur =>
+            chanteur.saison_chanteurs.length === 0 ||
+            chanteur.saison_chanteurs.every(sc => sc.deleted_at !== null)
         );
-
-
-        // 3 - différence
-        const disponibles = chanteurs
-            .filter(
-                chanteur =>
-                    !idsExistants.includes(chanteur.id)
-            )
-            .sort((a, b) =>
-                a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })
-            );
 
         return BaseResponse.success(disponibles);
     }
 
-
     async save(data) {
-        
+
         if (this.validator) {
             const validation = this.validator.validate(data);
 
@@ -134,7 +105,7 @@ export class ChanteurSaisonService extends BaseService {
                 return BaseResponse.error(validation.errors);
             }
         } else {
-            alert( "pas de validateuir")
+            alert("pas de validateuir")
             return
         }
 
@@ -149,18 +120,25 @@ export class ChanteurSaisonService extends BaseService {
     async addChanteur(chanteurId) {
         const saisonId = this.context.saisonId;
 
-        console.log(saisonId, chanteurId)
-        const { data: exists } =
+        console.log("chanteurId", chanteurId)
+        console.log("saisonId", saisonId)
+        const { data: exists, error: existsError } =
             await this.repository.exists(
                 saisonId,
                 chanteurId
             );
-
+        console.log(exists)
+        console.log(existsError)
 
         if (exists) {
             return BaseResponse.error(
                 [],
-                "Ce chanteur est déjà associé à cette saison"
+                "Ce chanteur est déjà associé à cette saison",
+                {
+                    action: "reactivateChanteurSaison",
+                    chanteurId,
+                    saisonId
+                }
             );
         }
 
@@ -197,6 +175,18 @@ export class ChanteurSaisonService extends BaseService {
 
 
         return BaseResponse.success(null);
+    }
+    async reactivate(chanteurId, saison_id) {
+
+        return this.repository.updateByCriteria(
+            {
+                saison_id: saison_id,
+                chanteur_id: chanteurId
+            },
+            {
+                deleted_at: null
+            }
+        );
     }
 
 }

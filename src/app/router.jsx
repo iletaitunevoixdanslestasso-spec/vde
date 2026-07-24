@@ -32,6 +32,8 @@ import ChansonPage from "../pages/admin/referentiels/chansons/ChansonPage";
 import PupitrePage from "../pages/admin/referentiels/pupitre/PupitrePage";
 import RepetitionPage from "../pages/admin/referentiels/repetition/RepetitionPage";
 import ConcertsPage from "../pages/admin/referentiels/concert/ConcertPage";
+import SaisonchansonPage from "../pages/admin/referentiels/saisonchanson/SaisonchansonPage";
+import ChansonsSaisonPage from "../pages/admin/saisons/ChansonsSaisonPage";
 
 export default function Router() {
 
@@ -73,7 +75,7 @@ export default function Router() {
                     <Route index element={<Dashboard />} />
                     {/* saisons programme */}
                     <Route path="saisons/:saison_nom/chanteurs" element={<ChanteurSaisonPage />} />
-                    <Route path="saisons/:saison_nom/chansons" element={`<ChansonsSaisonPage />`} />
+                    <Route path="saisons/:saison_nom/chansons" element={<ChansonsSaisonPage />} />
 
                     {/* réferentiels */}
                     <Route path="saisons" element={<SaisonPage />} />

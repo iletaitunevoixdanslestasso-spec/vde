@@ -25,7 +25,7 @@ export default function SelectRenderer({
                     key={option.id}
                     value={option.id}
                 >
-                    {option.nom} {option.prenom}
+                    {option.value}
                 </option>
 
             ))}

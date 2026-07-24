@@ -34,10 +34,50 @@ export class ChanteursSaisonController extends BaseController {
         if (!res.success) {
             return {};
         }
+        const availableChanteurs = res.data
+            .sort((a, b) => {
+                const aSaison = a.saison_chanteurs[0];
+                const bSaison = b.saison_chanteurs[0];
 
-        return {
-            availableChanteurs: res.data
-        };
+                const aDesactive = aSaison?.deleted_at != null;
+                const bDesactive = bSaison?.deleted_at != null;
+
+                if (aDesactive !== bDesactive) {
+                    return aDesactive ? 1 : -1;
+                }
+
+                const nom = a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" });
+                if (nom !== 0) return nom;
+
+                return a.prenom.localeCompare(b.prenom, "fr", { sensitivity: "base" });
+            })
+            .map(chanteur => {
+                const saisonChanteur = chanteur.saison_chanteurs[0];
+
+                const desactive = saisonChanteur?.deleted_at != null;
+
+                return {
+                    id: chanteur.id,
+                    value: `${chanteur.nom} ${chanteur.prenom}` +
+                        (desactive ? " (désactivé)" : ""),
+                    disabled: desactive
+                };
+            });
+        return { availableChanteurs }
+    }
+
+
+    /**
+     * Liste les chanteurs disponibles à ajouter
+     */
+    async getAvailableChanteurs(saisonId) {
+
+        console.log(
+            "SaisonChanteurController.getAvailableChanteurs",
+            saisonId
+        );
+
+        return this.service.getAvailableChanteurs(saisonId);
     }
 
 
@@ -57,21 +97,21 @@ export class ChanteursSaisonController extends BaseController {
 
 
     /**
-     * Ajouter un chanteur à une saison
+     * reactivate un chanteur à une saison
      */
-    async addChanteur(saisonId, chanteurId) {
-
+    async reactivate(chanteurId, saisonId) {
+        // const saisonId = this.context.saisonId;
         console.log(
-            "SaisonChanteurController.addChanteur",
-            {
-                saisonId,
-                chanteurId
-            }
-        );
-
-        return this.service.addChanteur(
+            "SaisonChanteurController.reactivate",
             saisonId,
             chanteurId
+
+
+        );
+
+        return this.service.reactivate(
+            chanteurId,
+            saisonId
         );
     }
 
@@ -96,7 +136,7 @@ export class ChanteursSaisonController extends BaseController {
     }
     copyAccessLink(saisonChanteurs) {
         console.log(saisonChanteurs)
-        const token=saisonChanteurs.acces.length ? saisonChanteurs.acces[0].token : 'aucun accès généré'
+        const token = saisonChanteurs.acces.length ? saisonChanteurs.acces[0].token : 'aucun accès généré'
         navigator.clipboard.writeText(token);
     }
     async sendAccessLink(saisonChanteurs) {

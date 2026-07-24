@@ -8,12 +8,13 @@ export class BaseResponse {
         };
     }
 
-    static error(errors = [], message = "") {
+    static error(errors = [], message = "", options={}) {
         return {
             success: false,
             data: null,
             errors,
-            message
+            message,
+            ...options
         };
     }
 }

@@ -25,6 +25,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
      * Liste les chanteurs associés à une saison
      */
     async findBySaison(saisonId) {
+        
         return this.supabase
             .from(this.table)
             .select(`
@@ -43,7 +44,8 @@ export class ChanteurSaisonRepository extends BaseRepository {
                 )
             `)
             .eq("saison_id", saisonId)
-            .is("deleted_at", null);
+            .is("deleted_at", null)
+            ;
     }
 
 
@@ -51,13 +53,13 @@ export class ChanteurSaisonRepository extends BaseRepository {
      * Vérifie si un chanteur est déjà associé
      */
     async exists(saisonId, chanteurId) {
-
+        console.log(saisonId, chanteurId)
         return this.supabase
             .from(this.table)
             .select("id")
             .eq("saison_id", saisonId)
             .eq("chanteur_id", chanteurId)
-            .is("deleted_at", null)
+            // .is("deleted_at", null)
             .maybeSingle();
     }
 

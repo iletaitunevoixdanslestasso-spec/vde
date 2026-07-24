@@ -102,10 +102,6 @@ export function SaisonProvider({ children }) {
 
     const updateSaisonSelectionne = (saison) => {
 
-        console.log(
-            "nouvelle sélection",
-            saison
-        );
 
         setSaisonSelectionne(saison);
     };

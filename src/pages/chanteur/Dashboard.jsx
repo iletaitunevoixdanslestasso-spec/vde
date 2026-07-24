@@ -1,7 +1,9 @@
 import { useChorale } from "../../core/hooks/useChorale";
 
 export default function DashboardChanteur() {
-  const { chanteur } = useChorale();
+  // const { chanteur } = useChorale();
+  const data = JSON.parse(localStorage.getItem("chanteur")); // stoke par TokenGuard
+  const chanteur = data?.chanteur?.chanteurs;  
 
   return (
     <div>

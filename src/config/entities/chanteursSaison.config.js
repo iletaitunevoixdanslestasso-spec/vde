@@ -14,7 +14,7 @@ import { ChanteurSaisonService } from "../../services/ChanteurSaisonService";
             source: "availableChanteurs",
             required: true,
             render: (v, row) => {
-                return `${row.chanteurs.nom} ${row.chanteurs.prenom}`
+                return `${row.chanteurs.nom} ${row.chanteurs.prenom}`;
             }
 
         },
@@ -36,9 +36,7 @@ import { ChanteurSaisonService } from "../../services/ChanteurSaisonService";
             hideInForm:true,
             // source: "availableChanteurs",
             render: (v, row) => {
-                // console.log(v)
-                // console.log(row)
-                console.log(row.acces)
+
                 const token = row.acces.length ? row.acces[0].token : ''
                 return `${token}`
             }

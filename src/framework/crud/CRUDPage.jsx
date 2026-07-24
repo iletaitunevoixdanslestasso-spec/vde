@@ -69,21 +69,27 @@ export default function CRUDPage({ config, context = {} }) {
     };
 
     // SAVE (CREATE / UPDATE)
-    const onFieldChange =  (field) => {
+    const onFieldChange = (field) => {
         console.log(field)
         setErrors(prev => prev.filter(e => e.field !== field));
     };
 
     // SAVE (CREATE / UPDATE)
     const handleAdd = async () => {
+        console.log("1")
         if (controller.prepareCreate) {
 
+            console.log("2")
             const extraContext = await controller.prepareCreate();
+            console.log("3")
 
             setFormContext(extraContext);
+            console.log("4")
         }
 
+        console.log("5")
         setEditItem(null);
+        console.log("6")
         setOpen(true);
     };
     const handleSave = async (form) => {
@@ -95,6 +101,22 @@ export default function CRUDPage({ config, context = {} }) {
             const result = await controller.save(form, load);
             console.log("handleSave result", result);
             if (!result.success) {
+                
+                console.log("result",result)
+                if (result?.action === "reactivateChanteurSaison") {
+                    if (window.confirm(
+                        "Ce chanteur est déjà associé mais désactivé.\nVoulez-vous le réactiver ?"
+                    )) {
+                        await controller.reactivate(
+                            result.chanteurId,
+                            result.saisonId
+                        );
+
+                        load();
+                        setOpen(false);
+                        return;
+                    }
+                }
                 console.log("dans result en erreur", result);
                 setErrors(
                     result.errors?.length
@@ -152,7 +174,7 @@ export default function CRUDPage({ config, context = {} }) {
                 errors={errors}
                 initialData={editItem}
                 onClose={() => setOpen(false)}
-                onFieldChange = {onFieldChange}
+                onFieldChange={onFieldChange}
                 onSave={handleSave}
             />
 

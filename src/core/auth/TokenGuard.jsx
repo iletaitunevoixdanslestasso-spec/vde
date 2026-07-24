@@ -5,7 +5,7 @@ import { getChanteurByToken } from "../supabase/chanteur.api";
 export default function TokenGuard() {
 
   const { token } = useParams();
-
+  console.log(token)
   const [loading, setLoading] = useState(true);
   const [valid, setValid] = useState(false);
 
@@ -20,7 +20,7 @@ export default function TokenGuard() {
       }
 
       const user = await getChanteurByToken(token);
-
+  console.log("user", user)
       if (user) {
         localStorage.setItem("token", token);
         localStorage.setItem("chanteur", JSON.stringify(user));
@@ -40,7 +40,7 @@ export default function TokenGuard() {
   if (loading) {
     return <div>Chargement...</div>;
   }
-
+  console.log("valid", valid)
   if (!valid) {
     return <Navigate to="/invalid-token" />;
   }

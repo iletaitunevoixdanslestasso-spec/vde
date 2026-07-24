@@ -67,13 +67,14 @@ export default function AdminMenu() {
                                 style={{ cursor: "pointer" }}
                                 onClick={() => handleClickSaison(saison, "chanteurs")}
                                 // onClick={() => navigate(`/admin/saisons/${saison.id}/chanteurs`)}
-                            >
+                                >
                                 👤 Chanteurs
                             </p>
 
                             <p
                                 style={{ cursor: "pointer" }}
-                                onClick={() => navigate(`/admin/saisons/${saison.id}/chansons`)}
+                                onClick={() => handleClickSaison(saison, "chansons")}
+                                // onClick={() => navigate(`/admin/saisons/${saison.id}/chansons`)}
                             >
                                 🎵 Chansons
                             </p>
