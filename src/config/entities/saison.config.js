@@ -8,7 +8,7 @@ import { SaisonController } from "../../controllers/SaisonController";
 
     const actions = [
         { label: "⭐ Activer", action: "activate" },
-        // { label: "👥 Chanteurs", action: "manageChanteurs" },
+        { label: "👥 Chanteurs", action: "manageChanteurs" },
     ];
 
     const columns= [

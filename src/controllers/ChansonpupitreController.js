@@ -1,7 +1,7 @@
 import { AccesController } from "./AccesController";
 import { BaseController } from "./BaseController";
 
-export class saisonChansonController extends BaseController {
+export class ChansonpupitreController extends BaseController {
 
     constructor(service) {
         super(service);
@@ -16,24 +16,25 @@ export class saisonChansonController extends BaseController {
     async getBySaison(saisonId) {
 
         console.log(
-            "SaisonChanteurController.getBySaison",
+            "ChansonpupitreController.getBySaison",
             saisonId
         );
 
         return this.service.getBySaison(saisonId);
     }
     async prepareCreate() {
-
-        const saisonId = this.context.saisonId;
-        const res = await this.service.getAvailableChansons(saisonId);
+        console.log(this.context)
+        console.log(this.service)
+        const chansonId = this.context.chansonId;
+        const res = await this.service.getAvailablePupitres(chansonId);
 
         if (!res.success) {
             return {};
         }
-        const availableChansons = res.data
+        const availablePupitres = res.data
             .sort((a, b) => {
-                const aSaison = a.saison_chansons[0];
-                const bSaison = b.saison_chansons[0];
+                const aSaison = a.chanson_pupitres[0];
+                const bSaison = b.chanson_pupitres[0];
 
                 const aDesactive = aSaison?.deleted_at != null;
                 const bDesactive = bSaison?.deleted_at != null;
@@ -42,24 +43,24 @@ export class saisonChansonController extends BaseController {
                     return aDesactive ? 1 : -1;
                 }
 
-                const titre = a.titre.localeCompare(b.titre, "fr", { sensitivity: "base" });
-                if (titre !== 0) return titre;
+                const nom = a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" });
+                if (nom !== 0) return nom;
 
                 
             })
             .map(chanson => {
-                const saisonChanteur = chanson.saison_chansons[0];
+                const chansonpupitre = chanson.chanson_pupitres[0];
 
-                const desactive = saisonChanteur?.deleted_at != null;
+                const desactive = chansonpupitre?.deleted_at != null;
 
                 return {
                     id: chanson.id,
-                    value: `${chanson.titre}` +
+                    value: `${chanson.nom}` +
                         (desactive ? " (désactivé)" : ""),
                     disabled: desactive
                 };
             });
-        return { availableChansons }
+        return { availablePupitres }
     }
 
 
@@ -69,7 +70,7 @@ export class saisonChansonController extends BaseController {
     async getAvailableChansons(saisonId) {
 
         console.log(
-            "SaisonChanteurController.getAvailableChansons",
+            "ChansonpupitreController.getAvailableChansons",
             saisonId
         );
 
@@ -83,7 +84,7 @@ export class saisonChansonController extends BaseController {
     async getAvailableChansons(saisonId) {
 
         console.log(
-            "SaisonChanteurController.getAvailableChansons",
+            "ChansonpupitreController.getAvailableChansons",
             saisonId
         );
 
@@ -98,7 +99,7 @@ export class saisonChansonController extends BaseController {
     async reactivate(chansonId, saisonId) {
         // const saisonId = this.context.saisonId;
         console.log(
-            "SaisonChanteurController.reactivate",
+            "ChansonpupitreController.reactivate",
             saisonId,
             chansonId
 
@@ -119,7 +120,7 @@ export class saisonChansonController extends BaseController {
     async removeChanteur(id) {
 
         console.log(
-            "SaisonChanteurController.removeChanteur",
+            "ChansonpupitreController.removeChanteur",
             id
         );
 

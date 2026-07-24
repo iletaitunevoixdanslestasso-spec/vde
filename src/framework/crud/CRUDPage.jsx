@@ -29,7 +29,8 @@ export default function CRUDPage({ config, context = {} }) {
 
     useEffect(() => {
         load();
-    }, [config.entity, context.saisonId]);
+    }, [config.entity, context.saisonId, context.selectChanson]);
+    // }, [config.entity, context.saisonId]);
 
 
 
@@ -48,9 +49,17 @@ export default function CRUDPage({ config, context = {} }) {
                 controller.activate(row, load);
                 break;
             case "manageChanteurs":
-                const url = controller.manageChanteurs(row, load);
-                console.log("url", url)
-                navigate(url)
+                const urlchanteur = controller.manageChanteurs(row, load);
+                console.log("url", urlchanteur)
+                navigate(urlchanteur)
+                break;
+            case "managePupitres":
+                const urlPutpitre = controller.managePupitres(row, load);
+                console.log("url", urlPutpitre)
+                console.log("context", context)
+                console.log("controller", controller)
+                context.selectChanson(row);
+                navigate(urlPutpitre)
                 break;
 
             case "delete":

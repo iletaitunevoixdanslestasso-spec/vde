@@ -4,6 +4,7 @@ import { ChansonRepository } from "../../repositories/ChansonRepository";
 import { ChansonService } from "../../services/ChansonService";
 import { ChansonValidator } from "../../validators/ChansonValidator";
 import { ChansonMapper } from "../../mappers/ChansonMapper";
+import { ChansonController } from "../../controllers/ChansonController";
 
 
 const columns = [
@@ -34,8 +35,16 @@ export const chansonConfig = createEntityConfig({
     Service: ChansonService,
     Validator: ChansonValidator,
     Mapper: ChansonMapper,
+    Controller:ChansonController,
 
 
-    columns
+    columns,
+    actions: [
+    {
+        label: "Pupitres",
+        icon: "🎼",
+        action: "managePupitres"
+    }
+]
 
 });

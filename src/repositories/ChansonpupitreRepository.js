@@ -1,30 +1,33 @@
 import { BaseRepository } from "./BaseRepository";
 
 
-export class SaisonchansonRepository extends BaseRepository {
+export class ChansonpupitreRepository extends BaseRepository {
 
     constructor(table) {
         super(table);
     }
 
-
     /**
      * Liste les chansons associés à une saison
      */
-    async findBySaison(saisonId) {
-        
+    async findBySaison(chansonId) {
+        console.log("chansonId",chansonId)
         return this.supabase
             .from(this.table)
             .select(`
                 id,
-                saison_id,
+                pupitre_id,
+                pupitres (
+                    id,
+                    nom
+                ),
                 chanson_id,
                 chansons (
                     id,
                     titre
                 )
             `)
-            .eq("saison_id", saisonId)
+            .eq("chanson_id", chansonId)
             .is("deleted_at", null)
             ;
     }
@@ -33,15 +36,18 @@ export class SaisonchansonRepository extends BaseRepository {
     /**
      * Vérifie si un chanson est déjà associé
      */
-    async exists(saisonId, chansonId) {
+    async exists(pupitreId, chansonId) {
 
         return this.supabase
             .from(this.table)
             .select("id")
-            .eq("saison_id", saisonId)
+            .eq("pupitre_id", pupitreId)
             .eq("chanson_id", chansonId)
             .is("deleted_at", null)
             .maybeSingle();
     }
 
 }
+
+
+

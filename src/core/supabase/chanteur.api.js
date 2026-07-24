@@ -7,6 +7,7 @@ export async function getChanteurByToken(token) {
         *,
         saison_chanteurs!inner (
             etat (*),
+            id,
             saison_id,
             chanteur_id,
             deleted_at,

@@ -26,6 +26,7 @@ import SaisonPage from "../pages/admin/referentiels/saisons/SaisonPage";
 import ChanteurPage from "../pages/admin/referentiels/chanteurs/ChanteurPage";
 import MesChansons from "../pages/chanteur/MesChansons";
 import SaisonChanteursPage from "../pages/admin/referentiels/saisons/SaisonChanteursPage";
+import ChansonpupitrePage from "../pages/admin/referentiels/chansons/ChansonpupitrePage";
 import { SaisonProvider } from "../components/contexts/SaisonContext";
 import ChanteurSaisonPage from "../pages/admin/saisons/ChanteurSaisonPage";
 import ChansonPage from "../pages/admin/referentiels/chansons/ChansonPage";
@@ -34,6 +35,8 @@ import RepetitionPage from "../pages/admin/referentiels/repetition/RepetitionPag
 import ConcertsPage from "../pages/admin/referentiels/concert/ConcertPage";
 import SaisonchansonPage from "../pages/admin/referentiels/saisonchanson/SaisonchansonPage";
 import ChansonsSaisonPage from "../pages/admin/saisons/ChansonsSaisonPage";
+import InscriptionChanteur from "../pages/chanteur/InscriptionChanteur";
+import { ChansonProvider } from "../components/contexts/ChansonContext";
 
 export default function Router() {
 
@@ -49,7 +52,12 @@ export default function Router() {
 
                 {/* CHANTEUR */}
                 <Route element={<TokenGuard />}>
+
                     <Route path="/chanteur/:token" element={<ChanteurLayout />}>
+                        <Route
+                            path="/chanteur/:token/inscription"
+                            element={<InscriptionChanteur />}
+                        />
                         <Route index element={<DashboardChanteur />} />
                         <Route path="chansons" element={<MesChansons />} />
                         <Route path="concerts" element={<Concerts />} />
@@ -67,7 +75,9 @@ export default function Router() {
                     element={
                         <AdminGuard>
                             <SaisonProvider>
-                                <AdminLayout />
+                                <ChansonProvider>
+                                    <AdminLayout />
+                                </ChansonProvider>
                             </SaisonProvider>
                         </AdminGuard>
                     }
@@ -82,6 +92,8 @@ export default function Router() {
                     <Route path="chanteurs" element={<ChanteurPage />} />
                     <Route path=":saison_nom/chanteurs" element={<SaisonChanteursPage />} />
                     <Route path="chansons" element={<ChansonPage />} />
+                    <Route path="chanson/:titre/pupitres" element={<ChansonpupitrePage />} />
+                    {/* <Route path="chansonspupitre" element={<ChansonpupitrePage />} /> */}
                     <Route path="pupitres" element={<PupitrePage />} />
                     <Route path="concerts" element={<ConcertsPage />} />
                     <Route path="repetitions" element={<RepetitionPage />} />

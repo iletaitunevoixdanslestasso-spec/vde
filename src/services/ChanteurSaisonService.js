@@ -188,5 +188,13 @@ export class ChanteurSaisonService extends BaseService {
             }
         );
     }
+    async setEtat(id, etat) {
 
+        return this.repository.update(
+            id,
+            {
+                etat: etat
+            }
+        );
+    }
 }

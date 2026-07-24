@@ -4,6 +4,7 @@ import { SaisonchansonRepository } from "../../repositories/SaisonchansonReposit
 import { SaisonchansonService } from "../../services/SaisonchansonService";
 import { SaisonchansonValidator } from "../../validators/SaisonchansonValidator";
 import { SaisonchansonMapper } from "../../mappers/SaisonchansonMapper";
+import {  saisonChansonController } from "../../controllers/saisonChansonController";
 
 
 const columns = [
@@ -14,14 +15,16 @@ const columns = [
             source: "availableChansons",
             required: true,
             render: (v, row) => {
-                return `${row.chanons.titre}`
+                return `${row.chansons.titre}`
             }
 
         },
 
 ];
 
+
 const actions= [
+    { label: "🗑 Supprimer", action: "delete" }
 ];
 
 
@@ -38,9 +41,10 @@ export const saisonchansonConfig = createEntityConfig({
     Service: SaisonchansonService,
     Validator: SaisonchansonValidator,
     Mapper: SaisonchansonMapper,
-
+    Controller:saisonChansonController,
 
     columns,
+    useBaseActions:false,
     actions
 
 });

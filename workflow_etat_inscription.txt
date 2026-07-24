@@ -1,3 +1,6 @@
+______________________________________________________________________________________________________________________________________
+_____20/07/2026__________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________
 je suis admin nouvelle saison
 j'associe le chanteur à la saison
 -> creation siason_chanteur etat 5 (je n'ai pas envoye le lien) 
@@ -53,3 +56,35 @@ update on saison_chanteurs for EACH row
 execute FUNCTION set_updated_at ();
 
 ajouter un champ eta qui fait reference a referetiel etat
+
+______________________________________________________________________________________________________________________________________
+_____24/07/2026__________________________________________________________________________________________________
+______________________________________________________________________________________________________________________________________
+
+Association chanteur/saison
+    ↓
+Trigger
+    crée acces
+    etat saison_chanteur = 5
+    ↓
+Admin clique "Envoyer"
+    ↓
+InvitationService
+    récupère le token
+    construit l'URL
+    envoie le mail
+    met etat = 4
+    ↓
+Le chanteur clique
+    ↓
+Formulaire
+    ↓
+Validation
+    etat = 3
+    ↓
+Admin valide
+    etat = 2
+    ↓
+Paiement reçu
+    etat = 1
+

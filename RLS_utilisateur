@@ -1,26 +1,26 @@
-CREATE POLICY "authenticated_insert_chansons"
-ON public.chansons
+CREATE POLICY "authenticated_insert_chanson_pupitres"
+ON public.chanson_pupitres
 FOR INSERT
 TO authenticated
 WITH CHECK (true);
 
-CREATE POLICY "authenticated_select_chansons"
-ON public.chansons
+CREATE POLICY "authenticated_select_chanson_pupitres"
+ON public.chanson_pupitres
 FOR SELECT
 TO authenticated
 USING (true);
 
-CREATE POLICY "authenticated_update_chansons"
-ON public.chansons
+CREATE POLICY "authenticated_update_chanson_pupitres"
+ON public.chanson_pupitres
 FOR UPDATE
 TO authenticated
 USING (true)
 WITH CHECK (true);
 
-CREATE POLICY "authenticated_delete_chansons"
-ON public.chansons
+CREATE POLICY "authenticated_delete_chanson_pupitres"
+ON public.chanson_pupitres
 FOR DELETE
 TO authenticated
 USING (true);
 
-ALTER TABLE public.chansons ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chanson_pupitres ENABLE ROW LEVEL SECURITY;

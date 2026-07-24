@@ -1,5 +1,6 @@
 import { ChanteurSaisonService } from "../services/ChanteurSaisonService";
 import { ChanteurService } from "../services/ChanteurService";
+import { MailService } from "../services/MailService";
 
 import { AccesController } from "./AccesController";
 import { BaseController } from "./BaseController";
@@ -9,6 +10,7 @@ export class ChanteursSaisonController extends BaseController {
     constructor(service) {
         super(service);
         this.accesController = new AccesController();
+        this.mailService = new MailService();
     }
 
 
@@ -140,11 +142,19 @@ export class ChanteursSaisonController extends BaseController {
         navigator.clipboard.writeText(token);
     }
     async sendAccessLink(saisonChanteurs) {
+        console.log(saisonChanteurs)
         const result = await this.accesController.generateLink(saisonChanteurs);
 
         // pour l'instant console (on fera email étape 9)
         console.log("Lien à envoyer :", result.url);
-
+        await this.mailService.sendInvitation(
+            saisonChanteurs.chanteurs.email,
+            result.url
+        );
+        await this.service.setEtat(
+            saisonChanteurs.id,
+            4
+        );
         return result;
     }
 

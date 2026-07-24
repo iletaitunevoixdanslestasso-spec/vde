@@ -17,6 +17,7 @@ export class ChanteurController extends BaseController {
         navigator.clipboard.writeText(link);
     }
     async sendAccessLink(chanteur) {
+        console.log(chanteur)
         const result = await this.accesController.generateLink(chanteur);
 
         // pour l'instant console (on fera email étape 9)

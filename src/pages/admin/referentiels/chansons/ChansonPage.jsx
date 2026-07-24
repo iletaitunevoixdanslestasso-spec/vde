@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../../core/supabase/client";
 import CRUDPage from "../../../../framework/crud/CRUDPage";
 import { chansonConfig } from "../../../../config/entities/chanson.config";
+import { useChanson } from "../../../../components/contexts/ChansonContext";
 
 
 export default function ChansonPage() {
-
+  const { selectChanson } = useChanson();
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -19,5 +20,7 @@ export default function ChansonPage() {
   }, []);
 
     return <CRUDPage 
-    config={chansonConfig} />;
+    config={chansonConfig}
+    context={{selectChanson}}
+    />;
 }

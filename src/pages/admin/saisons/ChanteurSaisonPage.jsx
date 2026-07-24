@@ -23,7 +23,7 @@ export default function ChanteurSaisonPage() {
         <CRUDPage
             config={ChanteursSaisonConfig}
             context={{
-                title: `${saisonSelectionne.active ? "⭐" : "📅"} ${ChanteursSaisonConfig.title} : ${saisonSelectionne.nom}`,
+                title: `${ChanteursSaisonConfig.title} : ${saisonSelectionne.nom} ${saisonSelectionne.active ? "⭐" : "📅"}`,
                 saisonId: saisonSelectionne.id
             }}
         />

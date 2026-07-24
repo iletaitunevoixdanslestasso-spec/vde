@@ -1,18 +1,19 @@
 import { BaseResponse } from "../core/framework/BaseResponse";
-import { ChansonRepository } from "../repositories/ChansonRepository";
+import { PupitreRepository } from "../repositories/PupitreRepository";
 import { BaseService } from "./BaseService";
 
 
-export class SaisonchansonService extends BaseService {
+export class ChansonpupitreService extends BaseService {
 
     constructor(repository, validator, mapper) {
         super(repository, validator, mapper);
-        this.chansonRepository = new ChansonRepository('chansons');
+        this.pupitreRepository = new PupitreRepository('pupitres');
     }
     async getAll() {
-
-        const saisonId = this.context.saisonId;
-        const { data, error } = await this.repository.findBySaison(saisonId);
+        console.log(this.context)
+        const chansonId = this.context.chansonId;
+        console.log("chansonId", chansonId)
+        const { data, error } = await this.repository.findBySaison(chansonId);
         if (error) {
             return {
                 success: false,
@@ -28,25 +29,25 @@ export class SaisonchansonService extends BaseService {
             success: true,
             data
         };
-        // return this.repository.findBySaison(saisonId);
+        // return this.repository.findBySaison(chansonId);
 
     }
 
     /**
      * Liste des chansons pouvant être ajoutés
-     */
-    async getAvailableChansons(saisonId) {
-
+     */ 
+    async getAvailablePupitres(chansonId) {
+        console.log(this.pupitreRepository)
         const { data: chansons, error } =
-            await this.chansonRepository.findAllAndSaison(saisonId);
+            await this.pupitreRepository.findAllAndChanson(chansonId);
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
         const disponibles = chansons.filter(chanson =>
-            chanson.saison_chansons.length === 0 ||
-            chanson.saison_chansons.every(sc => sc.deleted_at !== null)
+            chanson.chanson_pupitres.length === 0 ||
+            chanson.chanson_pupitres.every(sc => sc.deleted_at !== null)
         );
 
         return BaseResponse.success(disponibles);
@@ -66,21 +67,21 @@ export class SaisonchansonService extends BaseService {
         }
 
 
-        return this.addChanson(
-            data.chanson_id
+        return this.addPupitre(
+            data.pupitre_id
         );
     }
     /**
      * Ajout d'un chanson dans une saison
      */
-    async addChanson(chansonId) {
-        const saisonId = this.context.saisonId;
+    async addPupitre(pupitreId) {
+        const chansonId = this.context.chansonId;
 
+        console.log("pupitreId", pupitreId)
         console.log("chansonId", chansonId)
-        console.log("saisonId", saisonId)
         const { data: exists, error: existsError } =
             await this.repository.exists(
-                saisonId,
+                pupitreId,
                 chansonId
             );
         console.log(exists)
@@ -92,8 +93,8 @@ export class SaisonchansonService extends BaseService {
                 "Ce chanson est déjà associé à cette saison",
                 {
                     action: "reactivateChansonSaison",
-                    chansonId,
-                    saisonId
+                    pupitreId,
+                    chansonId
                 }
             );
         }
@@ -101,7 +102,7 @@ export class SaisonchansonService extends BaseService {
 
         const { data, error } =
             await this.repository.insert({
-                saison_id: saisonId,
+                pupitre_id: pupitreId,
                 chanson_id: chansonId
             });
 
