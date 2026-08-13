@@ -1,7 +1,7 @@
 import { AccesController } from "./AccesController";
 import { BaseController } from "./BaseController";
 
-export class saisonChansonController extends BaseController {
+export class SaisonChansonController extends BaseController {
 
     constructor(service) {
         super(service);
