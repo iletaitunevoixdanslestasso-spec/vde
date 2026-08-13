@@ -140,7 +140,7 @@ export default function FormRepartition({
 
             <div style={{ marginBottom: 15 }}>
                 <strong>
-                    Chanson : {context?.chanson?.titre}
+                    Chanson : {initialData?.chansons?.titre}
                 </strong>
             </div>
             <DataTable
