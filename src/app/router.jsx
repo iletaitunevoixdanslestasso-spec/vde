@@ -38,6 +38,7 @@ import ChansonsSaisonPage from "../pages/admin/saisons/ChansonsSaisonPage";
 import InscriptionChanteur from "../pages/chanteur/InscriptionChanteur";
 import { ChansonProvider } from "../components/contexts/ChansonContext";
 import RepartitionChansonsSaisonPage from "../pages/admin/saisons/RepartitionChansonsSaisonPage";
+import ChansonsChanteur from "../pages/chanteur/ChansonsChanteur";
 
 export default function Router() {
 
@@ -60,7 +61,7 @@ export default function Router() {
                             element={<InscriptionChanteur />}
                         />
                         <Route index element={<DashboardChanteur />} />
-                        <Route path="chansons" element={<MesChansons />} />
+                        <Route path="chansons" element={<ChansonsChanteur />} />
                         <Route path="concerts" element={<Concerts />} />
                         <Route path="repetitions" element={<Repetitions />} />
                         <Route path="votes" element={<Votes />} />

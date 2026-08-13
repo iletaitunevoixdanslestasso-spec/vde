@@ -28,7 +28,10 @@ export default function DashboardChanteur() {
       <p>Bienvenue dans votre espace chorale</p>
 
       <ul>
-        <li>🎵 Mes chansons</li>
+        <li>
+          <Link to="chansons">
+            🎵 Mes chansons
+          </Link></li>
         <li>🎤 Concerts</li>
         <li>🗓️ Répétitions</li>
         <li>🗳️ Votes</li>

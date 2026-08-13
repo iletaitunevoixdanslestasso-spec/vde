@@ -1,13 +1,16 @@
 import { Navigate, Outlet, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 import { getChanteurByToken } from "../supabase/chanteur.api";
+import { getSaisonActive } from "../supabase/saison.api";
 
 export default function TokenGuard() {
 
   const { token } = useParams();
-  console.log(token)
+
   const [loading, setLoading] = useState(true);
   const [valid, setValid] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
 
@@ -19,16 +22,36 @@ export default function TokenGuard() {
         return;
       }
 
+      // 1. Vérifier le token
       const user = await getChanteurByToken(token);
-  console.log("user", user)
-      if (user) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("chanteur", JSON.stringify(user));
-        setValid(true);
-      } else {
+
+      if (!user) {
         setValid(false);
+        setLoading(false);
+        return;
       }
 
+      // 2. Récupérer la saison active
+      const saisonActive = await getSaisonActive();
+
+      if (!saisonActive) {
+        setValid(false);
+        setLoading(false);
+        return;
+      }
+
+      // 3. Stocker les informations
+      localStorage.setItem("token", token);
+      localStorage.setItem("chanteur", JSON.stringify(user));
+
+      // 4. Comparer les saisons
+      const tokenSaisonId = user.saisonId;
+
+      const active =
+        tokenSaisonId === saisonActive.id;
+
+      setIsActive(active);
+      setValid(true);
       setLoading(false);
     }
 
@@ -40,10 +63,21 @@ export default function TokenGuard() {
   if (loading) {
     return <div>Chargement...</div>;
   }
-  console.log("valid", valid)
+
   if (!valid) {
-    return <Navigate to="/invalid-token" />;
+    return <Navigate to="/invalid-token" replace />;
   }
 
+  // Token valide mais saison non active
+  if (!isActive) {
+    return (
+      <Navigate
+        to={`/chanteur/${token}/inscription`}
+        replace
+      />
+    );
+  }
+
+  // Token valide + saison active
   return <Outlet />;
 }
