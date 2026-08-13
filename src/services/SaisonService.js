@@ -46,16 +46,5 @@ export class SaisonService extends BaseService {
             "Saison activée"
         );
     }
-    async setActivTODELe(id) {
 
-        console.log("et ici")
-        const { error } = await supabase
-            .rpc("set_active_saison", { p_id: id });
-
-        if (error) {
-            return BaseResponse.error([], error.message);
-        }
-
-        return BaseResponse.success(null, "Saison activée");
-    }
 }

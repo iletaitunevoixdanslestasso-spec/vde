@@ -14,21 +14,7 @@ export class SaisonController extends BaseController {
             { onSuccess, onError }
         );
     }
-    // activate(saison, onSuccess, onError) {
 
-    //     return this.handle(
-    //         () => this.service.setActive(saison.id),
-    //         {
-    //             onSuccess: () => {
-
-    //                 this.context.refresh();
-
-    //                 onSuccess?.(saison);
-    //             },
-    //             onError
-    //         }
-    //     );
-    // }
     activate(saison, onSuccess, onError) {
 
         return this.handle(
@@ -42,6 +28,22 @@ export class SaisonController extends BaseController {
             }
         );
     }
+
+    async save(entity, onSuccess, onError) {
+        return super.save(
+            entity,
+            (data) => {
+                // Si la saison modifiée est la saison active,
+                // on demande au contexte de la recharger
+                console.log(data)
+                console.log(this.context)
+                this.context?.refresh();
+                onSuccess?.(data);
+            },
+            onError
+        );
+    }
+
     manageChanteurs(saison, load) {
 
         // window.location.href =
@@ -51,7 +53,7 @@ export class SaisonController extends BaseController {
             saison
         );
         this.context.updateSaisonSelectionne(saison);
-        return(`/admin/${saison.nom}/chanteurs`);
+        return (`/admin/${saison.nom}/chanteurs`);
 
     }
 
