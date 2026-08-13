@@ -4,8 +4,7 @@ import { SaisonchansonRepository } from "../../repositories/SaisonchansonReposit
 import { SaisonchansonService } from "../../services/SaisonchansonService";
 import { SaisonchansonValidator } from "../../validators/SaisonchansonValidator";
 import { SaisonchansonMapper } from "../../mappers/SaisonchansonMapper";
-import {  SaisonChansonController } from "../../controllers/SaisonChansonController";
-
+import { SaisonchansonController } from "../../controllers/SaisonchansonController";
 
 const columns = [
         {
@@ -42,7 +41,7 @@ export const saisonchansonConfig = createEntityConfig({
     Service: SaisonchansonService,
     Validator: SaisonchansonValidator,
     Mapper: SaisonchansonMapper,
-    Controller:SaisonChansonController,
+    Controller:SaisonchansonController,
 
     columns,
     useBaseActions:false,
