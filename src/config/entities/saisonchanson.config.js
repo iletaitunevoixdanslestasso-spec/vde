@@ -24,7 +24,8 @@ const columns = [
 
 
 const actions= [
-    { label: "🗑 Supprimer", action: "delete" }
+    { label: "🎼 Répartition", action: "repartition" },
+    { label: "🗑 Supprimer", action: "delete" },
 ];
 
 

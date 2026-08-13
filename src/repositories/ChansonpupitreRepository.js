@@ -46,7 +46,24 @@ export class ChansonpupitreRepository extends BaseRepository {
             .is("deleted_at", null)
             .maybeSingle();
     }
-
+    async findByChanson(chansonId) {
+        return this.supabase
+            .from(this.table)
+            .select(`
+                id,
+                chanson_id,
+                pupitre_id,
+                pupitres (
+                    id,
+                    nom
+                )
+            `)
+            .eq("chanson_id", chansonId)
+            .is("deleted_at", null)
+            .order("created_at", {
+                ascending: true
+            });
+    }
 }
 
 

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { FieldRenderers } from "./FieldRenderers";
+import FormEdition from "./FormEdition";
+import FormRepartition from "./FormRepartition";
 
 export default function FormModal({
     open,
+    action,
     config,
     context,
     initialData = null,
@@ -13,6 +16,14 @@ export default function FormModal({
 }) {
 
     const [form, setForm] = useState({});
+
+
+
+    const ModalContent = {
+        edit: FormEdition,
+        repartition: FormRepartition
+    };
+
 
     // ✔ 1. hooks toujours en premier
     useEffect(() => {
@@ -33,8 +44,12 @@ export default function FormModal({
 
             setForm(obj);
         }
-    }, [initialData, open, config]);
 
+    }, [initialData, open, config, action]);
+
+
+    const Content = ModalContent[action] || FormEdition;
+    console.log("action", action)
     const errorsByField = Object.fromEntries(
         errors.map(e => [e.field, e.message])
     );
@@ -78,10 +93,21 @@ export default function FormModal({
         <div style={styles.overlay}>
             <div style={styles.modal}>
 
-                <h2>{initialData ? "✏️ Modifier" : "➕ Créer"}</h2>
 
+                <Content
+                    config={config}
+                    initialData={initialData}
+                    context={context}
+                    form={form}
+                    errors={errors}
+                    onChange={handleChange}
+                    onClose={onClose}
+                    onFieldChange={onFieldChange}
+                    onSave={onSave}
+                />
+                {/* 
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                     {
+                    {
                         fields.map((f) => {
 
                             const Renderer = FieldRenderers[f.type];
@@ -116,17 +142,15 @@ export default function FormModal({
                             );
                         })
                     }
-                    
-                </div>
+
+                </div> */}
+
+
 
                 <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
                     <button onClick={onClose}>Annuler</button>
 
-                    <button onClick={() => onSave(form)}>
-                        Enregistrer
-                    </button>
                 </div>
-
             </div>
         </div>
     );

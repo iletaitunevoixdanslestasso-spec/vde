@@ -37,6 +37,7 @@ import SaisonchansonPage from "../pages/admin/referentiels/saisonchanson/Saisonc
 import ChansonsSaisonPage from "../pages/admin/saisons/ChansonsSaisonPage";
 import InscriptionChanteur from "../pages/chanteur/InscriptionChanteur";
 import { ChansonProvider } from "../components/contexts/ChansonContext";
+import RepartitionChansonsSaisonPage from "../pages/admin/saisons/RepartitionChansonsSaisonPage";
 
 export default function Router() {
 
@@ -86,6 +87,7 @@ export default function Router() {
                     {/* saisons programme */}
                     <Route path="saisons/:saison_nom/chanteurs" element={<ChanteurSaisonPage />} />
                     <Route path="saisons/:saison_nom/chansons" element={<ChansonsSaisonPage />} />
+                    <Route path="saisons/:saison_nom/:chanson_nom/repartition" element={<RepartitionChansonsSaisonPage />} />
 
                     {/* réferentiels */}
                     <Route path="saisons" element={<SaisonPage />} />

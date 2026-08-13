@@ -12,6 +12,7 @@ export default function CRUDPage({ config, context = {} }) {
     const [items, setItems] = useState([]);
     const [title, setTitle] = useState(config.title || "CRUD Page");
     const [open, setOpen] = useState(false);
+    const [action, setAction] = useState("edit");
     const [editItem, setEditItem] = useState(null);
     const [errors, setErrors] = useState([]);
     const [controller, setController] = useState(config.controller);
@@ -21,7 +22,6 @@ export default function CRUDPage({ config, context = {} }) {
 
         controller.initialize(context);
         setTitle(context.title ?? title);
-
     }, [controller, context.saisonId]);
 
     // LOAD
@@ -36,10 +36,16 @@ export default function CRUDPage({ config, context = {} }) {
 
     // ACTIONS TABLE
     const handleAction = (action, row) => {
+        setAction(action)
 
         switch (action) {
 
             case "edit":
+                setEditItem(row);
+                setOpen(true);
+
+                break;
+            case "repartition":
                 setEditItem(row);
                 setOpen(true);
                 break;
@@ -85,6 +91,7 @@ export default function CRUDPage({ config, context = {} }) {
 
     // SAVE (CREATE / UPDATE)
     const handleAdd = async () => {
+        setAction("edit")
         console.log("1")
         if (controller.prepareCreate) {
 
@@ -110,8 +117,8 @@ export default function CRUDPage({ config, context = {} }) {
             const result = await controller.save(form, load);
             console.log("handleSave result", result);
             if (!result.success) {
-                
-                console.log("result",result)
+
+                console.log("result", result)
                 if (result?.action === "reactivateChanteurSaison") {
                     if (window.confirm(
                         "Ce chanteur est déjà associé mais désactivé.\nVoulez-vous le réactiver ?"
@@ -178,6 +185,7 @@ export default function CRUDPage({ config, context = {} }) {
             {/* MODAL */}
             <FormModal
                 open={open}
+                action={action}
                 config={config}
                 context={formContext}
                 errors={errors}
