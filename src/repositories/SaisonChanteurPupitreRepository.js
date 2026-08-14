@@ -165,4 +165,38 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
             }
         );
     }
+    async findBySaison(saisonId) {
+        return await this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            saison_id,
+            chanteur_id,
+            chanson_id,
+            pupitre_id,
+            principal
+        `)
+            .eq("saison_id", saisonId)
+            .is("deleted_at", null);
+
+            
+        const { data, error } = await this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            saison_id,
+            chanteur_id,
+            chanson_id,
+            pupitre_id,
+            principal
+        `)
+            .eq("saison_id", saisonId)
+            .is("deleted_at", null);
+
+        if (error) {
+            throw error;
+        }
+
+        return data || [];
+    }
 }

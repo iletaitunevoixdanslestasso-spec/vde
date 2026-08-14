@@ -16,9 +16,30 @@ export class BaseController {
         }
     }
 
-    async prepareCreate() {
+
+
+
+    async prepareForm() {
         return {};
     }
+
+    async loadItemByToken() {
+
+        return this.service.getByToken(
+            this.context.token
+        );
+
+    }
+
+
+    async saveItemByToken(form) {
+
+        return this.service.updateByToken(
+            this.context.token,
+            form
+        );
+    }    
+
     async handle(serviceCall, { onSuccess, onError } = {}) {
 
         const res = await serviceCall();

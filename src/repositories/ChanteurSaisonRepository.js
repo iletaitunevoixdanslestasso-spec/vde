@@ -25,7 +25,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
      * Liste les chanteurs associés à une saison
      */
     async findBySaison(saisonId) {
-        
+
         return this.supabase
             .from(this.table)
             .select(`
@@ -38,6 +38,11 @@ export class ChanteurSaisonRepository extends BaseRepository {
                     prenom,
                     email,
                     telephone
+                ),
+                groupe_id,
+                groupes (
+                id,
+                nom
                 ),
                 acces(
                 token

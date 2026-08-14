@@ -33,10 +33,11 @@ export default class RepartitionService {
                 .findBySaison(saisonId),
 
             this.saisonChanteurPupitreRepository
-                .findBySaisonAndChanson(
-                    saisonId,
-                    chansonId
-                )
+                .findBySaison(saisonId)
+                // .findBySaisonAndChanson(
+                //     saisonId,
+                //     chansonId
+                // )
         ]);
 
 

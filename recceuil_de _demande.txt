@@ -1,0 +1,25 @@
+"""""""""""""referentiel GROUPE"""""""""""""
+groupe 1 20h->21h30
+groupe 2 21h30->23h
+
+
+
+""""""""""""""droit à l'image""""""""""""""
+-> cote chanteur formulaire d'import de docuemtn "droit à l'image"
+-> cote admin :  saison chanteur
+workflow 0-> attente de formulaire
+workflow 1-> attente de lecture du formulaire
+workflow 2-> mettre la réponse ( OK || KO)
+
+"""""""""""""formulaire chanteur"""""""""""""
+ajouter le groupe
+groupe 1 20h->21h30
+groupe 2 21h30->23h
+->adresse
+
+"""""""""""""repetition"""""""""""""
+"""""""""""""RAPPEL"""""""""""""
+-> droit à limage
+-> choix du putpitre de reference
+
+

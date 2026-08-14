@@ -135,14 +135,26 @@ export class SaisonChanteurService extends BaseService {
 
 
     async save(data) {
+        console.log(data)
         if (this.validator) {
             const validation = this.validator.validate(data);
-            console.log("validation", validation);
+
             if (!validation.valid) {
                 return BaseResponse.error(validation.errors);
             }
         }
-        console.log("save", data);
+
+        // ✏️ Modification
+        if (data.id) {
+            return this.repository.update(
+                data.id,
+                {
+                    groupe_id: data.groupe_id
+                }
+            );
+        }
+
+        // ➕ Création
         return this.addChanteur(
             data.chanteur_id
         );
@@ -151,7 +163,7 @@ export class SaisonChanteurService extends BaseService {
      * Ajout d'un chanteur dans une saison
      */
     async addChanteur(chanteurId) {
-        console.log("chanteurId",chanteurId);
+        console.log("chanteurId", chanteurId);
         if (this.validator) {
             const validation = this.validator.validate(chanteurId);
             console.log("validation", validation);

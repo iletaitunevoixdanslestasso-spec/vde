@@ -32,15 +32,23 @@ export default function FormEdition({
 
                             <label>{f.header}</label>
 
-                            {Renderer && (
-                                <Renderer
-                                    field={f}
-                                    form={form}
-                                    onChange={onChange}
-                                    context={context}
-                                />
+                            {f.editType === "readonly" && initialData ? (
+                                <span>
+                                    {f.render
+                                        ? f.render(null, initialData)
+                                        : form[f.field]
+                                    }
+                                </span>
+                            ) : (
+                                Renderer && (
+                                    <Renderer
+                                        field={f}
+                                        form={form}
+                                        onChange={onChange}
+                                        context={context}
+                                    />
+                                )
                             )}
-
                             {errorsByField[f.field] && (
                                 <div style={{
                                     color: "#dc3545",

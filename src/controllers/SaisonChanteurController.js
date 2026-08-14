@@ -25,7 +25,7 @@ export class SaisonChanteurController extends BaseController {
 
         return this.service.getBySaison(saisonId);
     }
-    async prepareCreate() {
+    async prepareForm() {
 
         const saisonId = this.context.saisonId;
 

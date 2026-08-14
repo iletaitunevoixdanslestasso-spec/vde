@@ -5,6 +5,7 @@ import { ChanteurRepository } from "../../repositories/ChanteurRepository";
 import { ChanteurService } from "../../services/ChanteurService";
 import { ChanteurValidator } from "../../validators/ChanteurValidator";
 import { ChanteurMapper } from "../../mappers/ChanteurMapper";
+import { ChanteurController } from "../../controllers/ChanteurController";
 
 
 const entity = "chanteurs";
@@ -15,27 +16,15 @@ const columns = [
     { field: "prenom", header: "Prénom", type: "text", required: true },
     { field: "email", header: "Email", type: "text", required: true },
     { field: "telephone", header: "Téléphone", type: "text", required: true },
-    // {
-    //     field: "acces_link",
-    //     header: "Lien d'accès",
-    //     type: "custom",
-    //     hideInForm: true,
-    //     render: (value, row) => {
 
-    //         if (!row.acces || !row.acces.token) {
-    //             return "Aucun lien";
-    //         }
 
-    //         return `${import.meta.env.VITE_APP_BASE_URL}/${row.acces.token}`;
-    //     }
-    // }
 ];
-    const actions= [
-        { label: "✏️ Modifier", action: "edit" },
-        { label: "⭐ Activer", action: "activate" },
-        { label: "👥 Chanteurs", action: "manageChanteurs" },
-        { label: "🗑 Supprimer", action: "delete" }
-    ]  
+const actions = [
+    { label: "✏️ Modifier", action: "edit" },
+    { label: "⭐ Activer", action: "activate" },
+    { label: "👥 Chanteurs", action: "manageChanteurs" },
+    { label: "🗑 Supprimer", action: "delete" }
+]
 
 export const chanteurConfig = createEntityConfig({
     entity,
@@ -45,9 +34,9 @@ export const chanteurConfig = createEntityConfig({
     Service: ChanteurService,
     Validator: ChanteurValidator,
     Mapper: ChanteurMapper,
-    // Controller: chanteurController
+    Controller: ChanteurController,
     columns,
     // actions,
     defaultOrderBy: "nom",
-  
+
 });

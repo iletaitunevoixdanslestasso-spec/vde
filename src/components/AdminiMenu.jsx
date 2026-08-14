@@ -34,7 +34,7 @@ export default function AdminMenu() {
     return (
         <nav style={{ marginTop: 30 }}>
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin")}>
-                🏠 Dashboard
+                🏠 Tabelau de bord
             </p>
 
             <hr />            
@@ -77,6 +77,12 @@ export default function AdminMenu() {
                                 // onClick={() => navigate(`/admin/saisons/${saison.id}/chansons`)}
                             >
                                 🎵 Chansons
+                            </p>
+                            <p
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleClickSaison(saison, "groupes")}
+                            >
+                                🎵 Groupes
                             </p>
 
                             <p
@@ -133,6 +139,7 @@ export default function AdminMenu() {
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/repetitions")}>
                 🗓 Répétitions
             </p>
+
 
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/invitations")}>
                 📨 Invitations

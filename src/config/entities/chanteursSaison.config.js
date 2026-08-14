@@ -15,6 +15,20 @@ import { ChanteurSaisonService } from "../../services/ChanteurSaisonService";
             required: true,
             render: (v, row) => {
                 return `${row.chanteurs.nom} ${row.chanteurs.prenom}`;
+            },
+            editType: "readonly",
+
+
+        },
+        {
+            field: "groupe_id",
+            header: "Groupes",
+            type: "select",
+            source: "availableGroupes",
+            required: true,
+            render: (v, row) => {
+
+                return `${row.groupes?.nom || "doit choisir"}`;
             }
 
         },
@@ -46,6 +60,7 @@ import { ChanteurSaisonService } from "../../services/ChanteurSaisonService";
 
     ];
     const actions = [
+        { label: "✏️ Modifier", action: "edit" },
         {
             label: "🔗 Générer lien",
             icon: "🔗",

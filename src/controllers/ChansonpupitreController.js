@@ -22,7 +22,7 @@ export class ChansonpupitreController extends BaseController {
 
         return this.service.getBySaison(saisonId);
     }
-    async prepareCreate() {
+    async prepareForm() {
         console.log(this.context)
         console.log(this.service)
         const chansonId = this.context.chansonId;

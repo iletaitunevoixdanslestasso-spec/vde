@@ -8,6 +8,31 @@ export class ChanteurController extends BaseController {
         super(service);
         this.accesController = new AccesController();
     }
+    async loadItemByToken_chanteur() {
+
+        return this.service.getByToken(
+            this.context.token
+        );
+
+    }
+    async prepareForm() {
+
+        console.log("prepareForm saisonId" )
+        const saisonId = this.context.saisonId;
+
+        const result =
+        await this.service.getAvailableGroupes(saisonId);
+        console.log("prepareForm saisonId",saisonId )
+        console.log("prepareForm result",result )
+        return {
+            availableGroupes: result.success
+                ? result.data.map(groupe => ({
+                    id: groupe.id,
+                    value: groupe.nom
+                }))
+                : []
+        };
+    }
 
     generateAccessLink(chanteur) {
         console.log("generateAccessLink", chanteur);

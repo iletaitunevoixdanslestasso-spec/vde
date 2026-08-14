@@ -89,12 +89,38 @@ export default function FormRepartition({
         chansonPupitre
     ) => {
 
-        return saisonChanteurPupitres.some(
+        const chanteurId = chanteur.chanteur_id;
+        const pupitreId = chansonPupitre.pupitre_id;
+        const chansonId = initialData.chansons.id;
+
+        // 1. Cherche un choix spécifique pour cette chanson
+        const choixChanson = saisonChanteurPupitres.find(
             scp =>
-                scp.chanteur_id === chanteur.chanteur_id &&
-                scp.pupitre_id === chansonPupitre.pupitre_id
+                scp.chanteur_id === chanteurId &&
+                scp.chanson_id === chansonId
+        );
+
+
+        // 2. Si un choix existe pour cette chanson,
+        //    il est prioritaire
+        if (choixChanson) {
+            return choixChanson.pupitre_id === pupitreId;
+        }
+
+        // 3. Sinon, chercher le pupitre principal du chanteur
+        const pupitrePrincipal = saisonChanteurPupitres.find(
+            scp =>
+                scp.chanteur_id === chanteurId &&
+                scp.principal === true
+        );
+
+        // 4. Aucun choix chanson → utiliser le principal
+        return (
+            pupitrePrincipal?.pupitre_id === pupitreId
         );
     };
+
+
     const columns = [
         {
             field: "chanteur",

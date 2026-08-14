@@ -27,12 +27,15 @@ export class ChanteursSaisonController extends BaseController {
 
         return this.service.getBySaison(saisonId);
     }
-    async prepareCreate() {
+    async prepareForm() {
 
         const saisonId = this.context.saisonId;
 
-        const res = await this.service.getAvailableChanteurs(saisonId);
 
+        const [res, groupesRes] = await Promise.all([
+            this.service.getAvailableChanteurs(saisonId),
+            this.service.getAvailableGroupes(saisonId)
+        ]);
         if (!res.success) {
             return {};
         }
@@ -65,7 +68,14 @@ export class ChanteursSaisonController extends BaseController {
                     disabled: desactive
                 };
             });
-        return { availableChanteurs }
+        const availableGroupes = groupesRes.success
+            ? groupesRes.data.map(groupe => ({
+                id: groupe.id,
+                value: groupe.nom
+            }))
+            : [];
+
+        return { availableChanteurs, availableGroupes }
     }
 
 

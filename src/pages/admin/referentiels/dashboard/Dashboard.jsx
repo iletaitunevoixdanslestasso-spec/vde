@@ -1,3 +1,3 @@
 export default function Dashboard() {
-  return <h1>Dashboard Admin</h1>;
+  return <h1>Tabelau de bord Admin</h1>;
 }

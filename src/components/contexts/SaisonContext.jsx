@@ -22,9 +22,6 @@ const controller = new SaisonController(service);
 const SaisonContext = createContext();
 
 export function SaisonProvider({ children }) {
-
-    console.log("SaisonProvider");
-
     
 
     // c'est la saison ACTIVE il n'y en a qu'une

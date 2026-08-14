@@ -1,7 +1,7 @@
 import { AccesController } from "./AccesController";
 import { BaseController } from "./BaseController";
 
-export class SaisonchansonController extends BaseController {
+export class GroupesController extends BaseController {
 
     constructor(service) {
         super(service);
@@ -16,16 +16,16 @@ export class SaisonchansonController extends BaseController {
     async getBySaison(saisonId) {
 
         console.log(
-            "SaisonChanteurController.getBySaison",
+            "groupe.getBySaison",
             saisonId
         );
 
         return this.service.getBySaison(saisonId);
     }
-    async prepareForm() {
+    async prepareCreate_NOP() {
 
         const saisonId = this.context.saisonId;
-        const res = await this.service.getAvailableChansons(saisonId);
+        const res = await this.service.getAvailableGroupe(saisonId);
 
         if (!res.success) {
             return {};
@@ -92,56 +92,5 @@ export class SaisonchansonController extends BaseController {
 
 
 
-    /**
-     * reactivate un chanson à une saison
-     */
-    async reactivate(chansonId, saisonId) {
-        // const saisonId = this.context.saisonId;
-        console.log(
-            "SaisonChanteurController.reactivate",
-            saisonId,
-            chansonId
-
-
-        );
-
-        return this.service.reactivate(
-            chansonId,
-            saisonId
-        );
-    }
-
-
-
-    /**
-     * Retirer un chanson d'une saison
-     */
-    async removeChanteur(id) {
-
-        console.log(
-            "SaisonChanteurController.removeChanteur",
-            id
-        );
-
-        return this.service.removeChanteur(id);
-    }
-
-    generateAccessLink(saisonchanson) {
-        console.log("generateAccessLink", saisonchanson);
-        return this.accesController.generateLink(saisonchanson);
-    }
-    copyAccessLink(saisonChansons) {
-        console.log(saisonChansons)
-        const token = saisonChansons.acces.length ? saisonChansons.acces[0].token : 'aucun accès généré'
-        navigator.clipboard.writeText(token);
-    }
-    async sendAccessLink(saisonChansons) {
-        const result = await this.accesController.generateLink(saisonChansons);
-
-        // pour l'instant console (on fera email étape 9)
-        console.log("Lien à envoyer :", result.url);
-
-        return result;
-    }
 
 }

@@ -19,6 +19,7 @@ import { BaseService } from "./BaseService";
 import { ChanteurRepository } from "../repositories/ChanteurRepository";
 import { BaseResponse } from "../core/framework/BaseResponse";
 import { ChanteurSaisonRepository } from "../repositories/ChanteurSaisonRepository";
+import { GroupeRepository } from "../repositories/GroupeRepository";
 
 
 export class ChanteurSaisonService extends BaseService {
@@ -26,6 +27,7 @@ export class ChanteurSaisonService extends BaseService {
     constructor(repository, validator, mapper) {
         super(repository, validator, mapper);
         this.chanteurRepository = new ChanteurRepository('chanteurs');
+        this.groupeRepository = new GroupeRepository("groupes");
     }
     async getAll() {
 
@@ -97,7 +99,7 @@ export class ChanteurSaisonService extends BaseService {
     }
 
     async save(data) {
-
+        console.log(data)
         if (this.validator) {
             const validation = this.validator.validate(data);
 
@@ -108,52 +110,55 @@ export class ChanteurSaisonService extends BaseService {
             alert("pas de validateuir")
             return
         }
-
+       // ✏️ Modification
+        if (data.id) {
+            return this.repository.update(
+                data.id,
+                {
+                    groupe_id: data.groupe_id
+                }
+            );
+        }
 
         return this.addChanteur(
-            data.chanteur_id
+            data.chanteur_id,
+            data.groupe_id
         );
     }
     /**
      * Ajout d'un chanteur dans une saison
      */
-    async addChanteur(chanteurId) {
+    async addChanteur(chanteurId, groupeId) {
+
         const saisonId = this.context.saisonId;
 
-        console.log("chanteurId", chanteurId)
-        console.log("saisonId", saisonId)
         const { data: exists, error: existsError } =
             await this.repository.exists(
                 saisonId,
                 chanteurId
             );
-        console.log(exists)
-        console.log(existsError)
+
+        if (existsError) {
+            return BaseResponse.error([], existsError.message);
+        }
 
         if (exists) {
             return BaseResponse.error(
                 [],
-                "Ce chanteur est déjà associé à cette saison",
-                {
-                    action: "reactivateChanteurSaison",
-                    chanteurId,
-                    saisonId
-                }
+                "Ce chanteur est déjà associé à cette saison"
             );
         }
-
 
         const { data, error } =
             await this.repository.insert({
                 saison_id: saisonId,
-                chanteur_id: chanteurId
+                chanteur_id: chanteurId,
+                groupe_id: groupeId
             });
-
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
-
 
         return BaseResponse.success(data);
     }
@@ -196,5 +201,16 @@ export class ChanteurSaisonService extends BaseService {
                 etat: etat
             }
         );
+    }
+
+    async getAvailableGroupes(saisonId) {
+        const { data, error } =
+            await this.groupeRepository.findBySaison(saisonId);
+
+        if (error) {
+            return BaseResponse.error([], error.message);
+        }
+
+        return BaseResponse.success(data);
     }
 }

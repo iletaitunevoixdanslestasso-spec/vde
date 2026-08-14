@@ -35,12 +35,24 @@ export default function CRUDPage({ config, context = {} }) {
 
 
     // ACTIONS TABLE
-    const handleAction = (action, row) => {
+    const handleAction = async  (action, row) => {
         setAction(action)
 
         switch (action) {
 
             case "edit":
+                if (controller.prepareForm) {
+
+                    console.log("2")
+                    const extraContext = await controller.prepareForm();
+                    console.log("3")
+
+                    setFormContext({
+                        ...context,
+                        ...extraContext
+                    });
+                    console.log("4")
+                }
                 setEditItem(row);
                 setOpen(true);
 
@@ -93,13 +105,16 @@ export default function CRUDPage({ config, context = {} }) {
     const handleAdd = async () => {
         setAction("edit")
         console.log("1")
-        if (controller.prepareCreate) {
+        if (controller.prepareForm) {
 
             console.log("2")
-            const extraContext = await controller.prepareCreate();
+            const extraContext = await controller.prepareForm();
             console.log("3")
 
-            setFormContext(extraContext);
+            setFormContext({
+                ...context,
+                ...extraContext
+            });
             console.log("4")
         }
 
@@ -109,6 +124,7 @@ export default function CRUDPage({ config, context = {} }) {
         setOpen(true);
     };
     const handleSave = async (form) => {
+        console.log("handleSave controller", controller);
         console.log("handleSave form", form);
         try {
             setErrors([]);

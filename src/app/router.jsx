@@ -31,6 +31,7 @@ import { SaisonProvider } from "../components/contexts/SaisonContext";
 import ChanteurSaisonPage from "../pages/admin/saisons/ChanteurSaisonPage";
 import ChansonPage from "../pages/admin/referentiels/chansons/ChansonPage";
 import PupitrePage from "../pages/admin/referentiels/pupitre/PupitrePage";
+import GroupePage from "../pages/admin/referentiels/groupe/GroupePage";
 import RepetitionPage from "../pages/admin/referentiels/repetition/RepetitionPage";
 import ConcertsPage from "../pages/admin/referentiels/concert/ConcertPage";
 import SaisonchansonPage from "../pages/admin/referentiels/saisonchanson/SaisonchansonPage";
@@ -39,6 +40,7 @@ import InscriptionChanteur from "../pages/chanteur/InscriptionChanteur";
 import { ChansonProvider } from "../components/contexts/ChansonContext";
 import RepartitionChansonsSaisonPage from "../pages/admin/saisons/RepartitionChansonsSaisonPage";
 import ChansonsChanteur from "../pages/chanteur/ChansonsChanteur";
+import Profil from "../pages/chanteur/profil";
 
 export default function Router() {
 
@@ -59,6 +61,10 @@ export default function Router() {
                         <Route
                             path="/chanteur/:token/inscription"
                             element={<InscriptionChanteur />}
+                        />
+                        <Route
+                            path="/chanteur/:token/profil"
+                            element={<Profil />}
                         />
                         <Route index element={<DashboardChanteur />} />
                         <Route path="chansons" element={<ChansonsChanteur />} />
@@ -89,6 +95,7 @@ export default function Router() {
                     <Route path="saisons/:saison_nom/chanteurs" element={<ChanteurSaisonPage />} />
                     <Route path="saisons/:saison_nom/chansons" element={<ChansonsSaisonPage />} />
                     <Route path="saisons/:saison_nom/:chanson_nom/repartition" element={<RepartitionChansonsSaisonPage />} />
+                    <Route path="saisons/:saison_nom/groupes" element={<GroupePage />} />
 
                     {/* réferentiels */}
                     <Route path="saisons" element={<SaisonPage />} />

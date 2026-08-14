@@ -62,6 +62,49 @@ export class SaisonChanteurRepository extends BaseRepository {
             .eq("saison_id", saisonId)
             .is("deleted_at", null);
     }
+       async findBySaison_convention(saisonId) {
+        const { data, error } = await this.supabase
+            .from(this.table)
+            .select(`
+                id,
+                saison_id,
+                chanteur_id,
+                chanteurs (
+                    id,
+                    nom,
+                    prenom,
+                    email,
+                    telephone
+                )
+            `)
+            .eq("saison_id", saisonId)
+            .is("deleted_at", null);
+    
+
+        if (error) {
+            throw error;
+        }
+
+        return data || [];
+
+        // return this.supabase
+        //     .from(this.table)
+        //     .select(`
+        //         id,
+        //         saison_id,
+        //         chanteur_id,
+        //         chanteurs (
+        //             id,
+        //             nom,
+        //             prenom,
+        //             email,
+        //             telephone
+        //         )
+        //     `)
+        //     .eq("saison_id", saisonId)
+        //     .is("deleted_at", null);
+    }
+ 
 
 
     /**

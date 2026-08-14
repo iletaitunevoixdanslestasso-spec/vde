@@ -49,7 +49,7 @@ export default function FormModal({
 
 
     const Content = ModalContent[action] || FormEdition;
-    console.log("action", action)
+
     const errorsByField = Object.fromEntries(
         errors.map(e => [e.field, e.message])
     );
@@ -105,45 +105,7 @@ export default function FormModal({
                     onFieldChange={onFieldChange}
                     onSave={onSave}
                 />
-                {/* 
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {
-                        fields.map((f) => {
 
-                            const Renderer = FieldRenderers[f.type];
-
-                            return f.hideInForm ? null : (
-                                <div key={f.field}>
-
-                                    <label>{f.header}</label>
-
-                                    {Renderer && (
-                                        <Renderer
-                                            field={f}
-                                            form={form}
-                                            onChange={handleChange}
-                                            context={context}
-                                        />
-                                    )}
-
-                                    {errorsByField[f.field] && (
-                                        <div
-                                            style={{
-                                                color: "#dc3545",
-                                                fontSize: 12,
-                                                marginTop: 4
-                                            }}
-                                        >
-                                            {errorsByField[f.field]}
-                                        </div>
-                                    )}
-
-                                </div>
-                            );
-                        })
-                    }
-
-                </div> */}
 
 
 

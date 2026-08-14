@@ -7,7 +7,7 @@ export default function DataTable({
 }) {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(100);
 
     const [sort, setSort] = useState({
         field: null,
@@ -26,38 +26,52 @@ export default function DataTable({
      * 🔍 RECHERCHE
      * =========================================================
      */
-
     const filteredData = useMemo(() => {
 
         if (!search) {
             return data;
         }
 
-        const searchValue = search.toLowerCase();
+        const searchValue = search
+            .toLowerCase()
+            .trim();
 
-        return data.filter((row) =>
-            columns.some((col) => {
+        const containsSearch = (value) => {
 
-                let value;
+            if (value == null) {
+                return false;
+            }
 
-                /*
-                 * Pour la recherche, on utilise également
-                 * sortValue si la colonne en possède un.
-                 */
-                if (col.sortValue) {
-                    value = col.sortValue(row);
-                } else {
-                    value = row[col.field];
-                }
-
-                return String(value ?? "")
+            if (
+                typeof value === "string" ||
+                typeof value === "number" ||
+                typeof value === "boolean"
+            ) {
+                return String(value)
                     .toLowerCase()
                     .includes(searchValue);
-            })
+            }
+
+            if (Array.isArray(value)) {
+                return value.some(item =>
+                    containsSearch(item)
+                );
+            }
+
+            if (typeof value === "object") {
+                return Object.values(value).some(item =>
+                    containsSearch(item)
+                );
+            }
+
+            return false;
+        };
+
+        return data.filter(row =>
+            containsSearch(row)
         );
 
-    }, [data, search, columns]);
-
+    }, [data, search]);
 
     /*
      * =========================================================
@@ -360,6 +374,9 @@ export default function DataTable({
 
                     <option value={50}>
                         50 par page
+                    </option>
+                    <option value={100}>
+                        100 par page
                     </option>
 
                 </select>
