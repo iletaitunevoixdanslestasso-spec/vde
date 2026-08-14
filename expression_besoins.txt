@@ -1,7 +1,3 @@
-"""""""""""""referentiel GROUPE"""""""""""""
-groupe 1 20h->21h30
-groupe 2 21h30->23h
-
 
 
 """"""""""""""droit à l'image""""""""""""""
