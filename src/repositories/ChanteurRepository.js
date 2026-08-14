@@ -46,6 +46,7 @@ export class ChanteurRepository extends BaseRepository {
                 p_prenom: data.prenom,
                 p_email: data.email,
                 p_groupe_id: data.groupe_id,
+                p_pupitre_id: data.pupitre_id,
                 p_telephone: data.telephone
             }
         );

@@ -15,15 +15,43 @@ export class ChanteurController extends BaseController {
         );
 
     }
+
     async prepareForm() {
 
-        console.log("prepareForm saisonId" )
         const saisonId = this.context.saisonId;
 
-        const result =
-        await this.service.getAvailableGroupes(saisonId);
-        console.log("prepareForm saisonId",saisonId )
-        console.log("prepareForm result",result )
+
+        const [groupesResult, pupitresResult] =
+            await Promise.all([
+                this.service.getAvailableGroupes(saisonId),
+                this.service.getAvailablePupitres()
+            ]);
+
+
+        return {
+
+            availableGroupes: groupesResult.success
+                ? groupesResult.data.map(groupe => ({
+                    id: groupe.id,
+                    value: groupe.nom
+                }))
+                : [],
+
+            availablePupitres: pupitresResult.success
+                ? pupitresResult.data.map(pupitre => ({
+                    id: pupitre.id,
+                    value: pupitre.nom
+                }))
+                : []
+        };
+    }
+
+    async prepareForm_odl() {
+
+        const saisonId = this.context.saisonId;
+        console.log("prepareForm saisonId =", saisonId);
+        const result = await this.service.getAvailableGroupes(saisonId);
+        console.log("prepareForm result", result)
         return {
             availableGroupes: result.success
                 ? result.data.map(groupe => ({

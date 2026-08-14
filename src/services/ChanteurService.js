@@ -2,6 +2,7 @@ import { BaseService } from "./BaseService";
 import { supabase } from "../core/supabase/client";
 import { BaseResponse } from "../core/framework/BaseResponse";
 import { GroupeRepository } from "../repositories/GroupeRepository";
+import { PupitreRepository } from "../repositories/PupitreRepository";
 
 export class ChanteurService extends BaseService {
 
@@ -12,6 +13,7 @@ export class ChanteurService extends BaseService {
     ) {
         super(repository, validator, mapper);
         this.groupeRepository = new GroupeRepository("groupes");
+        this.pupitreRepository = new PupitreRepository("pupitres");
     }
 
 
@@ -126,5 +128,15 @@ export class ChanteurService extends BaseService {
 
         return BaseResponse.success(data);
     }
+    async getAvailablePupitres() {
 
+        const { data, error } =
+            await this.pupitreRepository.findAll();
+
+        if (error) {
+            return BaseResponse.error([], error.message);
+        }
+
+        return BaseResponse.success(data);
+    }
 }

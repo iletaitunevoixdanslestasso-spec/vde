@@ -5,6 +5,7 @@ import CRUDItemPage from "../../framework/crud/CRUDItemPage";
 const profilConfig = {
     ...chanteurConfig,
     Controller: ChanteurController,
+    title:"Profil",
     columns: [
         ...chanteurConfig.columns,
         {
@@ -16,14 +17,25 @@ const profilConfig = {
             render: (v, row) => {
                 return `${row.groupes?.nom || "doit choisir"}`;
             }
+        },
+        {
+            field: "pupitre_id",
+            header: "Pupitre par défaut",
+            type: "select",
+            source: "availablePupitres",
+            required: true,
+            render: (v, row) => {
+                return `${row.pupitre?.nom || "doit choisir"}`;
+            }
         }
     ]
 };
 
 export default function ChanteurPage() {
-
-    const token = localStorage.getItem("token");
+    
     const chanteur = JSON.parse(localStorage.getItem("chanteur"));
+    const token = localStorage.getItem("token");
+
 
     return (
         <CRUDItemPage

@@ -25,9 +25,7 @@ export default function CRUDItemPage({
             controller.initialize(context);
 
             let extraContext = {};
-            console.log("useEffect")
             if (controller.prepareForm) {
-                console.log("controller", controller)
                 extraContext =
                     await controller.prepareForm();
             }
@@ -197,9 +195,7 @@ export default function CRUDItemPage({
     /*
      * FORMULAIRE DIRECTEMENT DANS LA PAGE
      */
-    console.log(
-        config, item, formContext
-    )
+
     return (
         <div>
 
