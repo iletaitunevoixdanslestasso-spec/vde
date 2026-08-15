@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import FormEdition from "../form/FormEdition";
+import NotificationService from "../../services/NotificationService";
+
 
 export default function CRUDItemPage({
     config,
@@ -25,6 +27,7 @@ export default function CRUDItemPage({
             controller.initialize(context);
 
             let extraContext = {};
+
             if (controller.prepareForm) {
                 extraContext =
                     await controller.prepareForm();
@@ -68,7 +71,9 @@ export default function CRUDItemPage({
 
                 return;
             }
+
             const item = result.data[0];
+
             setItem(item);
             setForm(item);
 
@@ -142,8 +147,21 @@ export default function CRUDItemPage({
                         ]
                 );
 
+                NotificationService.error(
+                    result.message ||
+                    "L'enregistrement a échoué."
+                );
+
                 return;
             }
+
+            /*
+             * Notification de succès
+             */
+            NotificationService.success(
+                result.message ||
+                "Enregistrement effectué avec succès."
+            );
 
             /*
              * Rechargement du profil
@@ -162,6 +180,11 @@ export default function CRUDItemPage({
                     message: e.message
                 }
             ]);
+
+            NotificationService.error(
+                e.message ||
+                "Une erreur est survenue."
+            );
 
         } finally {
 
@@ -212,12 +235,14 @@ export default function CRUDItemPage({
                 onClose={null}
                 onSave={handleSave}
                 onChange={(field, value) => {
+
                     setForm(prev => ({
                         ...prev,
                         [field]: value
                     }));
 
                     onFieldChange(field);
+
                 }}
                 saving={saving}
             />
