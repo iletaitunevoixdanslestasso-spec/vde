@@ -50,6 +50,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
             `)
             .eq("saison_id", saisonId)
             .is("deleted_at", null)
+            .is("chanteurs.deleted_at", null)
             ;
     }
 

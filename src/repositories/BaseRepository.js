@@ -63,13 +63,13 @@ export class BaseRepository {
         return this.supabase.from(this.table).select("*").eq("id", id).single();
     }
 
-    async delete(id) {
+    async delete(id, extraFields = {}) {
         console.log("par ici")
-        return await this.softDelete(id)
+        return await this.softDelete(id, extraFields )
         // return this.supabase.from(this.table).delete().eq("id", id);
     }
 
-    async softDelete(id) {
+    async softDelete_old(id) {
         return this.supabase
             .from(this.table)
             .update({
@@ -79,6 +79,19 @@ export class BaseRepository {
             .select("*")
             .single();
     }
+
+    async softDelete(id, extraFields = {}) {
+        return this.supabase
+            .from(this.table)
+            .update({
+                ...extraFields,
+                deleted_at: new Date().toISOString()
+            })
+            .eq("id", id)
+            .select("*")
+            .single();
+    }
+
     async updateByCriteria(criteria, data) {
 
         let query = this.supabase

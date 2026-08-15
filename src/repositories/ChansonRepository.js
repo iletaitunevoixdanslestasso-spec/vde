@@ -21,6 +21,15 @@ export class ChansonRepository extends BaseRepository {
             )
         `)
             .eq("saison_chansons.saison_id", saisonId)
+            .is("deleted_at", null)
             .order(orderBy, { ascending: true });
     }  
+    async delete(id) {
+        return await this.supabase
+            .rpc("soft_delete_chanson", {
+                p_id: id
+            });
+
+        
+    }    
 }

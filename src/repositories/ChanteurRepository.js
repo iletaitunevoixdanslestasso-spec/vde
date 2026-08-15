@@ -20,6 +20,7 @@ export class ChanteurRepository extends BaseRepository {
             )
         `)
             .eq("saison_chanteurs.saison_id", saisonId)
+            .is("deleted_at", null)
             .order(orderBy, { ascending: true });
     }
 
@@ -51,5 +52,12 @@ export class ChanteurRepository extends BaseRepository {
             }
         );
     }
+    async delete(id) {
+        const { data, error } = await this.supabase
+            .rpc("soft_delete_chanteur", {
+                p_id: id
+            });
 
+        return { data, error };
+    }
 }

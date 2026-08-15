@@ -77,20 +77,6 @@ export class SaisonchansonController extends BaseController {
     }
 
 
-    /**
-     * Liste les chansons disponibles à ajouter
-     */
-    async getAvailableChansons(saisonId) {
-
-        console.log(
-            "SaisonChanteurController.getAvailableChansons",
-            saisonId
-        );
-
-        return this.service.getAvailableChansons(saisonId);
-    }
-
-
 
     /**
      * reactivate un chanson à une saison

@@ -40,13 +40,15 @@ export class ChanteurSaisonService extends BaseService {
             };
         }
 
-        data.sort((a, b) =>
+        // j'enlève des lignes de la able liaison les lignes dontle referentiel est null
+        const filteredData = data.filter(item => item.chansons !== null);
+        filteredData.sort((a, b) =>
             a.chanteurs.nom.localeCompare(b.chanteurs.nom)
         );
 
         return {
             success: true,
-            data
+            data: filteredData
         };
         // return this.repository.findBySaison(saisonId);
 
