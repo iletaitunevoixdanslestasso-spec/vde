@@ -22,7 +22,7 @@ const columns = [
         header: "Droit à l'image",
         type: "text",
         editType: "readonly",
-
+        hideInForm: true,
         render: (v, row) => {
 
             if (!row.droit_image) {

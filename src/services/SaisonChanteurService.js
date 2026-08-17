@@ -185,7 +185,7 @@ export class SaisonChanteurService extends BaseService {
         if (exists) {
             return BaseResponse.error(
                 [],
-                "Ce chanteur est déjà associé à cette saison"
+                "LALAL Ce chanteur est déjà associé à cette saison"
             );
         }
 
@@ -217,7 +217,7 @@ export class SaisonChanteurService extends BaseService {
         if (result.error?.code === "23505") {
             return BaseResponse.error(
                 [],
-                "Ce chanteur est déjà associé à cette saison. Voulez-vous le réactiver ?"
+                "BOBO Ce chanteur est déjà associé à cette saison. Voulez-vous le réactiver ?"
             );
         }
 

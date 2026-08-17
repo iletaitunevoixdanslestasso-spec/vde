@@ -31,7 +31,7 @@ export default function FormEdition({
                     return f.hideInForm ? null : (
                         <div key={f.field}>
 
-                            <label>{f.header}</label>
+                            <label>{f.header} : </label>
 
                             {f.editType === "readonly" && initialData ? (
                                 <span>

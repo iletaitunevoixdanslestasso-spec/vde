@@ -12,7 +12,7 @@ export class GroupeRepository extends BaseRepository {
      * Liste les chansons associés à une saison
      */
     async findBySaison(saisonId) {
-        console.log(`findBySaison(${saisonId})`)
+
         return this.supabase
             .from(this.table)
             .select(`

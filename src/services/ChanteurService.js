@@ -75,99 +75,6 @@ export class ChanteurService extends BaseService {
     }
 
 
-    async getByToken_old(token) {
-
-        const {
-            data,
-            error
-        } = await this.repository.findByToken(token);
-
-        if (error) {
-            return BaseResponse.error(
-                [],
-                error.message
-            );
-        }
-
-        const profil = Array.isArray(data)
-            ? data[0]
-            : data;
-
-        if (!profil) {
-            return BaseResponse.success(
-                [],
-                null
-            );
-        }
-
-        /*
-         * ----------------------------------------------------
-         * Template droit à l'image
-         * ----------------------------------------------------
-         */
-
-        // 1. Recherche du type de document
-        const {
-            data: documentType,
-            error: documentTypeError
-        } = await this.documentTypeRepository.findByCode(
-            "droit_image"
-        );
-
-        if (documentTypeError) {
-            return BaseResponse.error(
-                [],
-                documentTypeError.message
-            );
-        }
-
-        let droit_image_template_url = null;
-
-        // 2. Recherche du document référentiel correspondant
-        if (documentType) {
-
-            const {
-                data: template,
-                error: templateError
-            } = await this.referentielDocumentRepository
-                .findByDocumentTypeId(documentType.id);
-
-            if (templateError) {
-                return BaseResponse.error(
-                    [],
-                    templateError.message
-                );
-            }
-
-            // 3. Génération de l'URL signée
-            if (template?.path) {
-
-                droit_image_template_url =
-                    await StorageService.createSignedUrl(
-                        "referentiel-documents",
-                        template.path,
-                        3600
-                    );
-            }
-        }
-
-        /*
-         * ----------------------------------------------------
-         * Retour du profil
-         * ----------------------------------------------------
-         */
-
-        return BaseResponse.success(
-            [
-                {
-                    ...profil,
-                    droit_image_template_url
-                }
-            ],
-            null
-        );
-    }
-
     async getByToken(token) {
 
         const {
@@ -196,6 +103,50 @@ export class ChanteurService extends BaseService {
         /*
          * ----------------------------------------------------
          * Template droit à l'image
+         * ----------------------------------------------------
+         *
+         * Le chanteur est anonyme côté Supabase Auth.
+         * La récupération du template passe donc par
+         * l'Edge Function qui valide le token métier
+         * et génère l'URL signée.
+         */
+
+        let droit_image_url = null;
+
+        try {
+
+            const response = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-chanteur-droit-image`,
+                {
+                    method: "POST",
+                    headers: {
+                        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        token
+                    })
+                }
+            );
+
+            const templateResult = await response.json();
+
+            if (response.ok && templateResult?.url) {
+
+                droit_image_url =
+                    templateResult.url;
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Erreur récupération template droit à l'image",
+                error
+            );
+        }
+        /*
+         * ----------------------------------------------------
+         * Template droit à l'image TEMPLATE
          * ----------------------------------------------------
          *
          * Le chanteur est anonyme côté Supabase Auth.
@@ -248,7 +199,8 @@ export class ChanteurService extends BaseService {
             [
                 {
                     ...profil,
-                    droit_image_template_url
+                    droit_image_template_url,
+                    droit_image_url
                 }
             ],
             null

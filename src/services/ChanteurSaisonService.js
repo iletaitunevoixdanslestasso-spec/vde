@@ -147,7 +147,7 @@ export class ChanteurSaisonService extends BaseService {
         if (exists) {
             return BaseResponse.error(
                 [],
-                "Ce chanteur est déjà associé à cette saison"
+                "CII Ce chanteur est déjà associé à cette saison"
             );
         }
 

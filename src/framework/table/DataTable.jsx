@@ -539,14 +539,6 @@ export default function DataTable({
 
                                     {actions
                                         .filter((a) => {
-                                            console.log(
-                                                "ACTION",
-                                                a.action,
-                                                "workflow =",
-                                                row.droit_image_workflow,
-                                                "type =",
-                                                typeof row.droit_image_workflow
-                                            );
                                             if (typeof a.condition === "function") {
                                                 return a.condition(row);
                                             }

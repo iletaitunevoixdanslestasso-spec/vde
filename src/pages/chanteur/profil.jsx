@@ -8,10 +8,10 @@ const profilConfig = {
     Controller: ChanteurController,
     title: "Profil",
     columns: [
-    { field: "nom", header: "Nom", type: "text", required: true },
-    { field: "prenom", header: "Prénom", type: "text", required: true },
-    { field: "email", header: "Email", type: "text", required: true },
-    { field: "telephone", header: "Téléphone", type: "text", required: true },
+        { field: "nom", header: "Nom", type: "text", required: true },
+        { field: "prenom", header: "Prénom", type: "text", required: true },
+        { field: "email", header: "Email", type: "text", required: true },
+        { field: "telephone", header: "Téléphone", type: "text", required: true },
         {
             field: "groupe_id",
             header: "Groupe",
@@ -33,7 +33,7 @@ const profilConfig = {
             }
         },
         {
-            
+
             field: "droit_image_template_url",
             header: "Modèle de droit à l'image",
             type: "text",
@@ -57,12 +57,62 @@ const profilConfig = {
         },
         {
             field: "droit_image",
-            header: "Mon droit à l'image",
+            header: "Télécharger le droit à l'image",
             type: "fileUploader",
             signedUpload: true,
             bucket: "chanteur-documents",
             accept: ".pdf,application/pdf"
-        }
+        },
+        {
+            field: "droit_image_url",
+            header: "Mon droit à l'image",
+            type: "text",
+            editType: "readonly",
+            // hideInForm: true,
+
+            render: (v, row) => {
+
+                if (!row.droit_image) {
+                    return "Aucun document";
+                }
+
+                let link = React.createElement(
+                    "a",
+                    {
+                        href: row.droit_image_url,
+                        target: "_blank",
+                        rel: "noopener noreferrer"
+                    },
+                    `📄 ${row.droit_image}`
+                );
+                let dai = ''
+                switch (row.droit_image_workflow) {
+                    case 3:
+                        dai = '❌ Refusé'
+                        break;
+                    case 2:
+                        dai = '✅ Accepté'
+                        break;
+                
+                    default:
+                        break;
+                }
+                
+                let workflow = React.createElement(
+                    "div",
+                    null,
+                    `${dai}`
+                );
+
+                return React.createElement(
+                    "div",
+                    null,
+                    link,
+                    workflow
+                );
+            }
+        },
+
     ]
 };
 

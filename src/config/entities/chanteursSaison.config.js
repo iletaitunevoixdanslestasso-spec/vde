@@ -61,9 +61,10 @@ const columns = [
         header: "Droit à l'image",
         type: "text",
         editType: "readonly",
+        hideInForm: true,
 
         render: (v, row) => {
-            console.log("v",v)
+
             v= row.chanteurs.droit_image_workflow
             if (!row.chanteurs.droit_image) {
                 return "Non fourni";

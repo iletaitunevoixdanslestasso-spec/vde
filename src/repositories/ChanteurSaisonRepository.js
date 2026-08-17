@@ -67,7 +67,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
             .select("id")
             .eq("saison_id", saisonId)
             .eq("chanteur_id", chanteurId)
-            // .is("deleted_at", null)
+            .is("deleted_at", null)
             .maybeSingle();
     }
 
