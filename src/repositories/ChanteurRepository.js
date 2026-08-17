@@ -48,7 +48,8 @@ export class ChanteurRepository extends BaseRepository {
                 p_email: data.email,
                 p_groupe_id: data.groupe_id,
                 p_pupitre_id: data.pupitre_id,
-                p_telephone: data.telephone
+                p_telephone: data.telephone,
+                p_droit_image: data.droit_image ?? null
             }
         );
     }
@@ -59,5 +60,18 @@ export class ChanteurRepository extends BaseRepository {
             });
 
         return { data, error };
+    }
+
+    async updateDroitImageWorkflow(chanteurId, workflow) {
+
+        return this.supabase
+            .from(this.table)
+            .update({
+                droit_image_workflow: workflow,
+                updated_at: new Date().toISOString()
+            })
+            .eq("id", chanteurId)
+            .select()
+            .single();
     }
 }

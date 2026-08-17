@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FormEdition from "../form/FormEdition";
 import NotificationService from "../../services/NotificationService";
 
@@ -15,7 +15,11 @@ export default function CRUDItemPage({
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState({});
     const controller = config.controller;
+    const [fileUpload, setFileUpload] = useState(null);
 
+    const registerFileUpload = useCallback((upload) => {
+        setFileUpload(() => upload);
+    }, []);
 
     /*
      * INITIALISATION
@@ -130,9 +134,21 @@ export default function CRUDItemPage({
         setErrors([]);
 
         try {
+            let finalForm = { ...form };
+            if (fileUpload) {
+                const result = await fileUpload();
 
+                if (!result) {
+                    return;
+                }
+
+                finalForm = {
+                    ...finalForm,
+                    [result.field]: result.path
+                };
+            }
             const result =
-                await controller.saveItemByToken(form);
+                await controller.saveItemByToken(finalForm);
 
             if (!result.success) {
 
@@ -244,6 +260,7 @@ export default function CRUDItemPage({
                     onFieldChange(field);
 
                 }}
+                onFileUploadReady={registerFileUpload}
                 saving={saving}
             />
 

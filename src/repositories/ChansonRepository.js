@@ -32,4 +32,21 @@ export class ChansonRepository extends BaseRepository {
 
         
     }    
+    async findAllNotDelete(orderBy = "created_at") {
+        return this.supabase
+            .from(this.table)
+            .select(`
+                id,
+                deleted_at,
+                paroles,
+                referentiel_documents(
+                id,
+                path
+                ),
+                titre
+
+                `)
+            .is("deleted_at", null)
+            .order(orderBy, { ascending: true });
+    }    
 }

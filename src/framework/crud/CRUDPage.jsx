@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import DataTable from "../table/DataTable";
 import FormModal from "../form/FormModal";
 import { useNavigate } from "react-router-dom";
+import NotificationService from "../../services/NotificationService";
 
 export default function CRUDPage({ config, context = {} }) {
     const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function CRUDPage({ config, context = {} }) {
 
 
     // ACTIONS TABLE
-    const handleAction = async  (action, row) => {
+    const handleAction = async (action, row) => {
         setAction(action)
 
         switch (action) {
@@ -149,6 +150,10 @@ export default function CRUDPage({ config, context = {} }) {
                         return;
                     }
                 }
+                NotificationService.error(
+                    result.message ||
+                    "L'enregistrement a échoué."
+                );
                 console.log("dans result en erreur", result);
                 setErrors(
                     result.errors?.length
@@ -157,9 +162,11 @@ export default function CRUDPage({ config, context = {} }) {
                 );
                 return;
             }
-            console.log("avnt setOen");
             setOpen(false);
-            console.log("apres setOen");
+            NotificationService.success(
+                result.message ||
+                "Enregistrement effectué avec succès."
+            );
             setEditItem(null);
 
         } catch (e) {

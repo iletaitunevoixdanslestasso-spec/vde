@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldRenderers } from "./FieldRenderers";
 import FormEdition from "./FormEdition";
 import FormRepartition from "./FormRepartition";
@@ -17,7 +17,11 @@ export default function FormModal({
 
     const [form, setForm] = useState({});
 
+    const [fileUpload, setFileUpload] = useState(null);
 
+    const registerFileUpload = useCallback((upload) => {
+        setFileUpload(() => upload);
+    }, []);
 
     const ModalContent = {
         edit: FormEdition,
@@ -28,6 +32,8 @@ export default function FormModal({
     // ✔ 1. hooks toujours en premier
     useEffect(() => {
         if (!open) return;
+
+        setFileUpload(null);
 
         if (initialData) {
             setForm(initialData);
@@ -60,6 +66,11 @@ export default function FormModal({
     const fields = config.columns || [];
 
     const handleChange = (name, value) => {
+
+        console.log("FormModal handleChange", {
+            name,
+            value
+        });
         onFieldChange(name)
         setForm(prev => ({
             ...prev,
@@ -67,6 +78,36 @@ export default function FormModal({
         }));
     };
 
+    const handleSave = async (form) => {
+
+        let finalForm = { ...form };
+        console.log("FORMMODAL handleSave");
+        console.log("fileUpload", fileUpload);
+        if (fileUpload) {
+            const result = await fileUpload();
+
+            if (result === null) {
+                return;
+            }
+
+            // if (!result.skipped) {
+            //     finalForm = {
+            //         ...finalForm,
+            //         path: result.path
+            //     };
+            // }
+            if (!result.skipped) {
+                finalForm = {
+                    ...finalForm,
+                    [result.field]: result.path
+                };
+            }
+             console.log("FINAL RESULT", result);
+             console.log("FINAL FORM", finalForm);
+        }
+
+        onSave(finalForm);
+    };
 
     const styles = {
         overlay: {
@@ -103,7 +144,8 @@ export default function FormModal({
                     onChange={handleChange}
                     onClose={onClose}
                     onFieldChange={onFieldChange}
-                    onSave={onSave}
+                    onFileUploadReady={registerFileUpload}
+                    onSave={handleSave}
                 />
 
 

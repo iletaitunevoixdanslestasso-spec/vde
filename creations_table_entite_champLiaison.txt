@@ -1,0 +1,296 @@
+Oui. C'est nettement plus propre : le type de document ne doit pas être saisi librement dans referentiel_documents.
+
+On passe donc de :
+
+referentiel_documents
+type = "droit_image"
+
+à :
+
+document_types
+    id
+    code
+    libelle
+
+
+referentiel_documents
+    document_type_id → document_types.id
+    path
+    ...
+1. Table document_types
+
+Je te conseille de distinguer code et libelle :
+
+create table public.document_types (
+  id uuid not null default gen_random_uuid(),
+  code text not null,
+  libelle text not null,
+  created_at timestamp without time zone not null default now(),
+  updated_at timestamp without time zone not null default now(),
+
+
+  constraint document_types_pkey
+    primary key (id),
+
+
+  constraint document_types_code_unique
+    unique (code)
+);
+
+
+
+alter table public.document_types
+add column deleted_at timestamp without time zone null default null;
+
+
+alter table public.referentiel_documents
+add constraint referentiel_documents_document_type_id_fkey
+foreign key (document_type_id)
+references public.document_types(id);
+
+Puis notre type actuel :
+
+insert into public.document_types (
+    code,
+    libelle
+)
+values (
+    'droit_image',
+    'Droit à l''image'
+);
+
+Ainsi le code applicatif utilise toujours :
+
+droit_image
+
+mais l'admin voit :
+
+3. Structure finale
+document_types
+────────────────────────
+id
+code
+libelle
+
+
+      1
+      │
+      │
+      ▼
+referentiel_documents
+────────────────────────
+id
+document_type_id
+path
+created_at
+updated_at
+deleted_at
+
+Par exemple :
+
+document_types
+id   = A
+code = droit_image
+libelle = Droit à l'image
+
+
+referentiel_documents
+id = B
+document_type_id = A
+path = Contrat_de_Cession_de_Droit_a_l_image.pdf
+4. Et côté admin
+
+Tu as raison : le CRUD ReferentielDocument doit maintenant avoir :
+
+{
+    field: "document_type_id",
+    header: "Type de document",
+    type: "select",
+    source: "availableDocumentTypes",
+    required: true
+}
+
+
+Il choisit :
+
+Droit à l'image
+
+et la BDD enregistre l'UUID du type.
+
+5. Et côté chanteur
+
+Le code pourra continuer à rechercher le type par son code :
+
+const documentType =
+    await this.documentTypeRepository.findByCode(
+        "droit_image"
+    );
+
+puis récupérer le template :
+
+await this.referentielDocumentRepository.findByTypeId(
+    documentType.id
+);
+
+C'est beaucoup plus robuste.
+
+PS C:\Users\pjgn05751\chorale\vdejs> python generate_entity.py DocumentType       
+                  
+
+Oui. Il te manque simplement la préparation de cette source comme tu le fais déjà avec availableGroupes et availablePupitres.
+
+1. DocumentTypeRepository
+import { BaseRepository } from "./BaseRepository";
+
+
+export class DocumentTypeRepository extends BaseRepository {
+
+
+    constructor(table = "document_types") {
+        super(table);
+    }
+
+
+    async findAllActive() {
+        return this.supabase
+            .from(this.table)
+            .select("id, code, libelle")
+            .is("deleted_at", null)
+            .order("libelle", { ascending: true });
+    }
+
+
+    async findByCode(code) {
+        return this.supabase
+            .from(this.table)
+            .select("*")
+            .eq("code", code)
+            .maybeSingle();
+    }
+}
+2. Dans ReferentielDocumentService
+
+Ajoute le repository DocumentTypeRepository :
+
+import { BaseService } from "./BaseService";
+import { DocumentTypeRepository } from "../repositories/DocumentTypeRepository";
+
+
+export class ReferentielDocumentService extends BaseService {
+
+
+    constructor(repository, validator = null, mapper = null) {
+        super(repository, validator, mapper);
+
+
+        this.documentTypeRepository = new DocumentTypeRepository("document_types");
+    }
+
+
+    async getAvailableDocumentTypes() {
+
+
+        const { data, error } =
+            await this.documentTypeRepository.findAllActive();
+
+
+        if (error) {
+            return {
+                success: false,
+                data: [],
+                error: error.message
+            };
+        }
+
+
+        return {
+            success: true,
+            data
+        };
+    }
+}
+3. Dans ReferentielDocumentController
+
+Ajoute :
+
+async prepareForm() {
+
+
+    const result =
+        await this.service.getAvailableDocumentTypes();
+
+
+    return {
+        availableDocumentTypes: result.success
+            ? result.data.map(type => ({
+                id: type.id,
+                value: type.libelle
+            }))
+            : []
+    };
+}
+4. Et ajoute le Controller dans ta config
+
+Tu as actuellement :
+
+export const ReferentielDocumentConfig = createEntityConfig({
+    ...
+});
+
+Il faut ajouter :
+
+import { ReferentielDocumentController }
+    from "../../controllers/ReferentielDocumentController";
+
+puis :
+
+Controller: ReferentielDocumentController,
+
+Donc :
+
+export const ReferentielDocumentConfig = createEntityConfig({
+
+
+    entity: "ReferentielDocument",
+
+
+    title: "Documents",
+
+
+    table: "referentiel_documents",
+
+
+    Repository: ReferentielDocumentRepository,
+    Service: ReferentielDocumentService,
+    Validator: ReferentielDocumentValidator,
+    Mapper: ReferentielDocumentMapper,
+    Controller: ReferentielDocumentController,
+
+
+    columns,
+    actions
+
+
+});
+
+Ton SelectRenderer recevra alors :
+
+context.availableDocumentTypes
+
+avec :
+
+[
+    {
+        id: "...",
+        value: "Droit à l'image"
+    }
+]
+
+Donc dans le formulaire :
+
+Type de document
+[ Droit à l'image ▼ ]
+
+Et surtout, l'admin ne saisit plus jamais le code droit_image à la main.
+
+

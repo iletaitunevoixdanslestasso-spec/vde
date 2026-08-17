@@ -6,78 +6,110 @@ import { ChanteurSaisonService } from "../../services/ChanteurSaisonService";
 
 
 
-    const columns = [
-        {
-            field: "chanteur_id",
-            header: "Chanteurs",
-            type: "select",
-            source: "availableChanteurs",
-            required: true,
-            render: (v, row) => {
-                return `${row.chanteurs.nom} ${row.chanteurs.prenom}`;
-            },
-            editType: "readonly",
-
-
+const columns = [
+    {
+        field: "chanteur_id",
+        header: "Chanteurs",
+        type: "select",
+        source: "availableChanteurs",
+        required: true,
+        render: (v, row) => {
+            return `${row.chanteurs.nom} ${row.chanteurs.prenom}`;
         },
-        {
-            field: "groupe_id",
-            header: "Groupes",
-            type: "select",
-            source: "availableGroupes",
-            required: true,
-            render: (v, row) => {
+        editType: "readonly",
 
-                return `${row.groupes?.nom || "doit choisir"}`;
+
+    },
+    {
+        field: "groupe_id",
+        header: "Groupes",
+        type: "select",
+        source: "availableGroupes",
+        required: true,
+        render: (v, row) => {
+
+            return `${row.groupes?.nom || "doit choisir"}`;
+        }
+
+    },
+    {
+        field: "mail",
+        header: "E-mail",
+        type: "text",
+        hideInForm: true,
+        // source: "availableChanteurs",
+        render: (v, row) => {
+            return `${row.chanteurs.email}`
+        }
+
+    },
+    {
+        field: "lien",
+        header: "lien d'accès",
+        type: "text",
+        hideInForm: true,
+        // source: "availableChanteurs",
+        render: (v, row) => {
+
+            const token = row.acces.length ? row.acces[0].token : ''
+            return `${token}`
+        }
+
+    },
+    {
+        field: "droit_image_workflow",
+        header: "Droit à l'image",
+        type: "text",
+        editType: "readonly",
+
+        render: (v, row) => {
+            console.log("v",v)
+            v= row.chanteurs.droit_image_workflow
+            if (!row.chanteurs.droit_image) {
+                return "Non fourni";
             }
 
-        },
-        {
-            field: "mail",
-            header: "E-mail",
-            type: "text",
-            hideInForm:true,
-            // source: "availableChanteurs",
-            render: (v, row) => {
-                return `${row.chanteurs.email}`
-            }
-            
-        },
-        {
-            field: "lien",
-            header: "lien d'accès",
-            type: "text",
-            hideInForm:true,
-            // source: "availableChanteurs",
-            render: (v, row) => {
-
-                const token = row.acces.length ? row.acces[0].token : ''
-                return `${token}`
+            if (v === 0) {
+                return "Non fourni";
             }
 
-        },
+            if (v === 1) {
+                return "⏳ À valider";
+            }
+
+            if (v === 2) {
+                return "✅ Validé";
+            }
+
+            if (v === 3) {
+                return "❌ Refusé";
+            }
+
+            return "Inconnu";
+        }
+    },
 
 
-    ];
-    const actions = [
-        { label: "✏️ Modifier", action: "edit" },
-        {
-            label: "🔗 Générer lien",
-            icon: "🔗",
-            action: "generateAccessLink"
-        },
-        {
-            label: "📋 Copier",
-            icon: "📋",
-            action: "copyAccessLink"
-        },
-        {
-            label: "📩 Envoyer",
-            icon: "📩",
-            action: "sendAccessLink"
-        },
-        { label: "🗑 Supprimer", action: "delete" }
-    ]    
+];
+const actions = [
+    { label: "✏️ Modifier", action: "edit" },
+    {
+        label: "🔗 Générer lien",
+        icon: "🔗",
+        action: "generateAccessLink"
+    },
+    {
+        label: "📋 Copier",
+        icon: "📋",
+        action: "copyAccessLink"
+    },
+    {
+        label: "📩 Envoyer",
+        icon: "📩",
+        action: "sendAccessLink"
+    },
+    { label: "🗑 Supprimer", action: "delete" }
+]
 
 export const ChanteursSaisonConfig = createEntityConfig({
 
@@ -104,7 +136,7 @@ export const ChanteursSaisonConfig = createEntityConfig({
     },
 
     // ⭐ actions custom (IMPORTANT)
-    useBaseActions:false,
+    useBaseActions: false,
     actions,
 
 });

@@ -41,6 +41,8 @@ import { ChansonProvider } from "../components/contexts/ChansonContext";
 import RepartitionChansonsSaisonPage from "../pages/admin/saisons/RepartitionChansonsSaisonPage";
 import ChansonsChanteur from "../pages/chanteur/ChansonsChanteur";
 import Profil from "../pages/chanteur/profil";
+import Testdivers from "../pages/admin/Testdivers";
+import ReferentielDocumentPage from "../pages/admin/referentiels/ReferentielDocument/ReferentielDocumentPage";
 
 export default function Router() {
 
@@ -54,9 +56,9 @@ export default function Router() {
                 {/* ERROR */}
                 <Route path="/invalid-token" element={<InvalidToken />} />
 
+                <Route path="test" element={<Testdivers />} />
                 {/* CHANTEUR */}
                 <Route element={<TokenGuard />}>
-
                     <Route path="/chanteur/:token" element={<ChanteurLayout />}>
                         <Route
                             path="/chanteur/:token/inscription"
@@ -91,6 +93,8 @@ export default function Router() {
                     }
                 >
                     <Route index element={<Dashboard />} />
+                    {/* page de test */}
+                    <Route path="test" element={<Testdivers />} />
                     {/* saisons programme */}
                     <Route path="saisons/:saison_nom/chanteurs" element={<ChanteurSaisonPage />} />
                     <Route path="saisons/:saison_nom/chansons" element={<ChansonsSaisonPage />} />
@@ -105,6 +109,7 @@ export default function Router() {
                     <Route path="chanson/:titre/pupitres" element={<ChansonpupitrePage />} />
                     {/* <Route path="chansonspupitre" element={<ChansonpupitrePage />} /> */}
                     <Route path="pupitres" element={<PupitrePage />} />
+                    <Route path="documents" element={<ReferentielDocumentPage />} />
                     <Route path="concerts" element={<ConcertsPage />} />
                     <Route path="repetitions" element={<RepetitionPage />} />
                     <Route path="invitations" element={<div>Invitations</div>} />

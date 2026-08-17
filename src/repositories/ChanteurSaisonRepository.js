@@ -37,7 +37,9 @@ export class ChanteurSaisonRepository extends BaseRepository {
                     nom,
                     prenom,
                     email,
-                    telephone
+                    telephone,
+                    droit_image,
+                    droit_image_workflow
                 ),
                 groupe_id,
                 groupes (

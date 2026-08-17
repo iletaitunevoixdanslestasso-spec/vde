@@ -533,26 +533,41 @@ export default function DataTable({
 
                             ))}
 
-
                             {actions.length > 0 && (
 
                                 <td>
 
-                                    {actions.map((a, i) => (
-
-                                        <button
-                                            key={i}
-                                            onClick={() =>
-                                                onAction(
-                                                    a.action,
-                                                    row
-                                                )
+                                    {actions
+                                        .filter((a) => {
+                                            console.log(
+                                                "ACTION",
+                                                a.action,
+                                                "workflow =",
+                                                row.droit_image_workflow,
+                                                "type =",
+                                                typeof row.droit_image_workflow
+                                            );
+                                            if (typeof a.condition === "function") {
+                                                return a.condition(row);
                                             }
-                                        >
-                                            {a.label}
-                                        </button>
 
-                                    ))}
+                                            return true;
+                                        })
+                                        .map((a, i) => (
+
+                                            <button
+                                                key={i}
+                                                onClick={() =>
+                                                    onAction(
+                                                        a.action,
+                                                        row
+                                                    )
+                                                }
+                                            >
+                                                {a.label}
+                                            </button>
+
+                                        ))}
 
                                 </td>
 

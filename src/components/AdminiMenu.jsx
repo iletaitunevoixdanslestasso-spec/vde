@@ -85,6 +85,7 @@ export default function AdminMenu() {
                                 🎵 Groupes
                             </p>
 
+
                             <p
                                 style={{ cursor: "pointer" }}
                                 onClick={() => navigate(`/admin/saisons/${saison.id}/concerts`)}
@@ -130,6 +131,10 @@ export default function AdminMenu() {
 
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/pupitres")}>
                 🎼 Puptitres
+            </p>
+
+            <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/documents")}>
+                🎼 Documents
             </p>
 
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/concerts")}>

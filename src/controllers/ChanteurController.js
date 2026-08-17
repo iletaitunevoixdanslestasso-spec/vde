@@ -46,21 +46,7 @@ export class ChanteurController extends BaseController {
         };
     }
 
-    async prepareForm_odl() {
 
-        const saisonId = this.context.saisonId;
-        console.log("prepareForm saisonId =", saisonId);
-        const result = await this.service.getAvailableGroupes(saisonId);
-        console.log("prepareForm result", result)
-        return {
-            availableGroupes: result.success
-                ? result.data.map(groupe => ({
-                    id: groupe.id,
-                    value: groupe.nom
-                }))
-                : []
-        };
-    }
 
     generateAccessLink(chanteur) {
         console.log("generateAccessLink", chanteur);
@@ -79,4 +65,43 @@ export class ChanteurController extends BaseController {
         return result;
     }
 
+
+    async validateDroitImage(row, load) {
+
+        const result =
+            await this.service.validateDroitImage(
+                row.id
+            );
+
+        if (!result.success) {
+            console.error(
+                "validateDroitImage error",
+                result
+            );
+
+            return;
+        }
+
+        load?.();
+    }
+
+
+    async rejectDroitImage(row, load) {
+
+        const result =
+            await this.service.rejectDroitImage(
+                row.id
+            );
+
+        if (!result.success) {
+            console.error(
+                "rejectDroitImage error",
+                result
+            );
+
+            return;
+        }
+
+        load?.();
+    }
 }

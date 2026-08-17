@@ -21,7 +21,8 @@ export class BaseMapper {
         const result = {};
 
         this.columns.forEach(column => {
-            result[column.field] = entity[column.field];
+            if(column.mapped!== false)
+                result[column.field] = entity[column.field];
         });
 
         return result;

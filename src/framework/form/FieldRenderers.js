@@ -1,9 +1,12 @@
-import CollectionCheckboxRenderer from "./renderers.jsx/CollectionCheckboxRenderer";
-import DateRenderer from "./renderers.jsx/DateRenderer";
-import HiddenRenderer from "./renderers.jsx/HiddenRenderer";
-import NumberRenderer from "./renderers.jsx/NumberRenderer";
-import SelectRenderer from "./renderers.jsx/SelectRenderer";
-import TextRenderer from "./renderers.jsx/TextRenderer";
+import FileUploader from "../../core/framework/FileUploader";
+import CollectionCheckboxRenderer from "./renderers/CollectionCheckboxRenderer";
+import DateRenderer from "./renderers/DateRenderer";
+import FileRenderer from "./renderers/FileRenderer";
+import FileUploaderRenderer from "./renderers/FileUploaderRenderer";
+import HiddenRenderer from "./renderers/HiddenRenderer";
+import NumberRenderer from "./renderers/NumberRenderer";
+import SelectRenderer from "./renderers/SelectRenderer";
+import TextRenderer from "./renderers/TextRenderer";
 
 export const FieldRenderers = {
 
@@ -12,5 +15,6 @@ export const FieldRenderers = {
     number: NumberRenderer,
     select:SelectRenderer,
     collectionCheckbox:CollectionCheckboxRenderer,
-    hidden:HiddenRenderer
+    hidden:HiddenRenderer,
+    fileUploader:FileUploaderRenderer
 };

@@ -8,6 +8,7 @@ export default function FormEdition({
     errors,
     onClose,
     onSave,
+    onFileUploadReady,
     onChange
 }) {
     const fields = config.columns || [];
@@ -46,6 +47,7 @@ export default function FormEdition({
                                         form={form}
                                         onChange={onChange}
                                         context={context}
+                                        onFileUploadReady={onFileUploadReady}
                                     />
                                 )
                             )}
@@ -65,7 +67,7 @@ export default function FormEdition({
 
             </div>
             <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-                <button onClick={onClose}>Annuler</button>
+                {/* <button onClick={onClose}>Annuler</button> */}
 
                 <button onClick={() => onSave(form)}>
                     Enregistrer

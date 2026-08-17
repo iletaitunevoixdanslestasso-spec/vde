@@ -1,26 +1,36 @@
-CREATE POLICY "authenticated_insert_chanson_pupitres"
-ON public.chanson_pupitres
+--- POUR LES ANNON---
+-- create policy "anon can read active document types"
+-- on public.document_types
+-- for select
+-- to anon
+-- using (
+--     deleted_at is null
+-- );
+---
+
+CREATE POLICY "authenticated_insert_document_types"
+ON public.document_types
 FOR INSERT
 TO authenticated
 WITH CHECK (true);
 
-CREATE POLICY "authenticated_select_chanson_pupitres"
-ON public.chanson_pupitres
+CREATE POLICY "authenticated_select_document_types"
+ON public.document_types
 FOR SELECT
 TO authenticated
 USING (true);
 
-CREATE POLICY "authenticated_update_chanson_pupitres"
-ON public.chanson_pupitres
+CREATE POLICY "authenticated_update_document_types"
+ON public.document_types
 FOR UPDATE
 TO authenticated
 USING (true)
 WITH CHECK (true);
 
-CREATE POLICY "authenticated_delete_chanson_pupitres"
-ON public.chanson_pupitres
+CREATE POLICY "authenticated_delete_document_types"
+ON public.document_types
 FOR DELETE
 TO authenticated
 USING (true);
 
-ALTER TABLE public.chanson_pupitres ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.document_types ENABLE ROW LEVEL SECURITY;
