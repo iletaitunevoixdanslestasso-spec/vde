@@ -19,12 +19,11 @@ export class BaseMapper {
     toDb(entity) {
 
         const result = {};
-
         this.columns.forEach(column => {
             if(column.mapped!== false)
                 result[column.field] = entity[column.field];
         });
-
+        
         return result;
     }
 

@@ -135,17 +135,22 @@ export default function CRUDItemPage({
 
         try {
             let finalForm = { ...form };
+            // Le document déjà enregistré ne doit pas être envoyé
+            // comme un nouveau document.
+            delete finalForm.droit_image;
             if (fileUpload) {
                 const result = await fileUpload();
 
-                if (!result) {
-                    return;
+                // if (!result) {
+                //     return;
+                // }
+                if (result && !result.skipped) {
+                    finalForm = {
+                        ...finalForm,
+                        [result.field]: result.path
+                    };
                 }
 
-                finalForm = {
-                    ...finalForm,
-                    [result.field]: result.path
-                };
             }
             const result =
                 await controller.saveItemByToken(finalForm);

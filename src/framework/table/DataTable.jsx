@@ -7,7 +7,7 @@ export default function DataTable({
 }) {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(100);
+    const [pageSize, setPageSize] = useState(10);
 
     const [sort, setSort] = useState({
         field: null,

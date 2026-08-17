@@ -15,7 +15,7 @@ export class SaisonChanteurPupitreService extends BaseService {
      * 1. choix spécifique du chanteur s'il existe
      * 2. sinon pupitre principal de la saison
      */
-    async getMesChansons(token,saisonId, chanteurId) {
+    async getMesChansons(token, saisonId, chanteurId) {
 
         const [
             saisonChansons,
@@ -66,9 +66,23 @@ export class SaisonChanteurPupitreService extends BaseService {
             });
 
 
+
+
+
         /*
          * Construction des chansons
          */
+        console.log("SAISON CHANSONS", saisonChansons);
+
+        saisonChansons.forEach(item => {
+            if (!item.chansons) {
+                console.warn(
+                    "⚠️ chanson introuvable pour saison_chansons :",
+                    item
+                );
+            }
+        });
+
         const data = saisonChansons.map(item => {
 
             const chanson = item.chansons;

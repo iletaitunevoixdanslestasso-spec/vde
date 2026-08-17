@@ -8,6 +8,24 @@
 -- );
 ---
 
+
+------- ------- ------- ------- ------- ------- 
+------- DROP FUNCTION
+------- ------- ------- ------- ------- ------- 
+-- DROP FUNCTION IF EXISTS public.get_saison_chanteur_pupitres(text, uuid, uuid);
+------- ------- ------- ------- ------- ------- 
+
+------- ------- ------- ------- ------- ------- 
+------- OBTENIR CODE DE FUNCTION AVEC LA SIGNTURE
+------- ------- ------- ------- ------- ------- 
+SELECT
+    p.oid::regprocedure AS signature,
+    pg_get_functiondef(p.oid) AS definition
+FROM pg_proc p
+WHERE p.proname = 'get_saison_chanteur_pupitres';
+------- ------- ------- ------- ------- ------- --
+
+
 CREATE POLICY "authenticated_insert_document_types"
 ON public.document_types
 FOR INSERT

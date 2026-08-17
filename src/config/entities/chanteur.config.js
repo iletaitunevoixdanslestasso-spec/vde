@@ -19,10 +19,11 @@ const columns = [
     { field: "telephone", header: "Téléphone", type: "text", required: true },
     {
         field: "droit_image_workflow",
-        header: "Droit à l'image",
+        header: "Droit à l'imageici",
         type: "text",
         editType: "readonly",
         hideInForm: true,
+        mapped:false,
         render: (v, row) => {
 
             if (!row.droit_image) {
@@ -53,7 +54,7 @@ const columns = [
         header: "Document DAI",
         type: "text",
         hideInForm: true,
-
+        mapped:false,
         render: (v, row) => {
 
             if (!v) {

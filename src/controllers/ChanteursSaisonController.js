@@ -93,20 +93,6 @@ export class ChanteursSaisonController extends BaseController {
     }
 
 
-    /**
-     * Liste les chanteurs disponibles à ajouter
-     */
-    async getAvailableChanteurs(saisonId) {
-
-        console.log(
-            "SaisonChanteurController.getAvailableChanteurs",
-            saisonId
-        );
-
-        return this.service.getAvailableChanteurs(saisonId);
-    }
-
-
 
     /**
      * reactivate un chanteur à une saison

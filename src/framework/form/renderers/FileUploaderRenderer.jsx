@@ -20,7 +20,11 @@ export default function FileUploaderRenderer({
 
 
     const upload = useCallback(async () => {
-
+        // Aucun nouveau fichier sélectionné :
+        // surtout ne pas demander de token d'upload.
+        if (!uploaderRef.current?.hasFile()) {
+            return null;
+        }
         /*
          * CHANTEUR :
          * le token métier permet d'obtenir

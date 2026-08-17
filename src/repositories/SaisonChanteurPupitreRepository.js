@@ -18,7 +18,7 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
                 id,
                 saison_id,
                 chanson_id,
-                chansons (
+                chansons!inner (
                     id,
                     titre,
                     chanson_pupitres (
@@ -32,7 +32,8 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
                 )
             `)
             .eq("saison_id", saisonId)
-            .is("deleted_at", null);
+            .is("deleted_at", null)
+            .is("chansons.deleted_at", null);
 
         if (error) {
             throw error;
@@ -45,28 +46,7 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
      * Récupère les choix de pupitre du chanteur
      * pour une saison.
      */
-    async findBySaisonAndChanteur_old(saisonId, chanteurId) {
 
-        const { data, error } = await this.supabase
-            .from(this.table)
-            .select(`
-                id,
-                saison_id,
-                chanteur_id,
-                chanson_id,
-                pupitre_id,
-                principal
-            `)
-            .eq("saison_id", saisonId)
-            .eq("chanteur_id", chanteurId)
-            .is("deleted_at", null);
-
-        if (error) {
-            throw error;
-        }
-
-        return data || [];
-    }
     async findBySaisonAndChanteur(
         token,
         saisonId,
@@ -165,7 +145,28 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
             }
         );
     }
+    /**
+     * tous les pupitres appartenant aux chanteurs d'une saison donnée.
+     */
     async findBySaison(saisonId) {
+        return await this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            saison_chanteur_id,
+            chanson_id,
+            pupitre_id,
+            principal,
+            saison_chanteurs!saison_chanteur_pupitres_saison_chanteur_id_fkey (
+                id,
+                saison_id,
+                chanteur_id
+            )
+        `)
+            .eq("saison_chanteurs.saison_id", saisonId)
+            .is("deleted_at", null);
+    }
+    async findBySaison_old(saisonId) {
         return await this.supabase
             .from(this.table)
             .select(`
@@ -179,18 +180,38 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
             .eq("saison_id", saisonId)
             .is("deleted_at", null);
 
-            
+
+        // const { data, error } = await this.supabase
+        //     .from(this.table)
+        //     .select(`
+        //     id,
+        //     saison_id,
+        //     chanteur_id,
+        //     chanson_id,
+        //     pupitre_id,
+        //     principal
+        // `)
+        //     .eq("saison_id", saisonId)
+        //     .is("deleted_at", null);
+
+        // if (error) {
+        //     throw error;
+        // }
+
+        // return data || [];
+    }
+    async findBySaisonChanteur(saisonChanteurId) {
+
         const { data, error } = await this.supabase
             .from(this.table)
             .select(`
             id,
-            saison_id,
-            chanteur_id,
+            saison_chanteur_id,
             chanson_id,
             pupitre_id,
             principal
         `)
-            .eq("saison_id", saisonId)
+            .eq("saison_chanteur_id", saisonChanteurId)
             .is("deleted_at", null);
 
         if (error) {
@@ -199,4 +220,32 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
 
         return data || [];
     }
+
+
+    async findBySaisonChanteurChanson(
+        saisonChanteurId,
+        chansonId
+    ) {
+
+        const { data, error } = await this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            saison_chanteur_id,
+            chanson_id,
+            pupitre_id,
+            principal
+        `)
+            .eq("saison_chanteur_id", saisonChanteurId)
+            .eq("chanson_id", chansonId)
+            .is("deleted_at", null)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    }
+
 }

@@ -176,7 +176,8 @@ const FileUploader = forwardRef(function FileUploader({
 
     useImperativeHandle(ref, () => ({
         upload,
-        uploadWithSignedToken
+        uploadWithSignedToken,
+        hasFile: () => !!file
     }));
 
 

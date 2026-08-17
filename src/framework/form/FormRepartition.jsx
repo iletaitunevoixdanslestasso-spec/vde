@@ -96,7 +96,7 @@ export default function FormRepartition({
         // 1. Cherche un choix spécifique pour cette chanson
         const choixChanson = saisonChanteurPupitres.find(
             scp =>
-                scp.chanteur_id === chanteurId &&
+                scp.saison_chanteurs?.chanteur_id === chanteurId &&
                 scp.chanson_id === chansonId
         );
 
@@ -110,7 +110,7 @@ export default function FormRepartition({
         // 3. Sinon, chercher le pupitre principal du chanteur
         const pupitrePrincipal = saisonChanteurPupitres.find(
             scp =>
-                scp.chanteur_id === chanteurId &&
+                scp.saison_chanteurs?.chanteur_id === chanteurId &&
                 scp.principal === true
         );
 
