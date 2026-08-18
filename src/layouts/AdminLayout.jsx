@@ -33,7 +33,10 @@ export default function AdminLayout() {
           color: "white",
           padding: "20px"
         }}>
-          <h2>🎼 Chorale</h2>
+          <h2 className="logo-title">
+            <img src="/logoVDE.png" alt="Chorale" />
+            <span>Chorale</span>
+          </h2>
 
           {/* <nav style={{ marginTop: "30px" }}>
           <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin")}>

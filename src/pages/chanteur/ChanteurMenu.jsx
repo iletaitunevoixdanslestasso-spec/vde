@@ -12,8 +12,10 @@ export default function ChanteurMenu() {
     return (
         <nav>
 
-            <h2>🎼 Chorale</h2>
-
+          <h2 className="logo-title">
+            <img src="/logoVDE.png" alt="Chorale" />
+            <span>Chorale</span>
+          </h2>
             <hr />
 
             <p

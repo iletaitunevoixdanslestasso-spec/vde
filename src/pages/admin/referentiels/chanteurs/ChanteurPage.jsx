@@ -9,9 +9,10 @@ import { useSaison } from "../../../../components/contexts/SaisonContext";
 export default function ChanteurPage() {
 
   const [session, setSession] = useState(null);
-  const { saisonSelectionne } = useSaison();
-
-  useEffect(() => {
+  const { saisonSelectionne, saisonActive } = useSaison();
+  console.log("saisonActive.id", saisonActive.id)  
+  console.log("saisonSelectionne.id", saisonSelectionne.id)  
+  useEffect(() => { 
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       console.log(session);
@@ -29,7 +30,7 @@ export default function ChanteurPage() {
         config={chanteurConfig} />;
     </div>
     <div><ImportChanteursExcel
-      saisonId={saisonSelectionne.id}
+      saisonId={saisonActive.id}
     />  </div>
   </div>)
 }

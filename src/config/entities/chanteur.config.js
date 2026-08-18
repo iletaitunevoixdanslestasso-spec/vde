@@ -10,7 +10,7 @@ import React from "react";
 
 
 const entity = "chanteurs";
-const title = "🎤 les Chanteurs";
+const title = "🎤 les Adhérents";
 const table = "chanteurs";
 const columns = [
     { field: "nom", header: "Nom", type: "text", required: true },

@@ -1,11 +1,15 @@
 
 
 """"""""""""""droit à l'image""""""""""""""
--> cote chanteur formulaire d'import de docuemtn "droit à l'image"
--> cote admin :  saison chanteur
-workflow 0-> attente de formulaire
-workflow 1-> attente de lecture du formulaire
-workflow 2-> mettre la réponse ( OK || KO)
+=> fait
+    -> cote chanteur formulaire d'import de docuemtn "droit à l'image"
+    -> cote admin :  saison chanteur
+    workflow 0-> attente de formulaire
+    workflow 1-> attente de lecture du formulaire
+    workflow 2-> mettre la réponse ( OK || KO)
+    workflow 3-> mettre la réponse (  KO)
+=>a faire
+workflow 4-> reponse defenitve stop relance
 
 """""""""""""formulaire chanteur"""""""""""""
 ajouter le groupe
@@ -14,7 +18,20 @@ groupe 2 21h30->23h
 ->adresse
 
 """""""""""""repetition"""""""""""""
+->date JJ/MM/AAAA
+->type : parGRoupe/groupée/
+->accomapgnement : oui/non
+->durée (définit par défaut selon le type mais ajustable)
+->description
+
+
+
+
+
+"""""""""""""consert"""""""""""""
+
 """""""""""""RAPPEL"""""""""""""
+toDo lite
 -> droit à limage
 -> choix du putpitre de reference
 

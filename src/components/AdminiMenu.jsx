@@ -68,7 +68,7 @@ export default function AdminMenu() {
                                 onClick={() => handleClickSaison(saison, "chanteurs")}
                                 // onClick={() => navigate(`/admin/saisons/${saison.id}/chanteurs`)}
                                 >
-                                👤 Chanteurs
+                                👤 Choristes
                             </p>
 
                             <p
@@ -122,7 +122,7 @@ export default function AdminMenu() {
             </p>
 
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/chanteurs")}>
-                👤 Chanteurs
+                👤 Adhérents
             </p>
 
             <p style={{ cursor: "pointer" }} onClick={() => navigate("/admin/chansons")}>
