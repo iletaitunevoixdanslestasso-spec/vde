@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import DataTable from "../table/DataTable";
 import FormModal from "../form/FormModal";
@@ -6,9 +6,8 @@ import { useNavigate } from "react-router-dom";
 import NotificationService from "../../services/NotificationService";
 
 export default function CRUDPage({ config, context = {} }) {
+
     const navigate = useNavigate();
-
-
 
     const [items, setItems] = useState([]);
     const [title, setTitle] = useState(config.title || "CRUD Page");
@@ -19,127 +18,181 @@ export default function CRUDPage({ config, context = {} }) {
     const [controller, setController] = useState(config.controller);
     const [formContext, setFormContext] = useState({});
 
+
+    // INITIALISATION
     useEffect(() => {
 
         controller.initialize(context);
         setTitle(context.title ?? title);
+
     }, [controller, context.saisonId]);
+
 
     // LOAD
     const load = () => controller.load(setItems);
 
     useEffect(() => {
-        load();
-    }, [config.entity, context.saisonId, context.selectChanson]);
-    // }, [config.entity, context.saisonId]);
 
+        load();
+
+    }, [
+        config.entity,
+        context.saisonId,
+        context.selectChanson
+    ]);
 
 
     // ACTIONS TABLE
     const handleAction = async (action, row) => {
-        setAction(action)
+
+        setAction(action);
 
         switch (action) {
 
             case "edit":
+
                 if (controller.prepareForm) {
 
-                    console.log("2")
-                    const extraContext = await controller.prepareForm();
-                    console.log("3")
+                    const extraContext =
+                        await controller.prepareForm();
 
                     setFormContext({
                         ...context,
                         ...extraContext
                     });
-                    console.log("4")
                 }
+
                 setEditItem(row);
                 setOpen(true);
 
                 break;
+
+
             case "repartition":
+
                 setEditItem(row);
                 setOpen(true);
+
                 break;
+
 
             case "activate":
-                console.log("par la")
+
                 controller.activate(row, load);
+
                 break;
-            case "manageChanteurs":
-                const urlchanteur = controller.manageChanteurs(row, load);
-                console.log("url", urlchanteur)
-                navigate(urlchanteur)
+
+
+            case "manageChanteurs": {
+
+                const urlchanteur =
+                    controller.manageChanteurs(row, load);
+
+                navigate(urlchanteur);
+
                 break;
-            case "managePupitres":
-                const urlPutpitre = controller.managePupitres(row, load);
-                console.log("url", urlPutpitre)
-                console.log("context", context)
-                console.log("controller", controller)
+            }
+
+
+            case "managePupitres": {
+
+                const urlPutpitre =
+                    controller.managePupitres(row, load);
+
                 context.selectChanson(row);
-                navigate(urlPutpitre)
+
+                navigate(urlPutpitre);
+
                 break;
+            }
+
 
             case "delete":
-                if (window.confirm("Êtes-vous sûr de vouloir supprimer cet élément ?")) {
+
+                if (
+                    window.confirm(
+                        "Êtes-vous sûr de vouloir supprimer cet élément ?"
+                    )
+                ) {
                     controller.delete(row.id, load);
                 }
+
                 break;
 
+
             default:
-                if (typeof controller[action] === "function") {
+
+                if (
+                    typeof controller[action] === "function"
+                ) {
                     controller[action](row, load);
                 } else {
-                    console.warn("Unknown action:", action);
+                    console.warn(
+                        "Unknown action:",
+                        action
+                    );
                 }
+
         }
     };
 
-    // SAVE (CREATE / UPDATE)
+
+    // FIELD CHANGE
     const onFieldChange = (field) => {
-        console.log(field)
-        setErrors(prev => prev.filter(e => e.field !== field));
+
+        setErrors(prev =>
+            prev.filter(e => e.field !== field)
+        );
+
     };
 
-    // SAVE (CREATE / UPDATE)
+
+    // CREATE
     const handleAdd = async () => {
-        setAction("edit")
-        console.log("1")
+
+        setAction("edit");
+
         if (controller.prepareForm) {
 
-            console.log("2")
-            const extraContext = await controller.prepareForm();
-            console.log("3")
+            const extraContext =
+                await controller.prepareForm();
 
             setFormContext({
                 ...context,
                 ...extraContext
             });
-            console.log("4")
         }
 
-        console.log("5")
         setEditItem(null);
-        console.log("6")
         setOpen(true);
     };
+
+
+    // SAVE
     const handleSave = async (form) => {
-        console.log("handleSave controller", controller);
-        console.log("handleSave form", form);
+
         try {
+
             setErrors([]);
 
+            const result =
+                await controller.save(form, load);
 
-            const result = await controller.save(form, load);
-            console.log("handleSave result", result);
+
             if (!result.success) {
 
-                console.log("result", result)
-                if (result?.action === "reactivateChanteurSaison") {
-                    if (window.confirm(
-                        "Ce chanteur est déjà associé mais désactivé.\nVoulez-vous le réactiver ?"
-                    )) {
+                if (
+                    result?.action ===
+                    "reactivateChanteurSaison"
+                ) {
+
+                    if (
+                        window.confirm(
+                            "Ce chanteur est déjà associé mais désactivé.\n" +
+                            "Voulez-vous le réactiver ?"
+                        )
+                    ) {
+
                         await controller.reactivate(
                             result.chanteurId,
                             result.saisonId
@@ -147,65 +200,100 @@ export default function CRUDPage({ config, context = {} }) {
 
                         load();
                         setOpen(false);
+
                         return;
                     }
                 }
+
+
                 NotificationService.error(
                     result.message ||
                     "L'enregistrement a échoué."
                 );
-                console.log("dans result en erreur", result);
+
+
                 setErrors(
                     result.errors?.length
                         ? result.errors
                         : [{ message: result.message }]
                 );
+
                 return;
             }
+
+
             setOpen(false);
+
             NotificationService.success(
                 result.message ||
                 "Enregistrement effectué avec succès."
             );
+
             setEditItem(null);
 
         } catch (e) {
-            console.log("handleSave error", e);
-            setErrors([{ message: e.message }]);
+
+            console.log(
+                "handleSave error",
+                e
+            );
+
+            setErrors([
+                {
+                    message: e.message
+                }
+            ]);
         }
     };
+
 
     return (
         <div>
 
             {/* TITLE */}
-            <h1>{title}</h1>
+
+            <h1>
+                {title}
+            </h1>
+
 
             {/* ERRORS */}
+
             {errors.length > 0 && (
-                <div style={{ color: "red", marginBottom: 10 }}>
+
+                <div className="crud-errors">
+
                     {errors.map((e, i) => (
-                        <div key={i}>{e.message}</div>
+                        <div key={i}>
+                            {e.message}
+                        </div>
                     ))}
+
                 </div>
             )}
 
+
             {/* CREATE BUTTON */}
+
             <button
-                style={{ marginBottom: 10 }}
+                className="icon-new crud-new-button"
                 onClick={handleAdd}
             >
-                ➕ Nouveau
+                Nouveau
             </button>
 
+
             {/* TABLE */}
+
             <DataTable
                 data={items}
                 config={config}
                 onAction={handleAction}
             />
 
+
             {/* MODAL */}
+
             <FormModal
                 open={open}
                 action={action}

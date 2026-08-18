@@ -10,7 +10,7 @@ import { GroupesController } from "../../controllers/GroupesController";
 const columns = [
     {
         field: "nom",
-        header: "Nom",
+        header: "BLBNom",
         type: "text",
         required: true
     },

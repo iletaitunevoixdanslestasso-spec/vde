@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 export default function DataTable({
     data = [],
@@ -26,6 +26,7 @@ export default function DataTable({
      * 🔍 RECHERCHE
      * =========================================================
      */
+
     const filteredData = useMemo(() => {
 
         if (!search) {
@@ -73,6 +74,7 @@ export default function DataTable({
 
     }, [data, search]);
 
+
     /*
      * =========================================================
      * 🔃 TRI
@@ -81,16 +83,10 @@ export default function DataTable({
 
     const sortedData = useMemo(() => {
 
-        /*
-         * Aucun tri demandé
-         */
         if (!sort.field) {
             return filteredData;
         }
 
-        /*
-         * On récupère la définition de la colonne
-         */
         const column = columns.find(
             col => col.field === sort.field
         );
@@ -101,19 +97,6 @@ export default function DataTable({
 
         return [...filteredData].sort((a, b) => {
 
-            /*
-             * Si sortValue existe, on l'utilise.
-             *
-             * Exemple :
-             *
-             * sortValue: row =>
-             *     `${row.chanteurs.prenom} ${row.chanteurs.nom}`
-             *
-             * ou :
-             *
-             * sortValue: row =>
-             *     isPupitreValide(row, chansonPupitre) ? 1 : 0
-             */
             const valueA = column.sortValue
                 ? column.sortValue(a)
                 : a[column.field];
@@ -124,7 +107,7 @@ export default function DataTable({
 
 
             /*
-             * Gestion des valeurs null / undefined
+             * NULL
              */
 
             if (valueA == null && valueB == null) {
@@ -141,7 +124,7 @@ export default function DataTable({
 
 
             /*
-             * 🔢 NOMBRES
+             * NOMBRES
              */
 
             if (
@@ -155,10 +138,7 @@ export default function DataTable({
 
 
             /*
-             * 📅 DATES
-             *
-             * Si les valeurs ressemblent à des dates,
-             * on essaie de les comparer comme telles.
+             * DATES
              */
 
             if (
@@ -175,22 +155,7 @@ export default function DataTable({
 
 
             /*
-             * 🔤 TEXTE
-             *
-             * localeCompare permet notamment de gérer
-             * correctement les accents français.
-             *
-             * numeric: true permet par exemple :
-             *
-             * 1
-             * 2
-             * 10
-             *
-             * plutôt que :
-             *
-             * 1
-             * 10
-             * 2
+             * TEXTE
              */
 
             const comparison = String(valueA).localeCompare(
@@ -252,13 +217,6 @@ export default function DataTable({
 
         setSort((current) => {
 
-            /*
-             * Même colonne :
-             *
-             * asc → desc
-             * desc → asc
-             */
-
             if (current.field === field) {
 
                 return {
@@ -270,23 +228,12 @@ export default function DataTable({
                 };
             }
 
-
-            /*
-             * Nouvelle colonne :
-             * on commence en ascendant
-             */
-
             return {
                 field,
                 direction: "asc"
             };
 
         });
-
-        /*
-         * Quand on change le tri,
-         * on revient à la première page.
-         */
 
         setPage(1);
     };
@@ -307,12 +254,10 @@ export default function DataTable({
             setPage(totalPages);
         }
 
-        /*
-         * S'il n'y a aucune donnée,
-         * on reste sur la page 1.
-         */
-
-        if (totalPages === 0 && page !== 1) {
+        if (
+            totalPages === 0 &&
+            page !== 1
+        ) {
             setPage(1);
         }
 
@@ -329,26 +274,17 @@ export default function DataTable({
      */
 
     return (
-        <div
-            style={{
-                fontFamily: "Arial"
-            }}
-        >
+        <div className="data-table">
+
 
             {/* =================================================
-                🔍 SEARCH + PAGE SIZE
+                RECHERCHE + PAGE SIZE
             ================================================= */}
 
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 10
-                }}
-            >
+            <div className="data-table-toolbar">
 
                 <select
+                    className="data-table-page-size"
                     value={pageSize}
                     onChange={(e) => {
 
@@ -357,6 +293,7 @@ export default function DataTable({
                         );
 
                         setPage(1);
+
                     }}
                 >
 
@@ -375,6 +312,7 @@ export default function DataTable({
                     <option value={50}>
                         50 par page
                     </option>
+
                     <option value={100}>
                         100 par page
                     </option>
@@ -383,17 +321,14 @@ export default function DataTable({
 
 
                 <input
-                    placeholder="🔍 Rechercher..."
+                    className="data-table-search"
+                    placeholder="Rechercher..."
                     value={search}
                     onChange={(e) => {
 
                         setSearch(e.target.value);
                         setPage(1);
 
-                    }}
-                    style={{
-                        padding: 6,
-                        width: 250
                     }}
                 />
 
@@ -404,21 +339,11 @@ export default function DataTable({
                 TABLE
             ================================================= */}
 
-            <table
-                style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    background: "white"
-                }}
-            >
+            <table className="data-table-table">
 
                 <thead>
 
-                    <tr
-                        style={{
-                            background: "#f5f5f5"
-                        }}
-                    >
+                    <tr>
 
                         {columns.map((col) => (
 
@@ -427,32 +352,20 @@ export default function DataTable({
                                 onClick={() =>
                                     handleSort(col.field)
                                 }
-                                style={{
-                                    textAlign: "left",
-                                    padding: 10,
-                                    borderBottom:
-                                        "1px solid #ddd",
-                                    cursor: "pointer",
-                                    userSelect: "none"
-                                }}
+                                className="data-table-header"
                             >
 
                                 {col.header}
 
 
-                                {/* Indicateur de tri */}
-
                                 {sort.field === col.field && (
-                                    <span
-                                        style={{
-                                            marginLeft: 5
-                                        }}
-                                    >
-                                        {sort.direction === "asc"
-                                            ? "↑"
-                                            : "↓"
-                                        }
-                                    </span>
+
+                                    <span className={
+                                        sort.direction === "asc"
+                                            ? "icon-sort-asc"
+                                            : "icon-sort-desc"
+                                    } />
+
                                 )}
 
                             </th>
@@ -462,11 +375,7 @@ export default function DataTable({
 
                         {actions.length > 0 && (
 
-                            <th
-                                style={{
-                                    padding: 10
-                                }}
-                            >
+                            <th className="data-table-actions-header">
                                 Actions
                             </th>
 
@@ -486,13 +395,13 @@ export default function DataTable({
                             <td
                                 colSpan={
                                     columns.length +
-                                    (actions.length > 0 ? 1 : 0)
+                                    (
+                                        actions.length > 0
+                                            ? 1
+                                            : 0
+                                    )
                                 }
-                                style={{
-                                    padding: 20,
-                                    textAlign: "center",
-                                    color: "#777"
-                                }}
+                                className="data-table-empty"
                             >
                                 Aucun résultat
                             </td>
@@ -506,49 +415,70 @@ export default function DataTable({
 
                         <tr
                             key={row.id}
-                            style={{
-                                borderBottom:
-                                    "1px solid #eee"
-                            }}
+                            className="data-table-row"
                         >
 
                             {columns.map((col) => (
 
                                 <td
                                     key={col.field}
-                                    style={{
-                                        padding: 10
-                                    }}
+                                    className="data-table-cell"
                                 >
 
-                                    {col.render
-                                        ? col.render(
-                                            row[col.field],
-                                            row
-                                        )
-                                        : row[col.field]
-                                    }
+                                    {(() => {
+                                        const value = col.render
+                                            ? col.render(
+                                                row[col.field],
+                                                row
+                                            )
+                                            : row[col.field];
+
+                                        if (
+                                            value &&
+                                            typeof value === "object" &&
+                                            !React.isValidElement(value)
+                                        ) {
+                                            return (
+                                                <span className={value.cssClass || ""} title={value.title || ""} alt={value.title || ""}>
+                                                    {value.value}
+                                                </span>
+                                            );
+                                        }
+
+                                        return value;
+                                    })()}
 
                                 </td>
 
                             ))}
 
+
                             {actions.length > 0 && (
 
-                                <td>
+                                <td className="data-table-actions">
 
                                     {actions
                                         .filter((a) => {
-                                            if (typeof a.condition === "function") {
+
+                                            if (
+                                                typeof a.condition ===
+                                                "function"
+                                            ) {
                                                 return a.condition(row);
                                             }
 
                                             return true;
+
                                         })
                                         .map((a, i) => (
 
                                             <button
                                                 key={i}
+                                                className={
+                                                    `data-table-action ${a.cssClass || ""}`
+                                                }
+                                                title={a.title ?? a.label}
+                                                alt={a.title ?? a.label}
                                                 onClick={() =>
                                                     onAction(
                                                         a.action,
@@ -556,7 +486,9 @@ export default function DataTable({
                                                     )
                                                 }
                                             >
+
                                                 {a.label}
+
                                             </button>
 
                                         ))}
@@ -575,19 +507,12 @@ export default function DataTable({
 
 
             {/* =================================================
-                📄 PAGINATION
+                PAGINATION
             ================================================= */}
 
             {totalPages > 1 && (
 
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginTop: 10,
-                        gap: 5
-                    }}
-                >
+                <div className="data-table-pagination">
 
                     {Array.from(
                         {
@@ -598,20 +523,14 @@ export default function DataTable({
 
                         <button
                             key={p}
-                            onClick={() => setPage(p)}
-                            style={{
-                                padding: "5px 10px",
-                                background:
-                                    p === page
-                                        ? "#333"
-                                        : "#eee",
-                                color:
-                                    p === page
-                                        ? "white"
-                                        : "black",
-                                border: "none",
-                                cursor: "pointer"
-                            }}
+                            className={
+                                p === page
+                                    ? "data-table-page active"
+                                    : "data-table-page"
+                            }
+                            onClick={() =>
+                                setPage(p)
+                            }
                         >
                             {p}
                         </button>

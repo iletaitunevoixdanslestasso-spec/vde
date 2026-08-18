@@ -16,6 +16,9 @@ const columns = [
         render: (v, row) => {
             return `${row.chanteurs.nom} ${row.chanteurs.prenom}`;
         },
+        sortValue: (row) => {
+            return `${row.chanteurs?.nom ?? ""} ${row.chanteurs?.prenom ?? ""}`;
+        },
         editType: "readonly",
 
 
@@ -29,7 +32,11 @@ const columns = [
         render: (v, row) => {
 
             return `${row.groupes?.nom || "doit choisir"}`;
-        }
+        },
+        sortValue: (row) => {
+            return `${row.groupes?.nom || "doit choisir"}`;
+        },
+
 
     },
     {
@@ -40,8 +47,10 @@ const columns = [
         // source: "availableChanteurs",
         render: (v, row) => {
             return `${row.chanteurs.email}`
+        },
+        sortValue: (row) => {
+            return row.chanteurs?.email ?? "";
         }
-
     },
     {
         field: "lien",
@@ -65,35 +74,51 @@ const columns = [
 
         render: (v, row) => {
 
-            v= row.chanteurs.droit_image_workflow
-            if (!row.chanteurs.droit_image) {
-                return "Non fourni";
-            }
-
-            if (v === 0) {
-                return "Non fourni";
+            v = row.chanteurs.droit_image_workflow
+            if (!row.chanteurs.droit_image || v === 0) {
+                return {
+                    title: "Non fourni",
+                    cssClass: "dai-status icon-none"
+                };
             }
 
             if (v === 1) {
-                return "⏳ À valider";
+                return {
+                    title: "À valider",
+                    cssClass: "dai-status icon-pending"
+                };
             }
 
             if (v === 2) {
-                return "✅ Validé";
+                return {
+                    title: "Validé",
+                    cssClass: "dai-status icon-valider"
+                };
             }
 
             if (v === 3) {
-                return "❌ Refusé";
+                return {
+                    title: "Refusé",
+                    cssClass: "dai-status icon-refuser"
+                };
             }
 
-            return "Inconnu";
+            return {
+                title: "Inconnu",
+                cssClass: "dai-status icon-unknown"
+            };
         }
     },
 
 
 ];
 const actions = [
-    { label: "✏️ Modifier", action: "edit" },
+        {
+        title: "Modifier",
+        action: "edit",
+        cssClass: "icon-edit"
+    },
+
     {
         label: "🔗 Générer lien",
         icon: "🔗",
@@ -109,7 +134,11 @@ const actions = [
         icon: "📩",
         action: "sendAccessLink"
     },
-    { label: "🗑 Supprimer", action: "delete" }
+    {
+        title: "Supprimer",
+        action: "delete",
+        cssClass: "icon-delete"
+    }
 ]
 
 export const ChanteursSaisonConfig = createEntityConfig({

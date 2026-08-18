@@ -28,11 +28,94 @@ groupe 2 21h30->23h
 
 
 
+"""""""""""""lieu"""""""""""""
+-> numreoe + rue
+-> ville
+-> codepostale
+-> description
+-> lien vers geolocalisation
+affichage => lien vers geolocalisation générée à partir des info fournies
 """""""""""""consert"""""""""""""
-
+->titre : voix sur berge
+->date  x
+->heure de rdv
+->heure de début
+->durée (prévisionnelle)
+->heure de fin ( prévisionelle) => calculée automatiquement
+->lieu
+->description
+"""""""""""""Evennement"""""""""""""
+->titre : depart pourt le concert voix sur berge
+->date JJ/MM/AAAA 
+->heure de rdv
+->heure de début
+->durée (prévisionnelle)
+->heure de fin ( prévisionelle) => calculée automatiquement
+->lieu
+->description
+->association à un concert (si oui -> info concert sinon NULL)
+===============DASHBOARD===============
 """""""""""""RAPPEL"""""""""""""
 toDo lite
 -> droit à limage
 -> choix du putpitre de reference
 
+"""""""""""""RAPPEL"""""""""""""
+classsesr par ordre chonologique et heure
+
+->prochaine répétition
+-> si prochain répétitrion vient mardi > 7  alors Alerte écart > 7 jours (on saut une semaine) 
+->prochain concert
+->prochain evenneùent
+
+affichage le 15
+
+mardi 16/09/2126
+20h répétidion
+jeudi  18/09/2126
+Anniversair de PASCAL
+sameid 21/09/2126
+12h30 depart concert (évennemet)
+14h voix sur barge ( concert)
+20h00 diner chez Pascal ( evennement)
+mardi 23/09/2126
+20h répétidion
+mardi 30/09/2126
+20h répétidion
+mardi 06/09/2126
+20h répétidion
+ATTENTION marid 13/09/2126 pas de répatition
+mardi 20/09/2126
+20h répétidion
+
+
+affichage le 17
+sameid 21/09/2126
+12h30 depart concert (évennemet)
+14h voix sur barge ( concert)
+20h00 diner chez Pascal ( evennement)
+mardi 23/09/2126
+20h répétidion
+mardi 30/09/2126
+20h répétidion
+mardi 06/09/2126
+20h répétidion
+ATTENTION marid 13/09/2126 pas de répatition
+mardi 20/09/2126
+20h répétidion
+
+
+affichage le 22
+mardi 23/09/2126
+20h répétidion
+mardi 30/09/2126
+20h répétidion
+mardi 06/09/2126
+20h répétidion
+ATTENTION marid 13/09/2126 pas de répatition
+mardi 20/09/2126
+20h répétidion
+
+
+===============FIN DASHBOARD===============
 

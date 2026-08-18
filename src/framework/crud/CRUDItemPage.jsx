@@ -17,9 +17,11 @@ export default function CRUDItemPage({
     const controller = config.controller;
     const [fileUpload, setFileUpload] = useState(null);
 
+
     const registerFileUpload = useCallback((upload) => {
         setFileUpload(() => upload);
     }, []);
+
 
     /*
      * INITIALISATION
@@ -134,26 +136,39 @@ export default function CRUDItemPage({
         setErrors([]);
 
         try {
+
             let finalForm = { ...form };
-            // Le document déjà enregistré ne doit pas être envoyé
-            // comme un nouveau document.
+
+            /*
+             * Le document déjà enregistré ne doit pas
+             * être envoyé comme un nouveau document.
+             */
             delete finalForm.droit_image;
+
+
+            /*
+             * UPLOAD FICHIER
+             */
             if (fileUpload) {
+
                 const result = await fileUpload();
 
-                // if (!result) {
-                //     return;
-                // }
                 if (result && !result.skipped) {
+
                     finalForm = {
                         ...finalForm,
                         [result.field]: result.path
                     };
                 }
-
             }
+
+
+            /*
+             * SAUVEGARDE
+             */
             const result =
                 await controller.saveItemByToken(finalForm);
+
 
             if (!result.success) {
 
@@ -176,16 +191,18 @@ export default function CRUDItemPage({
                 return;
             }
 
+
             /*
-             * Notification de succès
+             * NOTIFICATION DE SUCCÈS
              */
             NotificationService.success(
                 result.message ||
                 "Enregistrement effectué avec succès."
             );
 
+
             /*
-             * Rechargement du profil
+             * RECHARGEMENT DU PROFIL
              */
             await load();
 
@@ -221,13 +238,13 @@ export default function CRUDItemPage({
     if (loading) {
 
         return (
-            <div>
+            <div className="crud-item-page">
 
                 <h1>
                     {config.title}
                 </h1>
 
-                <p>
+                <p className="crud-loading">
                     Chargement...
                 </p>
 
@@ -237,11 +254,10 @@ export default function CRUDItemPage({
 
 
     /*
-     * FORMULAIRE DIRECTEMENT DANS LA PAGE
+     * FORMULAIRE
      */
-
     return (
-        <div>
+        <div className="crud-item-page">
 
             <h1>
                 {config.title}

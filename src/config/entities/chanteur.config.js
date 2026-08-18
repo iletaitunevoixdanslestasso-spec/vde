@@ -19,34 +19,46 @@ const columns = [
     { field: "telephone", header: "Téléphone", type: "text", required: true },
     {
         field: "droit_image_workflow",
-        header: "Droit à l'imageici",
+        header: "Droit à l'image",
         type: "text",
         editType: "readonly",
         hideInForm: true,
-        mapped:false,
+        mapped: false,
+
         render: (v, row) => {
 
-            if (!row.droit_image) {
-                return "Non fourni";
-            }
-
-            if (v === 0) {
-                return "Non fourni";
+            if (!row.droit_image || v === 0) {
+                return {
+                    title: "Non fourni",
+                    cssClass: "dai-status icon-none"
+                };
             }
 
             if (v === 1) {
-                return "⏳ À valider";
+                return {
+                    title: "À valider",
+                    cssClass: "dai-status icon-pending"
+                };
             }
 
             if (v === 2) {
-                return "✅ Validé";
+                return {
+                    title: "Validé",
+                    cssClass: "dai-status icon-valider"
+                };
             }
 
             if (v === 3) {
-                return "❌ Refusé";
+                return {
+                    title: "Refusé",
+                    cssClass: "dai-status icon-refuser"
+                };
             }
 
-            return "Inconnu";
+            return {
+                value: "Inconnu",
+                cssClass: "dai-status icon-unknown"
+            };
         }
     },
     {
@@ -54,7 +66,7 @@ const columns = [
         header: "Document DAI",
         type: "text",
         hideInForm: true,
-        mapped:false,
+        mapped: false,
         render: (v, row) => {
 
             if (!v) {
@@ -75,20 +87,21 @@ const columns = [
 ];
 const actions = [
     {
-        label: "✅ Valider DAI",
+        label: "Valider DAI",
         action: "validateDroitImage",
+        cssClass: "icon-valider",
         condition: (row) =>
-                        row.droit_image != null &&
-            row.droit_image_workflow !== 2
+            row.droit_image != null && row.droit_image_workflow !== 2
     },
     {
-        label: "❌ Refuser DAI",
+        label: "Refuser DAI",
         action: "rejectDroitImage",
+        cssClass: "icon-refuser",
         condition: (row) =>
-                        row.droit_image != null &&
+            row.droit_image != null &&
             row.droit_image_workflow !== 3
     },
-  
+
 ];
 
 export const chanteurConfig = createEntityConfig({

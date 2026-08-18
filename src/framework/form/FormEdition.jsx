@@ -11,6 +11,7 @@ export default function FormEdition({
     onFileUploadReady,
     onChange
 }) {
+
     const fields = config.columns || [];
 
     const errorsByField = Object.fromEntries(
@@ -18,47 +19,75 @@ export default function FormEdition({
     );
 
     return (
-        <div>
+        <div className="form-edition">
+
+            <h2 className="form-edition-title">
+                <span
+                    className={
+                        initialData
+                            ? "icon-edit"
+                            : "icon-new"
+                    }
+                >
+                    {initialData
+                        ? "Modifier"
+                        : "Créer"
+                    }
+                </span>
+            </h2>
 
 
-            <h2>{initialData ? "✏️ Modifier" : "➕ Créer"}</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="form-edition-fields">
 
                 {fields.map((f) => {
 
                     const Renderer = FieldRenderers[f.type];
 
                     return f.hideInForm ? null : (
-                        <div key={f.field}>
 
-                            <label>{f.header} : </label>
+                        <div
+                            key={f.field}
+                            className="form-edition-field"
+                        >
+
+                            <label>
+                                {f.header} :
+                            </label>
+
 
                             {f.editType === "readonly" && initialData ? (
+
                                 <span>
                                     {f.render
                                         ? f.render(null, initialData)
                                         : form[f.field]
                                     }
                                 </span>
+
                             ) : (
+
                                 Renderer && (
+
                                     <Renderer
                                         field={f}
                                         form={form}
                                         onChange={onChange}
                                         context={context}
-                                        onFileUploadReady={onFileUploadReady}
+                                        onFileUploadReady={
+                                            onFileUploadReady
+                                        }
                                     />
+
                                 )
                             )}
+
+
                             {errorsByField[f.field] && (
-                                <div style={{
-                                    color: "#dc3545",
-                                    fontSize: 12,
-                                    marginTop: 4
-                                }}>
+
+                                <div className="form-field-error">
                                     {errorsByField[f.field]}
                                 </div>
+
                             )}
 
                         </div>
@@ -66,13 +95,23 @@ export default function FormEdition({
                 })}
 
             </div>
-            <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-                {/* <button onClick={onClose}>Annuler</button> */}
 
-                <button onClick={() => onSave(form)}>
+
+            <div className="form-edition-actions">
+
+                {/* <button onClick={onClose}>
+                    Annuler
+                </button> */}
+
+                <button
+                    className="icon-save"
+                    onClick={() => onSave(form)}
+                >
                     Enregistrer
                 </button>
+
             </div>
+
         </div>
     );
 }

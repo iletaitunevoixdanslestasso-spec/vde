@@ -7,24 +7,32 @@ import { SaisonchansonMapper } from "../../mappers/SaisonchansonMapper";
 import { SaisonchansonController } from "../../controllers/SaisonchansonController";
 
 const columns = [
-        {
-            field: "chanson_id",
-            header: "Chansons",
-            type: "select",
-            source: "availableChansons",
-            required: true,
-            render: (v, row) => {
-                return `${row.chansons.titre}`
-            }
+    {
+        field: "chanson_id",
+        header: "Chansons",
+        type: "select",
+        source: "availableChansons",
+        required: true,
+        render: (v, row) => {
+            return `${row.chansons.titre}`
+        }
 
-        },
+    },
 
 ];
 
 
-const actions= [
-    { label: "🎼 Répartition", action: "repartition" },
-    { label: "🗑 Supprimer", action: "delete" },
+const actions = [
+    {
+        label: "Pupitres",
+        cssClass: "icon-pupitres",
+        action: "managePupitres"
+    },
+    {
+        title: "Supprimer",
+        action: "delete",
+        cssClass: "icon-delete"
+    },
 ];
 
 
@@ -41,10 +49,10 @@ export const saisonchansonConfig = createEntityConfig({
     Service: SaisonchansonService,
     Validator: SaisonchansonValidator,
     Mapper: SaisonchansonMapper,
-    Controller:SaisonchansonController,
+    Controller: SaisonchansonController,
 
     columns,
-    useBaseActions:false,
+    useBaseActions: false,
     actions
 
 });

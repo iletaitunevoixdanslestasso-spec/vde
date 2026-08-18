@@ -17,11 +17,18 @@ export const baseConfig = {
         }
     ],
 
-    actions: [
-        { label: "✏️ Modifier", action: "edit" },
-        { label: "🗑 Supprimer", action: "delete" }
-    ],
-
+actions: [
+    {
+        title: "Modifier",
+        action: "edit",
+        cssClass: "icon-edit"
+    },
+    {
+        title: "Supprimer",
+        action: "delete",
+        cssClass: "icon-delete"
+    }
+],
     features: {
         search: true,
         pagination: true

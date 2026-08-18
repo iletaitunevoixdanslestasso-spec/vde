@@ -5,7 +5,10 @@ import AdminGuard from "../core/auth/AdminGuard";
 
 import InvalidToken from "../pages/public/InvalidToken";
 
+import AdminLayout from "../layouts/AdminLayout";
+import ChoraleLayout from "../layouts/ChoraleLayout";
 import ChanteurLayout from "../pages/chanteur/ChanteurLayout";
+
 import DashboardChanteur from "../pages/chanteur/Dashboard";
 
 
@@ -21,7 +24,7 @@ import ChansonsAdmin from "../pages/Chansons";
 import ConcertsAdmin from "../pages/Concerts";
 import AdminLogin from "../pages/admin/referentiels/login/login";
 import Dashboard from "../pages/admin/referentiels/dashboard/Dashboard";
-import AdminLayout from "../layouts/AdminLayout";
+
 import SaisonPage from "../pages/admin/referentiels/saisons/SaisonPage";
 import ChanteurPage from "../pages/admin/referentiels/chanteurs/ChanteurPage";
 import MesChansons from "../pages/chanteur/MesChansons";
@@ -48,74 +51,169 @@ export default function Router() {
 
     return (
         <BrowserRouter>
-            <Routes>
+            <SaisonProvider>
 
-                {/* HOME */}
-                <Route path="/" element={<Home />} />
+                <Routes>
 
-                {/* ERROR */}
-                <Route path="/invalid-token" element={<InvalidToken />} />
+                    {/* HOME */}
+                    <Route path="/" element={<Home />} />
 
-                <Route path="test" element={<Testdivers />} />
-                {/* CHANTEUR */}
-                <Route element={<TokenGuard />}>
-                    <Route path="/chanteur/:token" element={<ChanteurLayout />}>
-                        <Route
-                            path="/chanteur/:token/inscription"
-                            element={<InscriptionChanteur />}
-                        />
-                        <Route
-                            path="/chanteur/:token/profil"
-                            element={<Profil />}
-                        />
-                        <Route index element={<DashboardChanteur />} />
-                        <Route path="chansons" element={<ChansonsChanteur />} />
-                        <Route path="concerts" element={<Concerts />} />
-                        <Route path="repetitions" element={<Repetitions />} />
-                        <Route path="votes" element={<Votes />} />
-                    </Route>
-                </Route>
+                    {/* ERROR */}
+                    <Route path="/invalid-token" element={<InvalidToken />} />
 
-                {/* ADMIN LOGIN */}
-                <Route path="/admin/login" element={<AdminLogin />} />
-
-                {/* ADMIN APP */}
-                <Route
-                    path="/admin/*"
-                    element={
-                        <AdminGuard>
-                            <SaisonProvider>
-                                <ChansonProvider>
-                                    <AdminLayout />
-                                </ChansonProvider>
-                            </SaisonProvider>
-                        </AdminGuard>
-                    }
-                >
-                    <Route index element={<Dashboard />} />
-                    {/* page de test */}
                     <Route path="test" element={<Testdivers />} />
-                    {/* saisons programme */}
-                    <Route path="saisons/:saison_nom/chanteurs" element={<ChanteurSaisonPage />} />
-                    <Route path="saisons/:saison_nom/chansons" element={<ChansonsSaisonPage />} />
-                    <Route path="saisons/:saison_nom/:chanson_nom/repartition" element={<RepartitionChansonsSaisonPage />} />
-                    <Route path="saisons/:saison_nom/groupes" element={<GroupePage />} />
+                    {/* SITE CHORALE */}
+                    <Route element={<ChoraleLayout />}>
 
-                    {/* réferentiels */}
-                    <Route path="saisons" element={<SaisonPage />} />
-                    <Route path="chanteurs" element={<ChanteurPage />} />
-                    <Route path=":saison_nom/chanteurs" element={<SaisonChanteursPage />} />
-                    <Route path="chansons" element={<ChansonPage />} />
-                    <Route path="chanson/:titre/pupitres" element={<ChansonpupitrePage />} />
-                    {/* <Route path="chansonspupitre" element={<ChansonpupitrePage />} /> */}
-                    <Route path="pupitres" element={<PupitrePage />} />
-                    <Route path="documents" element={<ReferentielDocumentPage />} />
-                    <Route path="concerts" element={<ConcertsPage />} />
-                    <Route path="repetitions" element={<RepetitionPage />} />
-                    <Route path="invitations" element={<div>Invitations</div>} />
-                </Route>
+                        {/* =========================================
+                            CHANTEUR
+                            ========================================= */}
+                        <Route element={<TokenGuard />}>
 
-            </Routes>
+                            <Route
+                                path="/chanteur/:token"
+                                element={<ChanteurLayout />}
+                            >
+
+                                <Route
+                                    path="inscription"
+                                    element={<InscriptionChanteur />}
+                                />
+
+                                <Route
+                                    path="profil"
+                                    element={<Profil />}
+                                />
+
+                                <Route
+                                    index
+                                    element={<DashboardChanteur />}
+                                />
+
+                                <Route
+                                    path="chansons"
+                                    element={<ChansonsChanteur />}
+                                />
+
+                                <Route
+                                    path="concerts"
+                                    element={<Concerts />}
+                                />
+
+                                <Route
+                                    path="repetitions"
+                                    element={<Repetitions />}
+                                />
+
+                                <Route
+                                    path="votes"
+                                    element={<Votes />}
+                                />
+
+                            </Route>
+
+                        </Route>
+
+
+                        {/* =========================================
+                            ADMIN APP
+                        ========================================= */}
+                        <Route
+                            path="/admin/*"
+                            element={
+                                <AdminGuard>
+                                    <ChansonProvider>
+                                        <AdminLayout />
+                                    </ChansonProvider>
+                                </AdminGuard>
+                            }
+                        >
+
+                            <Route index element={<Dashboard />} />
+
+                            <Route
+                                path="test"
+                                element={<Testdivers />}
+                            />
+
+                            {/* saisons programme */}
+                            <Route
+                                path="saisons/:saison_nom/chanteurs"
+                                element={<ChanteurSaisonPage />}
+                            />
+
+                            <Route
+                                path="saisons/:saison_nom/chansons"
+                                element={<ChansonsSaisonPage />}
+                            />
+
+                            <Route
+                                path="saisons/:saison_nom/:chanson_nom/repartition"
+                                element={<RepartitionChansonsSaisonPage />}
+                            />
+
+                            <Route
+                                path="saisons/:saison_nom/groupes"
+                                element={<GroupePage />}
+                            />
+
+                            {/* référentiels */}
+                            <Route
+                                path="saisons"
+                                element={<SaisonPage />}
+                            />
+
+                            <Route
+                                path="chanteurs"
+                                element={<ChanteurPage />}
+                            />
+
+                            <Route
+                                path=":saison_nom/chanteurs"
+                                element={<SaisonChanteursPage />}
+                            />
+
+                            <Route
+                                path="chansons"
+                                element={<ChansonPage />}
+                            />
+
+                            <Route
+                                path="chanson/:titre/pupitres"
+                                element={<ChansonpupitrePage />}
+                            />
+
+                            <Route
+                                path="pupitres"
+                                element={<PupitrePage />}
+                            />
+
+                            <Route
+                                path="documents"
+                                element={<ReferentielDocumentPage />}
+                            />
+
+                            <Route
+                                path="concerts"
+                                element={<ConcertsPage />}
+                            />
+
+                            <Route
+                                path="repetitions"
+                                element={<RepetitionPage />}
+                            />
+
+                            <Route
+                                path="invitations"
+                                element={<div>Invitations</div>}
+                            />
+
+                        </Route>
+
+                    </Route>
+
+                </Routes>
+            </SaisonProvider>
         </BrowserRouter>
     );
 }

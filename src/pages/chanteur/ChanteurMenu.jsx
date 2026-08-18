@@ -10,62 +10,57 @@ export default function ChanteurMenu() {
     };
 
     return (
-        <nav>
-
-          <h2 className="logo-title">
-            <img src="/logoVDE.png" alt="Chorale" />
-            <span>Chorale</span>
-          </h2>
-            <hr />
+        <nav className="chanteur-menu">
 
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-dashboard"
                 onClick={() => go("")}
             >
-                🏠 Tableau de bord
+                Tableau de bord
             </p>
 
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-chansons"
                 onClick={() => go("/chansons")}
             >
-                🎵 Mes chansons
+                Mes chansons
             </p>
 
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-concerts"
                 onClick={() => go("/concerts")}
             >
-                🎤 Concerts
+                Concerts
             </p>
 
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-repetitions"
                 onClick={() => go("/repetitions")}
             >
-                🗓 Répétitions
+                Répétitions
             </p>
 
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-votes"
                 onClick={() => go("/votes")}
             >
-                🗳️ Votes
+                Votes
             </p>
 
             <hr />
 
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-inscription"
                 onClick={() => go("/inscription")}
             >
-                📝 Mon inscription
+                Mon inscription
             </p>
+
             <p
-                style={{ cursor: "pointer" }}
+                className="chanteur-menu-item icon-profil"
                 onClick={() => go("/profil")}
             >
-                📝 Mon profil
+                Mon profil
             </p>
 
         </nav>
