@@ -1,0 +1,12 @@
+.logo-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+.logo-title img {
+    width: 80px;
+    height: auto;
+    margin-bottom: 5px;
+}
