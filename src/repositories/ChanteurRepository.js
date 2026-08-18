@@ -53,6 +53,26 @@ export class ChanteurRepository extends BaseRepository {
             }
         );
     }
+    async updateStopRelancePupitre(token, stopRelancePupitre) {
+
+        return this.supabase.rpc(
+            "update_stop_relance_pupitre",
+            {
+                p_token: token,
+                p_stop_relance_pupitre: stopRelancePupitre
+            }
+        );
+    }
+    async updateStopRelanceDai(token, stopRelanceDai) {
+
+        return this.supabase.rpc(
+            "update_stop_relance_dai",
+            {
+                p_token: token,
+                p_stop_relance_dai: stopRelanceDai
+            }
+        );
+    }
     async delete(id) {
         const { data, error } = await this.supabase
             .rpc("soft_delete_chanteur", {

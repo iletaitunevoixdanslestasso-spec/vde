@@ -16,12 +16,12 @@ export default function ChoraleLayout() {
 
                     <div className="chorale-brand">
 
-                        <img
+                        {/* <img
                             src="/logoVDE.png"
                             alt="Chorale"
                         />
 
-                        <span>Chorale</span>
+                        <span>Chorale</span> */}
 
                     </div>
 

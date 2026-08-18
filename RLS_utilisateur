@@ -22,7 +22,7 @@ SELECT
     p.oid::regprocedure AS signature,
     pg_get_functiondef(p.oid) AS definition
 FROM pg_proc p
-WHERE p.proname = 'get_saison_chanteur_pupitres';
+WHERE p.proname = 'get_mon_profil()';
 ------- ------- ------- ------- ------- ------- --
 
 

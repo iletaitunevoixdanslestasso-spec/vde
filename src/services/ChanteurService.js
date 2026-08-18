@@ -347,4 +347,63 @@ export class ChanteurService extends BaseService {
             "Droit à l'image refusé."
         );
     }
+
+    async updateStopRelancePupitre(token, stopRelancePupitre) {
+
+        const { data, error } =
+            await this.repository.updateStopRelancePupitre(
+                token,
+                stopRelancePupitre
+            );
+
+        if (error) {
+            return BaseResponse.error(
+                null,
+                error.message
+            );
+        }
+
+        if (data !== true) {
+            return BaseResponse.error(
+                null,
+                "Impossible de modifier le paramètre de relance pupitre."
+            );
+        }
+
+        return BaseResponse.success(
+            {
+                stop_relance_pupitre: stopRelancePupitre
+            },
+            null
+        );
+    }
+    async updateStopRelanceDai(token, stopRelanceDai) {
+
+        const { data, error } =
+            await this.repository.updateStopRelanceDai(
+                token,
+                stopRelanceDai
+            );
+
+        if (error) {
+            return BaseResponse.error(
+                null,
+                error.message
+            );
+        }
+
+        if (data !== true) {
+            return BaseResponse.error(
+                null,
+                "Impossible de modifier le paramètre de relance DAI."
+            );
+        }
+
+        return BaseResponse.success(
+            {
+                stop_relance_dai: stopRelanceDai
+            },
+            null
+        );
+    }
 }

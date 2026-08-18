@@ -104,4 +104,18 @@ export class ChanteurController extends BaseController {
 
         load?.();
     }
+    async updateStopRelanceDai(stopRelanceDai) {
+
+        return this.service.updateStopRelanceDai(
+            this.context.token,
+            stopRelanceDai
+        );
+    }
+    async updateStopRelancePupitre(stopRelancePupitre) {
+
+        return this.service.updateStopRelancePupitre(
+            this.context.token,
+            stopRelancePupitre
+        );
+    }
 }

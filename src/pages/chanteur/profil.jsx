@@ -1,11 +1,9 @@
 import React from "react";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
-import { ChanteurController } from "../../controllers/ChanteurController";
 import CRUDItemPage from "../../framework/crud/CRUDItemPage";
 
 const profilConfig = {
     ...chanteurConfig,
-    Controller: ChanteurController,
     title: "Profil",
     columns: [
         { field: "nom", header: "Nom", type: "text", required: true },
