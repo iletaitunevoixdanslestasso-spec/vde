@@ -64,11 +64,11 @@ export default function Testdivers() {
       {
         method: "POST",
         headers: {
-            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-            "Content-Type": "application/json"
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            token: localStorage.getItem("token")
+          token: localStorage.getItem("token")
         })
       }
     );
@@ -122,21 +122,50 @@ export default function Testdivers() {
     }
   };
 
+  const testRelances = async () => {
+    try {
+      const response = await fetch(
+        "https://lqgkxpvkauoaeqtbndoy.supabase.co/functions/v1/relances",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({})
+        }
+      );
+
+      const result = await response.json();
+
+      console.log("RELANCES", response.status, result);
+
+    } catch (error) {
+      console.error("RELANCES ERROR", error);
+    }
+  };
+
   return (
     <div>
 
       <h1>test divers</h1>
+<hr />
 
-      <button onClick={testSignedUpload}>
-    Tester upload signé
+<button onClick={testRelances}>
+  Tester Edge Function Relances
 </button>
-      <hr/>
-      
-      <button onClick={testEdgeFunction2}>
-        Tester Edge Function 2
+      <hr />
+      <button onClick={testSignedUpload}>
+        Tester upload signé
       </button>
       <hr />
-      
+
+      <button onClick={testEdgeFunction2}>
+        Tester Edge Function 2
+
+      </button>
+      <hr />
+
       <button onClick={testEdgeFunction}>
         Tester Edge Function
       </button>
