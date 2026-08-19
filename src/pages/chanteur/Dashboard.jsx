@@ -146,7 +146,7 @@ export default function DashboardChanteur() {
 
       <h1 className="dashboard-title">
         <span className="icon icon-musical-note"></span>
-        Bonjour {profil.prenom}
+        Bonjour {profil.prenom} ICI
       </h1>
 
 
