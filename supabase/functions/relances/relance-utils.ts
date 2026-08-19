@@ -156,13 +156,13 @@ function base64UrlEncode(value: string): string {
 }
 
 async function obtenirAccessToken(): Promise<string> {
-  const clientId = Deno.env.get("GMAIL_CLIENT_ID");
-  const clientSecret = Deno.env.get("GMAIL_CLIENT_SECRET");
-  const refreshToken = Deno.env.get("GMAIL_REFRESH_TOKEN");
+  const clientId = Deno.env.get("GMAIL_IEUVDE_CLIENT_ID");
+  const clientSecret = Deno.env.get("GMAIL_IEUVDE_CLIENT_SECRET");
+  const refreshToken = Deno.env.get("GMAIL_IEUVDE_REFRESH_TOKEN");
 
   if (!clientId || !clientSecret || !refreshToken) {
     throw new Error(
-      "Secrets Gmail manquants : GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET ou GMAIL_REFRESH_TOKEN"
+      "Secrets Gmail manquants : GMAIL_IEUVDE_CLIENT_ID, GMAIL_IEUVDE_CLIENT_SECRET ou GMAIL_IEUVDE_REFRESH_TOKEN"
     );
   }
 
