@@ -3,8 +3,8 @@ import { supabase } from "../../../../core/supabase/client";
 import { useNavigate  } from "react-router-dom";
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState("jlg@vaille.net");
-  const [password, setPassword] = useState("p@tcHoul1");
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
    const navigate = useNavigate();
   const login = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({
