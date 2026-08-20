@@ -35,7 +35,7 @@ export class ChansonpupitreService extends BaseService {
 
     /**
      * Liste des chansons pouvant être ajoutés
-     */ 
+     */
     async getAvailablePupitres(chansonId) {
         console.log(this.pupitreRepository)
         const { data: chansons, error } =
@@ -53,7 +53,7 @@ export class ChansonpupitreService extends BaseService {
         return BaseResponse.success(disponibles);
     }
 
-    async save(data) {
+    async save_old(data) {
 
         if (this.validator) {
             const validation = this.validator.validate(data);
@@ -71,12 +71,15 @@ export class ChansonpupitreService extends BaseService {
             data.pupitre_id
         );
     }
+    async insert(entity) {
+        return this.addPupitre(entity);
+    }
     /**
      * Ajout d'un chanson dans une saison
      */
-    async addPupitre(pupitreId) {
+    async addPupitre(chansonPupitre) {
         const chansonId = this.context.chansonId;
-
+        const pupitreId = chansonPupitre.pupitre_id
         console.log("pupitreId", pupitreId)
         console.log("chansonId", chansonId)
         const { data: exists, error: existsError } =
@@ -90,7 +93,7 @@ export class ChansonpupitreService extends BaseService {
         if (exists) {
             return BaseResponse.error(
                 [],
-                "Ce chanson est déjà associé à cette saison",
+                "Ce pupitre est déjà associé à cette chanson",
                 {
                     action: "reactivateChansonSaison",
                     pupitreId,
@@ -103,7 +106,8 @@ export class ChansonpupitreService extends BaseService {
         const { data, error } =
             await this.repository.insert({
                 pupitre_id: pupitreId,
-                chanson_id: chansonId
+                chanson_id: chansonId,
+                audio_url: chansonPupitre.audio_url
             });
 
 

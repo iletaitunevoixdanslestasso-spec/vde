@@ -12,7 +12,6 @@ export default function ChansonPage() {
   useEffect(() => {
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log(session);
       setSession(session);
     };
 

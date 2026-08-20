@@ -1,5 +1,15 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+function encodeMimeHeader(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return btoa(binary);
+}
 
 /**
  * Vérifie si une relance peut être envoyée aujourd'hui.
@@ -27,9 +37,9 @@ export async function peutRelancer(
     .order("date_envoi", { ascending: false })
     .limit(1);
 
-          console.log(
-          `peutRelancer : ${chanteurId} ${typeRelanceId}`
-        );
+  console.log(
+    `peutRelancer : ${chanteurId} ${typeRelanceId}`
+  );
 
 
   if (contexteType === null) {
@@ -45,16 +55,16 @@ export async function peutRelancer(
   }
 
   const { data, error } = await query;
-console.log(
-  "peutRelancer RESULTAT :",
-  JSON.stringify({
-    chanteurId,
-    typeRelanceId,
-    contexteType,
-    contexteId,
-    data,
-  })
-);
+  console.log(
+    "peutRelancer RESULTAT :",
+    JSON.stringify({
+      chanteurId,
+      typeRelanceId,
+      contexteType,
+      contexteId,
+      data,
+    })
+  );
   if (error) {
     throw error;
   }
@@ -64,9 +74,9 @@ console.log(
   }
 
   const dateEnvoi = data[0].date_envoi;
-          console.log(
-          `peutRelancer  dateEnvoi: ${dateEnvoi} `
-        );
+  console.log(
+    `peutRelancer  dateEnvoi: ${dateEnvoi} `
+  );
   if (dateEnvoi === null) {
     return true;
   }
@@ -77,24 +87,24 @@ console.log(
   const dateAujourdhui = aujourdHui.toISOString().slice(0, 10);
   const dateDernierEnvoi = dernierEnvoi.toISOString().slice(0, 10);
 
-          console.log(
-          `peutRelancer  dateAujourdhui: ${dateAujourdhui} `
-        );
-          console.log(
-          `peutRelancer  dateDernierEnvoi: ${dateDernierEnvoi} `
-        );
+  console.log(
+    `peutRelancer  dateAujourdhui: ${dateAujourdhui} `
+  );
+  console.log(
+    `peutRelancer  dateDernierEnvoi: ${dateDernierEnvoi} `
+  );
 
 
   if (dateDernierEnvoi === dateAujourdhui) {
     console.log(
-  "peutRelancer COMPARAISON :",
-  JSON.stringify({
-    dateEnvoi,
-    dateDernierEnvoi,
-    dateAujourdhui,
-    memeJour: dateDernierEnvoi === dateAujourdhui,
-  })
-);
+      "peutRelancer COMPARAISON :",
+      JSON.stringify({
+        dateEnvoi,
+        dateDernierEnvoi,
+        dateAujourdhui,
+        memeJour: dateDernierEnvoi === dateAujourdhui,
+      })
+    );
     return false;
   }
 
@@ -192,7 +202,7 @@ async function obtenirAccessToken(): Promise<string> {
 }
 
 
-export async function envoyerMailRelance({
+export async function envoyerMailRelance_OLD({
   to,
   subject,
   text,
@@ -240,6 +250,160 @@ export async function envoyerMailRelance({
   }
 
   console.log("Mail Gmail envoyé :", data.id);
+
+  return {
+    success: true,
+    messageId: data.id,
+  };
+}
+
+export async function envoyerMailRelance({
+  to,
+  subject,
+  text,
+}: MailRelance) {
+
+  if (!to || !to.trim()) {
+    throw new Error("Adresse email destinataire absente");
+  }
+  const destinataire = to.trim();
+  console.log("DESTINATAIRE GMAIL :", JSON.stringify(to));
+  console.log("DESTINATAIRE GMAIL :", JSON.stringify(destinataire));
+
+  // 1. Obtenir un access_token valide
+  const accessToken = await obtenirAccessToken();
+
+
+
+  // --------------------------------------------------
+  // 2. Récupérer la signature Gmail du compte
+  // --------------------------------------------------
+
+  const signatureResponse = await fetch(
+    "https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs",
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  const signatureData = await signatureResponse.json();
+
+  if (!signatureResponse.ok) {
+    console.error(
+      "Erreur récupération signature Gmail :",
+      signatureData
+    );
+
+    throw new Error(
+      signatureData.error?.message ||
+      "Impossible de récupérer la signature Gmail"
+    );
+  }
+
+
+  // --------------------------------------------------
+  // 3. Trouver l'adresse d'envoi principale
+  // --------------------------------------------------
+
+  const sendAs = signatureData.sendAs?.find(
+    (item: any) => item.isPrimary === true
+  );
+
+
+  const signature = sendAs?.signature ?? "";
+
+
+  console.log(
+    "Signature Gmail récupérée :",
+    signature ? "OUI" : "NON"
+  );
+
+
+  // --------------------------------------------------
+  // 4. Transformer le texte du mail en HTML
+  // --------------------------------------------------
+
+  const textHtml = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\r?\n/g, "<br>");
+
+
+  // --------------------------------------------------
+  // 5. Ajouter la signature Gmail
+  // --------------------------------------------------
+
+  const html = signature
+    ? `${textHtml}<br><br>${signature}`
+    : textHtml;
+
+
+  // --------------------------------------------------
+  // 6. Construire le mail MIME HTML
+  // --------------------------------------------------
+
+  const mimeMessage = [
+    `To: ${destinataire}`,
+     `Subject: =?UTF-8?B?${encodeMimeHeader(subject)}?=`,
+    "MIME-Version: 1.0",
+    "Content-Type: text/html; charset=UTF-8",
+    "",
+    html,
+  ].join("\r\n");
+
+
+  // --------------------------------------------------
+  // 7. Encoder en base64url
+  // --------------------------------------------------
+
+  const raw = base64UrlEncode(mimeMessage);
+
+
+  // --------------------------------------------------
+  // 8. Envoyer via Gmail API
+  // --------------------------------------------------
+
+  const response = await fetch(
+    "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        raw,
+      }),
+    }
+  );
+
+
+  const data = await response.json();
+
+
+  if (!response.ok) {
+
+    console.error(
+      "Erreur Gmail :",
+      data
+    );
+
+    throw new Error(
+      data.error?.message ||
+      "Erreur lors de l'envoi du mail Gmail"
+    );
+  }
+
+
+  console.log(
+    "Mail Gmail envoyé :",
+    data.id
+  );
+
 
   return {
     success: true,

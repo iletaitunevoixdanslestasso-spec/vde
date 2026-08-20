@@ -1,4 +1,5 @@
 import { BaseService } from "./BaseService";
+import StorageService from "./StorageService";
 
 export class SaisonChanteurPupitreService extends BaseService {
 
@@ -83,90 +84,121 @@ export class SaisonChanteurPupitreService extends BaseService {
             }
         });
 
-        const data = saisonChansons.map(item => {
+        const data = await Promise.all(
+            saisonChansons.map(async item => {
 
-            const chanson = item.chansons;
+                const chanson = item.chansons;
 
+                /*
+                 * Document de la chanson
+                 */
+                const document = chanson.referentiel_documents;
 
-            /*
-             * Pupitres disponibles pour cette chanson
-             */
-            const pupitres = (chanson.chanson_pupitres || [])
-                .filter(cp => cp.pupitres)
-                .map(cp => ({
-                    id: cp.pupitre_id,
-                    nom: cp.pupitres.nom
-                }));
+                let documentUrl = null;
 
+                if (document?.path) {
 
-            /*
-             * Choix spécifique éventuel
-             */
-            const choixSpecifique =
-                choixParChanson.get(
-                    item.chanson_id
+                    documentUrl =
+                        await StorageService.createSignedUrl(
+                            "referentiel-documents",
+                            document.path,
+                            3600
+                        );
+
+                    console.log("url", documentUrl);
+                }
+
+                /*
+                 * Pupitres disponibles pour cette chanson
+                 */
+                // const pupitres = (chanson.chanson_pupitres || [])
+                //     .filter(cp => cp.pupitres)
+                //     .map(cp => ({
+                //         ...cp,
+                //         id: cp.pupitre_id,
+                //         nom: cp.pupitres.nom
+                //     }));
+                const pupitres = Array.from(
+                    new Map(
+                        (chanson.chanson_pupitres || [])
+                            .filter(cp => cp.pupitres)
+                            .map(cp => [
+                                cp.pupitre_id,
+                                {
+                                    ...cp,
+                                    id: cp.pupitre_id,
+                                    nom: cp.pupitres.nom
+                                }
+                            ])
+                    ).values()
                 );
 
+                /*
+                 * Choix spécifique éventuel
+                 */
+                const choixSpecifique =
+                    choixParChanson.get(item.chanson_id);
 
-            /*
-             * Vérifier si le pupitre principal
-             * est disponible pour cette chanson.
-             */
-            const principalAutorise =
-                pupitrePrincipal &&
-                pupitres.some(
-                    pupitre =>
-                        pupitre.id ===
-                        pupitrePrincipal.pupitre_id
-                );
+                /*
+                 * Vérifier si le pupitre principal
+                 * est disponible pour cette chanson.
+                 */
+                const principalAutorise =
+                    pupitrePrincipal &&
+                    pupitres.some(
+                        pupitre =>
+                            pupitre.id ===
+                            pupitrePrincipal.pupitre_id
+                    );
 
+                /*
+                 * Déterminer le pupitre affiché
+                 */
+                let pupitreChoisi = null;
 
-            /*
-             * Déterminer le pupitre affiché
-             *
-             * Priorité :
-             *
-             * 1. choix spécifique
-             * 2. pupitre principal s'il est autorisé
-             * 3. aucun choix
-             */
-            let pupitreChoisi = null;
+                if (choixSpecifique) {
 
-            if (choixSpecifique) {
+                    pupitreChoisi = {
+                        id: choixSpecifique.id,
+                        pupitre_id: choixSpecifique.pupitre_id,
+                        principal: false
+                    };
 
-                pupitreChoisi = {
-                    id: choixSpecifique.id,
-                    pupitre_id: choixSpecifique.pupitre_id,
-                    principal: false
+                }
+                else if (principalAutorise) {
+
+                    pupitreChoisi = {
+                        id: pupitrePrincipal.id,
+                        pupitre_id: pupitrePrincipal.pupitre_id,
+                        principal: true
+                    };
+                }
+                /**
+                 * audio du pupitre chsois
+                */
+                let audio_pupitre = null;
+                if (pupitreChoisi)
+                    audio_pupitre = pupitres.find(item => item.pupitre_id === pupitreChoisi.pupitre_id)
+
+                return {
+
+                    chanson_id: chanson.id,
+
+                    titre: chanson.titre,
+
+                    documentUrl,
+                    path: document?.path,
+                    audio_pupitre,
+                    pupitres,
+
+                    pupitreChoisi,
+
+                    choixSpecifique: !!choixSpecifique
+
                 };
 
-            }
-            else if (principalAutorise) {
-
-                pupitreChoisi = {
-                    id: pupitrePrincipal.id,
-                    pupitre_id: pupitrePrincipal.pupitre_id,
-                    principal: true
-                };
-
-            }
-
-
-            return {
-
-                chanson_id: chanson.id,
-
-                titre: chanson.titre,
-
-                pupitres,
-
-                pupitreChoisi,
-
-                choixSpecifique: !!choixSpecifique
-
-            };
-
-        });
+            })
+        );
 
 
         return {

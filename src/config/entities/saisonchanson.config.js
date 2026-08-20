@@ -5,6 +5,7 @@ import { SaisonchansonService } from "../../services/SaisonchansonService";
 import { SaisonchansonValidator } from "../../validators/SaisonchansonValidator";
 import { SaisonchansonMapper } from "../../mappers/SaisonchansonMapper";
 import { SaisonchansonController } from "../../controllers/SaisonchansonController";
+import React from "react";
 
 const columns = [
     {
@@ -18,6 +19,30 @@ const columns = [
         }
 
     },
+        {
+            mapped:false,
+            field: "paroles_url",
+            header: "Paroles",
+            type: "text",
+            hideInForm: true,
+    
+            render: (v, row) => {
+
+                if (!v) {
+                    return "Aucune parole";
+                }
+                let path = row?.chansons.referentiel_documents?.path || ''
+                return React.createElement(
+                    "a",
+                    {
+                        href: v,
+                        target: "_blank",
+                        rel: "noopener noreferrer"
+                    },
+                    `📄 ${path}`
+                );
+            }
+        },
 
 ];
 
@@ -26,7 +51,7 @@ const actions = [
     {
         label: "Pupitres",
         cssClass: "icon-pupitres",
-        action: "managePupitres"
+        action: "manageSaisonChansonPupitres"
     },
     {
         title: "Supprimer",

@@ -8,7 +8,20 @@ export class SaisonchansonController extends BaseController {
         this.accesController = new AccesController();
     }
 
+    managePupitres(saisonchanson, load) {
+        const chanson=saisonchanson.chansons
+        // window.location.href =
+        //     `/admin/saisons/${saison.nom}/chanteurs`;
+        console.log(
+            "SaisonchansonController.managePupitres",
+            chanson
+        );
 
+        return (`/admin//chanson/${chanson.titre}/pupitres`);
+
+        return (`/admin/chanson/${saison.nom}/chanteurs`);
+
+    }
 
     /**
      * Liste les chansons d'une saison
@@ -112,22 +125,5 @@ export class SaisonchansonController extends BaseController {
         return this.service.removeChanteur(id);
     }
 
-    generateAccessLink(saisonchanson) {
-        console.log("generateAccessLink", saisonchanson);
-        return this.accesController.generateLink(saisonchanson);
-    }
-    copyAccessLink(saisonChansons) {
-        console.log(saisonChansons)
-        const token = saisonChansons.acces.length ? saisonChansons.acces[0].token : 'aucun accès généré'
-        navigator.clipboard.writeText(token);
-    }
-    async sendAccessLink(saisonChansons) {
-        const result = await this.accesController.generateLink(saisonChansons);
-
-        // pour l'instant console (on fera email étape 9)
-        console.log("Lien à envoyer :", result.url);
-
-        return result;
-    }
 
 }

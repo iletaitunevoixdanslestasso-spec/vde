@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 
 import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
+import { Link } from "react-router-dom";
 
 
 export default function ChansonsChanteur() {
@@ -27,20 +28,20 @@ export default function ChansonsChanteur() {
 
     const controller =
         saisonchanteurpupitreConfig.controller;
-console.log(
-    "REPOSITORY CONFIG :",
-    saisonchanteurpupitreConfig.repository
-);
+    console.log(
+        "REPOSITORY CONFIG :",
+        saisonchanteurpupitreConfig.repository
+    );
 
-console.log(
-    "SAVE PUPITRE TYPE :",
-    typeof saisonchanteurpupitreConfig.repository.savePupitre
-);
+    console.log(
+        "SAVE PUPITRE TYPE :",
+        typeof saisonchanteurpupitreConfig.repository.savePupitre
+    );
 
-console.log(
-    "SERVICE :",
-    saisonchanteurpupitreConfig.service
-);
+    console.log(
+        "SERVICE :",
+        saisonchanteurpupitreConfig.service
+    );
 
     /*
      * Chargement des chansons
@@ -54,18 +55,18 @@ console.log(
 
         setLoading(true);
         setError(null);
-console.log("DATA :", data);
-console.log("SAISON ID :", saisonId);
-console.log("CHANTEUR ID :", chanteurId);
-console.log("TOKEN URL :", window.location.pathname);
+        console.log("DATA :", data);
+        console.log("SAISON ID :", saisonId);
+        console.log("CHANTEUR ID :", chanteurId);
+        console.log("TOKEN URL :", window.location.pathname);
         controller.getMesChansons(
             token,
             saisonId,
             chanteurId,
 
             (result) => {
-                
-    console.log("RESULTAT getMesChansons :", result);
+
+                console.log("RESULTAT getMesChansons :", result);
 
 
 
@@ -130,6 +131,10 @@ console.log("TOKEN URL :", window.location.pathname);
                         ) {
                             return chanson;
                         }
+                        // 🔎 Recherche du pupitre sélectionné
+                        const nouveauPupitre = chanson.pupitres.find(
+                            pupitre => pupitre.pupitre_id === nouveauChoix.pupitre_id
+                        );
 
                         return {
                             ...chanson,
@@ -140,7 +145,17 @@ console.log("TOKEN URL :", window.location.pathname);
                                     nouveauChoix.pupitre_id,
                                 principal:
                                     nouveauChoix.principal
-                            }
+                            },
+                            // 🎵 Nouveau son correspondant au pupitre
+                            audio_pupitre: nouveauPupitre
+                                ? {
+                                    id: nouveauPupitre.id,
+                                    pupitres: nouveauPupitre.pupitres,
+                                    audio_url: nouveauPupitre.audio_url,
+                                    pupitre_id: nouveauPupitre.pupitre_id,
+                                    nom: nouveauPupitre.nom
+                                }
+                                : null
                         };
                     })
                 );
@@ -250,7 +265,84 @@ console.log("TOKEN URL :", window.location.pathname);
                     const isSaving =
                         saving === chanson.chanson_id;
 
+                    return (
+                        <div
+                            key={chanson.chanson_id}
+                            className="chanson-card"
+                        >
+                            <div className="chanson-row">
 
+                                {/* Titre */}
+                                <div className="chanson-titre">
+                                    <strong>
+                                        {chanson.titre}
+                                    </strong>
+                                </div>
+
+                                {/* Partition / document */}
+                                <div className="chanson-document">
+                                    <Link
+                                        className="icon-documents"
+                                        to={chanson.documentUrl}
+                                        target="_blank"
+                                    >
+                                        {chanson.path}
+                                    </Link>
+                                </div>
+
+                                {/* Pupitre */}
+                                <div className="chanson-pupitre">
+
+                                    <select
+                                        value={pupitreChoisi}
+                                        disabled={isSaving}
+                                        onChange={(event) =>
+                                            handlePupitreChange(
+                                                chanson.chanson_id,
+                                                event.target.value
+                                            )
+                                        }
+                                    >
+                                        <option value="">
+                                            -- Choisir un pupitre --
+                                        </option>
+
+                                        {chanson.pupitres.map((pupitre) => (
+                                            <option
+                                                key={pupitre.id}
+                                                value={pupitre.id}
+                                            >
+                                                {pupitre.nom}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    {isSaving && (
+                                        <span className="chanson-saving">
+                                            Enregistrement...
+                                        </span>
+                                    )}
+
+                                </div>
+
+                                {/* Audio */}
+                                <div className="chanson-audio">
+
+                                    {chanson?.audio_pupitre?.audio_url && (
+                                        <Link
+                                            className="icon-chansons"
+                                            to={chanson.audio_pupitre.audio_url}
+                                            target="_blank"
+                                        >
+                                            Son de {chanson.audio_pupitre.nom}
+                                        </Link>
+                                    )}
+
+                                </div>
+
+                            </div>
+                        </div>
+                    );
                     return (
 
                         <div
@@ -272,55 +364,79 @@ console.log("TOKEN URL :", window.location.pathname);
                                     gap: "20px"
                                 }}
                             >
+                                <div>
 
-                                <strong>
-                                    {chanson.titre}
-                                </strong>
-
-
-                                <select
-                                    value={pupitreChoisi}
-                                    disabled={isSaving}
-                                    onChange={(event) =>
-                                        handlePupitreChange(
-                                            chanson.chanson_id,
-                                            event.target.value
-                                        )
-                                    }
-                                >
-
-                                    <option value="">
-                                        -- Choisir un pupitre --
-                                    </option>
+                                    <strong>
+                                        {chanson.titre}
+                                    </strong>
+                                </div>
+                                <div>
+                                    {<Link
+                                        to={`${chanson.documentUrl}`}
+                                        target="_blank"
+                                    // className="todo-button"
+                                    >
+                                        <span className=""></span>
+                                        {chanson.path}.
+                                    </Link>}
+                                </div>
+                                <div>
 
 
-                                    {chanson.pupitres.map(
-                                        pupitre => (
+                                    <select
+                                        value={pupitreChoisi}
+                                        disabled={isSaving}
+                                        onChange={(event) =>
+                                            handlePupitreChange(
+                                                chanson.chanson_id,
+                                                event.target.value
+                                            )
+                                        }
+                                    >
 
-                                            <option
-                                                key={
-                                                    pupitre.id
-                                                }
-                                                value={
-                                                    pupitre.id
-                                                }
-                                            >
-                                                {pupitre.nom}
-                                            </option>
+                                        <option value="">
+                                            -- Choisir un pupitre --
+                                        </option>
 
-                                        )
+
+                                        {chanson.pupitres.map(
+                                            pupitre => (
+
+                                                <option
+                                                    key={
+                                                        pupitre.id
+                                                    }
+                                                    value={
+                                                        pupitre.id
+                                                    }
+                                                >
+                                                    {pupitre.nom}
+                                                </option>
+
+                                            )
+                                        )}
+
+                                    </select>
+
+
+                                    {isSaving && (
+
+                                        <span>
+                                            Enregistrement...
+                                        </span>
+
                                     )}
-
-                                </select>
-
-
-                                {isSaving && (
-
-                                    <span>
-                                        Enregistrement...
-                                    </span>
-
-                                )}
+                                </div>
+                                <div>
+                                    {chanson?.audio_pupitre && chanson.audio_pupitre?.audio_url && <Link
+                                        to={`${chanson?.audio_pupitre?.audio_url}`}
+                                        target="_blank"
+                                    // className="todo-button"
+                                    >
+                                        <span className=""></span>
+                                        son de {chanson?.audio_pupitre?.nom}.
+                                    </Link>}
+                                </div>
 
                             </div>
 

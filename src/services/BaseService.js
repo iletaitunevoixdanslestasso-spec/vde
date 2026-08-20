@@ -24,7 +24,7 @@ export class BaseService {
             return BaseResponse.error([], error.message);
         }
 
-        return BaseResponse.success(   data.map(e => this.mapper.toUi(e)));
+        return BaseResponse.success(data.map(e => this.mapper.toUi(e)));
     }
 
     // 📦 GET BY ID
@@ -51,13 +51,13 @@ export class BaseService {
         }
 
         let result;
-        
+
         const dbEntity = this.mapper ? this.mapper.toDb(entity) : entity;
         console.log("dbEntity", dbEntity);
         if (entity.id) {
             result = await this.repository.update(entity.id, dbEntity);
         } else {
-            result = await this.repository.insert(dbEntity);
+            result = await this.insert(dbEntity);
         }
 
         if (result.error) {
@@ -67,7 +67,9 @@ export class BaseService {
 
         return BaseResponse.success(this.mapper.toUi(result.data));
     }
-
+    async insert(entity) {
+        return await this.repository.insert(entity);
+    }
     // 🗑️ DELETE (soft ou hard selon repo)
     async delete(id) {
         const { error } = await this.repository.delete(id);

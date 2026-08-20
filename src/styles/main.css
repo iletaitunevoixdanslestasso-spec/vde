@@ -507,3 +507,67 @@ button {
     content: "↓";
     margin-left: 5px;
 }
+
+/**
+ * chansonChanteur pge
+ */
+ .chanson-card {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.chanson-row {
+    display: grid;
+    grid-template-columns:
+        minmax(200px, 2fr)
+        minmax(150px, 1.5fr)
+        minmax(220px, 1.5fr)
+        minmax(150px, 1fr);
+
+    align-items: center;
+    gap: 20px;
+}
+
+.chanson-titre {
+    font-size: 16px;
+}
+
+.chanson-document,
+.chanson-audio {
+    display: flex;
+    align-items: center;
+}
+
+.chanson-document a,
+.chanson-audio a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.chanson-document a:hover,
+.chanson-audio a:hover {
+    text-decoration: underline;
+}
+
+.chanson-pupitre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chanson-pupitre select {
+    min-width: 200px;
+    padding: 7px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: white;
+}
+
+.chanson-saving {
+    font-size: 13px;
+    color: #777;
+    white-space: nowrap;
+}

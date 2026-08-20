@@ -12,7 +12,7 @@ export class SaisonchansonRepository extends BaseRepository {
      * Liste les chansons associés à une saison
      */
     async findBySaison(saisonId) {
-        
+
         return this.supabase
             .from(this.table)
             .select(`
@@ -21,7 +21,10 @@ export class SaisonchansonRepository extends BaseRepository {
                 chanson_id,
                 chansons (
                     id,
-                    titre
+                    titre,
+                    referentiel_documents(
+                    path
+                    )
                 )
             `)
             .eq("saison_id", saisonId)

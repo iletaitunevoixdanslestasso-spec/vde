@@ -1,6 +1,7 @@
 import { BaseResponse } from "../core/framework/BaseResponse";
 import { ChansonRepository } from "../repositories/ChansonRepository";
 import { BaseService } from "./BaseService";
+import StorageService from "./StorageService";
 
 
 export class SaisonchansonService extends BaseService {
@@ -25,9 +26,42 @@ export class SaisonchansonService extends BaseService {
             a.chansons.titre.localeCompare(b.chansons.titre)
         );
 
+
+        const enrichedData = await Promise.all(
+            filteredData.map(async chansonSaison => {
+                const chanson = chansonSaison.chansons
+
+                const document = chanson.referentiel_documents;
+
+                if (!document?.path) {
+                    return {
+                        ...chansonSaison,
+                        paroles_url: null
+                    };
+                }
+
+                const url =
+                    await StorageService.createSignedUrl(
+                        "referentiel-documents",
+                        document.path,
+                        3600
+                    );
+
+                return {
+                    ...chansonSaison,
+                    paroles_url: url
+                };
+            })
+        );
+
         return {
             success: true,
-            data:filteredData
+            data: enrichedData
+        };
+
+        return {
+            success: true,
+            data: filteredData
         };
         // return this.repository.findBySaison(saisonId);
 

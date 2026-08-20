@@ -212,8 +212,8 @@ Deno.serve(async (req) => {
         "",
         textesRelance.join("\n\n"),
         "",
-        "À bientôt,",
-        "La Chorale",
+        // "À bientôt,",
+        // "Le CA",
       ].join("\n");
 
 
@@ -231,12 +231,12 @@ Deno.serve(async (req) => {
           `ENVOI MAIL : ${chanteur.prenom} ${chanteur.nom}`
         );
 
-        const resultatMail = true
-        // const resultatMail = await envoyerMailRelance({
-        //   to: chanteur.email,
-        //   subject,
-        //   text,
-        // });
+        // const resultatMail = true
+        const resultatMail = await envoyerMailRelance({
+          to: chanteur.email,
+          subject,
+          text,
+        });
 
 
         console.log(

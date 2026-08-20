@@ -5,24 +5,45 @@ import { ChansonpupitreService } from "../../services/ChansonpupitreService";
 import { ChansonpupitreValidator } from "../../validators/ChansonpupitreValidator";
 import { ChansonpupitreMapper } from "../../mappers/ChansonpupitreMapper";
 import { ChansonpupitreController } from "../../controllers/ChansonpupitreController";
+import React from "react";
 
 
 const columns = [
-        {
-            field: "pupitre_id",
-            header: "Pupîtres",
-            type: "select",
-            source: "availablePupitres",
-            required: true,
-            render: (v, row) => {
-                console.log(row)
-                return `${row.pupitres.nom}`;
-            }
+    {
+        field: "pupitre_id",
+        header: "Pupitres",
+        type: "select",
+        source: "availablePupitres",
+        editType: "readonly",
+        required: true,
+        render: (v, row) => {
+            console.log(row)
+            return `${row.pupitres.nom}`;
+        }
 
+    },
+    {
+        field: "audio_url", header: "Audio", type: "text",
+        render: (v, row) => {
+
+            if (!v) {
+                return "Aucun son";
+            }
+            let path = row?.referentiel_documents?.path || ''
+            return React.createElement(
+                "a",
+                {
+                    href: v,
+                    target: "_blank",
+                    rel: "noopener noreferrer"
+                },
+                `${v}`
+            );
         },
+    }
 ];
 
-const actions= [
+const actions = [
 ];
 
 
@@ -30,7 +51,7 @@ export const chansonpupitreConfig = createEntityConfig({
 
     entity: "chansonpupitre",
 
-    title: "Les pupîtres",
+    title: "Les pupitres",
 
     table: "chanson_pupitres",
 
@@ -39,7 +60,7 @@ export const chansonpupitreConfig = createEntityConfig({
     Service: ChansonpupitreService,
     Validator: ChansonpupitreValidator,
     Mapper: ChansonpupitreMapper,
-    Controller:ChansonpupitreController,
+    Controller: ChansonpupitreController,
 
     columns,
     actions

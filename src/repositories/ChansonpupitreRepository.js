@@ -25,7 +25,9 @@ export class ChansonpupitreRepository extends BaseRepository {
                 chansons (
                     id,
                     titre
-                )
+                ),
+                audio_url
+                
             `)
             .eq("chanson_id", chansonId)
             .is("deleted_at", null)

@@ -95,11 +95,22 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "managePupitres": {
-
+                console.log(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
-
+                console.log(urlPutpitre)
                 context.selectChanson(row);
+
+                navigate(urlPutpitre);
+
+                break;
+            }
+            case "manageSaisonChansonPupitres": {
+                console.log(row)
+                const urlPutpitre =
+                    controller.managePupitres(row, load);
+                console.log(urlPutpitre)
+                context.selectChanson(row.chansons);
 
                 navigate(urlPutpitre);
 
