@@ -237,6 +237,12 @@ button {
 .icon-saisons::before {
     content: "📅";
 }
+.icon-repetition::before {
+    content: "🗓";
+}
+.icon-gestion::before {
+    content: "⚙️";
+}
 
 .icon-chanteurs::before {
     content: "👤";

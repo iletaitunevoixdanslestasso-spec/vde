@@ -98,6 +98,17 @@ export default function AdminMenu() {
                             </p>
 
                             <p
+                                className="admin-menu-item icon-repetition"
+                                onClick={() =>
+                                    handleClickSaison(
+                                        saison,
+                                        "repetition"
+                                    )
+                                }
+                            >
+                                Répétitions
+                            </p>
+                            <p
                                 className="admin-menu-item icon-groupes"
                                 onClick={() =>
                                     handleClickSaison(

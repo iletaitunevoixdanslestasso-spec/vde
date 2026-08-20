@@ -152,6 +152,10 @@ export default function Router() {
                                 path="saisons/:saison_nom/chansons"
                                 element={<ChansonsSaisonPage />}
                             />
+                            <Route
+                                path="saisons/:saison_nom/repetition"
+                                element={<RepetitionPage />}
+                            />
 
                             <Route
                                 path="saisons/:saison_nom/:chanson_nom/repartition"

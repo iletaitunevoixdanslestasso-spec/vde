@@ -50,9 +50,14 @@ const columns = [
 const actions = [
     {
         label: "Pupitres",
-        cssClass: "icon-pupitres",
+        cssClass: "icon-gestion",
         action: "manageSaisonChansonPupitres"
     },
+    { 
+        label: "Répartition", 
+        title: "affichage de la Répartition", 
+        cssClass: "icon-gestion", 
+        action: "repartition" },
     {
         title: "Supprimer",
         action: "delete",

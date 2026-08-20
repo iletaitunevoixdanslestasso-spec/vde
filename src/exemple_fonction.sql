@@ -1,3 +1,114 @@
+INSERT INTO public.rendezvous_type (
+    libelle,
+    code,
+    description
+)
+VALUES
+    (
+        'Répétition',
+        'repet',
+        'Les répétitions sont les mardis'
+    ),
+    (
+        'Concert',
+        'concert',
+        'Youpi un concert'
+    ),
+    (
+        'Regroupement',
+        'regroup',
+        'Extra chorale'
+    );
+-- ============================================================
+-- TABLE : lieux
+-- ============================================================
+
+CREATE TABLE public.lieux (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    rue TEXT,
+    ville TEXT,
+    code_postale TEXT,
+    description TEXT,
+    geolocalisation TEXT,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ
+);
+
+
+-- ============================================================
+-- INDEX
+-- ============================================================
+
+CREATE INDEX idx_lieux_ville
+    ON public.lieux(ville);
+
+CREATE INDEX idx_lieux_deleted_at
+    ON public.lieux(deleted_at);
+
+
+-- ============================================================
+-- RLS
+-- ============================================================
+
+ALTER TABLE public.lieux ENABLE ROW LEVEL SECURITY;
+
+
+-- Lecture des lieux non supprimés
+CREATE POLICY "Lieux visibles"
+ON public.lieux
+FOR SELECT
+USING (deleted_at IS NULL);
+
+
+-- Création
+CREATE POLICY "Lieux création"
+ON public.lieux
+FOR INSERT
+WITH CHECK (true);
+
+
+-- Modification
+CREATE POLICY "Lieux modification"
+ON public.lieux
+FOR UPDATE
+USING (true)
+WITH CHECK (true);
+
+
+-- Suppression
+CREATE POLICY "Lieux suppression"
+ON public.lieux
+FOR DELETE
+USING (true);
+
+
+-- ============================================================
+-- TRIGGER updated_at
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$;
+
+
+DROP TRIGGER IF EXISTS set_lieux_updated_at
+ON public.lieux;
+
+CREATE TRIGGER set_lieux_updated_at
+BEFORE UPDATE ON public.lieux
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_updated_at();
+
+
 
 ########################################################################################################
 -- suppression de la fonction
