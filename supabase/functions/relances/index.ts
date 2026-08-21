@@ -212,7 +212,7 @@ Deno.serve(async (req) => {
         "",
         textesRelance.join("\n\n"),
         "",
-        // "À bientôt,",
+        "À très vite !",
         // "Le CA",
       ].join("\n");
 
