@@ -247,6 +247,9 @@ button {
 .icon-chanteurs::before {
     content: "👤";
 }
+.icon-checked::before {
+    content: "✅";
+}
 
 .icon-chansons::before {
     content: "🎵";

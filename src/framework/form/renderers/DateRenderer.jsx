@@ -3,10 +3,7 @@ export default function DateRenderer({
     form,
     onChange
 }) {
-    console.log(form)
-    console.log(field)
-    console.log(field.field)
-    console.log(form[field.field])
+
     const value = form[field.field]
         ? form[field.field].substring(0, 10)
         : "";
