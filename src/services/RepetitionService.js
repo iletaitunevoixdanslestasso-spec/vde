@@ -11,7 +11,21 @@ export class RepetitionService extends BaseService {
         this.repetitionstypeRepository = new RepetitionstypeRepository('repetitions_type');
         this.rendezvousRepository = new RendezvouRepository('rendezvous');
     }
+    async getForDashboard(saisonId) {
 
+        const { data, error } =
+            await this.repository.findBySaison(saisonId);
+
+        console.log(data)
+        if (error) {
+            return BaseResponse.error([], error.message);
+        }
+
+
+        return BaseResponse.success(
+            data
+        );
+    }
     // le system appel le service.getALl de l'entite pour afficher la liste des entites
     // si je veux modifier la reponse il faut surcharger cette methode
     async getAll() {

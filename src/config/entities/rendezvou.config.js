@@ -4,6 +4,7 @@ import { RendezvouRepository } from "../../repositories/RendezvouRepository";
 import { RendezvouService } from "../../services/RendezvouService";
 import { RendezvouValidator } from "../../validators/RendezvouValidator";
 import { RendezvouMapper } from "../../mappers/RendezvouMapper";
+import { RendezvouController } from "../../controllers/RendezvouController";
 
 
 const columns = [
@@ -29,6 +30,7 @@ export const rendezvouConfig = createEntityConfig({
     Service: RendezvouService,
     Validator: RendezvouValidator,
     Mapper: RendezvouMapper,
+    Controller: RendezvouController,
 
 
     columns,

@@ -580,3 +580,864 @@ button {
     color: #777;
     white-space: nowrap;
 }
+
+/* =========================================================
+   RENDEZ-VOUS
+========================================================= */
+
+.dashboard-rendezvous {
+    margin-top: 30px;
+}
+
+.dashboard-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+
+/* ---------------------------------------------------------
+   Liste
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-list {
+    width: 100%;
+}
+
+
+/* ---------------------------------------------------------
+   Header
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-header {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) minmax(160px, 220px) 1fr;
+    gap: 20px;
+
+    padding: 10px 16px;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    color: var(--text-secondary, #777);
+}
+
+
+/* ---------------------------------------------------------
+   Ligne
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) minmax(160px, 220px) 1fr;
+    gap: 20px;
+
+    align-items: center;
+
+    padding: 14px 16px;
+
+    margin-bottom: 6px;
+
+    background: var(--background-secondary, #fff);
+
+    border: 1px solid var(--border-color, #e5e5e5);
+
+    border-radius: 10px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.dashboard-rendezvous-row:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ---------------------------------------------------------
+   Type
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-type {
+    min-width: 0;
+}
+
+.dashboard-rendezvous-type-label {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
+/* ---------------------------------------------------------
+   Date
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dashboard-rendezvous-date-day {
+    font-weight: 600;
+}
+
+.dashboard-rendezvous-date-time {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #777);
+}
+
+
+/* ---------------------------------------------------------
+   Description
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-description {
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+
+    color: var(--text-primary, #333);
+}
+
+
+/* ---------------------------------------------------------
+   TYPES
+--------------------------------------------------------- */
+
+/*
+ * Chaque code de rendezvous_type devient automatiquement
+ * une classe CSS.
+ *
+ * Exemple :
+ *
+ * rendezvous-type-concert
+ * rendezvous-type-reunion
+ * rendezvous-type-formation
+ * rendezvous-type-repet
+ */
+
+
+/* Répétition */
+
+.rendezvous-type-repet {
+    border-left: 4px solid var(--rendezvous-repetition-color, #777);
+}
+
+.rendezvous-type-repet .dashboard-rendezvous-type-label {
+    background: var(--rendezvous-repetition-bg, #f0f0f0);
+    color: var(--rendezvous-repetition-text, #555);
+}
+
+
+/* ---------------------------------------------------------
+   Etats
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-loading,
+.dashboard-rendezvous-empty {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 25px;
+
+    color: var(--text-secondary, #777);
+
+    border: 1px dashed var(--border-color, #ddd);
+
+    border-radius: 10px;
+}
+
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+    .dashboard-rendezvous-header {
+        display: none;
+    }
+
+    .dashboard-rendezvous-row {
+
+        grid-template-columns: 1fr;
+
+        gap: 8px;
+
+        padding: 14px;
+    }
+
+    .dashboard-rendezvous-type {
+        order: 1;
+    }
+
+    .dashboard-rendezvous-date {
+        order: 2;
+
+        flex-direction: row;
+
+        align-items: baseline;
+
+        gap: 8px;
+    }
+
+    .dashboard-rendezvous-description {
+        order: 3;
+    }
+
+}
+
+/* =========================================================
+   TODO
+========================================================= */
+
+.dashboard-todo {
+    margin-top: 25px;
+}
+
+.dashboard-todo h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0 0 15px;
+}
+
+
+/* ---------------------------------------------------------
+   Item
+--------------------------------------------------------- */
+
+.todo-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+
+    gap: 15px;
+
+    padding: 16px;
+
+    margin-bottom: 8px;
+
+    background: var(--background-secondary, #fff);
+
+    border: 1px solid var(--border-color, #e5e5e5);
+
+    border-radius: 10px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.todo-item:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ---------------------------------------------------------
+   Icône
+--------------------------------------------------------- */
+
+.todo-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #f5f5f5;
+
+    font-size: 1.2rem;
+}
+
+
+/* ---------------------------------------------------------
+   Contenu
+--------------------------------------------------------- */
+
+.todo-content {
+    min-width: 0;
+}
+
+.todo-title {
+    margin-bottom: 5px;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    color: var(--text-primary, #333);
+}
+
+.todo-description {
+    color: var(--text-secondary, #777);
+
+    line-height: 1.5;
+}
+
+.todo-description .todo-button {
+    margin-left: 5px;
+}
+
+
+/* ---------------------------------------------------------
+   Actions
+--------------------------------------------------------- */
+
+.todo-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   Boutons
+--------------------------------------------------------- */
+
+.todo-button {
+    display: inline-flex;
+
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: inherit;
+
+    font: inherit;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.todo-button-secondary {
+    padding: 7px 11px;
+
+    border: 1px solid var(--border-color, #ddd);
+
+    background: var(--background-secondary, #fff);
+
+    color: var(--text-secondary, #666);
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.todo-button-secondary:hover:not(:disabled) {
+    background: #f5f5f5;
+
+    border-color: #ccc;
+
+    color: var(--text-primary, #333);
+}
+
+.todo-button:disabled {
+    opacity: 0.6;
+
+    cursor: default;
+}
+
+
+/* ---------------------------------------------------------
+   TODO DAI
+--------------------------------------------------------- */
+
+.todo-dai {
+    border-left: 4px solid #d98c8c;
+}
+
+.todo-dai .todo-icon {
+    background: #fff1f1;
+}
+
+
+/* ---------------------------------------------------------
+   TODO Pupitre
+--------------------------------------------------------- */
+
+.todo-pupitre {
+    border-left: 4px solid #d6a85f;
+}
+
+.todo-pupitre .todo-icon {
+    background: #fff8e8;
+}
+
+
+/* ---------------------------------------------------------
+   Aucun TODO
+--------------------------------------------------------- */
+
+.todo-empty {
+    display: flex;
+
+    align-items: center;
+    gap: 10px;
+
+    padding: 16px;
+
+    border: 1px dashed var(--border-color, #ddd);
+
+    border-radius: 10px;
+
+    color: var(--text-secondary, #777);
+}
+
+.todo-empty .icon {
+    font-size: 1.1rem;
+}
+
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+    .todo-item {
+        grid-template-columns: 38px 1fr;
+
+        gap: 12px;
+
+        padding: 14px;
+    }
+
+    .todo-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .todo-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}
+
+/* =========================================================
+   DASHBOARD CHANTEUR
+========================================================= */
+
+.dashboard-chanteur {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0;
+
+    padding: 35px 40px 60px;
+
+    box-sizing: border-box;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: #333;
+}
+
+
+/* =========================================================
+   HEADER DU DASHBOARD
+========================================================= */
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    margin-bottom: 35px;
+
+    padding-bottom: 28px;
+
+    border-bottom: 1px solid #e8e8e8;
+}
+
+
+.dashboard-header-icon {
+    width: 58px;
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #f3f3f3;
+
+    color: #555;
+
+    font-size: 1.5rem;
+}
+
+
+.dashboard-header-content {
+    min-width: 0;
+}
+
+
+.dashboard-eyebrow {
+    margin-bottom: 4px;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.12em;
+
+    color: #888;
+}
+
+
+.dashboard-title {
+    margin: 0;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 2rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    color: #222;
+}
+
+
+.dashboard-subtitle {
+    margin: 8px 0 0;
+
+    max-width: 680px;
+
+    font-size: 0.95rem;
+
+    line-height: 1.5;
+
+    color: #777;
+}
+
+
+/* =========================================================
+   GRANDES SECTIONS
+========================================================= */
+
+.dashboard-todo,
+.dashboard-rendezvous {
+    margin: 0;
+}
+
+
+/* =========================================================
+   TITRES DE SECTIONS
+========================================================= */
+
+.dashboard-section-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 0 0 16px;
+}
+
+
+.dashboard-section-icon {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #f3f3f3;
+
+    color: #555;
+
+    font-size: 1rem;
+}
+
+
+.dashboard-section-label {
+    display: block;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    color: #222;
+}
+
+
+.dashboard-section-description {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 0.82rem;
+
+    font-weight: 400;
+
+    color: #888;
+}
+
+
+/* =========================================================
+   TODO
+========================================================= */
+
+.dashboard-todo {
+    padding: 0;
+}
+
+
+/*
+ * Quand il n'y a aucune action :
+ * on garde quelque chose de très léger.
+ */
+
+.todo-empty {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 14px 16px;
+
+    background: #fafafa;
+
+    border: 1px dashed #ddd;
+
+    border-radius: 9px;
+
+    color: #777;
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   SEPARATION RENDEZ-VOUS
+========================================================= */
+
+.dashboard-rendezvous {
+    margin-top: 42px;
+
+    padding-top: 30px;
+
+    border-top: 1px solid #e5e5e5;
+}
+
+
+/* =========================================================
+   ICÔNES DU DASHBOARD
+========================================================= */
+
+.icon-musical-note::before {
+    content: "🎵";
+}
+
+.icon-todo::before {
+    content: "☑";
+}
+
+.icon-calendar::before {
+    content: "📅";
+}
+
+.icon-check::before {
+    content: "✓";
+}
+
+
+/* =========================================================
+   BOUTONS DU DASHBOARD
+========================================================= */
+
+/*
+ * Important :
+ * on neutralise le "button { background-color: azure; }"
+ * global pour le dashboard.
+ */
+
+.dashboard-chanteur button {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   LOADING / ERROR
+========================================================= */
+
+.dashboard-loading,
+.dashboard-error {
+    min-height: 200px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: #777;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .dashboard-chanteur {
+        padding: 20px 15px 40px;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+
+        gap: 13px;
+
+        margin-bottom: 30px;
+
+        padding-bottom: 22px;
+    }
+
+    .dashboard-header-icon {
+        width: 46px;
+        height: 46px;
+
+        flex-basis: 46px;
+
+        border-radius: 12px;
+
+        font-size: 1.2rem;
+    }
+
+    .dashboard-title {
+        font-size: 1.55rem;
+    }
+
+    .dashboard-subtitle {
+        font-size: 0.88rem;
+    }
+
+    .dashboard-section-label {
+        font-size: 1.1rem;
+    }
+
+    .dashboard-rendezvous {
+        margin-top: 32px;
+
+        padding-top: 24px;
+    }
+}
+
+.dashboard-section-title-collapse {
+    cursor: pointer;
+    user-select: none;
+}
+
+.dashboard-section-title-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: 20px;
+}
+
+.dashboard-section-chevron {
+    font-size: 24px;
+    line-height: 1;
+    opacity: 0.6;
+    transition: transform 0.2s ease;
+}
+
+.dashboard-section-title-collapse:hover
+.dashboard-section-chevron {
+    opacity: 1;
+}
+
+.dashboard-section-collapse-content {
+    animation: dashboard-collapse-in 0.2s ease;
+}
+
+@keyframes dashboard-collapse-in {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -27,4 +27,31 @@ export class RepetitionController extends BaseController {
 
     }
 
+
+    async getForDashboard(saisonId) {
+
+        try {
+
+            const data =
+                await this.service.getForDashboard(saisonId);
+            console.log(data)
+            return {
+                success: true,
+                data:data.data
+            };
+
+        } catch (error) {
+
+            console.error(
+                "repetitionController.getForDashboard",
+                error
+            );
+
+            return {
+                success: false,
+                error
+            };
+        }
+    }
+
 }
