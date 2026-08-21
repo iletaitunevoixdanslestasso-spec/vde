@@ -208,7 +208,7 @@ Deno.serve(async (req) => {
       // ------------------------------------------------
 
       const text = [
-        `Bonjour ${chanteur.prenom},`,
+        `Hello ${chanteur.prenom}, Voix de l'Est !`,
         "",
         textesRelance.join("\n\n"),
         "",
