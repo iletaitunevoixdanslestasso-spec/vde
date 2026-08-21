@@ -102,7 +102,8 @@ Deno.serve(async (req) => {
             nom,
             email,
             stop_relance_pupitre,
-            stop_relance_dai
+            stop_relance_dai,
+            droit_image_workflow
           )
         `)
         .eq("saison_id", saison.id)
