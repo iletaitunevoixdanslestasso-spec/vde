@@ -2,7 +2,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../core/supabase/client";
 import AdminMenu from "../components/AdminiMenu";
-
+// AdminLayout.jsx
+import "../styles/espaceAdmin.css";
 export default function AdminLayout() {
 
     const navigate = useNavigate();

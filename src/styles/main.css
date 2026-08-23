@@ -1441,3 +1441,499 @@ button {
         transform: translateY(0);
     }
 }
+
+/* =========================================================
+   CHANTEUR LAYOUT
+========================================================= */
+
+.chanteur-layout {
+    min-height: 100vh;
+
+    display: flex;
+
+    background: var(
+        --chanteur-background,
+        #f7f7f8
+    );
+
+    color: var(
+        --text-primary,
+        #333
+    );
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.chanteur-sidebar {
+    width: 250px;
+
+    flex: 0 0 250px;
+
+    min-height: 100vh;
+
+    background: var(
+        --chanteur-sidebar-background,
+        #ffffff
+    );
+
+    border-right: 1px solid
+        var(
+            --border-color,
+            #e8e8e8
+        );
+}
+
+
+.chanteur-sidebar-inner {
+    position: sticky;
+
+    top: 0;
+
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 22px 14px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.chanteur-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 4px 8px 24px;
+
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid
+        var(
+            --border-color,
+            #eeeeee
+        );
+}
+
+
+.chanteur-brand-icon {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #f2f2f3;
+
+    font-size: 1.1rem;
+}
+
+
+.chanteur-brand-text {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.chanteur-brand-text strong {
+    font-size: 0.95rem;
+
+    line-height: 1.2;
+}
+
+
+.chanteur-brand-text span {
+    font-size: 0.75rem;
+
+    color: var(
+        --text-secondary,
+        #888
+    );
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.chanteur-menu {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 24px;
+
+    overflow-y: auto;
+
+    padding: 5px 0;
+}
+
+
+.chanteur-menu-section {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.chanteur-menu-section-title {
+    padding: 0 11px 7px;
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+
+    color: #999;
+}
+
+
+/* =========================================================
+   ITEM
+========================================================= */
+
+.chanteur-menu-item {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 10px 11px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #666;
+
+    font: inherit;
+
+    font-size: 0.9rem;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.chanteur-menu-item:hover {
+    background: #f5f5f5;
+
+    color: #333;
+}
+
+
+.chanteur-menu-item.active {
+    background: #eeeeef;
+
+    color: #222;
+
+    font-weight: 600;
+}
+
+
+.chanteur-menu-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: 8px;
+    bottom: 8px;
+
+    width: 3px;
+
+    border-radius: 3px;
+
+    background: #555;
+}
+
+
+/* =========================================================
+   ICÔNES
+========================================================= */
+
+.chanteur-menu-item::before {
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   CONTENU
+========================================================= */
+
+.chanteur-content {
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+}
+
+
+.chanteur-content-inner {
+    width: 100%;
+
+    min-height: 100vh;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TABLETTE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .chanteur-sidebar {
+        width: 210px;
+
+        flex-basis: 210px;
+    }
+
+    .chanteur-brand-text {
+        display: none;
+    }
+
+    .chanteur-brand {
+        justify-content: center;
+    }
+
+}
+
+/* =========================================================
+   SMARTPHONE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .chanteur-layout {
+        display: block;
+
+        min-height: 100vh;
+    }
+
+
+    /* -----------------------------------------------------
+       Navigation
+    ----------------------------------------------------- */
+
+    .chanteur-sidebar {
+        position: sticky;
+
+        top: 0;
+
+        z-index: 100;
+
+        width: 100%;
+
+        height: auto;
+
+        min-height: 0;
+
+        border-right: 0;
+
+        border-bottom: 1px solid
+            var(
+                --border-color,
+                #e8e8e8
+            );
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.96
+        );
+
+        backdrop-filter: blur(10px);
+    }
+
+
+    .chanteur-sidebar-inner {
+        position: static;
+
+        width: 100%;
+
+        height: auto;
+
+        padding: 10px 0 0;
+
+        display: block;
+    }
+
+
+    /* -----------------------------------------------------
+       Brand mobile
+    ----------------------------------------------------- */
+
+    .chanteur-brand {
+        padding: 0 15px 10px;
+
+        margin: 0;
+
+        border-bottom: 0;
+
+        justify-content: flex-start;
+    }
+
+
+    .chanteur-brand-icon {
+        width: 34px;
+        height: 34px;
+
+        flex-basis: 34px;
+
+        border-radius: 9px;
+
+        font-size: 0.9rem;
+    }
+
+
+    .chanteur-brand-text {
+        display: flex;
+    }
+
+
+    .chanteur-brand-text strong {
+        font-size: 0.85rem;
+    }
+
+
+    .chanteur-brand-text span {
+        font-size: 0.68rem;
+    }
+
+
+    /* -----------------------------------------------------
+       Menu horizontal
+    ----------------------------------------------------- */
+
+    .chanteur-menu {
+        width: 100%;
+
+        display: flex;
+
+        flex-direction: row;
+
+        gap: 5px;
+
+        padding: 5px 12px 10px;
+
+        overflow-x: auto;
+
+        overflow-y: hidden;
+
+        scrollbar-width: none;
+
+        box-sizing: border-box;
+    }
+
+
+    .chanteur-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    .chanteur-menu-section {
+        display: contents;
+    }
+
+
+    .chanteur-menu-section-title {
+        display: none;
+    }
+
+
+    /* -----------------------------------------------------
+       Items
+    ----------------------------------------------------- */
+
+    .chanteur-menu-item {
+        width: auto;
+
+        flex: 0 0 auto;
+
+        white-space: nowrap;
+
+        padding: 8px 11px;
+
+        border-radius: 8px;
+
+        font-size: 0.78rem;
+
+        gap: 7px;
+    }
+
+
+    .chanteur-menu-item.active::before {
+        display: none;
+    }
+
+
+    .chanteur-menu-item.active {
+        background: #eeeeef;
+    }
+
+
+    /* -----------------------------------------------------
+       Contenu
+    ----------------------------------------------------- */
+
+    .chanteur-content {
+        width: 100%;
+
+        min-height: calc(
+            100vh - 100px
+        );
+    }
+
+
+    .chanteur-content-inner {
+        min-height: 0;
+    }
+
+}

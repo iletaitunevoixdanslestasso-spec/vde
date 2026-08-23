@@ -2,6 +2,8 @@ import { Outlet } from "react-router-dom";
 import { useSaison } from "../components/contexts/SaisonContext";
 import NotificationProvider from "../components/contexts/NotificationProvider";
 
+import "../styles/chorale.css";
+
 export default function ChoraleLayout() {
 
     const { saisonActive } = useSaison();

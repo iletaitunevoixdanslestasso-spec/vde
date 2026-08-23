@@ -1,0 +1,100 @@
+/* =========================================================
+   ESPACE ADMIN
+   ========================================================= */
+
+.admin-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.admin-sidebar {
+    width: 250px;
+    padding: 20px;
+    background: #1e1e2f;
+    color: white;
+}
+
+.admin-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 20px;
+}
+
+.admin-user {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    background: #f5f5f5;
+    padding: 0 20px;
+    margin: -20px -20px 20px;
+}
+
+.admin-menu {
+    margin-top: 30px;
+}
+
+.admin-menu-item {
+    cursor: pointer;
+    margin: 0 0 12px;
+}
+
+.admin-menu-item:hover,
+.admin-menu-section:hover {
+    opacity: 0.7;
+}
+
+.admin-menu-section {
+    cursor: pointer;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.admin-season.active {
+    font-weight: bold;
+}
+
+.admin-season-items {
+    padding-left: 30px;
+}
+
+/* Icônes du menu admin */
+.admin-menu-item::before,
+.admin-menu-section::before {
+    display: inline-block;
+    width: 24px;
+    margin-right: 6px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+    .admin-sidebar {
+        width: 210px;
+    }
+}
+
+@media (max-width: 700px) {
+    .admin-layout {
+        display: block;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        padding: 12px 15px;
+    }
+
+    .admin-content {
+        padding: 15px;
+    }
+
+    .admin-user {
+        margin: -15px -15px 15px;
+    }
+}

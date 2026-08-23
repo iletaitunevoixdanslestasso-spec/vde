@@ -1,0 +1,449 @@
+/* =========================================================
+   CHORALE — COMMUN
+   ========================================================= */
+
+:root {
+    --text-primary: #333;
+    --text-secondary: #777;
+    --border-color: #e5e5e5;
+    --background-secondary: #fff;
+    --surface-muted: #f5f5f5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+button {
+    background-color: azure;
+}
+
+.chorale-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chorale-header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.chorale-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chorale-brand img {
+    height: 50px;
+    width: auto;
+}
+
+.chorale-brand span {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.chorale-saison {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chorale-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+
+/* =========================================================
+   ICÔNES
+   ========================================================= */
+
+/* Structure commune */
+
+.icon-new::before,
+.icon-save::before,
+.icon-edit::before,
+.icon-delete::before,
+.icon-cancel::before,
+.icon-dashboard::before,
+.icon-saisons::before,
+.icon-chanteurs::before,
+.icon-chansons::before,
+.icon-groupes::before,
+.icon-concerts::before,
+.icon-repetitions::before,
+.icon-pupitres::before,
+.icon-documents::before,
+.icon-invitations::before,
+.icon-votes::before,
+.icon-inscription::before,
+.icon-profil::before,
+.icon-referentiels::before {
+    display: inline-block;
+    width: 24px;
+    margin-right: 6px;
+}
+
+
+/* Actions */
+
+.icon-new::before {
+    content: "➕";
+}
+
+.icon-save::before {
+    content: "💾";
+}
+
+.icon-edit::before {
+    content: "✏️";
+}
+
+.icon-delete::before {
+    content: "🗑️";
+}
+
+.icon-cancel::before {
+    content: "❌";
+}
+
+
+/* Navigation */
+
+.icon-dashboard::before {
+    content: "🏠";
+}
+
+.icon-saisons::before {
+    content: "📅";
+}
+.icon-repetition::before {
+    content: "🗓";
+}
+.icon-gestion::before {
+    content: "⚙️";
+}
+
+.icon-chanteurs::before {
+    content: "👤";
+}
+.icon-checked::before {
+    content: "✅";
+}
+
+.icon-chansons::before {
+    content: "🎵";
+}
+
+.icon-groupes::before {
+    content: "👥";
+}
+
+.icon-concerts::before {
+    content: "🎤";
+}
+
+.icon-repetitions::before {
+    content: "🗓";
+}
+
+.icon-pupitres::before {
+    content: "🎼";
+}
+
+.icon-documents::before {
+    content: "📄";
+}
+
+.icon-invitations::before {
+    content: "📨";
+}
+
+.icon-votes::before {
+    content: "🗳️";
+}
+
+.icon-inscription::before {
+    content: "📝";
+}
+
+.icon-profil::before {
+    content: "👤";
+}
+
+.icon-referentiels::before {
+    content: "📚";
+}
+.icon-valider::before {
+    content: "✅";
+}
+
+.icon-refuser::before {
+    content: "❌";
+}
+.icon-pending::before {
+    content: "⏳";
+}
+.icon-none::before {
+    content: "⚪";
+}
+
+.icon-unknown::before {
+    content: "❓";
+}
+.icon-warning::before {
+    content: "⚠";
+}
+
+.icon-musical-note::before {
+    content: "🎵";
+}
+
+.icon-todo::before {
+    content: "☑";
+}
+
+.icon-calendar::before {
+    content: "📅";
+}
+
+.icon-check::before {
+    content: "✓";
+}
+
+/* =========================================================
+   CRUD page
+   ========================================================= */
+
+.crud-new-button {
+    margin-bottom: 10px;
+}
+
+.crud-errors {
+    color: red;
+    margin-bottom: 10px;
+}
+
+/* =========================================================
+   CRUD ITEM
+   ========================================================= */
+
+.crud-item-page {
+    width: 100%;
+}
+
+.crud-loading {
+    margin-top: 20px;
+}
+
+/* =========================================================
+   FORM EDITION
+   ========================================================= */
+
+.form-edition {
+    width: 100%;
+}
+
+.form-edition-title {
+    margin-bottom: 20px;
+}
+
+.form-edition-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-edition-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-edition-field label {
+    margin-bottom: 4px;
+}
+
+.form-field-error {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.form-edition-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+/* =========================================================
+   DATA TABLE
+   ========================================================= */
+
+.data-table {
+    width: 100%;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.data-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.data-table-search {
+    padding: 6px;
+    width: 250px;
+}
+
+.data-table-page-size {
+    padding: 6px;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.data-table-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.data-table-table thead tr {
+    background: #f5f5f5;
+}
+
+.data-table-header {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    user-select: none;
+}
+
+.data-table-actions-header {
+    padding: 10px;
+}
+
+.data-table-row {
+    border-bottom: 1px solid #eee;
+}
+
+.data-table-cell {
+    padding: 10px;
+}
+
+.data-table-empty {
+    padding: 20px;
+    text-align: center;
+    color: #777;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.data-table-actions {
+    padding: 10px;
+}
+
+.data-table-action {
+    margin-right: 5px;
+}
+
+.data-table-action.icon-edit{
+    background-color:darkseagreen
+}
+.data-table-action.icon-delete{
+    background-color: #dc3545;
+}
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.data-table-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.data-table-page {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    background: #eee;
+}
+
+.data-table-page.active {
+    background: #333;
+    color: white;
+}
+
+
+/* =========================================================
+   ICONES TRI
+   ========================================================= */
+
+.icon-sort-asc::before {
+    content: "↑";
+    margin-left: 5px;
+}
+
+.icon-sort-desc::before {
+    content: "↓";
+    margin-left: 5px;
+}
+
+
+/* =========================================================
+   RESPONSIVE GENERIQUE
+   ========================================================= */
+
+@media (max-width: 700px) {
+    .data-table {
+        overflow-x: auto;
+    }
+
+    .data-table-toolbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .data-table-search {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .form-edition-actions {
+        flex-wrap: wrap;
+    }
+}
+/* =========================================================
+   DROIT À L'IMAGE
+   ========================================================= */
+
+.dai-status {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.dai-status::before {
+    margin-right: 5px;
+}

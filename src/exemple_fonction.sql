@@ -1,3 +1,14 @@
+INSERT INTO public.repetition (
+    rendezvous_id,
+    repetition_type_id,
+    date
+)
+VALUES
+    (
+        'dc9f7914-f378-4e4a-9c2d-ccc5ab03a9b8'
+        '9322593d-5c03-448d-84f7-fa6fd1920e3c',
+        'Les répétitions sont les mardis'
+    ),
 INSERT INTO public.rendezvous_type (
     libelle,
     code,
