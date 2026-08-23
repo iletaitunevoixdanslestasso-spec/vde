@@ -1,4 +1,5 @@
 import { FieldRenderers } from "./FieldRenderers";
+import "../../styles/formedition.css";
 
 export default function FormEdition({
     config,
@@ -21,21 +22,40 @@ export default function FormEdition({
     return (
         <div className="form-edition">
 
-            <h2 className="form-edition-title">
-                <span
-                    className={
-                        initialData
-                            ? "icon-edit"
-                            : "icon-new"
-                    }
-                >
-                    {initialData
-                        ? "Modifier"
-                        : "Créer"
-                    }
-                </span>
-            </h2>
+            {/* =====================================================
+                EN-TÊTE DU FORMULAIRE
+                ===================================================== */}
 
+            <div className="form-edition-header">
+
+                <div className="form-edition-header-icon">
+                    {initialData ? "✏️" : "➕"}
+                </div>
+
+                <div className="form-edition-header-content">
+
+                    <h2 className="form-edition-title">
+                        {initialData
+                            ? "Modifier"
+                            : "Créer"
+                        }
+                    </h2>
+
+                    <p className="form-edition-subtitle">
+                        {initialData
+                            ? "Modifiez les informations ci-dessous."
+                            : "Renseignez les informations ci-dessous."
+                        }
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {/* =====================================================
+                CHAMPS
+                ===================================================== */}
 
             <div className="form-edition-fields">
 
@@ -57,12 +77,12 @@ export default function FormEdition({
 
                             {f.editType === "readonly" && initialData ? (
 
-                                <span>
+                                <div className="form-edition-readonly">
                                     {f.render
                                         ? f.render(null, initialData)
                                         : form[f.field]
                                     }
-                                </span>
+                                </div>
 
                             ) : (
 
@@ -96,6 +116,10 @@ export default function FormEdition({
 
             </div>
 
+
+            {/* =====================================================
+                ACTIONS
+                ===================================================== */}
 
             <div className="form-edition-actions">
 

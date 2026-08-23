@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { FieldRenderers } from "./FieldRenderers";
-import FormEdition from "./FormEdition";
+import FormEdition from "./Formedition";
 import FormRepartition from "./FormRepartition";
 
 export default function FormModal({

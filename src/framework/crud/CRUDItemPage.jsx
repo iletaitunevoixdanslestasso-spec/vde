@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import FormEdition from "../form/FormEdition";
+import FormEdition from "../form/Formedition";
 import NotificationService from "../../services/NotificationService";
 import "../../styles/espaceChanteur_cruditem.css";
 
