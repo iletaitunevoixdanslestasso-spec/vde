@@ -9,8 +9,13 @@ export class ConcertController extends BaseController {
 
     async prepareForm() {
 
-        const lieux = await this.service.findLieux();
-
+        const liste = await this.service.findLieux();
+        console.log(liste)
+        const lieux = liste.map(item => ({
+            ...item,
+            value: `${item.nom} ${item.description}`
+        }));
+        console.log(lieux)
         return {
             lieux
         };

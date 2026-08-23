@@ -4,12 +4,13 @@ import { concertConfig } from "../../../config/entities/concert.config";
 import { useSaison } from "../../../components/contexts/SaisonContext";
 import { SaisonConcertController } from "../../../controllers/SaisonConcertController";
 import { useNavigate } from "react-router-dom";
+import { useConcert } from "../../../components/contexts/ConcertContext";
 
 
 export default function ConcertSaisonPage() {
     const { saisonSelectionne } = useSaison()
     const navigate = useNavigate();
-
+    const { selectConcert } = useConcert(); 
     const saisonConcertConfig = {
         ...concertConfig,
         controller: new SaisonConcertController(concertConfig.service),
@@ -17,10 +18,6 @@ export default function ConcertSaisonPage() {
 
     }
 
-    if(!saisonSelectionne){
-        navigate(`/admin`)
-        return
-    }
 
 
     return (
@@ -28,7 +25,8 @@ export default function ConcertSaisonPage() {
             config={saisonConcertConfig}
             context={{
                 title: `${saisonConcertConfig.title} : ${saisonSelectionne.nom} ${saisonSelectionne.active ? "⭐" : "📅"}`,
-                saisonId: saisonSelectionne.id
+                saisonId: saisonSelectionne.id,
+                selectConcert:selectConcert
             }}
         />
     );

@@ -133,17 +133,6 @@ export default function AdminMenu() {
                                 Concerts
                             </p>
 
-                            <p
-                                className="admin-menu-item icon-repetitions"
-                                onClick={() =>
-                                    navigate(
-                                        `/admin/saisons/${saison.id}/repetitions`
-                                    )
-                                }
-                            >
-                                Répétitions
-                            </p>
-
                         </div>
                     )}
 

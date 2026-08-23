@@ -25,7 +25,8 @@ export default function SelectRenderer({
                     key={option.id}
                     value={option.id}
                 >
-                    {option.value}
+                    {/* { `${option.nom} ?? ${option.value}`} */}
+                    { option.value ?? option.nom ?? option.titre }
                 </option>
 
             ))}

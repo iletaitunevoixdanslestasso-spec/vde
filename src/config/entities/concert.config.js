@@ -22,6 +22,7 @@ const columns = [
         field: "lieu_mode",
         header: "Lieu",
         type: "select",
+        hideInTable: true,
         options: [
             { value: "existant", label: "Choisir un lieu existant" },
             { value: "nouveau", label: "Créer un nouveau lieu" }
@@ -39,7 +40,7 @@ const columns = [
             value: "existant"
         }
     },
-
+    
     {
         field: "lieu_nom",
         header: "Nom",
@@ -48,12 +49,13 @@ const columns = [
             field: "lieu_mode",
             value: "nouveau"
         },
-        render: (v, row) => {
-            console.log(row)
-            if (!row.lieux)
-                return ``
-            return `${row?.lieux?.nom || ''}`
-        },
+        render: (v, row) => row.lieux?.nom || '',
+        // render: (v, row) => {
+        //     console.log(row)
+        //     if (!row.lieux)
+        //         return ``
+        //     return `${row?.lieux?.nom || ''}`
+        // },
         sortValue: (row) => {
             if (!row.lieux)
                 return ''
@@ -147,6 +149,15 @@ const columns = [
     }
 ];
 
+const actions = [
+    {
+        label: "Chansons",
+        title: "Chansons",
+        cssClass: "icon-chanson",
+        action: "manageSaisonConcertChanson"
+    }
+];
+
 
 export const concertConfig = createEntityConfig({
 
@@ -163,6 +174,7 @@ export const concertConfig = createEntityConfig({
     Mapper: ConcertMapper,
 
 
-    columns
+    columns,
+    actions
 
 });

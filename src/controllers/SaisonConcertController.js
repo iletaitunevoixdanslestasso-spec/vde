@@ -6,6 +6,20 @@ export class SaisonConcertController extends ConcertController {
     constructor(service) {
         super(service);
     }
+    manageSaisonConcertChanson(concert, load) {
+
+        // window.location.href =
+        //     `/admin/saisons/${saison.nom}/chanteurs`;
+        console.log(
+            "SaisonConcertController.manageChanson",
+            concert
+        );
+        console.log(this.context)
+        return (`/admin/saison/concert/${concert.titre}/chansons`);
+
+        return (`/admin/chanson/${saison.nom}/chanteurs`);
+
+    }    
 
     async load(onSuccess, onError) {
         console.log("SaisonConcertController")

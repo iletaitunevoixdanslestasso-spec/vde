@@ -47,6 +47,8 @@ import Profil from "../pages/chanteur/profil";
 import Testdivers from "../pages/admin/Testdivers";
 import ReferentielDocumentPage from "../pages/admin/referentiels/ReferentielDocument/ReferentielDocumentPage";
 import ConcertSaisonPage from "../pages/admin/saisons/ConcertSaisonPage";
+import SaisonConcertChansonsPage from "../pages/admin/referentiels/chansons/SaisonConcertChansonsPage";
+import { ConcertProvider } from "../components/contexts/ConcertContext";
 
 export default function Router() {
 
@@ -130,7 +132,9 @@ export default function Router() {
                             element={
                                 <AdminGuard>
                                     <ChansonProvider>
-                                        <AdminLayout />
+                                        <ConcertProvider>
+                                            <AdminLayout />
+                                        </ConcertProvider>
                                     </ChansonProvider>
                                 </AdminGuard>
                             }
@@ -157,6 +161,12 @@ export default function Router() {
                                 path="saisons/:saison_nom/concerts"
                                 element={<ConcertSaisonPage />}
                             />
+                            <Route
+                                path="saison/concert/:titre/chansons"
+                                element={<SaisonConcertChansonsPage  />}
+                            />
+
+
                             <Route
                                 path="saisons/:saison_nom/repetition"
                                 element={<RepetitionPage />}

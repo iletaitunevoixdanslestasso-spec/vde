@@ -38,7 +38,8 @@ export default function CRUDPage({ config, context = {} }) {
     }, [
         config.entity,
         context.saisonId,
-        context.selectChanson
+        context.selectChanson,
+        context.selectConcert
     ]);
 
 
@@ -61,8 +62,13 @@ export default function CRUDPage({ config, context = {} }) {
                         ...extraContext
                     });
                 }
-
-                setEditItem(row);
+                // setEditItem(row);
+                //ajout d'un attribut par defaut 
+                const formItem = {
+                    ...row,
+                    lieu_mode: row.lieu_id ? "existant" : "nouveau"
+                };
+                setEditItem(formItem);
                 setOpen(true);
 
                 break;
@@ -114,6 +120,18 @@ export default function CRUDPage({ config, context = {} }) {
 
                 navigate(urlPutpitre);
 
+                break;
+            }
+
+            case "manageSaisonConcertChanson": {
+                console.log(row)
+
+                const urlConcertChanson =
+                    controller.manageSaisonConcertChanson(row, load);
+                console.log(urlConcertChanson)
+                // navigate(urlPutpitre);
+
+                context.selectConcert(row);
                 break;
             }
 
