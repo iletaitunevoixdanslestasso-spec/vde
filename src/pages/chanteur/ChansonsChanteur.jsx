@@ -1,51 +1,32 @@
 import { useEffect, useState } from "react";
-
-
-import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
 import { Link } from "react-router-dom";
 
-
+import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
+import "../../styles/espaceChanteur_chansons.css";
 export default function ChansonsChanteur() {
 
     const [chansons, setChansons] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(null);
+    const [error, setError] = useState(null);
 
     const data = JSON.parse(
-        localStorage.getItem("chanteur")
+        localStorage.getItem("chanteur") || "null"
     );
 
     const saisonId = data?.saisonId;
     const chanteurId = data?.chanteur?.chanteur_id;
     const token = localStorage.getItem("token");
 
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(null);
-    const [error, setError] = useState(null);
-
-
-
-
-
-
     const controller =
         saisonchanteurpupitreConfig.controller;
-    console.log(
-        "REPOSITORY CONFIG :",
-        saisonchanteurpupitreConfig.repository
-    );
-
-    console.log(
-        "SAVE PUPITRE TYPE :",
-        typeof saisonchanteurpupitreConfig.repository.savePupitre
-    );
-
-    console.log(
-        "SERVICE :",
-        saisonchanteurpupitreConfig.service
-    );
 
     /*
-     * Chargement des chansons
+     * =====================================================
+     * CHARGEMENT DES CHANSONS
+     * =====================================================
      */
+
     useEffect(() => {
 
         if (!saisonId || !chanteurId) {
@@ -55,10 +36,7 @@ export default function ChansonsChanteur() {
 
         setLoading(true);
         setError(null);
-        console.log("DATA :", data);
-        console.log("SAISON ID :", saisonId);
-        console.log("CHANTEUR ID :", chanteurId);
-        console.log("TOKEN URL :", window.location.pathname);
+
         controller.getMesChansons(
             token,
             saisonId,
@@ -66,14 +44,7 @@ export default function ChansonsChanteur() {
 
             (result) => {
 
-                console.log("RESULTAT getMesChansons :", result);
-
-
-
-                setChansons(
-                    result || []
-                );
-
+                setChansons(result || []);
                 setLoading(false);
             },
 
@@ -92,12 +63,14 @@ export default function ChansonsChanteur() {
             }
         );
 
-    }, [saisonId, chanteurId]);
-
+    }, [saisonId, chanteurId, token]);
 
     /*
-     * Modification du pupitre
+     * =====================================================
+     * MODIFICATION DU PUPITRE
+     * =====================================================
      */
+
     function handlePupitreChange(
         chansonId,
         pupitreId
@@ -119,8 +92,7 @@ export default function ChansonsChanteur() {
 
             (result) => {
 
-                const nouveauChoix =
-                    result;
+                const nouveauChoix = result;
 
                 setChansons(current =>
                     current.map(chanson => {
@@ -131,10 +103,13 @@ export default function ChansonsChanteur() {
                         ) {
                             return chanson;
                         }
-                        // 🔎 Recherche du pupitre sélectionné
-                        const nouveauPupitre = chanson.pupitres.find(
-                            pupitre => pupitre.pupitre_id === nouveauChoix.pupitre_id
-                        );
+
+                        const nouveauPupitre =
+                            chanson.pupitres?.find(
+                                pupitre =>
+                                    pupitre.pupitre_id ===
+                                    nouveauChoix.pupitre_id
+                            );
 
                         return {
                             ...chanson,
@@ -146,16 +121,22 @@ export default function ChansonsChanteur() {
                                 principal:
                                     nouveauChoix.principal
                             },
-                            // 🎵 Nouveau son correspondant au pupitre
-                            audio_pupitre: nouveauPupitre
-                                ? {
-                                    id: nouveauPupitre.id,
-                                    pupitres: nouveauPupitre.pupitres,
-                                    audio_url: nouveauPupitre.audio_url,
-                                    pupitre_id: nouveauPupitre.pupitre_id,
-                                    nom: nouveauPupitre.nom
-                                }
-                                : null
+
+                            audio_pupitre:
+                                nouveauPupitre
+                                    ? {
+                                        id:
+                                            nouveauPupitre.id,
+                                        pupitres:
+                                            nouveauPupitre.pupitres,
+                                        audio_url:
+                                            nouveauPupitre.audio_url,
+                                        pupitre_id:
+                                            nouveauPupitre.pupitre_id,
+                                        nom:
+                                            nouveauPupitre.nom
+                                    }
+                                    : null
                         };
                     })
                 );
@@ -179,211 +160,361 @@ export default function ChansonsChanteur() {
         );
     }
 
-
     /*
-     * Chargement
+     * =====================================================
+     * CHARGEMENT
+     * =====================================================
      */
+
     if (loading) {
 
         return (
-            <div>
-                <h1>🎵 Mes chansons</h1>
-                <p>Chargement...</p>
-            </div>
+            <main className="chansons-page">
+
+                <header className="chansons-page-header">
+
+                    <div className="chansons-page-header-icon">
+                        🎵
+                    </div>
+
+                    <div>
+                        <div className="chansons-page-eyebrow">
+                            Mon espace
+                        </div>
+
+                        <h1 className="chansons-page-title">
+                            Mes chansons
+                        </h1>
+
+                        <p className="chansons-page-subtitle">
+                            Chargement de vos chansons...
+                        </p>
+                    </div>
+
+                </header>
+
+                <div className="chansons-loading">
+                    <span className="chansons-loading-icon">
+                        🎵
+                    </span>
+
+                    <span>
+                        Chargement...
+                    </span>
+                </div>
+
+            </main>
         );
     }
 
-
     /*
-     * Pas de saison
+     * =====================================================
+     * PAS DE SAISON
+     * =====================================================
      */
+
     if (!saisonId) {
 
         return (
-            <div>
-                <h1>🎵 Mes chansons</h1>
+            <main className="chansons-page">
 
-                <p>
-                    Aucune saison active.
-                </p>
-            </div>
+                <header className="chansons-page-header">
+
+                    <div className="chansons-page-header-icon">
+                        🎵
+                    </div>
+
+                    <div>
+                        <div className="chansons-page-eyebrow">
+                            Mon espace
+                        </div>
+
+                        <h1 className="chansons-page-title">
+                            Mes chansons
+                        </h1>
+                    </div>
+
+                </header>
+
+                <div className="chansons-empty">
+                    <div className="chansons-empty-icon">
+                        📅
+                    </div>
+
+                    <div>
+                        <strong>
+                            Aucune saison active
+                        </strong>
+
+                        <p>
+                            Aucune saison n'est actuellement
+                            disponible.
+                        </p>
+                    </div>
+                </div>
+
+            </main>
         );
     }
 
-
     /*
-     * Pas de chansons
+     * =====================================================
+     * AUCUNE CHANSON
+     * =====================================================
      */
+
     if (!chansons.length) {
 
         return (
-            <div>
-                <h1>🎵 Mes chansons</h1>
+            <main className="chansons-page">
 
-                <p>
-                    Aucune chanson n'est actuellement
-                    disponible pour cette saison.
-                </p>
-            </div>
+                <header className="chansons-page-header">
+
+                    <div className="chansons-page-header-icon">
+                        🎵
+                    </div>
+
+                    <div>
+                        <div className="chansons-page-eyebrow">
+                            Mon espace
+                        </div>
+
+                        <h1 className="chansons-page-title">
+                            Mes chansons
+                        </h1>
+
+                        <p className="chansons-page-subtitle">
+                            Les chansons disponibles pour
+                            cette saison apparaîtront ici.
+                        </p>
+                    </div>
+
+                </header>
+
+                <div className="chansons-empty">
+                    <div className="chansons-empty-icon">
+                        🎶
+                    </div>
+
+                    <div>
+                        <strong>
+                            Aucune chanson disponible
+                        </strong>
+
+                        <p>
+                            Aucune chanson n'est actuellement
+                            disponible pour cette saison.
+                        </p>
+                    </div>
+                </div>
+
+            </main>
         );
     }
 
+    /*
+     * =====================================================
+     * PAGE
+     * =====================================================
+     */
 
     return (
-        <div>
+        <main className="chansons-page">
 
-            <h1>🎵 Mes chansons</h1>
+            {/* =================================================
+                EN-TÊTE
+               ================================================= */}
 
-            <p>
-                Choisissez le pupitre que vous chantez
-                pour chaque chanson.
-            </p>
+            <header className="chansons-page-header">
 
+                <div className="chansons-page-header-icon">
+                    🎵
+                </div>
+
+                <div className="chansons-page-header-content">
+
+                    <div className="chansons-page-eyebrow">
+                        Mon espace
+                    </div>
+
+                    <h1 className="chansons-page-title">
+                        Mes chansons
+                    </h1>
+
+                    <p className="chansons-page-subtitle">
+                        Retrouvez vos chansons, choisissez votre
+                        pupitre et accédez aux paroles et aux
+                        fichiers audio.
+                    </p>
+
+                </div>
+
+                <div className="chansons-page-count">
+                    <strong>
+                        {chansons.length}
+                    </strong>
+
+                    <span>
+                        {chansons.length > 1
+                            ? "chansons"
+                            : "chanson"}
+                    </span>
+                </div>
+
+            </header>
+
+            {/* =================================================
+                MESSAGE D'ERREUR
+               ================================================= */}
 
             {error && (
 
-                <div
-                    style={{
-                        color: "red",
-                        marginBottom: "15px"
-                    }}
-                >
-                    {error}
+                <div className="chansons-error">
+                    <span className="chansons-error-icon">
+                        ⚠️
+                    </span>
+
+                    <span>
+                        {error}
+                    </span>
                 </div>
 
             )}
 
+            {/* =================================================
+                AIDE
+               ================================================= */}
 
-            <div>
+            <div className="chansons-help">
+
+                <span className="chansons-help-icon">
+                    🎤
+                </span>
+
+                <div>
+                    <strong>
+                        Choisissez votre pupitre
+                    </strong>
+
+                    <span>
+                        Le fichier audio sera automatiquement
+                        adapté au pupitre sélectionné.
+                    </span>
+                </div>
+
+            </div>
+
+            {/* =================================================
+                LISTE DES CHANSONS
+               ================================================= */}
+
+            <section className="chansons-list">
 
                 {chansons.map(chanson => {
 
                     const pupitreChoisi =
-                        chanson.pupitreChoisi
-                            ?.pupitre_id || "";
+                        chanson.pupitreChoisi?.pupitre_id || "";
 
                     const isSaving =
                         saving === chanson.chanson_id;
 
+                    const audioDisponible =
+                        Boolean(
+                            chanson?.audio_pupitre?.audio_url
+                        );
+
                     return (
-                        <div
+                        <article
                             key={chanson.chanson_id}
                             className="chanson-card"
                         >
+
                             <div className="chanson-row">
 
-                                {/* Titre */}
-                                <div className="chanson-titre">
-                                    <strong>
-                                        {chanson.titre}
-                                    </strong>
+                                {/* =================================
+                                    TITRE
+                                   ================================= */}
+
+                                <div className="chanson-main">
+
+                                    <div className="chanson-icon">
+                                        🎵
+                                    </div>
+
+                                    <div className="chanson-title-content">
+
+                                        <h2 className="chanson-titre">
+                                            {chanson.titre}
+                                        </h2>
+
+                                    </div>
+
                                 </div>
 
-                                {/* Partition / document */}
+                                {/* =================================
+                                    PAROLES
+                                   ================================= */}
+
                                 <div className="chanson-document">
-                                    <Link
-                                        className="icon-documents"
-                                        to={chanson.documentUrl}
-                                        target="_blank"
-                                    >
-                                        {chanson.path}
-                                    </Link>
+
+                                    {chanson.documentUrl ? (
+
+                                        <Link
+                                            className="chanson-action chanson-action-document"
+                                            to={chanson.documentUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+
+                                            <span className="chanson-action-icon">
+                                                📄
+                                            </span>
+
+                                            <span className="chanson-action-content">
+
+                                                <strong>
+                                                    Paroles
+                                                </strong>
+
+                                                <small>
+                                                    {chanson.path}
+                                                </small>
+
+                                            </span>
+
+                                        </Link>
+
+                                    ) : (
+
+                                        <div className="chanson-action-disabled">
+                                            <span>
+                                                📄
+                                            </span>
+
+                                            <span>
+                                                Paroles indisponibles
+                                            </span>
+                                        </div>
+
+                                    )}
+
                                 </div>
 
-                                {/* Pupitre */}
+                                {/* =================================
+                                    PUPITRE
+                                   ================================= */}
+
                                 <div className="chanson-pupitre">
 
-                                    <select
-                                        value={pupitreChoisi}
-                                        disabled={isSaving}
-                                        onChange={(event) =>
-                                            handlePupitreChange(
-                                                chanson.chanson_id,
-                                                event.target.value
-                                            )
-                                        }
+                                    <label
+                                        htmlFor={`pupitre-${chanson.chanson_id}`}
+                                        className="chanson-pupitre-label"
                                     >
-                                        <option value="">
-                                            -- Choisir un pupitre --
-                                        </option>
-
-                                        {chanson.pupitres.map((pupitre) => (
-                                            <option
-                                                key={pupitre.id}
-                                                value={pupitre.id}
-                                            >
-                                                {pupitre.nom}
-                                            </option>
-                                        ))}
-                                    </select>
-
-                                    {isSaving && (
-                                        <span className="chanson-saving">
-                                            Enregistrement...
-                                        </span>
-                                    )}
-
-                                </div>
-
-                                {/* Audio */}
-                                <div className="chanson-audio">
-
-                                    {chanson?.audio_pupitre?.audio_url && (
-                                        <Link
-                                            className="icon-chansons"
-                                            to={chanson.audio_pupitre.audio_url}
-                                            target="_blank"
-                                        >
-                                            Son de {chanson.audio_pupitre.nom}
-                                        </Link>
-                                    )}
-
-                                </div>
-
-                            </div>
-                        </div>
-                    );
-                    return (
-
-                        <div
-                            key={chanson.chanson_id}
-                            style={{
-                                padding: "15px",
-                                marginBottom: "10px",
-                                border: "1px solid #ddd",
-                                borderRadius: "8px"
-                            }}
-                        >
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent:
-                                        "space-between",
-                                    alignItems: "center",
-                                    gap: "20px"
-                                }}
-                            >
-                                <div>
-
-                                    <strong>
-                                        {chanson.titre}
-                                    </strong>
-                                </div>
-                                <div>
-                                    {<Link
-                                        to={`${chanson.documentUrl}`}
-                                        target="_blank"
-                                    // className="todo-button"
-                                    >
-                                        <span className=""></span>
-                                        {chanson.path}.
-                                    </Link>}
-                                </div>
-                                <div>
-
+                                        Votre pupitre
+                                    </label>
 
                                     <select
+                                        id={`pupitre-${chanson.chanson_id}`}
                                         value={pupitreChoisi}
                                         disabled={isSaving}
                                         onChange={(event) =>
@@ -395,20 +526,15 @@ export default function ChansonsChanteur() {
                                     >
 
                                         <option value="">
-                                            -- Choisir un pupitre --
+                                            Choisir un pupitre
                                         </option>
 
-
-                                        {chanson.pupitres.map(
+                                        {chanson.pupitres?.map(
                                             pupitre => (
 
                                                 <option
-                                                    key={
-                                                        pupitre.id
-                                                    }
-                                                    value={
-                                                        pupitre.id
-                                                    }
+                                                    key={pupitre.id}
+                                                    value={pupitre.id}
                                                 >
                                                     {pupitre.nom}
                                                 </option>
@@ -418,36 +544,73 @@ export default function ChansonsChanteur() {
 
                                     </select>
 
-
                                     {isSaving && (
 
-                                        <span>
+                                        <span className="chanson-saving">
                                             Enregistrement...
                                         </span>
 
                                     )}
+
                                 </div>
-                                <div>
-                                    {chanson?.audio_pupitre && chanson.audio_pupitre?.audio_url && <Link
-                                        to={`${chanson?.audio_pupitre?.audio_url}`}
-                                        target="_blank"
-                                    // className="todo-button"
-                                    >
-                                        <span className=""></span>
-                                        son de {chanson?.audio_pupitre?.nom}.
-                                    </Link>}
+
+                                {/* =================================
+                                    AUDIO
+                                   ================================= */}
+
+                                <div className="chanson-audio">
+
+                                    {audioDisponible ? (
+
+                                        <Link
+                                            className="chanson-action chanson-action-audio"
+                                            to={chanson.audio_pupitre.audio_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+
+                                            <span className="chanson-action-icon">
+                                                🔊
+                                            </span>
+
+                                            <span className="chanson-action-content">
+
+                                                <strong>
+                                                    Audio
+                                                </strong>
+
+                                                <small>
+                                                    {chanson.audio_pupitre.nom}
+                                                </small>
+
+                                            </span>
+
+                                        </Link>
+
+                                    ) : (
+
+                                        <div className="chanson-action-disabled">
+                                            <span>
+                                                🔊
+                                            </span>
+
+                                            <span>
+                                                Choisissez un pupitre
+                                            </span>
+                                        </div>
+
+                                    )}
+
                                 </div>
 
                             </div>
 
-                        </div>
-
+                        </article>
                     );
-
                 })}
 
-            </div>
+            </section>
 
-        </div>
+        </main>
     );
 }
