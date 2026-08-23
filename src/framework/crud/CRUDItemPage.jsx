@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import FormEdition from "../form/FormEdition";
 import NotificationService from "../../services/NotificationService";
-
+import "../../styles/espaceChanteur_cruditem.css";
 
 export default function CRUDItemPage({
     config,
@@ -240,13 +240,37 @@ export default function CRUDItemPage({
         return (
             <div className="crud-item-page">
 
-                <h1>
-                    {config.title}
-                </h1>
+                <div className="crud-item-loading">
 
-                <p className="crud-loading">
-                    Chargement...
-                </p>
+                    <div className="crud-item-header">
+
+                        <div className="crud-item-header-icon">
+                            ✏️
+                        </div>
+
+                        <div className="crud-item-header-content">
+
+                            <div className="crud-item-eyebrow">
+                                Espace chanteur
+                            </div>
+
+                            <h1 className="crud-item-title">
+                                {config.title}
+                            </h1>
+
+                            <p className="crud-item-subtitle">
+                                Chargement de vos informations...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div className="crud-loading">
+                        Chargement...
+                    </div>
+
+                </div>
 
             </div>
         );
@@ -259,31 +283,64 @@ export default function CRUDItemPage({
     return (
         <div className="crud-item-page">
 
-            <h1>
-                {config.title}
-            </h1>
+            {/* =====================================================
+                EN-TÊTE
+                ===================================================== */}
 
-            <FormEdition
-                config={config}
-                initialData={item}
-                context={formContext}
-                form={form}
-                errors={errors}
-                onClose={null}
-                onSave={handleSave}
-                onChange={(field, value) => {
+            <header className="crud-item-header">
 
-                    setForm(prev => ({
-                        ...prev,
-                        [field]: value
-                    }));
+                <div className="crud-item-header-icon">
+                    ✏️
+                </div>
 
-                    onFieldChange(field);
+                <div className="crud-item-header-content">
 
-                }}
-                onFileUploadReady={registerFileUpload}
-                saving={saving}
-            />
+                    <div className="crud-item-eyebrow">
+                        Espace chanteur
+                    </div>
+
+                    <h1 className="crud-item-title">
+                        {config.title}
+                    </h1>
+
+                    <p className="crud-item-subtitle">
+                        Consultez et mettez à jour vos informations.
+                    </p>
+
+                </div>
+
+            </header>
+
+
+            {/* =====================================================
+                FORMULAIRE
+                ===================================================== */}
+
+            <section className="crud-item-form">
+
+                <FormEdition
+                    config={config}
+                    initialData={item}
+                    context={formContext}
+                    form={form}
+                    errors={errors}
+                    onClose={null}
+                    onSave={handleSave}
+                    onChange={(field, value) => {
+
+                        setForm(prev => ({
+                            ...prev,
+                            [field]: value
+                        }));
+
+                        onFieldChange(field);
+
+                    }}
+                    onFileUploadReady={registerFileUpload}
+                    saving={saving}
+                />
+
+            </section>
 
         </div>
     );

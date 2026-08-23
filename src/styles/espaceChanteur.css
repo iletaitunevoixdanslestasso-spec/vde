@@ -194,10 +194,7 @@
 .chanson-row {
     display: grid;
     grid-template-columns:
-        minmax(200px, 2fr)
-        minmax(150px, 1.5fr)
-        minmax(220px, 1.5fr)
-        minmax(150px, 1fr);
+        minmax(200px, 2fr) minmax(150px, 1.5fr) minmax(220px, 1.5fr) minmax(150px, 1fr);
     align-items: center;
     gap: 20px;
 }
@@ -546,9 +543,7 @@
 .dashboard-rendezvous-row {
     display: grid;
     grid-template-columns:
-        minmax(150px, 220px)
-        minmax(160px, 220px)
-        1fr;
+        minmax(150px, 220px) minmax(160px, 220px) 1fr;
     gap: 20px;
 }
 
@@ -694,19 +689,31 @@
     }
 
     .chanteur-sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+
         width: 100%;
         flex: 0 0 auto;
         min-height: auto;
+
         border-right: 0;
         border-bottom: 1px solid var(--border-color, #e8e8e8);
+
         background: var(--chanteur-sidebar-background, #fff);
     }
 
     .chanteur-sidebar-inner {
         position: static;
+
         width: 100%;
         height: auto;
-        padding: 8px 0 0;
+        min-height: 0;
+
+        padding: 0;
+
+        display: flex;
+        flex-direction: column;
     }
 
     /* =====================================================
@@ -716,8 +723,10 @@
     .chanteur-brand {
         justify-content: flex-start;
         gap: 10px;
+
         padding: 4px 14px 8px;
         margin-bottom: 0;
+
         border-bottom: 0;
     }
 
@@ -725,6 +734,7 @@
         width: 34px;
         height: 34px;
         flex-basis: 34px;
+
         border-radius: 9px;
         font-size: 0.95rem;
     }
@@ -747,13 +757,19 @@
 
     .chanteur-menu {
         width: 100%;
+
         display: flex;
         flex-direction: row;
+
         gap: 6px;
+
         padding: 6px 10px 10px;
+
         overflow-x: auto;
         overflow-y: hidden;
+
         scrollbar-width: none;
+
         box-sizing: border-box;
     }
 
@@ -784,6 +800,7 @@
         justify-content: center;
 
         gap: 4px;
+
         padding: 7px 4px;
 
         border-radius: 9px;
@@ -803,10 +820,12 @@
 
     .chanteur-menu-item::before {
         position: static;
+
         display: block;
 
         width: auto;
         height: auto;
+
         margin: 0;
 
         font-size: 1.25rem;
@@ -821,10 +840,6 @@
         background: #eeeeef;
         color: #222;
     }
-
-    /* =====================================================
-       SUPPRESSION DE LA BARRE ACTIVE DESKTOP
-       ===================================================== */
 
     .chanteur-menu-item.active::after {
         display: none;
