@@ -106,7 +106,7 @@ export default function ChanteurMenu() {
                 </button>
 
 
-                <button
+                {/* <button
                     type="button"
                     className={
                         `chanteur-menu-item icon-votes ` +
@@ -119,7 +119,7 @@ export default function ChanteurMenu() {
                     <span className="chanteur-menu-label">
                         Votes
                     </span>
-                </button>
+                </button> */}
 
             </div>
 
@@ -134,7 +134,7 @@ export default function ChanteurMenu() {
                     Mon espace
                 </div>
 
-
+{/* 
                 <button
                     type="button"
                     className={
@@ -149,7 +149,7 @@ export default function ChanteurMenu() {
                         Mon inscription
                     </span>
                 </button>
-
+ */}
 
                 <button
                     type="button"
