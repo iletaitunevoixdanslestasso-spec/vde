@@ -23,13 +23,13 @@ export default function ChoraleLayout() {
                             alt="Chorale"
                         />
 
-                        <span>Chorale</span>
+                        {/* <span>Chorale</span> */}
 
                     </div>
 
                     <div className="chorale-saison">
 
-                        🎼 Saison active :
+                        🎼
 
                         <strong>
                             {saisonActive?.nom ?? "Aucune"}
