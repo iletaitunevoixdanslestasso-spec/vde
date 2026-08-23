@@ -67,10 +67,7 @@ export default function FormModal({
 
     const handleChange = (name, value) => {
 
-        console.log("FormModal handleChange", {
-            name,
-            value
-        });
+
         onFieldChange(name)
         setForm(prev => ({
             ...prev,

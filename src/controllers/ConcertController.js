@@ -7,4 +7,13 @@ export class ConcertController extends BaseController {
         super(service);
     }
 
+    async prepareForm() {
+
+        const lieux = await this.service.findLieux();
+
+        return {
+            lieux
+        };
+    }
+
 }

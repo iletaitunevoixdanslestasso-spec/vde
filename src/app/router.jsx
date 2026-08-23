@@ -46,6 +46,7 @@ import ChansonsChanteur from "../pages/chanteur/ChansonsChanteur";
 import Profil from "../pages/chanteur/profil";
 import Testdivers from "../pages/admin/Testdivers";
 import ReferentielDocumentPage from "../pages/admin/referentiels/ReferentielDocument/ReferentielDocumentPage";
+import ConcertSaisonPage from "../pages/admin/saisons/ConcertSaisonPage";
 
 export default function Router() {
 
@@ -151,6 +152,10 @@ export default function Router() {
                             <Route
                                 path="saisons/:saison_nom/chansons"
                                 element={<ChansonsSaisonPage />}
+                            />
+                            <Route
+                                path="saisons/:saison_nom/concerts"
+                                element={<ConcertSaisonPage />}
                             />
                             <Route
                                 path="saisons/:saison_nom/repetition"

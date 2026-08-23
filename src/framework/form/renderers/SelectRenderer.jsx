@@ -5,7 +5,7 @@ export default function SelectRenderer({
     onChange
 }) {
 
-    const options = context[field.source] || [];
+    const options = field.options || context[field.source] || [];
 
     return (
         <select

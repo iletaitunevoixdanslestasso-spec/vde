@@ -16,8 +16,6 @@ export default function ConcertPage() {
             const { data: { session } } =
                 await supabase.auth.getSession();
 
-            console.log(session);
-
             setSession(session);
 
         };

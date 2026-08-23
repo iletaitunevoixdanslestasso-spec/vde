@@ -123,10 +123,12 @@ export default function AdminMenu() {
                             <p
                                 className="admin-menu-item icon-concerts"
                                 onClick={() =>
-                                    navigate(
-                                        `/admin/saisons/${saison.id}/concerts`
+                                    handleClickSaison(
+                                        saison,
+                                        "concerts"
                                     )
                                 }
+
                             >
                                 Concerts
                             </p>

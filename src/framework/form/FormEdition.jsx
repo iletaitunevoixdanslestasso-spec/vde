@@ -18,7 +18,17 @@ export default function FormEdition({
     const errorsByField = Object.fromEntries(
         errors.map(e => [e.field, e.message])
     );
+    const isVisible = (field) => {
 
+        if (!field.dependsOn) {
+            return true;
+        }
+
+        return (
+            form[field.dependsOn.field] ===
+            field.dependsOn.value
+        );
+    };
     return (
         <div className="form-edition">
 
@@ -61,7 +71,15 @@ export default function FormEdition({
 
                 {fields.map((f) => {
 
+                    if (!isVisible(f)) {
+                        return null;
+                    }
                     const Renderer = FieldRenderers[f.type];
+
+                    if (!Renderer) {
+                        return null;
+                    }
+
 
                     return f.hideInForm ? null : (
 
