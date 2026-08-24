@@ -129,9 +129,9 @@ export default function CRUDPage({ config, context = {} }) {
                 const urlConcertChanson =
                     controller.manageSaisonConcertChanson(row, load);
                 console.log(urlConcertChanson)
-                // navigate(urlPutpitre);
-
                 context.selectConcert(row);
+                navigate(urlConcertChanson);
+
                 break;
             }
 

@@ -49,6 +49,7 @@ import ReferentielDocumentPage from "../pages/admin/referentiels/ReferentielDocu
 import ConcertSaisonPage from "../pages/admin/saisons/ConcertSaisonPage";
 import SaisonConcertChansonsPage from "../pages/admin/referentiels/chansons/SaisonConcertChansonsPage";
 import { ConcertProvider } from "../components/contexts/ConcertContext";
+import SaisonconcertPage from "../pages/admin/referentiels/saisonconcert/SaisonconcertPage";
 
 export default function Router() {
 
@@ -162,7 +163,7 @@ export default function Router() {
                                 element={<ConcertSaisonPage />}
                             />
                             <Route
-                                path="saison/concert/:titre/chansons"
+                                path="saison/:saison_nom/concert/:titre/chansons"
                                 element={<SaisonConcertChansonsPage  />}
                             />
 

@@ -7,7 +7,7 @@ const ConcertContext = createContext();
 export function ConcertProvider({ children }) {
 
 
-    const [ConcertSelectionnee, setConcertSelectionnee] = useState(null);
+    const [concertSelectionne, setConcertSelectionnee] = useState(null);
 
 
     const selectConcert = (Concert) => {
@@ -27,7 +27,7 @@ export function ConcertProvider({ children }) {
     return (
         <ConcertContext.Provider
             value={{
-                ConcertSelectionnee,
+                concertSelectionne,
                 selectConcert,
                 clearConcert
             }}

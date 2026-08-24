@@ -15,7 +15,7 @@ export class SaisonConcertController extends ConcertController {
             concert
         );
         console.log(this.context)
-        return (`/admin/saison/concert/${concert.titre}/chansons`);
+        return (`/admin/saison/${this.context.saisonNom}/concert/${concert.titre}/chansons`);
 
         return (`/admin/chanson/${saison.nom}/chanteurs`);
 

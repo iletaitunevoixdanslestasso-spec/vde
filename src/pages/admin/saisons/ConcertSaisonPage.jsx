@@ -11,21 +11,25 @@ export default function ConcertSaisonPage() {
     const { saisonSelectionne } = useSaison()
     const navigate = useNavigate();
     const { selectConcert } = useConcert(); 
-    const saisonConcertConfig = {
+    const configLocal = {
         ...concertConfig,
         controller: new SaisonConcertController(concertConfig.service),
         title: `Concerts de la saison`
 
     }
-
+    if(!saisonSelectionne){
+        navigate(`/admin`)
+        return
+    }
 
 
     return (
         <CRUDPage
-            config={saisonConcertConfig}
+            config={configLocal}
             context={{
-                title: `${saisonConcertConfig.title} : ${saisonSelectionne.nom} ${saisonSelectionne.active ? "⭐" : "📅"}`,
+                title: `${configLocal.title} : ${saisonSelectionne.nom} ${saisonSelectionne.active ? "⭐" : "📅"}`,
                 saisonId: saisonSelectionne.id,
+                saisonNom: saisonSelectionne.nom,
                 selectConcert:selectConcert
             }}
         />

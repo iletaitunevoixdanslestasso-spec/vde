@@ -55,9 +55,9 @@ export class BaseService {
         const dbEntity = this.mapper ? this.mapper.toDb(entity) : entity;
         console.log("dbEntity", dbEntity);
         if (entity.id) {
-            result = await this.repository.update(entity.id, dbEntity);
+            result = await this.update(entity.id, dbEntity);
         } else {
-            result = await this.repository.insert(dbEntity);
+            result = await this.insert(dbEntity);
         }
 
         if (result.error) {
@@ -66,6 +66,14 @@ export class BaseService {
         console.log("result", result);
 
         return BaseResponse.success(this.mapper.toUi(result.data));
+    }
+
+
+    async insert(dbEntity) {
+        return await this.repository.insert(dbEntity);
+    }
+    async update(id, dbEntity) {
+        return await this.repository.update(id, dbEntity);
     }
 
     // 🗑️ DELETE (soft ou hard selon repo)
