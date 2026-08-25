@@ -73,10 +73,13 @@ export default function ConcertsChanteur() {
      */
 
     function handleParticipationChange(
+        date,
         concertId,
         participe
     ) {
-
+        if (new Date(date) < new Date()){
+            return false
+        }
         setSaving(concertId);
         setError(null);
 
@@ -537,7 +540,7 @@ export default function ConcertsChanteur() {
                                     </label>
 
                                     <div className="concert-participation-buttons">
-                                        {new Date(concert.date) > new Date() && (
+                                        
                                             <>
                                                 <button
                                                     type="button"
@@ -549,6 +552,7 @@ export default function ConcertsChanteur() {
                                                     title="Je participe"
                                                     onClick={() =>
                                                         handleParticipationChange(
+                                                            concert.date,
                                                             concert.id,
                                                             true
                                                         )
@@ -567,6 +571,7 @@ export default function ConcertsChanteur() {
                                                     title="Je ne participe pas"
                                                     onClick={() =>
                                                         handleParticipationChange(
+                                                            concert.date,
                                                             concert.id,
                                                             false
                                                         )
@@ -575,7 +580,7 @@ export default function ConcertsChanteur() {
                                                     ❌
                                                 </button>
                                             </>
-                                        )}
+                                        
                                     </div>
 
                                     {isSaving && (
