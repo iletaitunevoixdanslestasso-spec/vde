@@ -125,10 +125,15 @@ EXECUTE FUNCTION public.handle_updated_at();
 ########################################################################################################
 -- suppression de la fonction
 drop function if exists public.get_mon_profil(text);
-########################################################################################################
+
 CREATE OR REPLACE FUNCTION public.get_mon_profil(p_token text)
- RETURNS TABLE(id uuid, nom text, prenom text, email text, telephone text, created_at timestamp without time zone, updated_at timestamp without time zone, deleted_at timestamp without time zone, saison_id uuid, 
- groupe_id uuid, pupitre_id uuid, droit_image text, droit_image_workflow integer, stop_relance_dai boolean, stop_relance_pupitre boolean)
+ RETURNS 
+ TABLE(id
+uuid, nom text, prenom text, email text, telephone text, created_at
+timestamp without time zone, updated_at timestamp without time zone,
+deleted_at timestamp without time zone, saison_id uuid, groupe_id uuid,
+pupitre_id uuid, droit_image text, droit_image_workflow integer,
+stop_relance_dai boolean, stop_relance_pupitre boolean, gnom text, gdescription text)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'public'
@@ -151,7 +156,9 @@ AS $function$BEGIN
         c.droit_image,
         c.droit_image_workflow,
         c.stop_relance_dai,
-        c.stop_relance_pupitre
+        c.stop_relance_pupitre,
+        g.nom as gnom,
+        g.description as gdescription
 
     FROM acces a
 
@@ -160,6 +167,9 @@ AS $function$BEGIN
 
     INNER JOIN chanteurs c
         ON c.id = sc.chanteur_id
+
+    INNER JOIN groupes g
+        ON g.id = sc.groupe_id
 
     LEFT JOIN saison_chanteur_pupitres scp
         ON scp.saison_chanteur_id = sc.id

@@ -1,7 +1,7 @@
 import { BaseRepository } from "./BaseRepository";
 
 
-export class RendezvouRepository extends BaseRepository {
+export class SaisonConcertChanteurRepository extends BaseRepository {
 
     constructor(table) {
         super(table);
@@ -38,6 +38,29 @@ export class RendezvouRepository extends BaseRepository {
             .maybeSingle();
     }
 
+    async findBySaisonAndChanteur(
+        token,
+        saisonId,
+        chanteurId
+    ) {
+        console.log(token,
+            saisonId,
+            chanteurId)
+        return this.supabase
+            .from(this.table)
+            .select(`
+            *,
+            saison_rendezvous!inner(*),
+            saison_chanteurs!inner(*)
+        `)
+            .is("deleted_at", null)
+            .is("saison_rendezvous.deleted_at", null)
+            .is("saison_chanteurs.deleted_at", null)
+            .eq("saison_chanteurs.saison_id", saisonId)
+            .eq("saison_chanteurs.chanteur_id", chanteurId)
+            ;
+    }
+
     async findBySaisonAndTypeConcert(saisonId) {
         console.log("findBySaisonAndTypeConcert", saisonId)
         return this.supabase
@@ -55,10 +78,9 @@ export class RendezvouRepository extends BaseRepository {
             .eq("rendezvous_type.code", "concert")
             .is("deleted_at", null)
             .eq("saison_rendezvous.saison_id", saisonId)
-            .order('date', { ascending: true });
             ;
     }
-    
+
     async findByTypeConcert() {
 
         return this.supabase

@@ -6,16 +6,24 @@ export class RendezvouController extends BaseController {
     constructor(service) {
         super(service);
     }
-    async getForDashboard() {
+    async getForDashboard(saisonId) {
 
         try {
 
             const data =
-                await this.service.getForDashboard();
+                await this.service.getForDashboard(saisonId);
             console.log(data)
+            const dataAdapte = []
+            data.data.map((sr)=>{
+                dataAdapte.push({
+                    ...sr,
+                    ...sr.rendezvous,
+                    debut:sr.rendezvous.heure_debut,
+                })
+            })
             return {
                 success: true,
-                data:data.data
+                data:dataAdapte
             };
 
         } catch (error) {

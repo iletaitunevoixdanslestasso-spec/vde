@@ -18,7 +18,20 @@ export class SaisonConcertController extends ConcertController {
         return (`/admin/chanson/${saison.nom}/chanteurs`);
 
     }    
+    getMesConcerts(token, saisonId, chanteurId, onSuccess, onError) {
 
+        return this.handle(
+            () => this.service.getMesConcerts(
+                token,
+                saisonId,
+                chanteurId
+            ),
+            {
+                onSuccess,
+                onError
+            }
+        );
+    }
     async load(onSuccess, onError) {
         console.log("SaisonConcertController")
         return this.handle(

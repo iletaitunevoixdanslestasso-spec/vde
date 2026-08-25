@@ -36,6 +36,7 @@ export class RepetitionRepository extends BaseRepository {
                 )
             `)
             .is("deleted_at", null)
+            .gte("date", new Date().toISOString().split("T")[0])
             .eq("saison_id", saisonId)
             ;
     }   

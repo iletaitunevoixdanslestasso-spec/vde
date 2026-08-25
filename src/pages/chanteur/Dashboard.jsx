@@ -64,8 +64,8 @@ export default function DashboardChanteur() {
   /*
    * Chargement des rendez-vous du dashboard
    */
-  async function loadRendezvous(saisonId) {
-
+  async function loadRendezvous(profil) {
+    const saisonId = profil?.saison_id
     if (!saisonId) {
 
       setRendezvous([]);
@@ -86,7 +86,7 @@ export default function DashboardChanteur() {
        * des répétitions.
        */
       const rendezvousResult =
-        await rendezvouController.getForDashboard();
+        await rendezvouController.getForDashboard(saisonId);
 
 
       /*
@@ -113,7 +113,6 @@ export default function DashboardChanteur() {
       /*
        * Transformation des rendez-vous classiques
        */
-      console.log(rendezvousData)
       const rendezvousNormalises =
         rendezvousData
           .filter(item =>
@@ -134,7 +133,7 @@ export default function DashboardChanteur() {
               "Rendez-vous",
 
             date: item.date,
-
+            debut:item.debut,
             description:
               item.description ||
               item.titre ||
@@ -146,40 +145,44 @@ export default function DashboardChanteur() {
       /*
        * Transformation des répétitions
        */
+
       const repetitionsNormalisees =
-        repetitionsData.map(item => ({
+        repetitionsData.map((item) => {
+            const debut=item.repetitions_type.duree== 90? profil.gdescription : '20h'
+            return {
 
-          id: `repetition-${item.id}`,
+            id: `repetition-${item.id}`,
 
-          type: "repetition",
+            type: "repetition",
 
-          /*
-           * Classe CSS :
-           *
-           * rendezvous-type-repet
-           *
-           * si le rendez-vous parent est de type repet.
-           */
-          typeCode:
-            item.rendezvous?.rendezvous_type?.code ||
-            "repet",
+            /*
+            * Classe CSS :
+            *
+            * rendezvous-type-repet
+            *
+            * si le rendez-vous parent est de type repet.
+            */
+            typeCode:
+              item.rendezvous?.rendezvous_type?.code ||
+              "repet",
 
-          /*
-           * On identifie explicitement
-           * l'occurrence comme répétition.
-           */
-          typeLibelle:
-            item.repetitions_type?.libelle ||
-            "Répétition",
+            /*
+            * On identifie explicitement
+            * l'occurrence comme répétition.
+            */
+            typeLibelle:
+              `Répétition ${item.repetitions_type?.libelle}` ||
+              "Répétition",
 
-          date: item.date,
+            date: item.date,
+            debut:debut,
+            description:
+              item.description ||
+              item.rendezvous?.titre ||
+              ""
 
-          description:
-            item.description ||
-            item.rendezvous?.titre ||
-            ""
-
-        }));
+          }
+    });
 
 
       /*
@@ -240,7 +243,7 @@ export default function DashboardChanteur() {
       if (profilData?.saison_id) {
 
         await loadRendezvous(
-          profilData.saison_id
+          profilData
         );
 
       } else {
@@ -632,7 +635,7 @@ export default function DashboardChanteur() {
 
           <span>
             <span className="dashboard-section-label">
-              Rendez-vous
+              Rendez-vous à venir
             </span>
 
             <span className="dashboard-section-description">
@@ -721,7 +724,7 @@ export default function DashboardChanteur() {
                         </span>
 
                         <span className="dashboard-rendezvous-date-time">
-                          {formatRendezvousTime(item.date)}
+                          {item.debut}
                         </span>
 
                       </div>

@@ -7,4 +7,10 @@ export class SaisonconcertRepository extends BaseRepository {
         super(table);
     }
 
+    
+    async findChansonsAvecPupitres(token, saisonId) {
+                    
+     return       saisonId;
+    }
+
 }
