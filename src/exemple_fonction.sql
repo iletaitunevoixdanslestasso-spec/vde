@@ -1,7 +1,7 @@
 INSERT INTO public.repetition (
     rendezvous_id,
     repetition_type_id,
-    date
+    description
 )
 VALUES
     (
@@ -65,7 +65,8 @@ CREATE INDEX idx_lieux_deleted_at
 -- ============================================================
 
 ALTER TABLE public.lieux ENABLE ROW LEVEL SECURITY;
-
+ALTER TABLE public.saison_rendezvous
+ADD COLUMN deleted_at timestamptz NULL;
 
 -- Lecture des lieux non supprimés
 CREATE POLICY "Lieux visibles"
