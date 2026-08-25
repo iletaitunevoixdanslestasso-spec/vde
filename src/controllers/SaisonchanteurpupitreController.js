@@ -30,13 +30,13 @@ export class SaisonChanteurPupitreController extends BaseController {
         onSuccess,
         onError
     ) {
-console.log("CONTROLLER SAVE PUPITRE", {
-      token,
-        saisonId,
-        chanteurId,
-        chansonId,
-        pupitreId,
-});
+        console.log("CONTROLLER SAVE PUPITRE", {
+            token,
+            saisonId,
+            chanteurId,
+            chansonId,
+            pupitreId,
+        });
         return this.handle(
             () => this.service.savePupitre(
                 token,

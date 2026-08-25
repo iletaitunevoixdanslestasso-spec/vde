@@ -8,8 +8,6 @@ export class SaisonConcertController extends ConcertController {
     }
     manageSaisonConcertChanson(concert, load) {
 
-        // window.location.href =
-        //     `/admin/saisons/${saison.nom}/chanteurs`;
         console.log(
             "SaisonConcertController.manageChanson",
             concert

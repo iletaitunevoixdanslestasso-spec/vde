@@ -75,7 +75,7 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "repartition":
-
+                console.log("repartition",row)
                 setEditItem(row);
                 setOpen(true);
 

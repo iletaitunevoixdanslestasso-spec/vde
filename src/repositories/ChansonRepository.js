@@ -24,6 +24,8 @@ export class ChansonRepository extends BaseRepository {
             .is("deleted_at", null)
             .order(orderBy, { ascending: true });
     }  
+
+
     async delete(id) {
         return await this.supabase
             .rpc("soft_delete_chanson", {

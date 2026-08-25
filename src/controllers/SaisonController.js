@@ -46,8 +46,6 @@ export class SaisonController extends BaseController {
 
     manageChanteurs(saison, load) {
 
-        // window.location.href =
-        //     `/admin/saisons/${saison.nom}/chanteurs`;
         console.log(
             "SaisonController.manageChanteurs",
             saison

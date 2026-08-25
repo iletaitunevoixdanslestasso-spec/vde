@@ -14,7 +14,7 @@ export default function ChoraleLayout() {
             <div className="chorale-layout">
 
                 {/* HEADER COMMUN */}
-                <header className="chorale-header">
+                <header className="chorale-header" style={{display:'none'}}>
 
                     <div className="chorale-brand">
 

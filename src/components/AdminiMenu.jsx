@@ -20,7 +20,7 @@ export default function AdminMenu() {
 
     const handleClickSaison = (saison, typeListe) => {
         updateSaisonSelectionne(saison);
-        navigate(`/admin/saisons/${saison.nom}/${typeListe}`);
+        navigate(`/admin/saison/${saison.nom}/${typeListe}`);
     };
 
     const toggleSeason = (id) => {

@@ -18,13 +18,18 @@ export class BaseService {
     }
     // 📦 GET ALL
     async getAll(orderBy = "created_at") {
-        const { data, error } = await this.repository.findAllNotDelete(orderBy);
+        const { data, error } = await this.findAllNotDelete(orderBy);
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
         return BaseResponse.success(   data.map(e => this.mapper.toUi(e)));
+    }
+
+    // 📦 GET BY ID
+    async findAllNotDelete(orderBy) {
+        return await this.repository.findAllNotDelete(orderBy);
     }
 
     // 📦 GET BY ID

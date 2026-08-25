@@ -47,9 +47,10 @@ import Profil from "../pages/chanteur/profil";
 import Testdivers from "../pages/admin/Testdivers";
 import ReferentielDocumentPage from "../pages/admin/referentiels/ReferentielDocument/ReferentielDocumentPage";
 import ConcertSaisonPage from "../pages/admin/saisons/ConcertSaisonPage";
-import SaisonConcertChansonsPage from "../pages/admin/referentiels/chansons/SaisonConcertChansonsPage";
+
 import { ConcertProvider } from "../components/contexts/ConcertContext";
 import SaisonconcertPage from "../pages/admin/referentiels/saisonconcert/SaisonconcertPage";
+import SaisonConcertChansonsPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonConcertChansonsPage";
 
 export default function Router() {
 
@@ -150,36 +151,36 @@ export default function Router() {
 
                             {/* saisons programme */}
                             <Route
-                                path="saisons/:saison_nom/chanteurs"
+                                path="saison/:saison_nom/chanteurs"
                                 element={<ChanteurSaisonPage />}
                             />
 
                             <Route
-                                path="saisons/:saison_nom/chansons"
+                                path="saison/:saison_nom/chansons"
                                 element={<ChansonsSaisonPage />}
                             />
                             <Route
-                                path="saisons/:saison_nom/concerts"
+                                path="saison/:saison_nom/concerts"
                                 element={<ConcertSaisonPage />}
                             />
                             <Route
                                 path="saison/:saison_nom/concert/:titre/chansons"
-                                element={<SaisonConcertChansonsPage  />}
+                                element={<SaisonConcertChansonsPage />}
                             />
 
 
                             <Route
-                                path="saisons/:saison_nom/repetition"
+                                path="saison/:saison_nom/repetition"
                                 element={<RepetitionPage />}
                             />
 
                             <Route
-                                path="saisons/:saison_nom/:chanson_nom/repartition"
+                                path="saison/:saison_nom/:chanson_nom/repartition"
                                 element={<RepartitionChansonsSaisonPage />}
                             />
 
                             <Route
-                                path="saisons/:saison_nom/groupes"
+                                path="saison/:saison_nom/groupes"
                                 element={<GroupePage />}
                             />
 

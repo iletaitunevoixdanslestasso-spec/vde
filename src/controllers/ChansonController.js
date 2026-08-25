@@ -10,8 +10,7 @@ export class ChansonController extends BaseController {
     
     managePupitres(chanson, load) {
 
-        // window.location.href =
-        //     `/admin/saisons/${saison.nom}/chanteurs`;
+        
         console.log(
             "ChansonController.managePupitres",
             chanson
