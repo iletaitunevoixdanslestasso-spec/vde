@@ -8,7 +8,6 @@ export default function ChoraleLayout() {
 
     const { saisonActive } = useSaison();
     const styleHeader = import.meta.env.DEV ? {display:'none'} : {}
-    console.log(styleHeader)
     return (
         <NotificationProvider>
 

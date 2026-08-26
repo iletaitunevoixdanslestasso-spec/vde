@@ -4,11 +4,19 @@ import { Link } from "react-router-dom";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import { rendezvouConfig } from "../../config/entities/rendezvou.config";
 import { repetitionConfig } from "../../config/entities/repetition.config";
+import { useChanteur } from "../../components/contexts/ChanteurContext";
 
 export default function DashboardChanteur() {
 
-  const [profil, setProfil] = useState(null);
+  
   const [loading, setLoading] = useState(true);
+
+
+  const {
+    chanteur,
+    loadingChanteur,
+    setChanteur
+  } = useChanteur();
 
   const [rendezvous, setRendezvous] = useState([]);
   const [loadingRendezvous, setLoadingRendezvous] = useState(true);
@@ -30,42 +38,13 @@ export default function DashboardChanteur() {
     repetitionConfig.controller;
 
 
-  /*
-   * Chargement du profil
-   */
-  async function loadProfil() {
-
-    setLoading(true);
-
-    controller.initialize({
-      token
-    });
-
-    const result =
-      await controller.loadItemByToken();
-
-    if (result.success) {
-
-      const data = Array.isArray(result.data)
-        ? result.data[0]
-        : result.data;
-      console.log(data)
-      setProfil(data);
-
-      return data;
-    }
-
-    setLoading(false);
-
-    return null;
-  }
 
 
   /*
    * Chargement des rendez-vous du dashboard
    */
-  async function loadRendezvous(profil) {
-    const saisonId = profil?.saison_id
+  async function loadRendezvous(chanteur) {
+    const saisonId = chanteur?.saison_id
     if (!saisonId) {
 
       setRendezvous([]);
@@ -133,7 +112,7 @@ export default function DashboardChanteur() {
               "Rendez-vous",
 
             date: item.date,
-            debut:item.debut,
+            debut: item.debut,
             description:
               item.description ||
               item.titre ||
@@ -148,8 +127,8 @@ export default function DashboardChanteur() {
 
       const repetitionsNormalisees =
         repetitionsData.map((item) => {
-            const debut=item.repetitions_type.duree== 90? profil.gdescription : '20h'
-            return {
+          const debut = item.repetitions_type.duree == 90 ? chanteur.gdescription : '20h'
+          return {
 
             id: `repetition-${item.id}`,
 
@@ -175,14 +154,14 @@ export default function DashboardChanteur() {
               "Répétition",
 
             date: item.date,
-            debut:debut,
+            debut: debut,
             description:
               item.description ||
               item.rendezvous?.titre ||
               ""
 
           }
-    });
+        });
 
 
       /*
@@ -226,51 +205,37 @@ export default function DashboardChanteur() {
    */
   useEffect(() => {
 
-    if (!token) {
-
-      setLoading(false);
-
+    if (loadingChanteur) {
       return;
     }
 
-    async function loadDashboard() {
+    setLoading(false);
 
-      const profilData =
-        await loadProfil();
+    if (chanteur?.saison_id) {
 
-      setLoading(false);
+      loadRendezvous(chanteur);
 
-      if (profilData?.saison_id) {
+    } else {
 
-        await loadRendezvous(
-          profilData
-        );
+      setLoadingRendezvous(false);
 
-      } else {
-
-        setLoadingRendezvous(false);
-
-      }
     }
 
-    loadDashboard();
-
-  }, [token]);
-
+  }, [chanteur, loadingChanteur]);
 
   /*
    * Stop / activation des relances DAI
    */
   async function toggleRelanceDai() {
 
-    if (!profil || savingRelanceDAI) {
+    if (!chanteur || savingRelanceDAI) {
       return;
     }
 
     setSavingRelanceDai(true);
 
     const nouveauEtat =
-      !profil.stop_relance_dai;
+      !chanteur.stop_relance_dai;
 
     const result =
       await controller.updateStopRelanceDai(
@@ -295,14 +260,14 @@ export default function DashboardChanteur() {
    */
   async function toggleRelancePupitre() {
 
-    if (!profil || savingRelancePupitre) {
+    if (!chanteur || savingRelancePupitre) {
       return;
     }
 
     setSavingRelancePupitre(true);
 
     const nouveauEtat =
-      !profil.stop_relance_pupitre;
+      !chanteur.stop_relance_pupitre;
 
     const result =
       await controller.updateStopRelancePupitre(
@@ -368,7 +333,7 @@ export default function DashboardChanteur() {
   }
 
 
-  if (loading) {
+  if (loading || loadingChanteur) {
 
     return (
       <div className="dashboard-loading">
@@ -379,7 +344,7 @@ export default function DashboardChanteur() {
   }
 
 
-  if (!profil) {
+  if (!chanteur) {
 
     return (
       <div className="dashboard-error">
@@ -395,10 +360,10 @@ export default function DashboardChanteur() {
    */
 
   const todoDai =
-    profil.droit_image_workflow !== 2;
+    chanteur.droit_image_workflow !== 2;
 
   const todoPupitre =
-    !profil.pupitre_id;
+    !chanteur.pupitre_id;
 
 
   return (
@@ -418,7 +383,7 @@ export default function DashboardChanteur() {
           </div>
 
           <h1 className="dashboard-title">
-            Bonjour {profil.prenom}
+            Bonjour {chanteur.prenom}
           </h1>
 
           <p className="dashboard-subtitle">
@@ -505,7 +470,7 @@ export default function DashboardChanteur() {
 
                       <span
                         className={
-                          profil.stop_relance_dai
+                          chanteur.stop_relance_dai
                             ? "icon icon-notification-on"
                             : "icon icon-notification-off"
                         }
@@ -513,7 +478,7 @@ export default function DashboardChanteur() {
 
                       {savingRelanceDAI
                         ? "Modification..."
-                        : profil.stop_relance_dai
+                        : chanteur.stop_relance_dai
                           ? "Activer la relance automatique"
                           : "Stop relance"
                       }
@@ -573,7 +538,7 @@ export default function DashboardChanteur() {
 
                       <span
                         className={
-                          profil.stop_relance_pupitre
+                          chanteur.stop_relance_pupitre
                             ? "icon icon-notification-on"
                             : "icon icon-notification-off"
                         }
@@ -581,7 +546,7 @@ export default function DashboardChanteur() {
 
                       {savingRelancePupitre
                         ? "Modification..."
-                        : profil.stop_relance_pupitre
+                        : chanteur.stop_relance_pupitre
                           ? "Activer la relance automatique"
                           : "Stop relance"
                       }

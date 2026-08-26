@@ -1,3 +1,4 @@
+import { BaseResponse } from "../core/framework/BaseResponse";
 import { RendezvouRepository } from "../repositories/RendezvouRepository";
 import { SaisonConcertChanteurRepository } from "../repositories/SaisonConcertChanteurRepository";
 import { BaseService } from "./BaseService";
@@ -38,13 +39,12 @@ export class SaisonconcertService extends BaseService {
             )
         ]);
 
+        console.log("participations", participations)
         const data = saisonConcerts.data.map(concert => {
-
             const participation = participations.data.find(
                 participation =>
-                    participation.saison_rendezvous_id === concert.id
+                    participation.saison_rendezvous.rendezvous_id === concert.id
             );
-
             return {
                 ...concert,
                 participe: participation
@@ -58,5 +58,11 @@ export class SaisonconcertService extends BaseService {
             data
         };
     }
-
+    async saveParticipation(token, chanteur,concertId,saison_rendezvous_id,participe) {
+        const {data,error} =  await this.saisonConcertChanteurRepository.saveParticipation(token,saison_rendezvous_id, chanteur.saisonChanteur.id, participe )
+        if(!data)
+            return BaseResponse.error([], "erreur dans la requête")
+        return BaseResponse.success(data)
+        // let result = this.service.saveParticipation(token, saisonId, chanteurId, concertId, saison_rendezvous, participe)
+    }
 }

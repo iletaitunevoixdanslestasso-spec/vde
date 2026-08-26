@@ -2,11 +2,18 @@ import { useCallback, useEffect, useState } from "react";
 import FormEdition from "../form/FormEdition";
 import NotificationService from "../../services/NotificationService";
 import "../../styles/espaceChanteur_cruditem.css";
+import { useChanteur } from "../../components/contexts/ChanteurContext";
 
 export default function CRUDItemPage({
     config,
     context = {}
 }) {
+
+    const {
+        chanteur,
+        loadingChanteur,
+        setChanteur
+    } = useChanteur();
 
     const [item, setItem] = useState(null);
     const [errors, setErrors] = useState([]);
@@ -55,6 +62,7 @@ export default function CRUDItemPage({
      */
     const load = async () => {
 
+
         setLoading(true);
         setErrors([]);
 
@@ -79,7 +87,7 @@ export default function CRUDItemPage({
             }
 
             const item = result.data[0];
-
+            setChanteur(item)
             setItem(item);
             setForm(item);
 
@@ -105,7 +113,9 @@ export default function CRUDItemPage({
 
 
     useEffect(() => {
-        load();
+        setItem(chanteur);
+        setForm(chanteur);
+        setLoading(false);
     }, [
         config.entity,
         context.token,
@@ -231,40 +241,37 @@ export default function CRUDItemPage({
         }
     };
 
-
+    const headerHml = () => {
+        // return false
+        const html = <div className="crud-item-header">
+            <div className="crud-item-header-icon">
+                👤
+            </div>
+            <div className="crud-item-header-content">
+                <h1 className="crud-item-title">
+                    {config.title}
+                </h1>
+                <p className="crud-item-subtitle">
+                    {loading
+                        ? `Chargement de vos informations...`
+                        : `mes informaitons personnelles`
+                    }
+                </p>
+            </div>
+        </div>;
+        return html
+    }
     /*
      * LOADING
      */
-    if (loading) {
+    if (!chanteur || loading) {
 
         return (
             <div className="crud-item-page">
 
                 <div className="crud-item-loading">
 
-                    <div className="crud-item-header">
-
-                        <div className="crud-item-header-icon">
-                            ✏️
-                        </div>
-
-                        <div className="crud-item-header-content">
-
-                            <div className="crud-item-eyebrow">
-                                Espace chanteur
-                            </div>
-
-                            <h1 className="crud-item-title">
-                                {config.title}
-                            </h1>
-
-                            <p className="crud-item-subtitle">
-                                Chargement de vos informations...
-                            </p>
-
-                        </div>
-
-                    </div>
+                    {headerHml()}
 
                     <div className="crud-loading">
                         Chargement...
@@ -287,29 +294,10 @@ export default function CRUDItemPage({
                 EN-TÊTE
                 ===================================================== */}
 
-            <header className="crud-item-header">
+            {/* <header className="crud-item-header">
+            </header> */}
+            {headerHml()}
 
-                <div className="crud-item-header-icon">
-                    ✏️
-                </div>
-
-                <div className="crud-item-header-content">
-
-                    <div className="crud-item-eyebrow">
-                        Espace chanteur
-                    </div>
-
-                    <h1 className="crud-item-title">
-                        {config.title}
-                    </h1>
-
-                    <p className="crud-item-subtitle">
-                        Consultez et mettez à jour vos informations.
-                    </p>
-
-                </div>
-
-            </header>
 
 
             {/* =====================================================

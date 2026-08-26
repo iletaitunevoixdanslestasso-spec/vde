@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import "../../styles/espaceChanteur_concerts.css";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
+import { useChanteur } from "../../components/contexts/ChanteurContext";
+import NotificationService from "../../services/NotificationService";
 
 export default function ConcertsChanteur() {
 
@@ -10,13 +12,15 @@ export default function ConcertsChanteur() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(null);
     const [error, setError] = useState(null);
+    const {
+        chanteur,
+        loadingChanteur,
+        setChanteur
+    } = useChanteur();
 
-    const data = JSON.parse(
-        localStorage.getItem("chanteur") || "null"
-    );
 
-    const saisonId = data?.saisonId;
-    const chanteurId = data?.chanteur?.chanteur_id;
+    const saisonId = chanteur?.saison_id;
+    const chanteurId = chanteur?.id;
     const token = localStorage.getItem("token");
 
     const controller =
@@ -75,9 +79,11 @@ export default function ConcertsChanteur() {
     function handleParticipationChange(
         date,
         concertId,
+        saison_rendezvous,
         participe
     ) {
-        if (new Date(date) < new Date()){
+        if (new Date(date) < new Date()) {
+            NotificationService.info("Ce concert est passé, la participation ne peut pas être modifiée.")
             return false
         }
         setSaving(concertId);
@@ -85,13 +91,16 @@ export default function ConcertsChanteur() {
 
         controller.saveParticipation(
             token,
-            saisonId,
-            chanteurId,
+            chanteur,
             concertId,
+            saison_rendezvous,
             participe,
 
             (result) => {
-
+                NotificationService.success(
+                    result.message ||
+                    "Enregistrement effectué avec succès."
+                );
                 setConcerts(current =>
                     current.map(concert => {
 
@@ -112,7 +121,9 @@ export default function ConcertsChanteur() {
             },
 
             (err) => {
-
+                NotificationService.error(
+                    "Erreur modification participation"
+                );
                 console.error(
                     "Erreur modification participation",
                     err
@@ -540,47 +551,49 @@ export default function ConcertsChanteur() {
                                     </label>
 
                                     <div className="concert-participation-buttons">
-                                        
-                                            <>
-                                                <button
-                                                    type="button"
-                                                    className={`concert-participation-button ${concert.participe === true
-                                                        ? "selected"
-                                                        : ""
-                                                        }`}
-                                                    disabled={isSaving}
-                                                    title="Je participe"
-                                                    onClick={() =>
-                                                        handleParticipationChange(
-                                                            concert.date,
-                                                            concert.id,
-                                                            true
-                                                        )
-                                                    }
-                                                >
-                                                    👍
-                                                </button>
 
-                                                <button
-                                                    type="button"
-                                                    className={`concert-participation-button ${concert.participe === false
-                                                        ? "selected"
-                                                        : ""
-                                                        }`}
-                                                    disabled={isSaving}
-                                                    title="Je ne participe pas"
-                                                    onClick={() =>
-                                                        handleParticipationChange(
-                                                            concert.date,
-                                                            concert.id,
-                                                            false
-                                                        )
-                                                    }
-                                                >
-                                                    ❌
-                                                </button>
-                                            </>
-                                        
+                                        <>
+                                            <button
+                                                type="button"
+                                                className={`concert-participation-button ${concert.participe === true
+                                                    ? "selected"
+                                                    : ""
+                                                    }`}
+                                                disabled={isSaving}
+                                                title="Je participe"
+                                                onClick={() =>
+                                                    handleParticipationChange(
+                                                        concert.date,
+                                                        concert.id,
+                                                        concert.saison_rendezvous[0].id,
+                                                        true
+                                                    )
+                                                }
+                                            >
+                                                👍
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className={`concert-participation-button ${concert.participe === false
+                                                    ? "selected"
+                                                    : ""
+                                                    }`}
+                                                disabled={isSaving}
+                                                title="Je ne participe pas"
+                                                onClick={() =>
+                                                    handleParticipationChange(
+                                                        concert.date,
+                                                        concert.id,
+                                                        concert.saison_rendezvous[0].id,
+                                                        false
+                                                    )
+                                                }
+                                            >
+                                                ❌
+                                            </button>
+                                        </>
+
                                     </div>
 
                                     {isSaving && (

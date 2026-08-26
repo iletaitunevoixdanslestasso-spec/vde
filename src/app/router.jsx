@@ -52,6 +52,7 @@ import { ConcertProvider } from "../components/contexts/ConcertContext";
 import SaisonconcertPage from "../pages/admin/referentiels/saisonconcert/SaisonconcertPage";
 import SaisonConcertChansonsPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonConcertChansonsPage";
 import ConcertsChanteur from "../pages/chanteur/ConcertChanteur";
+import { ChanteurProvider } from "../components/contexts/ChanteurContext";
 
 
 export default function Router() {
@@ -79,7 +80,10 @@ export default function Router() {
 
                             <Route
                                 path="/chanteur/:token"
-                                element={<ChanteurLayout />}
+                                element={
+                                    <ChanteurProvider>
+                                        <ChanteurLayout />
+                                    </ChanteurProvider>}
                             >
 
                                 <Route
@@ -118,7 +122,6 @@ export default function Router() {
                                 />
 
                             </Route>
-
                         </Route>
 
                         {/* =========================================
@@ -243,6 +246,6 @@ export default function Router() {
 
                 </Routes>
             </SaisonProvider>
-        </BrowserRouter>
+        </BrowserRouter >
     );
 }

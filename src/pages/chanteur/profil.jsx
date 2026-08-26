@@ -1,6 +1,7 @@
 import React from "react";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import CRUDItemPage from "../../framework/crud/CRUDItemPage";
+import { useChanteur } from "../../components/contexts/ChanteurContext";
 
 const profilConfig = {
     ...chanteurConfig,
@@ -91,11 +92,11 @@ const profilConfig = {
                     case 2:
                         dai = '✅ Accepté'
                         break;
-                
+
                     default:
                         break;
                 }
-                
+
                 let workflow = React.createElement(
                     "div",
                     null,
@@ -116,14 +117,24 @@ const profilConfig = {
 
 export default function ChanteurPage() {
 
-    const chanteur = JSON.parse(localStorage.getItem("chanteur"));
+    const storeCHanteur = JSON.parse(localStorage.getItem("chanteur"));
+    const saison_id = JSON.parse(localStorage.getItem("chanteur")).saisonId;
+
+    const {
+        chanteur,
+        loadingChanteur,
+        setChanteur
+    } = useChanteur();
+
     const token = localStorage.getItem("token");
 
+    if (!chanteur)
+        return (<div className="crud-loading">Chargement...</div >)
 
     return (
         <CRUDItemPage
             config={profilConfig}
-            context={{ token, saisonId: chanteur?.saisonId }}
+            context={{ token, saisonId: saison_id }}
         />
     );
 }

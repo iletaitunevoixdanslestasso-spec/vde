@@ -17,7 +17,7 @@ export class SaisonConcertController extends ConcertController {
 
         return (`/admin/chanson/${saison.nom}/chanteurs`);
 
-    }    
+    }
     getMesConcerts(token, saisonId, chanteurId, onSuccess, onError) {
 
         return this.handle(
@@ -38,6 +38,12 @@ export class SaisonConcertController extends ConcertController {
             () => this.service.getAllBySaison(),
             { onSuccess, onError }
         );
+    }
+    async saveParticipation(token,chanteur,concertId, saison_rendezvous,participe, cbSuccess, cbError) {
+        let result = await this.service.saveParticipation(token, chanteur, concertId, saison_rendezvous, participe)
+        if(result.success)
+            return cbSuccess(result)
+        return cbError(result)
     }
     async save(form, onSuccess, onError) {
         console.log("SaisonConcertController save", form);

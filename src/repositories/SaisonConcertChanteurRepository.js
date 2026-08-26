@@ -6,6 +6,55 @@ export class SaisonConcertChanteurRepository extends BaseRepository {
     constructor(table) {
         super(table);
     }
+    async findBySaisonAndChanteur(
+        token,
+        saisonId,
+        chanteurId
+    ) {
+        console.log(token,
+            saisonId,
+            chanteurId)
+        return this.supabase
+            .from(this.table)
+            .select(`
+            *,
+            saison_rendezvous!inner(*),
+            saison_chanteurs!inner(*)
+        `)
+            .is("deleted_at", null)
+            .is("saison_rendezvous.deleted_at", null)
+            .is("saison_chanteurs.deleted_at", null)
+            .eq("saison_chanteurs.saison_id", saisonId)
+            .eq("saison_chanteurs.chanteur_id", chanteurId)
+            ;
+    }
+
+    async saveParticipation(token, saisonRendezvousId, saisonChanteurId, participe) {
+        return  await this.supabase
+            .from(this.table)
+            .upsert(
+                {
+                    saison_rendezvous_id: saisonRendezvousId,
+                    saison_chanteur_id: saisonChanteurId,
+                    participe: participe,
+                    deleted_at: null
+                },
+                {
+                    onConflict: "saison_rendezvous_id,saison_chanteur_id"
+                }
+            )
+            .select()
+            .single();
+
+        // if (error) {
+        //     throw error;
+        // }
+
+        // return data;
+    }
+
+
+
     async findTypeConcert() {
 
         return this.supabase
@@ -38,28 +87,6 @@ export class SaisonConcertChanteurRepository extends BaseRepository {
             .maybeSingle();
     }
 
-    async findBySaisonAndChanteur(
-        token,
-        saisonId,
-        chanteurId
-    ) {
-        console.log(token,
-            saisonId,
-            chanteurId)
-        return this.supabase
-            .from(this.table)
-            .select(`
-            *,
-            saison_rendezvous!inner(*),
-            saison_chanteurs!inner(*)
-        `)
-            .is("deleted_at", null)
-            .is("saison_rendezvous.deleted_at", null)
-            .is("saison_chanteurs.deleted_at", null)
-            .eq("saison_chanteurs.saison_id", saisonId)
-            .eq("saison_chanteurs.chanteur_id", chanteurId)
-            ;
-    }
 
     async findBySaisonAndTypeConcert(saisonId) {
         console.log("findBySaisonAndTypeConcert", saisonId)

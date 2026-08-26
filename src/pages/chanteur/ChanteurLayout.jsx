@@ -1,49 +1,37 @@
 import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+
 import ChanteurMenu from "./ChanteurMenu";
-// ChanteurLayout.jsx
+import { ChanteurProvider, useChanteur } from "./../../components/contexts/ChanteurContext";
+
 import "../../styles/espaceChanteur.css";
-export default function ChanteurLayout() {
+import { chanteurConfig } from "../../config/entities/chanteur.config";
+
+function ChanteurLayoutContent() {
+
+    const {
+        chanteur,
+        setChanteur,
+        setLoadingChanteur
+    } = useChanteur();
+
+
 
     return (
 
         <div className="chanteur-layout">
 
-            {/* =================================================
-                SIDEBAR / NAVIGATION
-            ================================================= */}
-
             <aside className="chanteur-sidebar">
 
                 <div className="chanteur-sidebar-inner">
 
-                    <div className="chanteur-brand">
+                    {/* ... */}
 
-                        <div className="chanteur-brand-icon">
-                            <span className="icon icon-musical-note"></span>
-                        </div>
-
-                        <div className="chanteur-brand-text">
-                            <strong>
-                                Chorale
-                            </strong>
-
-                            <span>
-                                Espace chanteur
-                            </span>
-                        </div>
-
-                    </div>
-
-                    <ChanteurMenu />
+                    <ChanteurMenu chanteur={chanteur}/>
 
                 </div>
 
             </aside>
-
-
-            {/* =================================================
-                CONTENU
-            ================================================= */}
 
             <main className="chanteur-content">
 
@@ -56,5 +44,18 @@ export default function ChanteurLayout() {
             </main>
 
         </div>
+    );
+}
+
+
+export default function ChanteurLayout() {
+
+    return (
+
+        <ChanteurProvider>
+
+            <ChanteurLayoutContent />
+
+        </ChanteurProvider>
     );
 }

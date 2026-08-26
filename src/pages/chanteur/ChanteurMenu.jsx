@@ -1,6 +1,6 @@
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
-export default function ChanteurMenu() {
+export default function ChanteurMenu({chanteur}) {
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -40,6 +40,10 @@ export default function ChanteurMenu() {
                 <div className="chanteur-menu-section-title">
                     Chorale
                 </div>
+{/*                 
+                    <div className="concerts-page-eyebrow">
+                        ``${chanteur.prenom} ${chanteur.nom} `
+                    </div> */}
 
 
                 <button
