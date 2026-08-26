@@ -1,14 +1,174 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import "../../styles/espaceChanteur_dashboard.css";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import { rendezvouConfig } from "../../config/entities/rendezvou.config";
 import { repetitionConfig } from "../../config/entities/repetition.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 
+
+function formatRendezvousDate(date) {
+  if (!date) {
+    return "";
+  }
+
+  return new Date(date).toLocaleDateString("fr-FR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
+function TodoItem({
+  title,
+  children,
+  icon = "icon-warning",
+  action,
+  actionLabel,
+  actionIcon,
+  disabled = false
+}) {
+  return (
+    <div className="todo-item">
+
+      <div className="todo-icon">
+        <span className={`icon ${icon}`} />
+      </div>
+
+      <div className="todo-content">
+
+        <div className="todo-title">
+          {title}
+        </div>
+
+        <div className="todo-description">
+          {children}
+        </div>
+
+        {action && (
+          <div className="todo-actions">
+            <button
+              type="button"
+              className="todo-button todo-button-secondary"
+              onClick={action}
+              disabled={disabled}
+            >
+              {actionIcon && (
+                <span className={`icon ${actionIcon}`} />
+              )}
+
+              {actionLabel}
+            </button>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+
+function RendezvousRow({ item, onInfo }) {
+
+  const isConcert = item.typeCode === "concert";
+
+  const participationIcon =
+    item.participation === true
+      ? "icon-checked"
+      : item.participation === false
+        ? "icon-cancel"
+        : "icon-unknown";
+
+  return (
+    <div
+      className={
+        `dashboard-rendezvous-row rendezvous-type-${item.typeCode}`
+      }
+    >
+
+      {/* TYPE */}
+      <div className="dashboard-rendezvous-type">
+        <span className="dashboard-rendezvous-type-label">
+          {item.typeLibelle}
+        </span>
+      </div>
+
+
+      {/* DATE */}
+      <div className="dashboard-rendezvous-date">
+
+        <span className="dashboard-rendezvous-date-day">
+          {formatRendezvousDate(item.date)}
+        </span>
+
+        {item.debut && (
+          <span className="dashboard-rendezvous-date-time">
+            {item.debut}
+          </span>
+        )}
+
+      </div>
+
+
+      {/* INFORMATIONS */}
+      <div className="dashboard-rendezvous-description">
+
+        {item.lieu && (
+          <div className="dashboard-rendezvous-lieu">
+
+
+            <button
+              type="button"
+              className="dashboard-rendezvous-info-button"
+              onClick={() => onInfo(item)}
+            >
+              <span className="dashboard-rendezvous-lieu-ville">
+                {item.lieu.nom}
+                {item.lieu.ville && ` à ${item.lieu.ville.toUpperCase()}`}
+              </span>
+            </button>
+
+          </div>
+        )}
+
+        {item.description && (
+          <button
+            type="button"
+            className="dashboard-rendezvous-info-button"
+            onClick={() => onInfo(item)}
+          >
+            <span className="icon icon-info" />
+            Infos
+          </button>
+        )}
+
+
+        {isConcert && (
+          <span
+            className={`icon ${participationIcon} dashboard-rendezvous-participation`}
+            title={
+              item.participation === true
+                ? "Je participe"
+                : item.participation === false
+                  ? "Je ne participe pas"
+                  : "Participation non définie"
+            }
+          />
+        )}
+
+      </div>
+
+    </div>
+  );
+}
+
+
+
+
 export default function DashboardChanteur() {
 
-  
+
   const [loading, setLoading] = useState(true);
 
 
@@ -28,7 +188,7 @@ export default function DashboardChanteur() {
   const [rendezvousOpen, setRendezvousOpen] = useState(true);
 
   const token = localStorage.getItem("token");
-
+  const [selectedRendezvous, setSelectedRendezvous] = useState(null);
   const controller = chanteurConfig.controller;
 
   const rendezvouController =
@@ -65,7 +225,7 @@ export default function DashboardChanteur() {
        * des répétitions.
        */
       const rendezvousResult =
-        await rendezvouController.getForDashboard(saisonId);
+        await rendezvouController.getForDashboard(chanteur);
 
 
       /*
@@ -97,28 +257,38 @@ export default function DashboardChanteur() {
           .filter(item =>
             item.rendezvous_type?.code !== "repet"
           )
-          .map(item => ({
+          .map(item => {
+            const rendezvous = item.rendezvous;
+            const lieu = rendezvous?.lieux || null;
+            return {
+              id: `rendezvous-${item.id}`,
 
-            id: `rendezvous-${item.id}`,
+              type: "rendezvous",
 
-            type: "rendezvous",
+              typeCode:
+                item.rendezvous_type?.code ||
+                "rendezvous",
 
-            typeCode:
-              item.rendezvous_type?.code ||
-              "rendezvous",
+              typeLibelle:
+                item.rendezvous_type?.libelle ||
+                "Rendez-vous",
 
-            typeLibelle:
-              item.rendezvous_type?.libelle ||
-              "Rendez-vous",
+              date: item.date,
+              debut: item.debut,
 
-            date: item.date,
-            debut: item.debut,
-            description:
-              item.description ||
-              item.titre ||
-              ""
+              titre: item.titre || "",
 
-          }));
+              description: item.description || "",
+
+              lieu,
+
+              participation:
+                item.rendezvous_type?.code === "concert"
+                  ? item.participation
+                  : null
+            }
+          }
+          );
 
 
       /*
@@ -244,7 +414,7 @@ export default function DashboardChanteur() {
 
     if (result.success) {
 
-      setProfil(prev => ({
+      setChanteur(prev => ({
         ...prev,
         stop_relance_dai: nouveauEtat
       }));
@@ -276,7 +446,7 @@ export default function DashboardChanteur() {
 
     if (result.success) {
 
-      setProfil(prev => ({
+      setChanteur(prev => ({
         ...prev,
         stop_relance_pupitre: nouveauEtat
       }));
@@ -365,6 +535,11 @@ export default function DashboardChanteur() {
   const todoPupitre =
     !chanteur.pupitre_id;
 
+  const todoParticipation =
+    true
+
+
+  const toutEstFait = !todoDai && !todoPupitre && !todoParticipation
 
   return (
 
@@ -424,159 +599,106 @@ export default function DashboardChanteur() {
         </h2>
 
 
-
         {todoOpen && (
           <div className="dashboard-section-collapse-content">
 
             {todoDai && (
-
-              <div className="todo-item todo-dai">
-
-                <div className="todo-icon">
-
-                  <span className="icon icon-warning"></span>
-
-                </div>
-
-                <div className="todo-content">
-
-                  <div className="todo-title">
-                    Mettre à jour votre DAI
-                  </div>
-
-                  <div className="todo-description">
-
-                    Votre droit à l'image doit être
-                    mis à jour dans la rubrique
-
-                    <Link
-                      to={`/chanteur/${token}/profil`}
-                      className="todo-button"
-                    >
-                      <span className="icon icon-chanteur"></span>
-                      « Mon profil ».
-                    </Link>
-
-                  </div>
-
-                  <div className="todo-actions">
-
-                    <button
-                      type="button"
-                      className="todo-button todo-button-secondary"
-                      onClick={toggleRelanceDai}
-                      disabled={savingRelanceDAI}
-                    >
-
-                      <span
-                        className={
-                          chanteur.stop_relance_dai
-                            ? "icon icon-notification-on"
-                            : "icon icon-notification-off"
-                        }
-                      ></span>
-
-                      {savingRelanceDAI
-                        ? "Modification..."
-                        : chanteur.stop_relance_dai
-                          ? "Activer la relance automatique"
-                          : "Stop relance"
-                      }
-
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-
+              <TodoItem
+                title="Mettre à jour votre DAI"
+                action={toggleRelanceDai}
+                disabled={savingRelanceDAI}
+                actionIcon={
+                  chanteur.stop_relance_dai
+                    ? "icon-notification-on"
+                    : "icon-notification-off"
+                }
+                actionLabel={
+                  savingRelanceDAI
+                    ? "Modification..."
+                    : chanteur.stop_relance_dai
+                      ? "Activer la relance automatique"
+                      : "Stop relance"
+                }
+              >
+                Votre droit à l'image doit être mis à jour dans la rubrique{" "}
+                <Link
+                  to={`/chanteur/${token}/profil`}
+                  className="todo-button"
+                >
+                  <span className="icon icon-chanteur" />
+                  « Mon profil »
+                </Link>.
+              </TodoItem>
             )}
 
 
-            {/* TODO PUPITRE */}
+            {todoParticipation && (
+              <TodoItem
+                title="Votre participation aux concerts"
+                action={toggleRelancePupitre}
+                disabled={savingRelancePupitre}
+                actionIcon={
+                  chanteur.stop_relance_pupitre
+                    ? "icon-notification-on"
+                    : "icon-notification-off"
+                }
+                actionLabel={
+                  savingRelancePupitre
+                    ? "Modification..."
+                    : chanteur.stop_relance_pupitre
+                      ? "Activer la relance automatique"
+                      : "Stop relance"
+                }
+              >
+                Indiquez votre participation aux{" "}
+                <Link
+                  to={`/chanteur/${token}/concerts`}
+                  className="todo-button"
+                >
+                  <span className="icon icon-concerts" />
+                  concerts
+                </Link>.
+              </TodoItem>
+            )}
+
 
             {todoPupitre && (
-
-              <div className="todo-item todo-pupitre">
-
-                <div className="todo-icon">
-
-                  <span className="icon icon-warning"></span>
-
-                </div>
-
-                <div className="todo-content">
-
-                  <div className="todo-title">
-                    Choisir votre pupitre par défaut
-                  </div>
-
-                  <div className="todo-description">
-
-                    Vous devez choisir votre pupitre
-                    principal pour la saison.
-
-                    <Link
-                      to={`/chanteur/${token}/profil`}
-                      className="todo-button"
-                    >
-                      <span className="icon icon-chanteur"></span>
-                      « Mon profil ».
-                    </Link>
-
-                  </div>
-
-                  <div className="todo-actions">
-
-                    <button
-                      type="button"
-                      className="todo-button todo-button-secondary"
-                      onClick={toggleRelancePupitre}
-                      disabled={savingRelancePupitre}
-                    >
-
-                      <span
-                        className={
-                          chanteur.stop_relance_pupitre
-                            ? "icon icon-notification-on"
-                            : "icon icon-notification-off"
-                        }
-                      ></span>
-
-                      {savingRelancePupitre
-                        ? "Modification..."
-                        : chanteur.stop_relance_pupitre
-                          ? "Activer la relance automatique"
-                          : "Stop relance"
-                      }
-
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-
+              <TodoItem
+                title="Choisir votre pupitre par défaut"
+                action={toggleRelancePupitre}
+                disabled={savingRelancePupitre}
+                actionIcon={
+                  chanteur.stop_relance_pupitre
+                    ? "icon-notification-on"
+                    : "icon-notification-off"
+                }
+                actionLabel={
+                  savingRelancePupitre
+                    ? "Modification..."
+                    : chanteur.stop_relance_pupitre
+                      ? "Activer la relance automatique"
+                      : "Stop relance"
+                }
+              >
+                Vous devez choisir votre pupitre principal pour la saison.{" "}
+                <Link
+                  to={`/chanteur/${token}/profil`}
+                  className="todo-button"
+                >
+                  <span className="icon icon-chanteur" />
+                  « Mon profil »
+                </Link>.
+              </TodoItem>
             )}
 
 
-            {/* Aucune TODO */}
-
-            {!todoDai && !todoPupitre && (
-
+            {toutEstFait && (
               <div className="todo-empty">
-
-                <span className="icon icon-check"></span>
-
-                <span>
-                  Tout est à jour !
-                </span>
-
+                <span className="icon icon-check" />
+                <span>Tout est à jour !</span>
               </div>
-
             )}
+
           </div>
         )}
 
@@ -642,67 +764,18 @@ export default function DashboardChanteur() {
 
                 <div className="dashboard-rendezvous-list">
 
-                  {/* En-tête */}
-
                   <div className="dashboard-rendezvous-header">
-
-                    <div>
-                      Type
-                    </div>
-
-                    <div>
-                      Date
-                    </div>
-
-                    <div>
-                      Description
-                    </div>
-
+                    <div>Type</div>
+                    <div>Date</div>
+                    <div>Informations</div>
                   </div>
 
-
-                  {/* Lignes */}
-
                   {rendezvous.map(item => (
-
-                    <div
+                    <RendezvousRow
                       key={item.id}
-                      className={
-                        `dashboard-rendezvous-row ` +
-                        `rendezvous-type-${item.typeCode}`
-                      }
-                    >
-
-                      <div className="dashboard-rendezvous-type">
-
-                        <span className="dashboard-rendezvous-type-label">
-                          {item.typeLibelle}
-                        </span>
-
-                      </div>
-
-
-                      <div className="dashboard-rendezvous-date">
-
-                        <span className="dashboard-rendezvous-date-day">
-                          {formatRendezvousDate(item.date)}
-                        </span>
-
-                        <span className="dashboard-rendezvous-date-time">
-                          {item.debut}
-                        </span>
-
-                      </div>
-
-
-                      <div className="dashboard-rendezvous-description">
-
-                        {item.description || "—"}
-
-                      </div>
-
-                    </div>
-
+                      item={item}
+                      onInfo={setSelectedRendezvous}
+                    />
                   ))}
 
                 </div>
@@ -712,7 +785,81 @@ export default function DashboardChanteur() {
         )}
       </section>
 
-    </div >
+      {selectedRendezvous && (
+        <div
+          className="dashboard-modal-overlay"
+          onClick={() => setSelectedRendezvous(null)}
+        >
+          <div
+            className="dashboard-modal"
+            onClick={event => event.stopPropagation()}
+          >
 
+            <button
+              type="button"
+              className="dashboard-modal-close"
+              onClick={() => setSelectedRendezvous(null)}
+            >
+              ×
+            </button>
+
+            <h3>
+              {selectedRendezvous.lieu?.nom}
+            </h3>
+
+            {selectedRendezvous.lieu && (
+              <div className="dashboard-modal-lieu">
+
+                <div>
+                  {selectedRendezvous.lieu.rue}
+                </div>
+
+                <div>
+                  {selectedRendezvous.lieu.code_postale}{" "}
+                  {selectedRendezvous.lieu.ville}
+                </div>
+
+                {selectedRendezvous.lieu.description && (
+                  <div className="dashboard-modal-lieu-description">
+                    {selectedRendezvous.lieu.description}
+                  </div>
+                )}
+
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    [
+                      selectedRendezvous.lieu.nom,
+                      selectedRendezvous.lieu.rue,
+                      selectedRendezvous.lieu.code_postale,
+                      selectedRendezvous.lieu.ville
+                    ]
+                      .filter(Boolean)
+                      .join(", ")
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="dashboard-modal-map-button"
+                >
+                  <span className="icon icon-location"></span>
+                  Voir sur Google Maps
+                </a>
+
+              </div>
+            )}
+
+            {selectedRendezvous.description && (
+              <div className="dashboard-modal-description">
+
+                <h4>Description</h4>
+
+                {selectedRendezvous.description}
+
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
+    </div >
   );
 }

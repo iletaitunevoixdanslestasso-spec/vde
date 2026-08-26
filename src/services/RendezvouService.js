@@ -10,10 +10,10 @@ export class RendezvouService extends BaseService {
     /**
      * Liste les chanteurs d'une saison
      */
-    async getForDashboard(saisonId) {
+    async getForDashboard(chanteur) {
 
         const { data, error } =
-            await this.repository.findForDashboard(saisonId);
+            await this.repository.findForDashboard(chanteur);
 
         console.log(data)
         if (error) {

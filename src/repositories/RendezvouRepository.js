@@ -56,9 +56,9 @@ export class RendezvouRepository extends BaseRepository {
             .is("deleted_at", null)
             .eq("saison_rendezvous.saison_id", saisonId)
             .order('date', { ascending: true });
-            ;
+        ;
     }
-    
+
     async findByTypeConcert() {
 
         return this.supabase
@@ -77,8 +77,8 @@ export class RendezvouRepository extends BaseRepository {
             ;
     }
 
-    async findForDashboard(saisonId) {
-
+    async findForDashboard(chanteur) {
+        const saisonId = chanteur?.saison_id
         return this.supabase
             .from('saison_rendezvous')
             .select(`
@@ -89,6 +89,7 @@ export class RendezvouRepository extends BaseRepository {
                     date,
                     heure_rdv,
                     heure_debut,
+                    lieux(*),
                     heure_fin_previsionnelle,
                     description,
                     deleted_at,
@@ -97,9 +98,14 @@ export class RendezvouRepository extends BaseRepository {
                         libelle,
                         code
                     )
+                ),
+                saison_concert_chanteurs(
+                    id,
+                    participe
                 )
             `)
             .eq("saison_id", saisonId)
+            .eq("saison_concert_chanteurs.saison_chanteur_id", chanteur.saisonChanteur.id)
             .gte("rendezvous.date", new Date().toISOString().split("T")[0])
             .is("deleted_at", null)
             .is("rendezvous.deleted_at", null)
