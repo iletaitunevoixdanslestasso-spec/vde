@@ -7,14 +7,15 @@ import "../styles/chorale.css";
 export default function ChoraleLayout() {
 
     const { saisonActive } = useSaison();
-
+    const styleHeader = import.meta.env.DEV ? {display:'none'} : {}
+    console.log(styleHeader)
     return (
         <NotificationProvider>
 
-            <div className="chorale-layout">
+            <div className="chorale-layout" >
 
                 {/* HEADER COMMUN */}
-                <header className="chorale-header" style={{display:'none'}}>
+                <header className="chorale-header" style={styleHeader} >
 
                     <div className="chorale-brand">
 
@@ -22,9 +23,6 @@ export default function ChoraleLayout() {
                             src="/logoVDE.png"
                             alt="Chorale"
                         />
-
-                        {/* <span>Chorale</span> */}
-
                     </div>
 
                     <div className="chorale-saison">
