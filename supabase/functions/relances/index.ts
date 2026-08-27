@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
         textesRelance.push(resultatDai.texte);
       }
 
-
+      textesRelance.push("pour test je force");
       // ------------------------------------------------
       // 5. Aucune relance
       // ------------------------------------------------
@@ -203,6 +203,38 @@ Deno.serve(async (req) => {
         continue;
       }
 
+      // ------------------------------------------------
+      // Token d'accès du chanteur
+      // ------------------------------------------------
+
+      const { data: acces, error: accesError } = await supabase
+        .from("acces")
+        .select("token")
+        .eq("saison_chanteur_id", saisonChanteur.id)
+        .eq("actif", true)
+        .is("deleted_at", null)
+        .maybeSingle();
+
+      if (accesError) {
+        throw accesError;
+      }
+
+      if (!acces?.token) {
+        console.log(
+          `AUCUN TOKEN D'ACCÈS : ${chanteur.prenom} ${chanteur.nom}`
+        );
+
+        // On peut continuer sans lien
+      }
+      const appUrl = Deno.env.get("APP_URL");
+
+      if (!appUrl) {
+        throw new Error("La variable APP_URL n'est pas configurée");
+      }
+      const lienEspaceChanteur = acces?.token
+        ? `${appUrl}/chanteur/${acces.token}`
+        : null;
+
 
       // ------------------------------------------------
       // 6. Mail commun
@@ -213,8 +245,11 @@ Deno.serve(async (req) => {
         "",
         textesRelance.join("\n\n"),
         "",
+        lienEspaceChanteur
+          ? `👉 Accéder à mon espace chanteur : ${lienEspaceChanteur}`
+          : "👉 Ton lien d'accès n'est pas disponible, contacte le CA.",
+        "",
         "À très vite !",
-        // "Le CA",
       ].join("\n");
 
 

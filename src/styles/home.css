@@ -1,0 +1,304 @@
+/* =========================================================
+   ACCUEIL
+   ========================================================= */
+
+.accueil {
+    min-height: 100vh;
+    background: var(
+        --chanteur-background,
+        #f5f6fa
+    );
+
+    display: flex;
+    justify-content: center;
+
+    padding: 60px 20px;
+    box-sizing: border-box;
+
+    color: #2d3047;
+}
+
+
+/* =========================================================
+   CONTAINER
+   ========================================================= */
+
+.accueil-container {
+    width: 100%;
+    max-width: 850px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.accueil-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+
+.accueil-logo {
+    width: 68px;
+    height: 68px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(
+        --chanteur-primary,
+        #6257a8
+    );
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+
+.accueil-logo-icon {
+    color: white;
+    font-size: 32px;
+    line-height: 1;
+}
+
+
+.accueil-header h1 {
+    margin: 0;
+
+    font-size: 36px;
+    font-weight: 700;
+
+    letter-spacing: -0.5px;
+}
+
+
+.accueil-subtitle {
+    margin: 8px 0 0;
+
+    color: #73768a;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   CARTE PRINCIPALE
+   ========================================================= */
+
+.accueil-card {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 38px 42px;
+
+    box-shadow:
+        0 8px 30px rgba(40, 40, 70, 0.07);
+}
+
+
+.accueil-card h2,
+.accueil-access h2 {
+    margin: 0 0 14px;
+
+    font-size: 24px;
+    font-weight: 650;
+}
+
+
+.accueil-card > p {
+    margin: 0 0 10px;
+
+    color: #626579;
+
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   FONCTIONNALITÉS
+   ========================================================= */
+
+.accueil-features {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-top: 32px;
+}
+
+
+.accueil-feature {
+    display: flex;
+    gap: 15px;
+
+    padding: 20px;
+
+    border-radius: 14px;
+
+    background: #f8f8fc;
+
+    border: 1px solid #ececf3;
+}
+
+
+.accueil-feature-icon {
+    flex: 0 0 42px;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(98, 87, 168, 0.10);
+
+    color: var(
+        --chanteur-primary,
+        #6257a8
+    );
+
+    font-size: 20px;
+}
+
+
+.accueil-feature h3 {
+    margin: 0 0 5px;
+
+    font-size: 16px;
+    font-weight: 650;
+
+    color: #303247;
+}
+
+
+.accueil-feature p {
+    margin: 0;
+
+    color: #74778a;
+
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   ACCÈS
+   ========================================================= */
+
+.accueil-access {
+    margin-top: 22px;
+
+    padding: 28px 32px;
+
+    text-align: center;
+
+    border-radius: 18px;
+
+    background: rgba(98, 87, 168, 0.07);
+
+    border: 1px solid rgba(98, 87, 168, 0.12);
+}
+
+
+.accueil-access h2 {
+    font-size: 20px;
+}
+
+
+.accueil-access p {
+    margin: 5px 0;
+
+    color: #626579;
+
+    line-height: 1.5;
+}
+
+
+.accueil-access-info {
+    font-size: 14px;
+    color: #85879a !important;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.accueil-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+
+    margin-top: 30px;
+
+    color: #8a8c9d;
+
+    font-size: 13px;
+}
+
+
+.accueil-footer strong {
+    color: #66687b;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .accueil {
+        padding: 35px 15px;
+    }
+
+
+    .accueil-header {
+        margin-bottom: 28px;
+    }
+
+
+    .accueil-header h1 {
+        font-size: 30px;
+    }
+
+
+    .accueil-subtitle {
+        font-size: 15px;
+    }
+
+
+    .accueil-card {
+        padding: 28px 22px;
+    }
+
+
+    .accueil-features {
+        grid-template-columns: 1fr;
+    }
+
+
+    .accueil-access {
+        padding: 25px 20px;
+    }
+
+
+    .accueil-footer {
+        flex-wrap: wrap;
+        text-align: center;
+    }
+}

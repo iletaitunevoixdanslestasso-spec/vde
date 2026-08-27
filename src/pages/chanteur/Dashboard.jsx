@@ -541,7 +541,9 @@ export default function DashboardChanteur() {
    */
 
   const todoDai =
-    chanteur.droit_image_workflow !== 2;
+    chanteur.droit_image_workflow !== 1 &&
+    chanteur.droit_image_workflow !== 2
+    ;
 
   const todoPupitre =
     !chanteur.pupitre_id;
