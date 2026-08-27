@@ -80,7 +80,7 @@ export async function relanceDai(
   // 3. DAI déjà accepté
   // --------------------------------------------------
 
-  if (chanteur.droit_image_workflow === 2) {
+  if (chanteur.droit_image_workflow === 2 || chanteur.droit_image_workflow === 1) {
 
     console.log(
       `OK DAI : ${chanteur.prenom} ${chanteur.nom}`
