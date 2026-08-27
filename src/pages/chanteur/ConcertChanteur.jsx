@@ -5,6 +5,7 @@ import "../../styles/espaceChanteur_concerts.css";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 import NotificationService from "../../services/NotificationService";
+import ConcertParticipation from "../../components/ConcertParticipation";
 
 export default function ConcertsChanteur() {
 
@@ -48,7 +49,7 @@ export default function ConcertsChanteur() {
             chanteurId,
 
             (result) => {
-
+                console.log("result", result)
                 setConcerts(result || []);
                 setLoading(false);
             },
@@ -76,67 +77,7 @@ export default function ConcertsChanteur() {
      * =====================================================
      */
 
-    function handleParticipationChange(
-        date,
-        concertId,
-        saison_rendezvous,
-        participe
-    ) {
-        if (new Date(date) < new Date()) {
-            NotificationService.info("Ce concert est passé, la participation ne peut pas être modifiée.")
-            return false
-        }
-        setSaving(concertId);
-        setError(null);
 
-        controller.saveParticipation(
-            token,
-            chanteur,
-            concertId,
-            saison_rendezvous,
-            participe,
-
-            (result) => {
-                NotificationService.success(
-                    result.message ||
-                    "Enregistrement effectué avec succès."
-                );
-                setConcerts(current =>
-                    current.map(concert => {
-
-                        if (
-                            concert.id !== concertId
-                        ) {
-                            return concert;
-                        }
-
-                        return {
-                            ...concert,
-                            participe
-                        };
-                    })
-                );
-
-                setSaving(null);
-            },
-
-            (err) => {
-                NotificationService.error(
-                    "Erreur modification participation"
-                );
-                console.error(
-                    "Erreur modification participation",
-                    err
-                );
-
-                setError(
-                    "Impossible d'enregistrer votre participation."
-                );
-
-                setSaving(null);
-            }
-        );
-    }
 
     /*
      * =====================================================
@@ -415,10 +356,10 @@ export default function ConcertsChanteur() {
                         saving === concert.id;
 
                     const participationValue =
-                        concert.participe === null ||
-                            concert.participe === undefined
+                        concert.participation === null ||
+                            concert.participation === undefined
                             ? ""
-                            : String(concert.participe);
+                            : String(concert.participation);
 
                     return (
                         <article
@@ -544,65 +485,22 @@ export default function ConcertsChanteur() {
                                     PARTICIPATION
                                    ================================= */}
 
-                                <div className="concert-participation">
-
-                                    <label className="concert-participation-label">
-                                        Ma participation
-                                    </label>
-
-                                    <div className="concert-participation-buttons">
-
-                                        <>
-                                            <button
-                                                type="button"
-                                                className={`concert-participation-button ${concert.participe === true
-                                                    ? "selected"
-                                                    : ""
-                                                    }`}
-                                                disabled={isSaving}
-                                                title="Je participe"
-                                                onClick={() =>
-                                                    handleParticipationChange(
-                                                        concert.date,
-                                                        concert.id,
-                                                        concert.saison_rendezvous[0].id,
-                                                        true
-                                                    )
-                                                }
-                                            >
-                                                👍
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className={`concert-participation-button ${concert.participe === false
-                                                    ? "selected"
-                                                    : ""
-                                                    }`}
-                                                disabled={isSaving}
-                                                title="Je ne participe pas"
-                                                onClick={() =>
-                                                    handleParticipationChange(
-                                                        concert.date,
-                                                        concert.id,
-                                                        concert.saison_rendezvous[0].id,
-                                                        false
-                                                    )
-                                                }
-                                            >
-                                                ❌
-                                            </button>
-                                        </>
-
-                                    </div>
-
-                                    {isSaving && (
-                                        <span className="concert-saving">
-                                            Enregistrement...
-                                        </span>
-                                    )}
-
-                                </div>
+                                <ConcertParticipation
+                                    concert={concert}
+                                    // token={token}
+                                    // chanteur={chanteur}
+                                    // controller={controller}
+                                    onParticipationChange={(concertId, participation) => {
+                                        console.log("participation", participation)
+                                        setConcerts(current =>
+                                            current.map(item =>
+                                                item.id === concertId
+                                                    ? { ...item, participation }
+                                                    : item
+                                            )
+                                        );
+                                    }}
+                                />
 
                             </div>
 

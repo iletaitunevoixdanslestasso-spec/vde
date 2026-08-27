@@ -47,7 +47,7 @@ export class SaisonconcertService extends BaseService {
             );
             return {
                 ...concert,
-                participe: participation
+                participation: participation
                     ? participation.participe
                     : null
             };

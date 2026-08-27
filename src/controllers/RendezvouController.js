@@ -18,14 +18,18 @@ export class RendezvouController extends BaseController {
                 const participe = sr.saison_concert_chanteurs.length
                     ? sr.saison_concert_chanteurs?.[0]?.participe
                     : null
-                dataAdapte.push({
-                    ...sr,
+                const rendezvous = {
                     ...sr.rendezvous,
                     debut: sr.rendezvous.heure_debut,
                     participation:
                         sr.rendezvous.rendezvous_type.code === "concert"
                             ? participe
                             : null
+                }
+                dataAdapte.push({
+                    ...rendezvous,
+                    saison_rendezvous : sr
+                    // ...sr.rendezvous,
                 })
             })
             return {

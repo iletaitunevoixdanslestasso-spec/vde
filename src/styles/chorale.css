@@ -139,6 +139,9 @@ button {
 .icon-checked::before {
     content: "✅";
 }
+.icon-accepted::before {
+    content: "👍";
+}
 
 .icon-chansons::before {
     content: "🎵";

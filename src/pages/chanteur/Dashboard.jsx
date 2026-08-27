@@ -5,6 +5,8 @@ import { chanteurConfig } from "../../config/entities/chanteur.config";
 import { rendezvouConfig } from "../../config/entities/rendezvou.config";
 import { repetitionConfig } from "../../config/entities/repetition.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
+import ConcertParticipation from "../../components/ConcertParticipation";
+import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
 
 
 function formatRendezvousDate(date) {
@@ -69,16 +71,17 @@ function TodoItem({
 }
 
 
-function RendezvousRow({ item, onInfo }) {
+function RendezvousRow({ item, onInfo, onParticipation }) {
 
   const isConcert = item.typeCode === "concert";
 
   const participationIcon =
     item.participation === true
-      ? "icon-checked"
+      ? "icon-accepted"
       : item.participation === false
         ? "icon-cancel"
         : "icon-unknown";
+
 
   return (
     <div
@@ -145,16 +148,16 @@ function RendezvousRow({ item, onInfo }) {
 
 
         {isConcert && (
-          <span
-            className={`icon ${participationIcon} dashboard-rendezvous-participation`}
-            title={
-              item.participation === true
-                ? "Je participe"
-                : item.participation === false
-                  ? "Je ne participe pas"
-                  : "Participation non définie"
-            }
-          />
+          <button
+            type="button"
+            className="dashboard-rendezvous-participation-button"
+            onClick={() => onParticipation(item)}
+            title="Modifier ma participation"
+          >
+            <span
+              className={`icon ${participationIcon} dashboard-rendezvous-participation`}
+            />
+          </button>
         )}
 
       </div>
@@ -170,7 +173,7 @@ export default function DashboardChanteur() {
 
 
   const [loading, setLoading] = useState(true);
-
+  const [selectedConcert, setSelectedConcert] = useState(null);
 
   const {
     chanteur,
@@ -258,33 +261,40 @@ export default function DashboardChanteur() {
             item.rendezvous_type?.code !== "repet"
           )
           .map(item => {
-            const rendezvous = item.rendezvous;
+
+
+            // const rendezvous = item.rendezvous;
+            const rendezvous = item;
+            console.log(rendezvous)
             const lieu = rendezvous?.lieux || null;
+            const typeCode =
+              rendezvous.rendezvous_type?.code ||
+              "rendezvous";
             return {
-              id: `rendezvous-${item.id}`,
+              saison_rendezvous: [item.saison_rendezvous],
 
-              type: "rendezvous",
+              key: `${typeCode}-${item.id}`,
+              id: item.id,
+              type: typeCode,
 
-              typeCode:
-                item.rendezvous_type?.code ||
-                "rendezvous",
+              typeCode,
 
               typeLibelle:
-                item.rendezvous_type?.libelle ||
+                rendezvous.rendezvous_type?.libelle ||
                 "Rendez-vous",
 
-              date: item.date,
-              debut: item.debut,
+              date: rendezvous.date,
+              debut: rendezvous.debut,
 
-              titre: item.titre || "",
+              titre: rendezvous.titre || "",
 
-              description: item.description || "",
+              description: rendezvous.description || "",
 
               lieu,
 
               participation:
-                item.rendezvous_type?.code === "concert"
-                  ? item.participation
+                rendezvous.rendezvous_type?.code === "concert"
+                  ? rendezvous.participation
                   : null
             }
           }
@@ -300,7 +310,8 @@ export default function DashboardChanteur() {
           const debut = item.repetitions_type.duree == 90 ? chanteur.gdescription : '20h'
           return {
 
-            id: `repetition-${item.id}`,
+            key: `repetition-${item.id}`,
+            id: item.id,
 
             type: "repetition",
 
@@ -772,9 +783,10 @@ export default function DashboardChanteur() {
 
                   {rendezvous.map(item => (
                     <RendezvousRow
-                      key={item.id}
+                      key={item.key}
                       item={item}
                       onInfo={setSelectedRendezvous}
+                      onParticipation={setSelectedConcert}
                     />
                   ))}
 
@@ -856,6 +868,51 @@ export default function DashboardChanteur() {
 
               </div>
             )}
+
+          </div>
+        </div>
+      )}
+
+      {selectedConcert && (
+        <div
+          className="dashboard-modal-overlay"
+          onClick={() => setSelectedConcert(null)}
+        >
+          <div
+            className="dashboard-modal"
+            onClick={event => event.stopPropagation()}
+          >
+
+            <button
+              type="button"
+              className="dashboard-modal-close"
+              onClick={() => setSelectedConcert(null)}
+            >
+              ×
+            </button>
+
+            <h3>
+              {selectedConcert.titre}
+            </h3>
+
+            <ConcertParticipation
+              concert={selectedConcert}
+              onParticipationChange={(concertId, participe) => {
+                console.log(concertId, participe)
+                setRendezvous(current =>
+                  current.map(item =>
+                    item.id === concertId
+                      ? {
+                        ...item,
+                        participation: participe
+                      }
+                      : item
+                  )
+                );
+
+                setSelectedConcert(null);
+              }}
+            />
 
           </div>
         </div>
