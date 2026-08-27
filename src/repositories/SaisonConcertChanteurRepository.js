@@ -30,7 +30,7 @@ export class SaisonConcertChanteurRepository extends BaseRepository {
     }
 
     async saveParticipation(token, saisonRendezvousId, saisonChanteurId, participe) {
-        return  await this.supabase
+        return await this.supabase
             .from(this.table)
             .upsert(
                 {
@@ -206,5 +206,30 @@ export class SaisonConcertChanteurRepository extends BaseRepository {
         }
 
         return lieu;
+    }
+    async findByConcert(saisonRendezvousId) {
+        return this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            saison_rendezvous_id,
+            saison_chanteur_id,
+            participe,
+            saison_chanteurs (
+                id,
+                saison_id,
+                chanteur_id,
+                chanteurs (
+                    id,
+                    nom,
+                    prenom,
+                    email,
+                    telephone
+                )
+            )
+        `)
+            .eq("saison_rendezvous_id", saisonRendezvousId)
+            .eq("participe", true)
+            .is("deleted_at", null);
     }
 }

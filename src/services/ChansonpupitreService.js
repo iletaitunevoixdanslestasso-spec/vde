@@ -80,6 +80,7 @@ export class ChansonpupitreService extends BaseService {
     async addPupitre(chansonPupitre) {
         const chansonId = this.context.chansonId;
         const pupitreId = chansonPupitre.pupitre_id
+        const ordre = chansonPupitre.ordre
         console.log("pupitreId", pupitreId)
         console.log("chansonId", chansonId)
         const { data: exists, error: existsError } =
@@ -107,6 +108,7 @@ export class ChansonpupitreService extends BaseService {
             await this.repository.insert({
                 pupitre_id: pupitreId,
                 chanson_id: chansonId,
+                ordre: ordre,
                 audio_url: chansonPupitre.audio_url
             });
 

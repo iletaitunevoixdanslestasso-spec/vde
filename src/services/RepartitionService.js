@@ -1,4 +1,8 @@
 import { BaseResponse } from "../core/framework/BaseResponse";
+// import { ChansonpupitreRepository } from "../repositories/ChansonpupitreRepository";
+// import { SaisonChanteurPupitreRepository } from "../repositories/SaisonChanteurPupitreRepository";
+// import { SaisonChanteurRepository } from "../repositories/SaisonChanteurRepository";
+import { SaisonConcertChanteurRepository } from "../repositories/SaisonConcertChanteurRepository";
 
 export default class RepartitionService {
 
@@ -15,30 +19,42 @@ export default class RepartitionService {
 
         this.saisonChanteurPupitreRepository =
             saisonChanteurPupitreRepository;
+
+        this.saisonConcertChanteurRepository =
+            new SaisonConcertChanteurRepository("saison_concert_chanteurs");
     }
 
 
-    async getRepartition(chansonId, saisonId) {
+    async getRepartition(chansonId, saisonId, saisonConcertId) {
 
-        const [
-            chansonPupitresResponse,
-            saisonChanteursResponse,
-            saisonChanteurPupitresResponse
-        ] = await Promise.all([
-
+        const requests = [
+            // 1. Pupitres autorisés pour la chanson
             this.chansonPupitreRepository
                 .findByChanson(chansonId),
 
-            this.saisonChanteurRepository
+            // 2. Pupitres des chanteurs de la saison
+            this.saisonChanteurPupitreRepository
                 .findBySaison(saisonId),
 
-            this.saisonChanteurPupitreRepository
+            // 3. Tous les chanteurs de la saison
+            this.saisonChanteurRepository
                 .findBySaison(saisonId)
-                // .findBySaisonAndChanson(
-                //     saisonId,
-                //     chansonId
-                // )
-        ]);
+        ];
+
+        // 4. Si concert : récupérer les participations
+        if (saisonConcertId) {
+            requests.push(
+                this.saisonConcertChanteurRepository
+                    .findByConcert(saisonConcertId)
+            );
+        }
+
+        const [
+            chansonPupitresResponse,
+            saisonChanteurPupitresResponse,
+            saisonChanteursResponse,
+            saisonConcertChanteursResponse
+        ] = await Promise.all(requests);
 
 
         /*
@@ -46,28 +62,33 @@ export default class RepartitionService {
          */
 
         if (chansonPupitresResponse.error) {
-
             return BaseResponse.error(
                 [],
                 chansonPupitresResponse.error.message
             );
         }
 
+        if (saisonChanteurPupitresResponse.error) {
+            return BaseResponse.error(
+                [],
+                saisonChanteurPupitresResponse.error.message
+            );
+        }
 
         if (saisonChanteursResponse.error) {
-
             return BaseResponse.error(
                 [],
                 saisonChanteursResponse.error.message
             );
         }
 
-
-        if (saisonChanteurPupitresResponse.error) {
-
+        if (
+            saisonConcertId &&
+            saisonConcertChanteursResponse?.error
+        ) {
             return BaseResponse.error(
                 [],
-                saisonChanteurPupitresResponse.error.message
+                saisonConcertChanteursResponse.error.message
             );
         }
 
@@ -85,7 +106,10 @@ export default class RepartitionService {
                 saisonChanteursResponse.data || [],
 
             saisonChanteurPupitres:
-                saisonChanteurPupitresResponse.data || []
+                saisonChanteurPupitresResponse.data || [],
+
+            saisonConcertChanteurs:
+                saisonConcertChanteursResponse?.data || []
 
         });
     }

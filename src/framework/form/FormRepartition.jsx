@@ -20,7 +20,7 @@ export default function FormRepartition({
         new SaisonChanteurRepository(),
         new SaisonChanteurPupitreRepository("saison_chanteur_pupitres")
     );
-
+    const saisonConcertId = config.controller.context.saisonConcertId ?? false;
     const [chansonPupitres, setChansonPupitres] = useState([]);
     const [saisonChanteurs, setSaisonChanteurs] = useState([]);
     const [saisonChanteurPupitres, setSaisonChanteurPupitres] = useState([]);
@@ -49,9 +49,9 @@ export default function FormRepartition({
         const response =
             await repartitionService.getRepartition(
                 initialData.chansons.id,
-                initialData.saison_id
+                initialData.saison_id,
+                saisonConcertId
             );
-
 
         if (!response.success) {
 
@@ -63,17 +63,33 @@ export default function FormRepartition({
             return;
         }
 
-
         const data = response.data;
-
 
         setChansonPupitres(
             data.chansonPupitres
         );
 
-        setSaisonChanteurs(
-            data.saisonChanteurs
-        );
+        let chanteurs = data.saisonChanteurs || [];
+
+        // En mode concert :
+        // on ne garde que les chanteurs qui participent
+        if (saisonConcertId) {
+
+            const participations =
+                data.saisonConcertChanteurs || [];
+
+            chanteurs = chanteurs.filter(
+                chanteur =>
+                    participations.some(
+                        participation =>
+                            participation.saison_chanteur_id ===
+                            chanteur.id &&
+                            participation.participe === true
+                    )
+            );
+        }
+
+        setSaisonChanteurs(chanteurs);
 
         setSaisonChanteurPupitres(
             data.saisonChanteurPupitres
@@ -121,7 +137,7 @@ export default function FormRepartition({
     };
 
 
-    const columns = [
+    const columns_old = [
         {
             field: "chanteur",
             header: "Chanteur",
@@ -156,6 +172,110 @@ export default function FormRepartition({
                 isPupitreValide(row, chansonPupitre) ? 1 : 0
         }))
     ];
+    const columns = [
+        {
+            field: "chanteur",
+            header: "Chanteur",
+
+            render: (_, row) => (
+                <>
+                    {row.chanteurs?.prenom} {row.chanteurs?.nom}
+                </>
+            ),
+
+            sortValue: (row) =>
+                getNomChanteur(row)
+        },
+
+        ...chansonPupitres.map((chansonPupitre) => ({
+            field: `pupitre_${chansonPupitre.pupitre_id}`,
+            header: chansonPupitre.pupitres?.nom,
+
+            render: (_, row) => {
+
+                const valide =
+                    isPupitreValide(
+                        row,
+                        chansonPupitre
+                    );
+
+                return (
+                    <input
+                        type="checkbox"
+                        checked={valide}
+                        readOnly
+                    />
+                );
+            },
+
+            sortValue: (row) =>
+                getSortValuePupitre(
+                    row,
+                    chansonPupitre
+                )
+        }))
+    ];
+    
+    const getNomChanteur = (row) =>
+        `${row.chanteurs?.nom ?? ""} ${row.chanteurs?.prenom ?? ""}`;
+
+
+    const getSortValuePupitre = (
+        row,
+        chansonPupitre
+    ) => {
+
+        const pupitreId =
+            getPupitreEffectif(row);
+
+        const nom =
+            getNomChanteur(row);
+
+        /*
+         * Le pupitre cliqué en premier.
+         * Puis les autres pupitres dans leur ordre.
+         */
+
+        const estPupitreSelectionne =
+            pupitreId === chansonPupitre.pupitre_id;
+
+        const ordrePupitre =
+            estPupitreSelectionne
+                ? "0"
+                : "1";
+
+        return `${ordrePupitre}_${pupitreId ?? "999"}_${nom}`;
+    };
+
+    const getPupitreEffectif = (row) => {
+
+        const chanteurId = row.chanteur_id;
+        const chansonId = initialData.chansons.id;
+
+        // Priorité au pupitre spécifique à la chanson
+        const choixChanson =
+            saisonChanteurPupitres.find(
+                scp =>
+                    scp.saison_chanteurs?.chanteur_id ===
+                    chanteurId &&
+                    scp.chanson_id === chansonId
+            );
+
+        if (choixChanson) {
+            return choixChanson.pupitre_id;
+        }
+
+        // Sinon pupitre principal
+        const pupitrePrincipal =
+            saisonChanteurPupitres.find(
+                scp =>
+                    scp.saison_chanteurs?.chanteur_id ===
+                    chanteurId &&
+                    scp.principal === true
+            );
+
+        return pupitrePrincipal?.pupitre_id ?? null;
+    };
 
     return (
         <div>

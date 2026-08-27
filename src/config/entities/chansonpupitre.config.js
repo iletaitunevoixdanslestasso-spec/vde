@@ -23,6 +23,19 @@ const columns = [
 
     },
     {
+        field: "ordre",
+        header: "ordre",
+        type: "number",
+        // source: "availablePupitres",
+        // editType: "readonly",
+        // required: true,
+        // render: (v, row) => {
+        //     console.log(row)
+        //     return `${row.pupitres.nom}`;
+        // }
+
+    },
+    {
         field: "audio_url", header: "Audio", type: "text",
         render: (v, row) => {
 
@@ -63,6 +76,9 @@ export const chansonpupitreConfig = createEntityConfig({
     Controller: ChansonpupitreController,
 
     columns,
-    actions
+    actions,
+    dragAndDrop: true,
+    orderField: "ordre"
+
 
 });

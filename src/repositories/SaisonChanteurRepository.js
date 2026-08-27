@@ -51,16 +51,18 @@ export class SaisonChanteurRepository extends BaseRepository {
                 id,
                 saison_id,
                 chanteur_id,
-                chanteurs (
+                chanteurs!left (
                     id,
                     nom,
                     prenom,
                     email,
                     telephone
                 )
+                
             `)
             .eq("saison_id", saisonId)
-            .is("deleted_at", null);
+            .is("deleted_at", null)
+            .is("chanteurs.deleted_at", null);
     }
        async findBySaison_convention(saisonId) {
         const { data, error } = await this.supabase

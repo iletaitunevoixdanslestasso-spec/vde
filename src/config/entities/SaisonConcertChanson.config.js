@@ -63,7 +63,7 @@ export const SaisonConcertChansonConfig = createEntityConfig({
 
     entity: "SaisonConcertChanson",
 
-    title: "TODO",
+    title: "Les chansons",
 
     table: "saison_concert_chansons",
 

@@ -9,6 +9,9 @@ export default function DataTable({
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
+    const dragAndDrop = config.dragAndDrop === true;
+    const orderField = config.orderField || "ordre";
+
     const [sort, setSort] = useState({
         field: null,
         direction: "asc"
@@ -19,7 +22,57 @@ export default function DataTable({
     );
 
     const actions = config.actions || [];
+    const [draggedRow, setDraggedRow] = useState(null);
 
+    /*
+     * =========================================================
+     * DRAG AND DROP
+     * =========================================================
+     */
+
+    const handleDragStart = (row) => {
+        setDraggedRow(row);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (targetRow) => {
+
+        if (!draggedRow) {
+            return;
+        }
+
+        if (draggedRow.id === targetRow.id) {
+            setDraggedRow(null);
+            return;
+        }
+
+        const newData = [...data];
+
+        const fromIndex = newData.findIndex(
+            row => row.id === draggedRow.id
+        );
+
+        const toIndex = newData.findIndex(
+            row => row.id === targetRow.id
+        );
+
+        if (fromIndex === -1 || toIndex === -1) {
+            setDraggedRow(null);
+            return;
+        }
+
+        const [movedRow] =
+            newData.splice(fromIndex, 1);
+
+        newData.splice(toIndex, 0, movedRow);
+
+        setDraggedRow(null);
+
+        // À gérer ensuite pour sauvegarder
+    };
 
     /*
      * =========================================================

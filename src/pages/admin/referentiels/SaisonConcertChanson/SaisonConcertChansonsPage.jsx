@@ -28,7 +28,10 @@ export default function SaisonConcertChansonsPage() {
 
     return (
         <CRUDPage
-            config={SaisonConcertChansonConfig}
+            config={{
+                ...SaisonConcertChansonConfig,
+                title:`Les chansons pour ${concertSelectionne.titre}`
+            }}
             context={{
                 saisonId:saisonSelectionne.id,
                 concertId:concertSelectionne.id,
