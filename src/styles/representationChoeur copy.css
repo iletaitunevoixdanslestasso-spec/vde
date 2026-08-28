@@ -1,0 +1,423 @@
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.representation-choeur {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 24px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.choeur-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.choeur-header-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f1f5f9;
+    font-size: 22px;
+}
+
+.choeur-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.choeur-subtitle {
+    margin-top: 3px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+
+/* =========================================================
+   SCÈNE
+========================================================= */
+
+.choeur-scene {
+    position: relative;
+
+    min-height: 360px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   ARC
+========================================================= */
+
+.choeur-arc {
+    position: relative;
+
+    width: 100%;
+    max-width: 100%;
+
+    height: 280px;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding: 40px 10px 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   PUPITRE
+========================================================= */
+.choeur-pupitre {
+    width: 30%;
+    max-width: 180px;
+    min-width: 0;
+
+    margin: 0 2px;
+}
+
+/* =========================================================
+   LABEL PUPITRE
+========================================================= */
+
+.pupitre-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-bottom: 14px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: var(--pupitre-color);
+
+    white-space: nowrap;
+}
+
+.pupitre-label-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: var(--pupitre-color);
+
+    box-shadow:
+        0 0 0 4px
+        color-mix(
+            in srgb,
+            var(--pupitre-color) 12%,
+            transparent
+        );
+}
+
+.pupitre-count {
+    display: inline-flex;
+
+    min-width: 20px;
+    height: 20px;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 5px;
+
+    border-radius: 10px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--pupitre-color) 10%,
+            white
+        );
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   CHANTEURS
+========================================================= */
+
+.pupitre-chanteurs {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    max-width: 170px;
+}
+
+
+/* =========================================================
+   ICÔNE CHANTEUR
+========================================================= */
+
+.chanteur {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--pupitre-color) 10%,
+            white
+        );
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+
+    cursor: default;
+}
+
+.icon-chanteurs {
+    width: 22px;
+    height: 22px;
+
+    fill: var(--pupitre-color);
+
+    stroke: var(--pupitre-color);
+    stroke-width: 1.2;
+
+    transition: transform 0.18s ease;
+}
+
+.chanteur:hover {
+    transform: translateY(-4px) scale(1.08);
+
+    background:
+        color-mix(
+            in srgb,
+            var(--pupitre-color) 18%,
+            white
+        );
+
+    box-shadow:
+        0 5px 12px
+        color-mix(
+            in srgb,
+            var(--pupitre-color) 25%,
+            transparent
+        );
+}
+
+.chanteur:hover .icon-chanteurs {
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   CHEF DE CHŒUR
+========================================================= */
+
+.chef-choeur {
+    position: relative;
+
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 9px 16px;
+
+    border-radius: 30px;
+
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.chef-choeur-icon {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   LIGNE VISUELLE DE LA SCÈNE
+========================================================= */
+
+.choeur-scene::before {
+    content: "";
+
+    position: absolute;
+
+    left: 5%;
+    right: 5%;
+
+    bottom: 45px;
+
+    height: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #e2e8f0 15%,
+            #cbd5e1 50%,
+            #e2e8f0 85%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   LÉGENDE
+========================================================= */
+
+.choeur-legende {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    margin-top: 18px;
+    padding-top: 16px;
+
+    border-top: 1px solid #f1f5f9;
+}
+
+.legende-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 12px;
+    color: #64748b;
+}
+
+.legende-color {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   VIDE
+========================================================= */
+
+.representation-choeur.empty {
+    min-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    color: #64748b;
+}
+
+.choeur-empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.choeur-empty-text {
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .representation-choeur {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .choeur-scene {
+        min-height: 440px;
+    }
+
+    .choeur-arc {
+        height: auto;
+
+        padding-top: 20px;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 20px;
+    }
+
+    .choeur-pupitre {
+        width: 100%;
+        min-height: auto;
+
+        margin: 0;
+    }
+
+    .pupitre-chanteurs {
+        max-width: 280px;
+    }
+
+    .choeur-scene::before {
+        display: none;
+    }
+
+    .chef-choeur {
+        margin-top: 10px;
+    }
+
+    .choeur-legende {
+        gap: 10px 14px;
+    }
+}

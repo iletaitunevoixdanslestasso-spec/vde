@@ -1,0 +1,204 @@
+/* =========================================================
+   CRUD PAGE
+   ========================================================= */
+
+.crud-page {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.crud-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+
+.crud-header h1 {
+    margin: 0;
+
+    color: #1e293b;
+
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   BOUTON NOUVEAU
+   ========================================================= */
+
+.crud-new-button {
+    flex: 0 0 auto;
+
+    min-height: 40px;
+
+    padding: 9px 15px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #4f46e5;
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+
+.crud-new-button:hover {
+    background: #4338ca;
+
+    box-shadow:
+        0 4px 12px rgba(79, 70, 229, .22);
+}
+
+
+.crud-new-button:active {
+    transform: translateY(1px);
+}
+
+
+/* =========================================================
+   ERREURS
+   ========================================================= */
+
+.crud-errors {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    margin-bottom: 16px;
+    padding: 12px 14px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.crud-page > .data-table,
+.crud-page > div {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   TABLETTE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .crud-header {
+        margin-bottom: 16px;
+    }
+
+    .crud-header h1 {
+        font-size: 22px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .crud-page {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------------------
+       HEADER
+    ----------------------------------------------------- */
+
+    .crud-header {
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 12px;
+
+        margin-bottom: 16px;
+    }
+
+
+    .crud-header h1 {
+        font-size: 21px;
+    }
+
+
+    /* -----------------------------------------------------
+       BOUTON
+    ----------------------------------------------------- */
+
+    .crud-new-button {
+        width: 100%;
+
+        min-height: 42px;
+    }
+
+
+    /* -----------------------------------------------------
+       ERREURS
+    ----------------------------------------------------- */
+
+    .crud-errors {
+        margin-bottom: 14px;
+
+        padding: 10px 12px;
+
+        font-size: 13px;
+    }
+
+}
+
+
+/* =========================================================
+   PETITS TELEPHONES
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .crud-header h1 {
+        font-size: 19px;
+    }
+
+    .crud-new-button {
+        min-height: 40px;
+
+        padding: 8px 12px;
+    }
+
+}
