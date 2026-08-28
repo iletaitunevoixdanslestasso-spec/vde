@@ -121,5 +121,7 @@ export class ChansonpupitreService extends BaseService {
         return BaseResponse.success(data);
     }
 
-
+    async updateOrdres(rows) {
+        return this.repository.updateOrdres(rows);
+    }
 }

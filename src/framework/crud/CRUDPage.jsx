@@ -75,7 +75,7 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "repartition":
-                console.log("repartition",row)
+                console.log("repartition", row)
                 setEditItem(row);
                 setOpen(true);
 
@@ -274,7 +274,11 @@ export default function CRUDPage({ config, context = {} }) {
             ]);
         }
     };
+    const handleReorder = async (rows) => {
+        await controller.updateOrdres(rows);
 
+        await load();
+    };
 
     return (
         <div>
@@ -318,6 +322,7 @@ export default function CRUDPage({ config, context = {} }) {
                 data={items}
                 config={config}
                 onAction={handleAction}
+                onReorder={handleReorder}
             />
 
 

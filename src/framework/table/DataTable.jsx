@@ -4,6 +4,7 @@ export default function DataTable({
     data = [],
     config = {},
     onAction,
+    onReorder
 }) {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -64,14 +65,19 @@ export default function DataTable({
             return;
         }
 
-        const [movedRow] =
-            newData.splice(fromIndex, 1);
+        const [movedRow] = newData.splice(fromIndex, 1);
 
         newData.splice(toIndex, 0, movedRow);
 
         setDraggedRow(null);
 
-        // À gérer ensuite pour sauvegarder
+        // Recalcul du champ ordre
+        const reorderedData = newData.map((row, index) => ({
+            ...row,
+            [orderField]: index + 1
+        }));
+
+        onReorder?.(reorderedData);
     };
 
     /*
@@ -468,7 +474,11 @@ export default function DataTable({
 
                         <tr
                             key={row.id}
-                            className="data-table-row"
+                            className={`data-table-row ${dragAndDrop ? "data-table-row-draggable" : ""}`}
+                            draggable={dragAndDrop}
+                            onDragStart={() => handleDragStart(row)}
+                            onDragOver={dragAndDrop ? handleDragOver : undefined}
+                            onDrop={() => handleDrop(row)}
                         >
 
                             {columns.map((col) => (

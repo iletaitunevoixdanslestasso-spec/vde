@@ -46,7 +46,7 @@ export class ChansonpupitreController extends BaseController {
                 const nom = a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" });
                 if (nom !== 0) return nom;
 
-                
+
             })
             .map(chanson => {
                 const chansonpupitre = chanson.chanson_pupitres[0];
@@ -143,6 +143,9 @@ export class ChansonpupitreController extends BaseController {
         console.log("Lien à envoyer :", result.url);
 
         return result;
+    }
+    async updateOrdres(rows) {
+        return this.service.updateOrdres(rows);
     }
 
 }
