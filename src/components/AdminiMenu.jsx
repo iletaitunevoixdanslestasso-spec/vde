@@ -211,6 +211,14 @@ export default function AdminMenu() {
                     >
                         Concerts
                     </p>
+                    <p
+                        className="admin-menu-item icon-lieux"
+                        onClick={() =>
+                            navigate("/admin/lieux")
+                        }
+                    >
+                        Lieux
+                    </p>
 
                     <p
                         className="admin-menu-item icon-repetitions"

@@ -3,7 +3,7 @@ import { BaseMapper } from "./BaseMapper";
 
 export class ConcertMapper extends BaseMapper {
 
-    constructor(columns) {
+    constructor(columns = []) {
         super(columns);
     }
 

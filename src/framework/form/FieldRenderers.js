@@ -9,6 +9,7 @@ import NumberRenderer from "./renderers/NumberRenderer";
 import SelectRenderer from "./renderers/SelectRenderer";
 import TextareaRenderer from "./renderers/Textarea";
 import TextRenderer from "./renderers/TextRenderer";
+import TimeRenderer from "./renderers/TimeRenderer";
 
 export const FieldRenderers = {
 
@@ -21,4 +22,5 @@ export const FieldRenderers = {
     fileUploader:FileUploaderRenderer,
     textarea:TextareaRenderer,
     checkbox:CheckboxRenderer,
+    time:TimeRenderer,
 };

@@ -104,6 +104,9 @@ button {
     content: "💾";
 }
 
+.icon-lieux::before {
+    content: "📍";
+}
 .icon-edit::before {
     content: "✏️";
 }

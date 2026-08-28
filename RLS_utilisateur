@@ -1,6 +1,6 @@
 --- POUR LES ANNON---
 -- create policy "anon can read active document types"
--- on public.document_types
+-- on public. lieux
 -- for select
 -- to anon
 -- using (
@@ -26,29 +26,29 @@ WHERE p.proname = 'get_mon_profil()';
 ------- ------- ------- ------- ------- ------- --
 
 
-CREATE POLICY "authenticated_insert_document_types"
-ON public.document_types
+CREATE POLICY "authenticated_insert_ lieux"
+ON public. lieux
 FOR INSERT
 TO authenticated
 WITH CHECK (true);
 
-CREATE POLICY "authenticated_select_document_types"
-ON public.document_types
+CREATE POLICY "authenticated_select_ lieux"
+ON public. lieux
 FOR SELECT
 TO authenticated
 USING (true);
 
-CREATE POLICY "authenticated_update_document_types"
-ON public.document_types
+CREATE POLICY "authenticated_update_ lieux"
+ON public. lieux
 FOR UPDATE
 TO authenticated
 USING (true)
 WITH CHECK (true);
 
-CREATE POLICY "authenticated_delete_document_types"
-ON public.document_types
+CREATE POLICY "authenticated_delete_ lieux"
+ON public. lieux
 FOR DELETE
 TO authenticated
 USING (true);
 
-ALTER TABLE public.document_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public. lieux ENABLE ROW LEVEL SECURITY;

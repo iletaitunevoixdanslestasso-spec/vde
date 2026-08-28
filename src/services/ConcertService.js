@@ -116,7 +116,6 @@ export class ConcertService extends BaseService {
             heure_debut: form.heure_debut,
             duree_previsionnelle: form.duree_previsionnelle,
             description: form.description,
-            description: form.description,
             date: form.date,
             rendezvous_type_id: rendezvous_type.id,
             lieu_id: lieuId

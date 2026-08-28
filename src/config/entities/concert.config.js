@@ -10,6 +10,9 @@ const columns = [
     { field: "titre", header: "Titre", type: "text" },
 
     { field: "date", header: "Date", type: "date" },
+    { field: "description", header: "Description du concert", type: "textarea" },
+    { field: "heure_debut", header: "Heure du début", type: "time" },
+    { field: "heure_rdv", header: "Heure du rdv", type: "time" },
     {
         field: "rendezvous_type_id",
         header: "typerendezvous",

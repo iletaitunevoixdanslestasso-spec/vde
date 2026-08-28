@@ -53,6 +53,7 @@ import SaisonconcertPage from "../pages/admin/referentiels/saisonconcert/Saisonc
 import SaisonConcertChansonsPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonConcertChansonsPage";
 import ConcertsChanteur from "../pages/chanteur/ConcertChanteur";
 import { ChanteurProvider } from "../components/contexts/ChanteurContext";
+import LieuxPage from "../pages/admin/referentiels/Lieux/LieuxPage";
 
 
 export default function Router() {
@@ -218,6 +219,10 @@ export default function Router() {
                             <Route
                                 path="pupitres"
                                 element={<PupitrePage />}
+                            />
+                            <Route
+                                path="lieux"
+                                element={<LieuxPage />}
                             />
 
                             <Route
