@@ -1,4 +1,4 @@
-import "./../styles/RepresentationChoeur.css";
+import "./../styles/representationChoeur.css";
 
 
 function IconChanteur({
