@@ -1,0 +1,389 @@
+/* =========================================================
+   DOCUMENTS CHANTEUR
+   ========================================================= */
+
+.documents-chanteur {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.documents-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.documents-header__icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: var(--color-primary-light, #eef2ff);
+    border-radius: 14px;
+
+    font-size: 24px;
+}
+
+.documents-header h1 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 700;
+
+    color: var(--color-text, #1f2937);
+}
+
+.documents-header p {
+    margin: 4px 0 0;
+
+    font-size: 14px;
+    line-height: 1.4;
+
+    color: var(--color-text-secondary, #6b7280);
+}
+
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.documents-section {
+    margin-bottom: 28px;
+}
+
+.documents-section__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 12px;
+}
+
+.documents-section__icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #f3f4f6;
+    border-radius: 11px;
+
+    font-size: 19px;
+}
+
+.documents-section h2 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    color: #1f2937;
+}
+
+.documents-section__count {
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   LISTE
+   ========================================================= */
+
+.documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* =========================================================
+   DOCUMENT
+   ========================================================= */
+
+.document-item {
+    display: flex;
+    align-items: center;
+
+    min-height: 68px;
+    padding: 10px 12px;
+
+    box-sizing: border-box;
+
+    text-decoration: none;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.document-item:hover {
+    transform: translateY(-1px);
+
+    border-color: #d1d5db;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.document-item:active {
+    transform: scale(0.99);
+}
+
+
+/* =========================================================
+   ICONE DOCUMENT
+   ========================================================= */
+
+.document-item__icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #f8fafc;
+    border-radius: 11px;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.document-item__content {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    flex: 1;
+
+    margin-left: 12px;
+}
+
+.document-item__title {
+    overflow: hidden;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    color: #1f2937;
+
+    text-overflow: ellipsis;
+}
+
+.document-item__type {
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   ACTION
+   ========================================================= */
+
+.document-item__action {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    margin-left: 8px;
+
+    background: #f3f4f6;
+    border-radius: 10px;
+
+    font-size: 18px;
+
+    color: #4b5563;
+}
+
+
+/* =========================================================
+   DOCUMENT INDISPONIBLE
+   ========================================================= */
+
+.document-item--disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.document-item--disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   ETATS
+   ========================================================= */
+
+.documents-chanteur--state {
+    min-height: 250px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.documents-loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.documents-loading__icon {
+    font-size: 22px;
+
+    animation: documents-pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes documents-pulse {
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+.documents-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 6px;
+
+    max-width: 350px;
+
+    padding: 24px;
+
+    text-align: center;
+
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 16px;
+
+    color: #9a3412;
+}
+
+.documents-error__icon {
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.documents-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 16px;
+
+    color: #6b7280;
+}
+
+.documents-empty__icon {
+    margin-bottom: 4px;
+
+    font-size: 34px;
+}
+
+.documents-empty strong {
+    font-size: 15px;
+    color: #374151;
+}
+
+.documents-empty span {
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 700px) {
+
+    .documents-chanteur {
+        padding: 24px;
+    }
+
+    .documents-header {
+        margin-bottom: 32px;
+    }
+
+    .documents-header h1 {
+        font-size: 28px;
+    }
+
+    .document-item {
+        min-height: 72px;
+        padding: 12px 14px;
+    }
+
+    .document-item__title {
+        font-size: 15px;
+    }
+
+}

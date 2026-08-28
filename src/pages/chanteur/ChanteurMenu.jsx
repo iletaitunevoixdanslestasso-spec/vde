@@ -108,6 +108,20 @@ export default function ChanteurMenu({chanteur}) {
                         Répétitions
                     </span>
                 </button>
+                <button
+                    type="button"
+                    className={
+                        `chanteur-menu-item icon-documents ` +
+                        (isActive("/documents")
+                            ? "active"
+                            : "")
+                    }
+                    onClick={() => go("/documents")}
+                >
+                    <span className="chanteur-menu-label">
+                        Documents
+                    </span>
+                </button>
 
 
                 {/* <button

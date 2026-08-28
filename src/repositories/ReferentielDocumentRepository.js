@@ -49,4 +49,30 @@ export class ReferentielDocumentRepository extends BaseRepository {
     }
 
 
+    async findDocumentsChanteur() {
+
+        const { data, error } = await this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            titre,
+            path,
+            document_type_id,
+            document_types!inner (
+                id,
+                code,
+                libelle
+            )
+        `)
+            .in("document_types.code", ["choriste", "adherent"])
+            .is("deleted_at", null)
+            .order("titre", {
+                ascending: true
+            });
+
+        return {
+            data,
+            error
+        };
+    }
 }

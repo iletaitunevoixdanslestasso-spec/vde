@@ -27,7 +27,7 @@ export class ReferentielDocumentService extends BaseService {
             data
         };
     }
-    
+
     async getAll(orderBy = "titre") {
 
         const { data, error } =
@@ -43,7 +43,7 @@ export class ReferentielDocumentService extends BaseService {
         const enrichedData = await Promise.all(
             data.map(async document => {
 
-                
+
 
                 if (!document?.path) {
                     return {
@@ -104,4 +104,46 @@ export class ReferentielDocumentService extends BaseService {
             error: null
         };
     }
+
+    async findDocumentsChanteur() {
+        const { data, error } =
+            await this.repository.findDocumentsChanteur();
+
+        if (error) {
+            return {
+                success: false,
+                errors: error
+            };
+        }
+
+        const enrichedData = await Promise.all(
+            data.map(async document => {
+
+                if (!document?.path) {
+                    return {
+                        ...document,
+                        downloadUrl: null
+                    };
+                }
+
+                const url =
+                    await StorageService.createSignedUrl(
+                        "referentiel-documents",
+                        document.path,
+                        3600
+                    );
+
+                return {
+                    ...document,
+                    downloadUrl: url
+                };
+            })
+        );
+
+        return {
+            success: true,
+            data: enrichedData
+        };
+    }
+
 }

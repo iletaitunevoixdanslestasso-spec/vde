@@ -107,6 +107,7 @@ button {
 .icon-lieux::before {
     content: "📍";
 }
+
 .icon-edit::before {
     content: "✏️";
 }

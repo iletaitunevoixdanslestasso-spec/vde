@@ -54,6 +54,8 @@ import SaisonConcertChansonsPage from "../pages/admin/referentiels/SaisonConcert
 import ConcertsChanteur from "../pages/chanteur/ConcertChanteur";
 import { ChanteurProvider } from "../components/contexts/ChanteurContext";
 import LieuxPage from "../pages/admin/referentiels/Lieux/LieuxPage";
+import DocumentsChanteur from "../pages/chanteur/DocumentsChanteur";
+import DocumentsChanteurPage from "../pages/admin/referentiels/DocumentsChanteur/DocumentsChanteurPage";
 
 
 export default function Router() {
@@ -116,6 +118,10 @@ export default function Router() {
                                     path="repetitions"
                                     element={<Repetitions />}
                                 />
+                                <Route
+                                    path="documents"
+                                    element={<DocumentsChanteurPage />}
+                                />
 
                                 <Route
                                     path="votes"
@@ -173,7 +179,6 @@ export default function Router() {
                                 path="saison/:saison_nom/concert/:titre/chansons"
                                 element={<SaisonConcertChansonsPage />}
                             />
-
 
                             <Route
                                 path="saison/:saison_nom/repetition"
