@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { FieldRenderers } from "./FieldRenderers";
 import FormEdition from "./FormEdition";
 import FormRepartition from "./FormRepartition";
+import "./../styles/FormModal.css";
 
 export default function FormModal({
     open,
@@ -16,7 +17,6 @@ export default function FormModal({
 }) {
 
     const [form, setForm] = useState({});
-
     const [fileUpload, setFileUpload] = useState(null);
 
     const registerFileUpload = useCallback((upload) => {
@@ -28,24 +28,28 @@ export default function FormModal({
         repartition: FormRepartition
     };
 
-
-    // ✔ 1. hooks toujours en premier
     useEffect(() => {
+
         if (!open) return;
 
         setFileUpload(null);
 
         if (initialData) {
+
             setForm(initialData);
+
         } else {
+
             const obj = {};
 
             config.columns.forEach(f => {
+
                 if (f.type === "date") obj[f.field] = "";
                 if (f.type === "text") obj[f.field] = "";
                 if (f.type === "number") obj[f.field] = "";
                 if (f.type === "select") obj[f.field] = "";
                 if (f.type === "boolean") obj[f.field] = false;
+
             });
 
             setForm(obj);
@@ -53,22 +57,14 @@ export default function FormModal({
 
     }, [initialData, open, config, action]);
 
-
     const Content = ModalContent[action] || FormEdition;
 
-    const errorsByField = Object.fromEntries(
-        errors.map(e => [e.field, e.message])
-    );
-
-    // ✔ 2. ensuite logique normale
     if (!open) return null;
-
-    const fields = config.columns || [];
 
     const handleChange = (name, value) => {
 
+        onFieldChange(name);
 
-        onFieldChange(name)
         setForm(prev => ({
             ...prev,
             [name]: value
@@ -78,81 +74,63 @@ export default function FormModal({
     const handleSave = async (form) => {
 
         let finalForm = { ...form };
-        console.log("FORMMODAL handleSave");
-        console.log("fileUpload", fileUpload);
+
         if (fileUpload) {
+
             const result = await fileUpload();
 
             if (result === null) {
                 return;
             }
 
-            // if (!result.skipped) {
-            //     finalForm = {
-            //         ...finalForm,
-            //         path: result.path
-            //     };
-            // }
             if (!result.skipped) {
+
                 finalForm = {
                     ...finalForm,
                     [result.field]: result.path
                 };
             }
-             console.log("FINAL RESULT", result);
-             console.log("FINAL FORM", finalForm);
         }
 
         onSave(finalForm);
     };
 
-    const styles = {
-        overlay: {
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000
-        },
-        modal: {
-            background: "white",
-            padding: 20,
-            width: 500,
-            borderRadius: 8
-        }
-    };
-
     return (
-        <div style={styles.overlay}>
-            <div style={styles.modal}>
+        <div className="form-modal-overlay">
 
+            <div className="form-modal">
 
-                <Content
-                    config={config}
-                    initialData={initialData}
-                    context={context}
-                    form={form}
-                    errors={errors}
-                    onChange={handleChange}
-                    onClose={onClose}
-                    onFieldChange={onFieldChange}
-                    onFileUploadReady={registerFileUpload}
-                    onSave={handleSave}
-                />
+                <div className="form-modal-content">
 
-
-
-
-                <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-                    <button onClick={onClose}>Annuler</button>
+                    <Content
+                        config={config}
+                        initialData={initialData}
+                        context={context}
+                        form={form}
+                        errors={errors}
+                        onChange={handleChange}
+                        onClose={onClose}
+                        onFieldChange={onFieldChange}
+                        onFileUploadReady={registerFileUpload}
+                        onSave={handleSave}
+                    />
 
                 </div>
+
+                <div className="form-modal-footer">
+
+                    <button
+                        type="button"
+                        className="form-modal-cancel"
+                        onClick={onClose}
+                    >
+                        Annuler
+                    </button>
+
+                </div>
+
             </div>
+
         </div>
     );
 }

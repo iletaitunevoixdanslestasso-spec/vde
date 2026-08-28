@@ -4,6 +4,7 @@ import { ChansonpupitreRepository } from "../../repositories/ChansonpupitreRepos
 import { SaisonChanteurRepository } from "../../repositories/SaisonChanteurRepository";
 import { SaisonChanteurPupitreRepository } from "../../repositories/SaisonChanteurPupitreRepository";
 import DataTable from "../table/DataTable";
+import RepresentationChoeur from "../../components/RepresentationChoeur";
 
 
 export default function FormRepartition({
@@ -215,7 +216,7 @@ export default function FormRepartition({
                 )
         }))
     ];
-    
+
     const getNomChanteur = (row) =>
         `${row.chanteurs?.nom ?? ""} ${row.chanteurs?.prenom ?? ""}`;
 
@@ -277,6 +278,77 @@ export default function FormRepartition({
         return pupitrePrincipal?.pupitre_id ?? null;
     };
 
+    const getPupitresRepresentation = () => {
+
+        return chansonPupitres.map((chansonPupitre, index) => {
+
+            const pupitreId =
+                chansonPupitre.pupitre_id;
+
+            const pupitre =
+                chansonPupitre.pupitres;
+
+            /*
+             * Chanteurs appartenant effectivement
+             * à ce pupitre pour cette chanson.
+             */
+            const chanteurs =
+                saisonChanteurs
+                    .filter(chanteur =>
+                        getPupitreEffectif(chanteur) === pupitreId
+                    )
+                    .map(chanteur => ({
+                        id: chanteur.id,
+                        chanteur_id: chanteur.chanteur_id,
+                        prenom: chanteur.chanteurs?.prenom,
+                        nom: chanteur.chanteurs?.nom
+                    }));
+
+
+            /*
+             * Couleur du pupitre.
+             *
+             * Pour l'instant on détermine la couleur
+             * à partir du nom.
+             *
+             * Tu pourras ensuite mettre la couleur
+             * directement dans la table pupitres.
+             */
+            const nom =
+                (pupitre?.nom || "").toLowerCase();
+
+            let couleur = "#64748b";
+
+            if (nom.includes("sopr")) {
+                couleur = "#e91e63";
+            }
+            else if (nom.includes("alto")) {
+                couleur = "#9c27b0";
+            }
+            else if (
+                nom.includes("tenor") ||
+                nom.includes("ténor")
+            ) {
+                couleur = "#2196f3";
+            }
+            else if (
+                nom.includes("basse")
+            ) {
+                couleur = "#16a34a";
+            }
+
+
+            return {
+                id: pupitreId,
+                code: pupitre?.code || `pupitre-${index}`,
+                nom: pupitre?.nom || "Pupitre",
+                couleur,
+                chanteurs
+            };
+        });
+    };
+
+
     return (
         <div>
 
@@ -286,7 +358,7 @@ export default function FormRepartition({
 
             <div style={{ marginBottom: 15 }}>
                 <strong>
-                    Chanson : {initialData?.chansons?.titre}
+                    Chanson : {initialData?.saison_chansons?.chansons?.titre}
                 </strong>
             </div>
             <DataTable
@@ -295,141 +367,12 @@ export default function FormRepartition({
                     columns
                 }}
             />
-            {/* 
-            <div
-                style={{
-                    overflowX: "auto"
-                }}
-            >
 
-                <table
-                    style={{
-                        width: "100%",
-                        borderCollapse: "collapse"
-                    }}
-                >
+            <RepresentationChoeur
+                pupitres={getPupitresRepresentation()}
+                titre={initialData?.saison_chansons?.chansons?.titre}
+            />
 
-                    <thead>
-
-                        <tr>
-
-                            <th
-                                style={{
-                                    border: "1px solid #ccc",
-                                    padding: 8,
-                                    textAlign: "left",
-                                    background: "#f5f5f5",
-                                    position: "sticky",
-                                    left: 0
-                                }}
-                            >
-                                Chanteur
-                            </th>
-
-
-                            {chansonPupitres.map(
-                                chansonPupitre => (
-
-                                    <th
-                                        key={chansonPupitre.id}
-                                        style={{
-                                            border: "1px solid #ccc",
-                                            padding: 8,
-                                            textAlign: "center",
-                                            background: "#f5f5f5"
-                                        }}
-                                    >
-                                        {
-                                            chansonPupitre
-                                                .pupitres
-                                                ?.nom
-                                        }
-                                    </th>
-
-                                )
-                            )}
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        {saisonChanteurs.map(
-                            saisonChanteur => (
-
-                                <tr
-                                    key={saisonChanteur.id}
-                                >
-
-                                    <td
-                                        style={{
-                                            border: "1px solid #ccc",
-                                            padding: 8,
-                                            whiteSpace: "nowrap",
-                                            position: "sticky",
-                                            left: 0,
-                                            background: "white"
-                                        }}
-                                    >
-                                        {
-                                            saisonChanteur
-                                                .chanteurs
-                                                ?.prenom
-                                        }{" "}
-                                        {
-                                            saisonChanteur
-                                                .chanteurs
-                                                ?.nom
-                                        }
-                                    </td>
-
-
-                                    {chansonPupitres.map(
-                                        chansonPupitre => {
-
-                                            const valide =
-                                                isPupitreValide(
-                                                    saisonChanteur,
-                                                    chansonPupitre
-                                                );
-
-
-                                            return (
-                                                <td
-                                                    key={
-                                                        chansonPupitre.id
-                                                    }
-                                                    style={{
-                                                        border: "1px solid #ccc",
-                                                        padding: 8,
-                                                        textAlign: "center"
-                                                    }}
-                                                >
-
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={valide}
-                                                        readOnly
-                                                    />
-
-                                                </td>
-                                            );
-
-                                        }
-                                    )}
-
-                                </tr>
-
-                            )
-                        )}
-
-                    </tbody>
-
-                </table>
-
-            </div> */}
 
         </div>
     );

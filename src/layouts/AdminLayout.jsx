@@ -2,49 +2,85 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../core/supabase/client";
 import AdminMenu from "../components/AdminiMenu";
-// AdminLayout.jsx
+
 import "../styles/espaceAdmin.css";
+
 export default function AdminLayout() {
 
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
+
         supabase.auth.getUser().then(({ data }) => {
             setUser(data.user);
         });
+
     }, []);
 
+
     const logout = async () => {
+
         await supabase.auth.signOut();
+
         navigate("/admin/login");
+
     };
+
 
     return (
         <div className="admin-layout">
 
-            {/* MENU ADMIN */}
+            {/* =================================================
+                MENU
+            ================================================= */}
+
             <aside className="admin-sidebar">
                 <AdminMenu />
             </aside>
 
 
-            {/* CONTENU ADMIN */}
+            {/* =================================================
+                CONTENU
+            ================================================= */}
+
             <main className="admin-content">
 
-                <div className="admin-user">
+                <header className="admin-header">
 
-                    <span>
-                        {user?.email}
-                    </span>
+                    <div className="admin-header-user">
 
-                    <button onClick={logout}>
-                        Déconnexion
+                        <span className="admin-user-icon">
+                            👤
+                        </span>
+
+                        <span className="admin-user-email">
+                            {user?.email}
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        className="admin-logout"
+                        onClick={logout}
+                    >
+                        <span className="admin-logout-icon">
+                            ↪
+                        </span>
+
+                        <span>
+                            Déconnexion
+                        </span>
                     </button>
 
-                </div>
+                </header>
 
-                <Outlet />
+
+                <div className="admin-page">
+                    <Outlet />
+                </div>
 
             </main>
 

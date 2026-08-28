@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import "./DataTable.css"
 
 export default function DataTable({
     data = [],
@@ -18,16 +19,18 @@ export default function DataTable({
         direction: "asc"
     });
 
+    const [draggedRow, setDraggedRow] = useState(null);
+
     const columns = (config.columns || []).filter(
         c => !c.hideInTable
     );
 
     const actions = config.actions || [];
-    const [draggedRow, setDraggedRow] = useState(null);
+
 
     /*
      * =========================================================
-     * DRAG AND DROP
+     * DRAG & DROP
      * =========================================================
      */
 
@@ -71,7 +74,6 @@ export default function DataTable({
 
         setDraggedRow(null);
 
-        // Recalcul du champ ordre
         const reorderedData = newData.map((row, index) => ({
             ...row,
             [orderField]: index + 1
@@ -80,9 +82,10 @@ export default function DataTable({
         onReorder?.(reorderedData);
     };
 
+
     /*
      * =========================================================
-     * 🔍 RECHERCHE
+     * RECHERCHE
      * =========================================================
      */
 
@@ -136,7 +139,7 @@ export default function DataTable({
 
     /*
      * =========================================================
-     * 🔃 TRI
+     * TRI
      * =========================================================
      */
 
@@ -164,11 +167,6 @@ export default function DataTable({
                 ? column.sortValue(b)
                 : b[column.field];
 
-
-            /*
-             * NULL
-             */
-
             if (valueA == null && valueB == null) {
                 return 0;
             }
@@ -181,11 +179,6 @@ export default function DataTable({
                 return -1;
             }
 
-
-            /*
-             * NOMBRES
-             */
-
             if (
                 typeof valueA === "number" &&
                 typeof valueB === "number"
@@ -194,11 +187,6 @@ export default function DataTable({
                     ? valueA - valueB
                     : valueB - valueA;
             }
-
-
-            /*
-             * DATES
-             */
 
             if (
                 valueA instanceof Date ||
@@ -211,11 +199,6 @@ export default function DataTable({
                     ? dateA - dateB
                     : dateB - dateA;
             }
-
-
-            /*
-             * TEXTE
-             */
 
             const comparison = String(valueA).localeCompare(
                 String(valueB),
@@ -232,23 +215,18 @@ export default function DataTable({
 
         });
 
-    }, [
-        filteredData,
-        sort,
-        columns
-    ]);
+    }, [filteredData, sort, columns]);
 
 
     /*
      * =========================================================
-     * 📄 PAGINATION
+     * PAGINATION
      * =========================================================
      */
 
     const totalPages = Math.ceil(
         sortedData.length / pageSize
     );
-
 
     const paginatedData = useMemo(() => {
 
@@ -259,25 +237,20 @@ export default function DataTable({
             start + pageSize
         );
 
-    }, [
-        sortedData,
-        page,
-        pageSize
-    ]);
+    }, [sortedData, page, pageSize]);
 
 
     /*
      * =========================================================
-     * 🔃 CHANGEMENT DE TRI
+     * TRI
      * =========================================================
      */
 
     const handleSort = (field) => {
 
-        setSort((current) => {
+        setSort(current => {
 
             if (current.field === field) {
-
                 return {
                     field,
                     direction:
@@ -300,7 +273,7 @@ export default function DataTable({
 
     /*
      * =========================================================
-     * 🔄 CORRECTION DE PAGE
+     * PAGE
      * =========================================================
      */
 
@@ -320,83 +293,163 @@ export default function DataTable({
             setPage(1);
         }
 
-    }, [
-        totalPages,
-        page
-    ]);
+    }, [totalPages, page]);
 
 
     /*
      * =========================================================
-     * 🖥️ AFFICHAGE
+     * RENDU VALEUR
      * =========================================================
      */
 
-    return (
-        <div className="data-table">
+    const renderValue = (column, row) => {
 
+        const value = column.render
+            ? column.render(
+                row[column.field],
+                row
+            )
+            : row[column.field];
 
-            {/* =================================================
-                RECHERCHE + PAGE SIZE
-            ================================================= */}
-
-            <div className="data-table-toolbar">
-
-                <select
-                    className="data-table-page-size"
-                    value={pageSize}
-                    onChange={(e) => {
-
-                        setPageSize(
-                            Number(e.target.value)
-                        );
-
-                        setPage(1);
-
-                    }}
+        if (
+            value &&
+            typeof value === "object" &&
+            !React.isValidElement(value)
+        ) {
+            return (
+                <span
+                    className={
+                        `data-table-value ${value.cssClass || ""}`
+                    }
+                    title={value.title || ""}
                 >
+                    {value.value}
+                </span>
+            );
+        }
 
-                    <option value={5}>
-                        5 par page
-                    </option>
+        return value;
+    };
 
-                    <option value={10}>
-                        10 par page
-                    </option>
 
-                    <option value={25}>
-                        25 par page
-                    </option>
+    /*
+     * =========================================================
+     * ACTIONS
+     * =========================================================
+     */
 
-                    <option value={50}>
-                        50 par page
-                    </option>
+    const renderActions = (row) => {
 
-                    <option value={100}>
-                        100 par page
-                    </option>
+        const visibleActions = actions.filter(action => {
 
-                </select>
+            if (typeof action.condition === "function") {
+                return action.condition(row);
+            }
 
+            return true;
+        });
+
+        if (visibleActions.length === 0) {
+            return null;
+        }
+
+        return (
+            <div className="data-table-actions">
+
+                {visibleActions.map((action, index) => (
+
+                    <button
+                        key={index}
+                        type="button"
+                        className={
+                            `data-table-action ${action.cssClass || ""}`
+                        }
+                        title={
+                            action.title ??
+                            action.label
+                        }
+                        onClick={() =>
+                            onAction?.(
+                                action.action,
+                                row
+                            )
+                        }
+                    >
+                        {action.label}
+                    </button>
+
+                ))}
+
+            </div>
+        );
+    };
+
+
+    /*
+     * =========================================================
+     * AFFICHAGE
+     * =========================================================
+     */
+
+return (
+    <div className="data-table">
+
+        <div className="data-table-toolbar">
+
+            <div className="data-table-search-wrapper">
+
+                <span className="data-table-search-icon">
+                    🔎
+                </span>
 
                 <input
                     className="data-table-search"
                     placeholder="Rechercher..."
                     value={search}
                     onChange={(e) => {
-
                         setSearch(e.target.value);
                         setPage(1);
-
                     }}
                 />
 
+                {search && (
+                    <button
+                        type="button"
+                        className="data-table-search-clear"
+                        onClick={() => {
+                            setSearch("");
+                            setPage(1);
+                        }}
+                    >
+                        ×
+                    </button>
+                )}
+
             </div>
 
+            <select
+                className="data-table-page-size"
+                value={pageSize}
+                onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setPage(1);
+                }}
+            >
+                <option value={5}>5 par page</option>
+                <option value={10}>10 par page</option>
+                <option value={25}>25 par page</option>
+                <option value={50}>50 par page</option>
+                <option value={100}>100 par page</option>
+            </select>
 
-            {/* =================================================
-                TABLE
-            ================================================= */}
+        </div>
+
+
+        {/* =================================================
+            TABLE UNIQUE
+        ================================================= */}
+
+        <div className="data-table-container">
 
             <table className="data-table-table">
 
@@ -414,30 +467,28 @@ export default function DataTable({
                                 className="data-table-header"
                             >
 
-                                {col.header}
+                                <span className="data-table-header-content">
+                                    {col.header}
 
-
-                                {sort.field === col.field && (
-
-                                    <span className={
-                                        sort.direction === "asc"
-                                            ? "icon-sort-asc"
-                                            : "icon-sort-desc"
-                                    } />
-
-                                )}
+                                    {sort.field === col.field && (
+                                        <span
+                                            className={
+                                                sort.direction === "asc"
+                                                    ? "data-table-sort data-table-sort-asc"
+                                                    : "data-table-sort data-table-sort-desc"
+                                            }
+                                        />
+                                    )}
+                                </span>
 
                             </th>
 
                         ))}
 
-
                         {actions.length > 0 && (
-
                             <th className="data-table-actions-header">
                                 Actions
                             </th>
-
                         )}
 
                     </tr>
@@ -454,15 +505,21 @@ export default function DataTable({
                             <td
                                 colSpan={
                                     columns.length +
-                                    (
-                                        actions.length > 0
-                                            ? 1
-                                            : 0
-                                    )
+                                    (actions.length > 0 ? 1 : 0)
                                 }
                                 className="data-table-empty"
                             >
-                                Aucun résultat
+                                <div className="data-table-empty-content">
+                                    <span>🔎</span>
+
+                                    <strong>
+                                        Aucun résultat
+                                    </strong>
+
+                                    <small>
+                                        Aucun élément ne correspond à votre recherche.
+                                    </small>
+                                </div>
                             </td>
 
                         </tr>
@@ -474,11 +531,25 @@ export default function DataTable({
 
                         <tr
                             key={row.id}
-                            className={`data-table-row ${dragAndDrop ? "data-table-row-draggable" : ""}`}
+                            className={
+                                `data-table-row ${
+                                    dragAndDrop
+                                        ? "data-table-row-draggable"
+                                        : ""
+                                }`
+                            }
                             draggable={dragAndDrop}
-                            onDragStart={() => handleDragStart(row)}
-                            onDragOver={dragAndDrop ? handleDragOver : undefined}
-                            onDrop={() => handleDrop(row)}
+                            onDragStart={() =>
+                                handleDragStart(row)
+                            }
+                            onDragOver={
+                                dragAndDrop
+                                    ? handleDragOver
+                                    : undefined
+                            }
+                            onDrop={() =>
+                                handleDrop(row)
+                            }
                         >
 
                             {columns.map((col) => (
@@ -486,31 +557,9 @@ export default function DataTable({
                                 <td
                                     key={col.field}
                                     className="data-table-cell"
+                                    data-label={col.header}
                                 >
-
-                                    {(() => {
-                                        const value = col.render
-                                            ? col.render(
-                                                row[col.field],
-                                                row
-                                            )
-                                            : row[col.field];
-
-                                        if (
-                                            value &&
-                                            typeof value === "object" &&
-                                            !React.isValidElement(value)
-                                        ) {
-                                            return (
-                                                <span className={value.cssClass || ""} title={value.title || ""} alt={value.title || ""}>
-                                                    {value.value}
-                                                </span>
-                                            );
-                                        }
-
-                                        return value;
-                                    })()}
-
+                                    {renderValue(col, row)}
                                 </td>
 
                             ))}
@@ -518,44 +567,11 @@ export default function DataTable({
 
                             {actions.length > 0 && (
 
-                                <td className="data-table-actions">
-
-                                    {actions
-                                        .filter((a) => {
-
-                                            if (
-                                                typeof a.condition ===
-                                                "function"
-                                            ) {
-                                                return a.condition(row);
-                                            }
-
-                                            return true;
-
-                                        })
-                                        .map((a, i) => (
-
-                                            <button
-                                                key={i}
-                                                className={
-                                                    `data-table-action ${a.cssClass || ""}`
-                                                }
-                                                title={a.title ?? a.label}
-                                                alt={a.title ?? a.label}
-                                                onClick={() =>
-                                                    onAction(
-                                                        a.action,
-                                                        row
-                                                    )
-                                                }
-                                            >
-
-                                                {a.label}
-
-                                            </button>
-
-                                        ))}
-
+                                <td
+                                    className="data-table-cell data-table-actions-cell"
+                                    data-label="Actions"
+                                >
+                                    {renderActions(row)}
                                 </td>
 
                             )}
@@ -568,42 +584,67 @@ export default function DataTable({
 
             </table>
 
-
-            {/* =================================================
-                PAGINATION
-            ================================================= */}
-
-            {totalPages > 1 && (
-
-                <div className="data-table-pagination">
-
-                    {Array.from(
-                        {
-                            length: totalPages
-                        },
-                        (_, i) => i + 1
-                    ).map((p) => (
-
-                        <button
-                            key={p}
-                            className={
-                                p === page
-                                    ? "data-table-page active"
-                                    : "data-table-page"
-                            }
-                            onClick={() =>
-                                setPage(p)
-                            }
-                        >
-                            {p}
-                        </button>
-
-                    ))}
-
-                </div>
-
-            )}
-
         </div>
-    );
+
+
+        {/* =================================================
+            PAGINATION
+        ================================================= */}
+
+        {totalPages > 1 && (
+
+            <div className="data-table-pagination">
+
+                <button
+                    type="button"
+                    className="data-table-page data-table-page-navigation"
+                    disabled={page === 1}
+                    onClick={() =>
+                        setPage(current => current - 1)
+                    }
+                >
+                    ‹
+                </button>
+
+                {Array.from(
+                    {
+                        length: totalPages
+                    },
+                    (_, i) => i + 1
+                ).map((p) => (
+
+                    <button
+                        key={p}
+                        type="button"
+                        className={
+                            p === page
+                                ? "data-table-page active"
+                                : "data-table-page"
+                        }
+                        onClick={() =>
+                            setPage(p)
+                        }
+                    >
+                        {p}
+                    </button>
+
+                ))}
+
+                <button
+                    type="button"
+                    className="data-table-page data-table-page-navigation"
+                    disabled={page === totalPages}
+                    onClick={() =>
+                        setPage(current => current + 1)
+                    }
+                >
+                    ›
+                </button>
+
+            </div>
+
+        )}
+
+    </div>
+);
 }

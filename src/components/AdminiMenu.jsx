@@ -1,247 +1,334 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SaisonController } from "../controllers/SaisonController";
+import "./../styles/adminMenu.css";
 import { useSaison } from "./contexts/SaisonContext";
 
 export default function AdminMenu() {
 
     const navigate = useNavigate();
-    const controller = new SaisonController();
 
-    const [openSaisons, setOpenSaisons] = useState(true);
-    const [openReferentiels, setOpenReferentiels] = useState(true);
+    const [openSaisons, setOpenSaisons] = useState(false);
+    const [openReferentiels, setOpenReferentiels] = useState(false);
     const [openSeason, setOpenSeason] = useState({});
 
     const {
-        saisonActive,
         saisons,
         updateSaisonSelectionne
     } = useSaison();
 
     const handleClickSaison = (saison, typeListe) => {
+
         updateSaisonSelectionne(saison);
+
+        setOpenSaisons(true);
+
+        setOpenSeason(prev => ({
+            ...prev,
+            [saison.id]: true
+        }));
+
         navigate(`/admin/saison/${saison.nom}/${typeListe}`);
     };
 
     const toggleSeason = (id) => {
+
         setOpenSeason(prev => ({
+            ...prev,
             [id]: !prev[id]
         }));
+    };
+
+    const closeMenus = () => {
+
+        setOpenSaisons(false);
+        setOpenReferentiels(false);
+    };
+
+    const toggleSaisons = () => {
+
+        setOpenSaisons(prev => !prev);
+        setOpenReferentiels(false);
+    };
+
+    const toggleReferentiels = () => {
+
+        setOpenReferentiels(prev => !prev);
+        setOpenSaisons(false);
+    };
+
+    const handleClickReferentiel = (path) => {
+
+        navigate(path);
+
+        setOpenReferentiels(true);
+        setOpenSaisons(false);
     };
 
     return (
         <nav className="admin-menu">
 
-            {/* TABLEAU DE BORD */}
+            <div className="admin-menu-main">
 
-            <p
-                className="admin-menu-item icon-dashboard"
-                onClick={() => navigate("/admin")}
-            >
-                Tableau de bord
-            </p>
+                <button
+                    type="button"
+                    className="admin-menu-item admin-menu-dashboard icon-dashboard"
+                    onClick={() => {
+                        navigate("/admin");
+                        closeMenus();
+                    }}
+                >
+                    <span>Tableau de bord</span>
+                </button>
 
-            <hr />
+                <button
+                    type="button"
+                    className={`admin-menu-section icon-saisons ${openSaisons ? "open" : ""}`}
+                    onClick={toggleSaisons}
+                >
+                    <span>Saisons</span>
 
+                    <span className="admin-menu-arrow">
+                        {openSaisons ? "⌃" : "⌄"}
+                    </span>
+                </button>
 
-            {/* SAISONS */}
+                <button
+                    type="button"
+                    className={`admin-menu-section icon-referentiels ${openReferentiels ? "open" : ""}`}
+                    onClick={toggleReferentiels}
+                >
+                    <span>Référentiels</span>
 
-            <p
-                className="admin-menu-section icon-saisons"
-                onClick={() => setOpenSaisons(!openSaisons)}
-            >
-                Saisons {openSaisons ? "▼" : "▶"}
-            </p>
+                    <span className="admin-menu-arrow">
+                        {openReferentiels ? "⌃" : "⌄"}
+                    </span>
+                </button>
 
-            {openSaisons && saisons.map(saison => (
+            </div>
 
-                <div key={saison.id}>
+            {openSaisons && (
 
-                    <p
-                        className={`admin-menu-item admin-season ${
-                            saison.active
-                                ? "active icon-saison-active"
-                                : "icon-saison"
-                        }`}
-                        onClick={() => toggleSeason(saison.id)}
-                    >
-                        {saison.nom}{" "}
-                        {openSeason[saison.id] ? "▼" : "▶"}
-                    </p>
+                <div className="admin-dropdown admin-dropdown-seasons">
 
-                    {openSeason[saison.id] && (
+                    <div className="admin-dropdown-title">
+                        <span className="icon-saisons">
+                            Saisons
+                        </span>
+                    </div>
 
-                        <div className="admin-season-items">
+                    <div className="admin-dropdown-content">
 
-                            <p
-                                className="admin-menu-item icon-chanteurs"
-                                onClick={() =>
-                                    handleClickSaison(
-                                        saison,
-                                        "chanteurs"
-                                    )
-                                }
+                        {saisons.map((saison) => (
+
+                            <div
+                                key={saison.id}
+                                className="admin-season-group"
                             >
-                                Choristes
-                            </p>
 
-                            <p
-                                className="admin-menu-item icon-chansons"
-                                onClick={() =>
-                                    handleClickSaison(
-                                        saison,
-                                        "chansons"
-                                    )
-                                }
-                            >
-                                Chansons
-                            </p>
+                                <button
+                                    type="button"
+                                    className={`admin-season ${saison.active ? "active" : ""}`}
+                                    onClick={() => toggleSeason(saison.id)}
+                                >
+                                    <span
+                                        className={
+                                            saison.active
+                                                ? "icon-saison-active"
+                                                : "icon-saison"
+                                        }
+                                    >
+                                        {saison.nom}
+                                    </span>
 
-                            <p
-                                className="admin-menu-item icon-repetition"
-                                onClick={() =>
-                                    handleClickSaison(
-                                        saison,
-                                        "repetition"
-                                    )
-                                }
-                            >
-                                Répétitions
-                            </p>
-                            <p
-                                className="admin-menu-item icon-groupes"
-                                onClick={() =>
-                                    handleClickSaison(
-                                        saison,
-                                        "groupes"
-                                    )
-                                }
-                            >
-                                Groupes
-                            </p>
+                                    <span className="admin-menu-arrow">
+                                        {openSeason[saison.id] ? "⌃" : "›"}
+                                    </span>
+                                </button>
 
-                            <p
-                                className="admin-menu-item icon-concerts"
-                                onClick={() =>
-                                    handleClickSaison(
-                                        saison,
-                                        "concerts"
-                                    )
-                                }
+                                {openSeason[saison.id] && (
 
-                            >
-                                Concerts
-                            </p>
+                                    <div className="admin-season-items">
 
-                        </div>
-                    )}
+                                        <button
+                                            type="button"
+                                            className="admin-menu-item icon-chanteurs"
+                                            onClick={() =>
+                                                handleClickSaison(
+                                                    saison,
+                                                    "chanteurs"
+                                                )
+                                            }
+                                        >
+                                            Choristes
+                                        </button>
 
-                </div>
-            ))}
+                                        <button
+                                            type="button"
+                                            className="admin-menu-item icon-chansons"
+                                            onClick={() =>
+                                                handleClickSaison(
+                                                    saison,
+                                                    "chansons"
+                                                )
+                                            }
+                                        >
+                                            Chansons
+                                        </button>
 
-            <hr />
+                                        <button
+                                            type="button"
+                                            className="admin-menu-item icon-repetition"
+                                            onClick={() =>
+                                                handleClickSaison(
+                                                    saison,
+                                                    "repetition"
+                                                )
+                                            }
+                                        >
+                                            Répétitions
+                                        </button>
 
+                                        <button
+                                            type="button"
+                                            className="admin-menu-item icon-groupes"
+                                            onClick={() =>
+                                                handleClickSaison(
+                                                    saison,
+                                                    "groupes"
+                                                )
+                                            }
+                                        >
+                                            Groupes
+                                        </button>
 
-            {/* REFERENTIELS */}
+                                        <button
+                                            type="button"
+                                            className="admin-menu-item icon-concerts"
+                                            onClick={() =>
+                                                handleClickSaison(
+                                                    saison,
+                                                    "concerts"
+                                                )
+                                            }
+                                        >
+                                            Concerts
+                                        </button>
 
-            <p
-                className="admin-menu-section icon-referentiels"
-                onClick={() =>
-                    setOpenReferentiels(!openReferentiels)
-                }
-            >
-                Référentiels{" "}
-                {openReferentiels ? "▼" : "▶"}
-            </p>
+                                    </div>
+                                )}
 
-            {openReferentiels && (
+                            </div>
+                        ))}
 
-                <div>
-
-                    <p
-                        className="admin-menu-item icon-saisons"
-                        onClick={() =>
-                            navigate("/admin/saisons")
-                        }
-                    >
-                        Saisons
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-chanteurs"
-                        onClick={() =>
-                            navigate("/admin/chanteurs")
-                        }
-                    >
-                        Adhérents
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-chansons"
-                        onClick={() =>
-                            navigate("/admin/chansons")
-                        }
-                    >
-                        Chansons
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-pupitres"
-                        onClick={() =>
-                            navigate("/admin/pupitres")
-                        }
-                    >
-                        Pupitres
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-documents"
-                        onClick={() =>
-                            navigate("/admin/documents")
-                        }
-                    >
-                        Documents
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-concerts"
-                        onClick={() =>
-                            navigate("/admin/concerts")
-                        }
-                    >
-                        Concerts
-                    </p>
-                    <p
-                        className="admin-menu-item icon-lieux"
-                        onClick={() =>
-                            navigate("/admin/lieux")
-                        }
-                    >
-                        Lieux
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-repetitions"
-                        onClick={() =>
-                            navigate("/admin/repetitions")
-                        }
-                    >
-                        Répétitions
-                    </p>
-
-                    <p
-                        className="admin-menu-item icon-invitations"
-                        onClick={() =>
-                            navigate("/admin/invitations")
-                        }
-                    >
-                        Invitations
-                    </p>
-
+                    </div>
                 </div>
             )}
 
-            <hr />
+            {openReferentiels && (
+
+                <div className="admin-dropdown admin-dropdown-referentiels">
+
+                    <div className="admin-dropdown-title">
+                        <span className="icon-referentiels">
+                            Référentiels
+                        </span>
+                    </div>
+
+                    <div className="admin-dropdown-content">
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-saisons"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/saisons");
+                            }}
+                        >
+                            Saisons
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-chanteurs"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/chanteurs");
+                            }}
+                        >
+                            Adhérents
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-chansons"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/chansons");
+                            }}
+                        >
+                            Chansons
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-pupitres"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/pupitres");
+                            }}
+                        >
+                            Pupitres
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-documents"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/documents");
+                            }}
+                        >
+                            Documents
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-concerts"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/concerts");
+                            }}
+                        >
+                            Concerts
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-lieux"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/lieux");
+                            }}
+                        >
+                            Lieux
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-repetitions"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/repetitions");
+                            }}
+                        >
+                            Répétitions
+                        </button>
+
+                        <button
+                            type="button"
+                            className="admin-menu-item icon-invitations"
+                            onClick={() => {
+                                handleClickReferentiel("/admin/invitations");
+                            }}
+                        >
+                            Invitations
+                        </button>
+
+                    </div>
+                </div>
+            )}
 
         </nav>
     );

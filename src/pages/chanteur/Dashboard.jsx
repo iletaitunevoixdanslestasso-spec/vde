@@ -274,14 +274,14 @@ export default function DashboardChanteur() {
               saison_rendezvous: [item.saison_rendezvous],
 
               key: `${typeCode}-${item.id}`,
-              id: item.id,
+              id: rendezvous.id,
               type: typeCode,
 
               typeCode,
 
               typeLibelle:
-                rendezvous.rendezvous_type?.libelle ||
-                "Rendez-vous",
+                `${rendezvous.rendezvous_type?.libelle ||
+                "Rendez-vous"} ${rendezvous.titre}`,
 
               date: rendezvous.date,
               debut: rendezvous.debut,

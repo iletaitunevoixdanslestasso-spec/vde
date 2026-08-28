@@ -4,7 +4,7 @@ import DataTable from "../table/DataTable";
 import FormModal from "../form/FormModal";
 import { useNavigate } from "react-router-dom";
 import NotificationService from "../../services/NotificationService";
-
+import "./../styles/CRUDPage.css";
 export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
