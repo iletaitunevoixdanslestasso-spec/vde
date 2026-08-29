@@ -1,3 +1,4 @@
+
 /* =========================================================
    DATA TABLE
    ========================================================= */
@@ -92,41 +93,93 @@
 
 
 /* =========================================================
-   DESKTOP TABLE
+   CONTENEUR DU TABLEAU
    ========================================================= */
 
-.data-table-desktop {
+.data-table-container {
+    position: relative;
+
     width: 100%;
+
+    max-height: 70vh;
+
     overflow-x: auto;
+    overflow-y: auto;
+
     border: 1px solid var(--border-color, #e5e7eb);
     border-radius: 16px;
+
     background: #ffffff;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+
+    box-shadow:
+        0 2px 10px rgba(15, 23, 42, .04);
+
+    isolation: isolate;
 }
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
 
 .data-table-table {
     width: 100%;
+
     border-collapse: separate;
     border-spacing: 0;
+
     font-size: 14px;
 }
 
+
+/* =========================================================
+   HEADER FIXE
+   ========================================================= */
+
 .data-table-table thead {
+    position: sticky;
+    top: 0;
+
+    z-index: 20;
+
     background: #f8fafc;
 }
 
+.data-table-table thead th {
+    position: sticky;
+    top: 0;
+
+    z-index: 21;
+
+    background: #f8fafc;
+}
+
+
+/* =========================================================
+   EN-TÊTES DE COLONNES
+   ========================================================= */
+
 .data-table-header {
     padding: 13px 16px;
+
     border-bottom: 1px solid #e5e7eb;
+
     color: #64748b;
+
     font-size: 12px;
     font-weight: 700;
+
     text-transform: uppercase;
     letter-spacing: .04em;
+
     text-align: left;
+
     white-space: nowrap;
+
     cursor: pointer;
     user-select: none;
+
+    background: #f8fafc;
 }
 
 .data-table-header:hover {
@@ -134,15 +187,29 @@
     background: #f1f5f9;
 }
 
+
+/* =========================================================
+   CONTENU HEADER
+   ========================================================= */
+
 .data-table-header-content {
     display: inline-flex;
+
     align-items: center;
+
     gap: 7px;
 }
 
+
+/* =========================================================
+   TRI
+   ========================================================= */
+
 .data-table-sort {
     position: relative;
+
     display: inline-block;
+
     width: 7px;
     height: 11px;
 }
@@ -150,21 +217,27 @@
 .data-table-sort::before,
 .data-table-sort::after {
     position: absolute;
+
     left: 0;
+
     content: "";
+
     width: 0;
     height: 0;
+
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
 }
 
 .data-table-sort::before {
     top: 0;
+
     border-bottom: 4px solid #94a3b8;
 }
 
 .data-table-sort::after {
     bottom: 0;
+
     border-top: 4px solid #94a3b8;
 }
 
@@ -178,7 +251,7 @@
 
 
 /* =========================================================
-   ROWS
+   LIGNES
    ========================================================= */
 
 .data-table-row {
@@ -195,11 +268,32 @@
     border-bottom: 1px solid #f1f5f9;
 }
 
+
+/* =========================================================
+   CELLULES
+   ========================================================= */
+
 .data-table-cell {
     padding: 14px 16px;
+
     color: #334155;
+
     vertical-align: middle;
+
+    background: #ffffff;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
+
+.data-table-row:hover .data-table-cell {
+    background: #fafafa;
+}
+
+
+/* =========================================================
+   DRAG & DROP
+   ========================================================= */
 
 .data-table-row-draggable {
     cursor: grab;
@@ -207,12 +301,21 @@
 
 .data-table-row-draggable:active {
     cursor: grabbing;
+
     opacity: .65;
 }
 
+
+/* =========================================================
+   VALEUR
+   ========================================================= */
+
 .data-table-value {
     display: inline-flex;
+
     align-items: center;
+
+    max-width: 100%;
 }
 
 
@@ -222,63 +325,90 @@
 
 .data-table-actions-header {
     width: 1%;
+
     padding: 13px 16px;
+
     border-bottom: 1px solid #e5e7eb;
+
     color: #64748b;
+
     font-size: 12px;
     font-weight: 700;
+
     text-transform: uppercase;
+
     white-space: nowrap;
+
     text-align: right;
+
+    background: #f8fafc;
 }
 
 .data-table-actions-cell {
     text-align: right;
+
     white-space: nowrap;
 }
 
 .data-table-actions {
     display: flex;
+
     justify-content: flex-end;
     align-items: center;
+
     gap: 6px;
 }
 
 .data-table-action {
     min-height: 34px;
+
     padding: 7px 10px;
+
     border: 1px solid #e2e8f0;
     border-radius: 9px;
+
     background: #ffffff;
+
     color: #475569;
+
     font-size: 13px;
     font-weight: 600;
+
     cursor: pointer;
+
     transition:
         background .15s ease,
         border-color .15s ease,
         color .15s ease,
         transform .15s ease;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
 }
 
 .data-table-action:hover {
     background: #f8fafc;
-    border-color: #cbd5e1;
-    color: #4f46e5;
-    transform: translateY(-1px);
-}
 
-.data-table-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    border-color: #cbd5e1;
+
+    color: #4f46e5;
+
+    transform: translateY(-1px);
 }
 
 .data-table-action-icon {
     font-size: 16px;
+
+    line-height: 1;
 }
 
+.data-table-action-label {
+    white-space: nowrap;
+}
 
 
 /* =========================================================
@@ -287,39 +417,38 @@
 
 .data-table-empty {
     padding: 50px 20px !important;
+
     text-align: center;
 }
 
 .data-table-empty-content {
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     gap: 7px;
+
     color: #64748b;
 }
 
-.data-table-empty-content>span {
+.data-table-empty-content > span {
     font-size: 28px;
+
     opacity: .6;
 }
 
 .data-table-empty-content strong {
     color: #334155;
+
     font-size: 15px;
 }
 
 .data-table-empty-content small {
     color: #94a3b8;
+
     font-size: 13px;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-.data-table-mobile {
-    display: none;
 }
 
 
@@ -329,23 +458,33 @@
 
 .data-table-pagination {
     display: flex;
+
     justify-content: center;
     align-items: center;
+
     gap: 5px;
+
     margin-top: 18px;
 }
 
 .data-table-page {
     min-width: 36px;
     height: 36px;
+
     padding: 0 10px;
+
     border: 1px solid #e2e8f0;
     border-radius: 9px;
+
     background: #ffffff;
+
     color: #64748b;
+
     font-size: 13px;
     font-weight: 600;
+
     cursor: pointer;
+
     transition:
         background .15s ease,
         color .15s ease,
@@ -354,18 +493,23 @@
 
 .data-table-page:hover:not(:disabled) {
     border-color: #c7d2fe;
+
     background: #f5f3ff;
+
     color: #4f46e5;
 }
 
 .data-table-page.active {
     border-color: #4f46e5;
+
     background: #4f46e5;
+
     color: #ffffff;
 }
 
 .data-table-page:disabled {
     opacity: .35;
+
     cursor: not-allowed;
 }
 
@@ -401,8 +545,11 @@
 
     .data-table-toolbar {
         flex-direction: column-reverse;
+
         align-items: stretch;
+
         gap: 10px;
+
         margin-bottom: 14px;
     }
 
@@ -416,84 +563,71 @@
 
 
     /* -----------------------------------------
-       On cache le vrai tableau
+       Conteneur tableau
        ----------------------------------------- */
 
-    .data-table-desktop {
-        display: none;
+    .data-table-container {
+        max-height: 65vh;
+
+        overflow-x: auto;
+        overflow-y: auto;
+
+        border-radius: 14px;
+
+        -webkit-overflow-scrolling: touch;
     }
 
 
     /* -----------------------------------------
-       Cards
+       Table mobile
        ----------------------------------------- */
 
-    .data-table-mobile {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .data-table-card {
-        position: relative;
+    .data-table-table {
         width: 100%;
-        box-sizing: border-box;
-        overflow: hidden;
-        border: 1px solid #e5e7eb;
-        border-radius: 15px;
-        background: #ffffff;
-        box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+
+        font-size: 13px;
     }
 
-    .data-table-card-draggable {
-        cursor: grab;
+
+    /* -----------------------------------------
+       Header mobile
+       ----------------------------------------- */
+
+    .data-table-table thead,
+    .data-table-table thead th {
+        position: sticky;
+
+        top: 0;
+
+        z-index: 20;
     }
 
-    .data-table-card-draggable:active {
-        cursor: grabbing;
+    .data-table-header {
+        padding: 11px 12px;
+
+        font-size: 10px;
+
+        letter-spacing: .03em;
+
+        background: #f8fafc;
     }
 
-    .data-table-card-content {
-        padding: 13px 15px;
+    .data-table-header-content {
+        gap: 5px;
     }
 
-    .data-table-card-field {
-        display: grid;
-        grid-template-columns: minmax(90px, 34%) 1fr;
-        gap: 12px;
-        align-items: center;
-        padding: 8px 0;
-    }
 
-    .data-table-card-field:not(:last-child) {
-        border-bottom: 1px solid #f1f5f9;
-    }
+    /* -----------------------------------------
+       Cellules mobile
+       ----------------------------------------- */
 
-    .data-table-card-field-primary {
-        padding-top: 2px;
-        padding-bottom: 12px;
-    }
+    .data-table-cell {
+        padding: 12px;
 
-    .data-table-card-label {
-        color: #94a3b8;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: .035em;
-    }
+        font-size: 13px;
 
-    .data-table-card-value {
-        min-width: 0;
-        color: #334155;
-        font-size: 14px;
-        font-weight: 500;
         overflow-wrap: anywhere;
-    }
-
-    .data-table-card-field-primary .data-table-card-value {
-        color: #1e293b;
-        font-size: 15px;
-        font-weight: 700;
+        word-break: break-word;
     }
 
 
@@ -501,72 +635,46 @@
        Actions mobile
        ----------------------------------------- */
 
-    .data-table-card-actions {
-        padding: 10px 12px;
-        border-top: 1px solid #f1f5f9;
-        background: #f8fafc;
+    .data-table-actions {
+        gap: 5px;
     }
 
-    .data-table-card-actions .data-table-actions {
-        justify-content: stretch;
-        gap: 7px;
-    }
+    .data-table-action {
+        width: 40px !important;
+        min-width: 40px !important;
 
-    .data-table-card-actions .data-table-action {
-        flex: 1;
-        min-height: 38px;
-    }
+        height: 40px !important;
+        min-height: 40px !important;
 
+        padding: 0 !important;
 
-    /* -----------------------------------------
-       Empty
-       ----------------------------------------- */
+        display: inline-flex !important;
 
-    .data-table-empty-mobile {
-        display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 7px;
-        min-height: 160px;
-        padding: 25px;
-        border: 1px dashed #cbd5e1;
-        border-radius: 15px;
-        background: #f8fafc;
-        text-align: center;
     }
 
-    .data-table-empty-icon {
-        font-size: 28px;
-        opacity: .55;
+    .data-table-action-label {
+        display: none !important;
     }
 
-    .data-table-empty-mobile strong {
-        color: #334155;
-        font-size: 15px;
-    }
+    .data-table-action-icon {
+        display: inline-flex;
 
-    .data-table-empty-mobile small {
-        max-width: 260px;
-        color: #94a3b8;
-        font-size: 12px;
-    }
+        align-items: center;
+        justify-content: center;
 
-
-    .data-table-card-actions .data-table-action {
-        flex: 0 0 40px;
-        width: 40px;
-        min-height: 38px;
-        padding: 0;
-    }
-
-    .data-table-card-actions .data-table-action-label {
-        display: none;
-    }
-
-    .data-table-card-actions .data-table-action-icon {
         font-size: 18px;
+
+        line-height: 1;
     }
+
+    .data-table-actions-header {
+        padding: 11px 12px;
+
+        font-size: 10px;
+    }
+
 
     /* -----------------------------------------
        Pagination
@@ -574,15 +682,21 @@
 
     .data-table-pagination {
         gap: 4px;
+
         margin-top: 14px;
+
         overflow-x: auto;
+
         justify-content: flex-start;
+
         padding: 2px;
     }
 
     .data-table-page {
         flex: 0 0 auto;
+
         min-width: 34px;
+
         height: 34px;
     }
 
@@ -595,41 +709,26 @@
 
 @media (max-width: 400px) {
 
-    .data-table-card-field {
-        grid-template-columns: 1fr;
-        gap: 3px;
+    .data-table-header {
+        padding-left: 10px;
+        padding-right: 10px;
+
+        font-size: 9px;
     }
 
-    .data-table-card-label {
-        font-size: 10px;
-    }
+    .data-table-cell {
+        padding-left: 10px;
+        padding-right: 10px;
 
-    .data-table-card-value {
-        font-size: 14px;
-    }
-
-}
-@media (max-width: 700px) {
-
-    .data-table-action-label {
-        display: none !important;
+        font-size: 12px;
     }
 
     .data-table-action {
-        width: 40px !important;
-        min-width: 40px !important;
-        height: 40px !important;
-        min-height: 40px !important;
-        padding: 0 !important;
+        width: 38px !important;
+        min-width: 38px !important;
 
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
+        height: 38px !important;
+        min-height: 38px !important;
     }
 
-    .data-table-action-icon {
-        display: inline-flex;
-        font-size: 18px;
-        line-height: 1;
-    }
 }
