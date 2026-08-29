@@ -146,7 +146,7 @@ export class ChanteursSaisonController extends BaseController {
         // pour l'instant console (on fera email étape 9)
         console.log("Lien à envoyer :", result.url);
         await this.mailService.sendInvitation(
-            saisonChanteurs.chanteurs.email,
+            saisonChanteurs.chanteurs,
             result.url
         );
         await this.service.setEtat(
