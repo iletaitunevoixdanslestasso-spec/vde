@@ -1,4 +1,3 @@
-
 /* =========================================================
    DATA TABLE
    ========================================================= */
@@ -153,8 +152,16 @@
 
     background: #f8fafc;
 }
+.data-table-table thead th:first-child {
+    top: 0;
+    left: 0;
+    z-index: 30;
+}
 
-
+.data-table-table th:first-child,
+.data-table-table td:first-child {
+    box-shadow: 2px 0 4px rgba(15, 23, 42, .06);
+}
 /* =========================================================
    EN-TÊTES DE COLONNES
    ========================================================= */
@@ -200,6 +207,37 @@
     gap: 7px;
 }
 
+/* =========================================================
+   PREMIÈRE COLONNE FIXE
+   ========================================================= */
+
+.data-table-table th:first-child,
+.data-table-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+}
+
+
+/* Première cellule du header :
+   elle doit être au-dessus du reste */
+.data-table-table thead th:first-child {
+    left: 0;
+    z-index: 30;
+    background: #f8fafc;
+}
+
+
+/* Première cellule des lignes */
+.data-table-table tbody td:first-child {
+    background: #ffffff;
+}
+
+
+/* Conservation du hover sur la première colonne */
+.data-table-row:hover td:first-child {
+    background: #fafafa;
+}
 
 /* =========================================================
    TRI
@@ -433,7 +471,7 @@
     color: #64748b;
 }
 
-.data-table-empty-content > span {
+.data-table-empty-content>span {
     font-size: 28px;
 
     opacity: .6;
