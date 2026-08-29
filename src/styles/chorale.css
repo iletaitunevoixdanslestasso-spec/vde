@@ -80,6 +80,7 @@ button {
 .icon-chansons::before,
 .icon-groupes::before,
 .icon-concerts::before,
+.icon-saisonactive::before,
 .icon-repetitions::before,
 .icon-lieux::before,
 .icon-pupitres::before,
@@ -131,9 +132,7 @@ button {
 .icon-saisons::before {
     content: "📅";
 }
-.icon-repetition::before {
-    content: "🗓";
-}
+
 .icon-gestion::before {
     content: "⚙️";
 }
@@ -158,6 +157,9 @@ button {
 
 .icon-concerts::before {
     content: "🎤";
+}
+.icon-saisonactive::before {
+    content: "⭐";
 }
 
 .icon-repetitions::before {
@@ -373,13 +375,13 @@ button {
 .data-table-action {
     margin-right: 5px;
 }
-
+/* 
 .data-table-action.icon-edit{
     background-color:darkseagreen
 }
 .data-table-action.icon-delete{
     background-color: #dc3545;
-}
+} */
 /* =========================================================
    PAGINATION
    ========================================================= */

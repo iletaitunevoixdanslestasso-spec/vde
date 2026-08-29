@@ -330,9 +330,6 @@
 /* =========================================================
    MOBILE
    ========================================================= */
-/* =========================================================
-   MOBILE
-   ========================================================= */
 
 @media (max-width: 700px) {
 
@@ -369,6 +366,19 @@
 
 
     /* =====================================================
+       CONTENEUR GENERAL DE SCROLL
+       ===================================================== */
+
+    .admin-horizontal-scroll-wrapper {
+        position: relative;
+
+        width: 100%;
+
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
        MENU PRINCIPAL HORIZONTAL
        ===================================================== */
 
@@ -387,9 +397,13 @@
         box-sizing: border-box;
 
         overflow-x: auto;
+        overflow-y: hidden;
 
         scrollbar-width: none;
+
+        scroll-behavior: smooth;
     }
+
 
     .admin-menu-main::-webkit-scrollbar {
         display: none;
@@ -481,7 +495,9 @@
 
     .admin-menu-main .admin-menu-section.open {
         background: #eeeeef;
+
         color: #222;
+
         font-weight: 600;
     }
 
@@ -523,13 +539,12 @@
        ===================================================== */
 
     .admin-dropdown-title {
-
         display: none;
     }
 
 
     /* =====================================================
-       CONTENU DROPDOWN
+       CONTENU DROPDOWN HORIZONTAL
        ===================================================== */
 
     .admin-dropdown-content {
@@ -542,12 +557,21 @@
         gap: 5px;
 
         width: 100%;
+        min-width: 0;
+
+        padding-left: 4px;
+        padding-right: 4px;
+
+        box-sizing: border-box;
 
         overflow-x: auto;
         overflow-y: hidden;
 
         scrollbar-width: none;
+
+        scroll-behavior: smooth;
     }
+
 
     .admin-dropdown-content::-webkit-scrollbar {
         display: none;
@@ -555,27 +579,162 @@
 
 
     /* =====================================================
+       REFERENTIELS HORIZONTAL
+       ===================================================== */
+
+    .admin-dropdown-referentiels .admin-dropdown-content {
+
+        display: flex;
+
+        flex-direction: row;
+
+        flex-wrap: nowrap;
+
+        align-items: stretch;
+
+        gap: 5px;
+
+        width: 100%;
+        min-width: 0;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scrollbar-width: none;
+
+        scroll-behavior: smooth;
+    }
+
+
+    .admin-dropdown-referentiels .admin-dropdown-content::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    /* =====================================================
+       BOUTONS REFERENTIELS
+       ===================================================== */
+
+    .admin-dropdown-referentiels .admin-dropdown-content>.admin-menu-item {
+
+        width: 72px;
+        min-width: 72px;
+        max-width: 72px;
+
+        flex: 0 0 72px;
+
+        min-height: 48px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 3px;
+
+        padding: 6px 4px;
+
+        box-sizing: border-box;
+
+        border-radius: 8px;
+
+        font-size: 10px;
+
+        text-align: center;
+    }
+
+
+    /* =====================================================
+       ICÔNES REFERENTIELS
+       ===================================================== */
+
+    .admin-dropdown-referentiels .admin-dropdown-content>.admin-menu-item::before {
+
+        display: block;
+
+        font-size: 18px;
+
+        line-height: 1;
+    }
+
+
+    /* =====================================================
        SAISONS HORIZONTAL
        ===================================================== */
 
-    .admin-season-group {
+    .admin-dropdown-seasons .admin-dropdown-content {
 
-        flex: 0 0 auto;
+        display: flex;
+
+        flex-direction: row;
+
+        flex-wrap: nowrap;
+
+        align-items: flex-start;
+
+        gap: 8px;
+
+        width: 100%;
+        min-width: 0;
+
+        padding-left: 4px;
+        padding-right: 4px;
+
+        box-sizing: border-box;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scrollbar-width: none;
+
+        scroll-behavior: smooth;
+    }
+
+
+    .admin-dropdown-seasons .admin-dropdown-content::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    /* =====================================================
+       GROUPE D'UNE SAISON
+       ===================================================== */
+
+    .admin-dropdown-seasons .admin-season-group {
 
         display: flex;
         flex-direction: column;
 
+        flex: 0 0 auto;
+
+        width: 105px;
         min-width: 105px;
+
+        box-sizing: border-box;
     }
 
 
-    .admin-season {
+    /* =====================================================
+       BOUTON SAISON
+       ===================================================== */
+
+    .admin-dropdown-seasons .admin-season {
+
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
 
         width: 100%;
+        min-width: 105px;
 
         min-height: 42px;
 
         padding: 7px 9px;
+
+        box-sizing: border-box;
 
         border-radius: 9px;
 
@@ -589,65 +748,68 @@
        SOUS-MENU D'UNE SAISON
        ===================================================== */
 
-    .admin-season-items {
+    .admin-dropdown-seasons .admin-season-items {
 
         display: flex;
+
         flex-direction: row;
+        flex-wrap: nowrap;
+
+        align-items: stretch;
 
         gap: 4px;
 
-        margin: 3px 0 0;
+        width: 100%;
 
+        margin: 4px 0 0;
         padding: 0;
 
-        border-left: 0;
+        border: 0;
 
-        overflow-x: auto;
-
-        scrollbar-width: none;
-    }
-
-    .admin-season-items::-webkit-scrollbar {
-        display: none;
+        overflow: visible;
     }
 
 
     /* =====================================================
-       LIENS SAISON
+       LIENS DU SOUS-MENU SAISON
        ===================================================== */
 
-    .admin-season-items .admin-menu-item {
-
-        width: auto;
-        min-width: 72px;
-
-        min-height: 48px;
-
-        flex: 0 0 72px;
+    .admin-dropdown-seasons .admin-season-items .admin-menu-item {
 
         display: flex;
+
         flex-direction: column;
 
         align-items: center;
         justify-content: center;
 
-        gap: 3px;
+        width: 72px;
+        min-width: 72px;
+        max-width: 72px;
+
+        flex: 0 0 72px;
+
+        min-height: 48px;
 
         padding: 6px 4px;
+
+        box-sizing: border-box;
 
         border-radius: 8px;
 
         font-size: 10px;
 
         text-align: center;
+
+        white-space: normal;
     }
 
 
     /* =====================================================
-       ICÔNES DES LIENS SAISON
+       ICÔNES DU SOUS-MENU SAISON
        ===================================================== */
 
-    .admin-season-items .admin-menu-item::before {
+    .admin-dropdown-seasons .admin-season-items .admin-menu-item::before {
 
         display: block;
 
@@ -656,50 +818,108 @@
         line-height: 1;
     }
 
-}
+
+    /* =====================================================
+       FLÈCHES DE SCROLL
+       ===================================================== */
+    /* =====================================================
+   FLÈCHES DE SCROLL
+   ===================================================== */
+
+    .admin-scroll-arrow {
+        position: absolute;
+
+        top: 50%;
+        transform: translateY(-50%);
+
+        z-index: 50;
+
+        width: 30px;
+        height: 30px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0;
+        padding: 0;
+
+        border: 1px solid #e5e7eb;
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, .96);
+
+        color: #475569;
+
+        font-size: 25px;
+        font-weight: 400;
+
+        line-height: 1;
+
+        cursor: pointer;
+
+        box-shadow:
+            0 3px 10px rgba(15, 23, 42, .12);
+
+        transition:
+            background .15s ease,
+            color .15s ease,
+            transform .15s ease;
+    }
 
 
-/* =========================================================
+    .admin-scroll-arrow:hover {
+        background: #f5f3ff;
+        color: #4f46e5;
+
+        transform: translateY(-50%) scale(1.05);
+    }
+
+
+    .admin-scroll-arrow-left {
+        left: 2px;
+    }
+
+
+    .admin-scroll-arrow-right {
+        right: 2px;
+    }
+
+    /* =========================================================
    TRÈS PETITS ÉCRANS
    ========================================================= */
 
-@media (max-width: 400px) {
+    @media (max-width: 400px) {
 
-    .admin-menu-main .admin-menu-item,
-    .admin-menu-main .admin-menu-section {
+        .admin-menu-main .admin-menu-item,
+        .admin-menu-main .admin-menu-section {
 
-        width: 64px;
-        min-width: 64px;
-        flex-basis: 64px;
+            width: 64px;
+            min-width: 64px;
+            flex-basis: 64px;
 
-        min-height: 55px;
+            min-height: 55px;
+        }
+
+
+        .admin-season-group {
+            min-width: 95px;
+            width: 95px;
+        }
+
+
+        .admin-season-items .admin-menu-item {
+
+            min-width: 68px;
+            flex-basis: 68px;
+        }
+
+
+        .admin-menu-main .admin-menu-item,
+        .admin-menu-main .admin-menu-section {
+
+            padding-left: 9px;
+            padding-right: 9px;
+        }
+
     }
-
-
-    .admin-season-group {
-        min-width: 95px;
-    }
-
-
-    .admin-season-items .admin-menu-item {
-
-        min-width: 68px;
-        flex-basis: 68px;
-    }
-
-}
-
-/* =========================================================
-   TRES PETITS ECRANS
-   ========================================================= */
-
-@media (max-width: 400px) {
-
-    .admin-menu-main .admin-menu-item,
-    .admin-menu-main .admin-menu-section {
-
-        padding-left: 9px;
-        padding-right: 9px;
-    }
-
-}

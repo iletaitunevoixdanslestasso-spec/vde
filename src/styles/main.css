@@ -237,7 +237,7 @@ button {
 .icon-saisons::before {
     content: "📅";
 }
-.icon-repetition::before {
+.icon-repetitions::before {
     content: "🗓";
 }
 .icon-gestion::before {

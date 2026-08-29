@@ -7,7 +7,7 @@ import { SaisonMapper } from "../../mappers/SaisonMapper";
 import { SaisonController } from "../../controllers/SaisonController";
 
     const actions = [
-        { label: "⭐ Activer", action: "activate" },
+        { label: "Activer",cssClass:"icon-saisonactive", action: "activate" },
         // { label: "👥 Chanteurs", action: "manageChanteurs" },
     ];
 

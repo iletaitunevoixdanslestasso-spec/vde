@@ -120,17 +120,17 @@ const actions = [
     },
 
     {
-        label: "🔗 Générer lien",
+        label: "Générer lien",
         icon: "🔗",
         action: "generateAccessLink"
     },
     {
-        label: "📋 Copier",
+        label: "Copier",
         icon: "📋",
         action: "copyAccessLink"
     },
     {
-        label: "📩 Envoyer",
+        label: "Envoyer",
         icon: "📩",
         action: "sendAccessLink"
     },

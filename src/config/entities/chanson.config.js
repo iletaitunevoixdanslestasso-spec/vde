@@ -85,7 +85,6 @@ export const chansonConfig = createEntityConfig({
     actions: [
         {
             label: "Pupitres",
-            icon: "🎼",
             cssClass: "icon-pupitres",
             action: "managePupitres"
         }

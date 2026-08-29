@@ -156,7 +156,7 @@ const actions = [
     {
         label: "Chansons",
         title: "Chansons",
-        cssClass: "icon-chanson",
+        cssClass: "icon-chansons",
         action: "manageSaisonConcertChanson"
     }
 ];

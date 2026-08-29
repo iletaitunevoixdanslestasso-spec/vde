@@ -52,7 +52,7 @@ const actions = [
     { 
         label: "Répartition", 
         title: "affichage de la Répartition", 
-        cssClass: "icon-gestion", 
+        cssClass: "icon-groupes", 
         action: "repartition"
     },
 
