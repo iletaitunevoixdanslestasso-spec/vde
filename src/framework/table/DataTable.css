@@ -11,6 +11,7 @@
     white-space: nowrap;
 }
 
+
 .data-table-cell-no-word-break {
     overflow-wrap: normal !important;
     word-break: normal !important;
