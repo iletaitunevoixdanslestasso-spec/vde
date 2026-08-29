@@ -53,7 +53,8 @@ export class ChanteurController extends BaseController {
         return this.accesController.generateLink(chanteur);
     }
     copyAccessLink(link) {
-        navigator.clipboard.writeText(link);
+        const url = `${window.location.origin}/chanteur/${link}`;
+        navigator.clipboard.writeText(url);
     }
     async sendAccessLink(chanteur) {
         console.log(chanteur)
