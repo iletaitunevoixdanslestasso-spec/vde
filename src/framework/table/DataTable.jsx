@@ -561,7 +561,13 @@ export default function DataTable({
 
                                     <td
                                         key={col.field}
-                                        className="data-table-cell"
+                                        className={
+                                            `data-table-cell ${col.type === "date" ||
+                                                col.type === "time"
+                                                ? "data-table-cell-nowrap"
+                                                : ""
+                                            } data-table-cell-no-word-break`
+                                        } 
                                         data-label={col.header}
                                     >
                                         {renderValue(col, row)}

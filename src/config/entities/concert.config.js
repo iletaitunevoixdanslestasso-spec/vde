@@ -9,10 +9,17 @@ import { ConcertMapper } from "../../mappers/ConcertMapper";
 const columns = [
     { field: "titre", header: "Titre", type: "text" },
 
-    { field: "date", header: "Date", type: "date" },
-    { field: "description", header: "Description du concert", type: "textarea" },
-    { field: "heure_debut", header: "Heure du début", type: "time" },
-    { field: "heure_rdv", header: "Heure du rdv", type: "time" },
+    { field: "date", header: "Date", type: "date" , 
+        render: (value) => {
+        if (!value) {
+            return "";
+        }
+
+        return new Date(value).toLocaleDateString("fr-FR");
+    }},
+    { field: "description", header: "infos", type: "textarea" },
+    { field: "heure_debut", header: "début", type: "time" },
+    { field: "heure_rdv", header: "rdv", type: "time" },
     {
         field: "rendezvous_type_id",
         header: "typerendezvous",
@@ -132,7 +139,7 @@ const columns = [
 
     {
         field: "lieu_description",
-        header: "Description du lieu",
+        header: "le lieu",
         type: "textarea",
         dependsOn: {
             field: "lieu_mode",
