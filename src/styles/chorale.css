@@ -90,7 +90,7 @@ button {
 .icon-inscription::before,
 .icon-etaterreur::before,
 .icon-alerte::before,
-.icon-avertissement::before
+.icon-avertissement::before,
 .icon-profil::before,
 .icon-referentiels::before {
     display: inline-block;
