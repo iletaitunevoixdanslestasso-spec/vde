@@ -145,7 +145,7 @@ export class RendezvouRepository extends BaseRepository {
         `)
             .is("deleted_at", null)
             .neq('code')
-            .notIn('code',['repet','concert'])
+            .notIn('code', ['repet', 'concert'])
             .order("libelle")
             ;
 
@@ -207,4 +207,6 @@ export class RendezvouRepository extends BaseRepository {
 
         return lieu;
     }
+
+
 }

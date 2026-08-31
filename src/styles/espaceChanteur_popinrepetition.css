@@ -1,0 +1,245 @@
+/* =========================================================
+   POPIN PARTICIPATION REPETITION
+   ========================================================= */
+
+.repetition-participation-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background: rgba(0, 0, 0, 0.55);
+}
+
+
+/* =========================================================
+   POPIN
+   ========================================================= */
+
+.repetition-participation-popin {
+    width: 100%;
+    max-width: 480px;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.30);
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.repetition-participation-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+
+.repetition-participation-icon {
+    width: 54px;
+    height: 54px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    background: #f1f3f5;
+
+    font-size: 28px;
+}
+
+
+.repetition-participation-eyebrow {
+    margin-bottom: 3px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+
+    opacity: 0.6;
+}
+
+
+.repetition-participation-title {
+    margin: 0;
+
+    font-size: 24px;
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.repetition-participation-content {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-bottom: 28px;
+}
+
+
+.repetition-participation-content p {
+    margin: 0;
+
+    line-height: 1.5;
+}
+
+
+.repetition-participation-content strong {
+    font-size: 18px;
+}
+
+
+.repetition-participation-time {
+    font-size: 14px;
+
+    opacity: 0.75;
+}
+
+
+.repetition-participation-question {
+    margin-top: 10px !important;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BOUTONS
+   ========================================================= */
+
+.repetition-participation-buttons {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 18px;
+}
+
+
+.repetition-participation-button {
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 2px solid #ddd;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    font-size: 32px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+
+.repetition-participation-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+
+    border-color: #aaa;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+
+.repetition-participation-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+
+.repetition-participation-button:disabled {
+    opacity: 0.5;
+
+    cursor: wait;
+}
+
+
+/* =========================================================
+   ENREGISTREMENT
+   ========================================================= */
+
+.repetition-participation-saving {
+    margin-top: 18px;
+
+    font-size: 14px;
+
+    opacity: 0.7;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .repetition-participation-overlay {
+        padding: 15px;
+    }
+
+
+    .repetition-participation-popin {
+        padding: 25px 20px;
+    }
+
+
+    .repetition-participation-button {
+        width: 64px;
+        height: 64px;
+
+        font-size: 28px;
+    }
+
+}

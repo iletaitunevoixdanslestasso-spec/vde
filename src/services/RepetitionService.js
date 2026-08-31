@@ -40,9 +40,9 @@ export class RepetitionService extends BaseService {
         }
         // // j'enlève des lignes de la able liaison les lignes dontle referentiel est null
         // const filteredData = data.filter(item => item.chansons !== null);
-        console.log(data    )
+        console.log(data)
         data.sort((a, b) =>
-             new Date(b.date) - new Date(a.date)
+            new Date(b.date) - new Date(a.date)
         );
 
 
@@ -95,6 +95,27 @@ export class RepetitionService extends BaseService {
         };
 
         return super.save(entityToSave);
+    }
+
+    async findDuJourPourChanteur(saisonId, saisonChanteurId) {
+        return this.repository.findDuJourPourChanteur(
+            saisonId,
+            saisonChanteurId
+        );
+    }
+    async saveParticipation(
+        token,
+        saisonChanteurId,
+        repetitionId,
+        participe
+    ) {
+
+        return this.repository.saveParticipation(
+            token,
+            saisonChanteurId,
+            repetitionId,
+            participe
+        );
     }
 
 }
