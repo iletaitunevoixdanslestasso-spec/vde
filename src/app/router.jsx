@@ -56,6 +56,7 @@ import { ChanteurProvider } from "../components/contexts/ChanteurContext";
 import LieuxPage from "../pages/admin/referentiels/Lieux/LieuxPage";
 import DocumentsChanteur from "../pages/chanteur/DocumentsChanteur";
 import DocumentsChanteurPage from "../pages/admin/referentiels/DocumentsChanteur/DocumentsChanteurPage";
+import InvitationSaisonPage from "../pages/admin/referentiels/invitationSaison/InvitationSaisonPage";
 
 
 export default function Router() {
@@ -174,6 +175,10 @@ export default function Router() {
                             <Route
                                 path="saison/:saison_nom/concerts"
                                 element={<ConcertSaisonPage />}
+                            />
+                            <Route
+                                path="saison/:saison_nom/invitations"
+                                element={<InvitationSaisonPage />}
                             />
                             <Route
                                 path="saison/:saison_nom/concert/:titre/chansons"

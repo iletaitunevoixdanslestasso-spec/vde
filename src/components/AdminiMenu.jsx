@@ -401,6 +401,19 @@ export default function AdminMenu() {
                                                 Concerts
                                             </button>
 
+                                            <button
+                                                type="button"
+                                                className="admin-menu-item icon-invitations"
+                                                onClick={() =>
+                                                    handleClickSaison(
+                                                        saison,
+                                                        "invitations"
+                                                    )
+                                                }
+                                            >
+                                                Invitations
+                                            </button>
+
                                         </div>
 
                                     )}
@@ -574,18 +587,6 @@ export default function AdminMenu() {
                                 Répétitions
                             </button>
 
-
-                            <button
-                                type="button"
-                                className="admin-menu-item icon-invitations"
-                                onClick={() =>
-                                    handleClickReferentiel(
-                                        "/admin/invitations"
-                                    )
-                                }
-                            >
-                                Invitations
-                            </button>
 
                         </div>
 

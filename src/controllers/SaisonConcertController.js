@@ -47,9 +47,18 @@ export class SaisonConcertController extends ConcertController {
     }
     async save(form, onSuccess, onError) {
         console.log("SaisonConcertController save", form);
+        const {data, error} = await this.service.findTypeConcert()
+        if(error){}
+
+        console.log(data)
+        const newForm = {
+            ...form,
+            rendezvous_type_id:data.id
+        }
+        console.log(newForm)
 
         return this.handle(
-            () => this.service.saveSaisonConcert(form),
+            () => this.service.saveSaisonConcert(newForm),
             {
                 onSuccess,
                 onError

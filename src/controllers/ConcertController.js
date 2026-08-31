@@ -15,7 +15,6 @@ export class ConcertController extends BaseController {
             ...item,
             value: `${item.nom} ${item.description}`
         }));
-        console.log(lieux)
         return {
             lieux
         };

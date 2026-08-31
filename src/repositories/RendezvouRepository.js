@@ -38,6 +38,27 @@ export class RendezvouRepository extends BaseRepository {
             .maybeSingle();
     }
 
+    async findBySaisonAndTypeAutres(saisonId) {
+        console.log("findBySaisonAndTypeAutres", saisonId)
+        return this.supabase
+            .from(this.table)
+            .select(`
+            *,
+            lieux(*),
+            saison_rendezvous!inner(*),
+            rendezvous_type!inner(
+                id,
+                libelle,
+                code
+            )
+        `)
+            .neq("rendezvous_type.code", "concert")
+            .neq("rendezvous_type.code", "repet")
+            .is("deleted_at", null)
+            .eq("saison_rendezvous.saison_id", saisonId)
+            .order('date', { ascending: true });
+        ;
+    }
     async findBySaisonAndTypeConcert(saisonId) {
         console.log("findBySaisonAndTypeConcert", saisonId)
         return this.supabase
@@ -111,6 +132,28 @@ export class RendezvouRepository extends BaseRepository {
             .is("rendezvous.deleted_at", null)
             .order("id", { ascending: true });
 
+    }
+    async findType() {
+
+        const { data, error } = await this.supabase
+            .from("rendezvous_type")
+            .select(`
+            id,
+            libelle,
+            code,
+            description
+        `)
+            .is("deleted_at", null)
+            .neq('code')
+            .notIn('code',['repet','concert'])
+            .order("libelle")
+            ;
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
     }
     async findLieux() {
 

@@ -89,6 +89,11 @@ export class ConcertService extends BaseService {
         return BaseResponse.success(newData);
 
     }
+    async findTypeConcert() {
+        const res =
+            await this.rendezvouRepository.findTypeConcert();
+        return res
+    }
     async save(form) {
         console.log(form)
         let lieuId = form.lieu_id || null;
@@ -107,8 +112,8 @@ export class ConcertService extends BaseService {
             lieuId = lieu.id;
         }
         console.log("lieuid", lieuId)
-        const { data: rendezvous_type, error } =
-            await this.rendezvouRepository.findTypeConcert();
+        // const { data: rendezvous_type, error } =
+        //     await this.rendezvouRepository.findTypeConcert();
         const concert = {
             id: rendezvousId,
             titre: form.titre,
@@ -117,7 +122,7 @@ export class ConcertService extends BaseService {
             duree_previsionnelle: form.duree_previsionnelle,
             description: form.description,
             date: form.date,
-            rendezvous_type_id: rendezvous_type.id,
+            rendezvous_type_id: form.rendezvous_type_id,
             lieu_id: lieuId
         };
 
