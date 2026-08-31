@@ -14,11 +14,15 @@ export default function ChanteurSaisonPage() {
     const navigate = useNavigate();
     const [session, setSession] = useState(null);
     const { saisonSelectionne } = useSaison();
-    if(!saisonSelectionne){
-        navigate(`/admin`)
-        return
-    }
-    
+  useEffect(() => {
+        if (!saisonSelectionne) {
+            navigate("/admin");
+        }
+    }, [saisonSelectionne, navigate]);
+
+    if (!saisonSelectionne) {
+        return null;
+    }    
     return (
         <CRUDPage
             config={ChanteursSaisonConfig}

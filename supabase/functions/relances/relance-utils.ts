@@ -11,6 +11,7 @@ function encodeMimeHeader(value: string): string {
   return btoa(binary);
 }
 
+
 /**
  * Vérifie si une relance peut être envoyée aujourd'hui.
  *
@@ -54,7 +55,10 @@ export async function peutRelancer(
     query = query.eq("contexte_id", contexteId);
   }
 
+
   const { data, error } = await query;
+
+
   console.log(
     "peutRelancer RESULTAT :",
     JSON.stringify({
@@ -65,63 +69,95 @@ export async function peutRelancer(
       data,
     })
   );
+
+
   if (error) {
     throw error;
   }
+
 
   if (!data || data.length === 0) {
     return true;
   }
 
+
   const dateEnvoi = data[0].date_envoi;
+
+
   console.log(
     `peutRelancer  dateEnvoi: ${dateEnvoi} `
   );
+
+
   if (dateEnvoi === null) {
     return true;
   }
 
+
   const aujourdHui = new Date();
   const dernierEnvoi = new Date(dateEnvoi);
 
-  const dateAujourdhui = aujourdHui.toISOString().slice(0, 10);
-  const dateDernierEnvoi = dernierEnvoi.toISOString().slice(0, 10);
+  const dateAujourdhui =
+    aujourdHui.toISOString().slice(0, 10);
+
+  const dateDernierEnvoi =
+    dernierEnvoi.toISOString().slice(0, 10);
+
 
   console.log(
     `peutRelancer  dateAujourdhui: ${dateAujourdhui} `
   );
+
   console.log(
     `peutRelancer  dateDernierEnvoi: ${dateDernierEnvoi} `
   );
 
 
   if (dateDernierEnvoi === dateAujourdhui) {
+
     console.log(
       "peutRelancer COMPARAISON :",
       JSON.stringify({
         dateEnvoi,
         dateDernierEnvoi,
         dateAujourdhui,
-        memeJour: dateDernierEnvoi === dateAujourdhui,
+        memeJour:
+          dateDernierEnvoi === dateAujourdhui,
       })
     );
+
     return false;
   }
+
 
   return dateDernierEnvoi < dateAujourdhui;
 }
 
 
 /**
- * Enregistre une relance après l'envoi réel du mail.
+ * Enregistre une relance après une tentative d'envoi.
+ *
+ * resultatEnvoi :
+ * - SUCCES
+ * - ERREUR
+ *
+ * messageId :
+ * - ID Gmail si l'envoi a réussi
+ *
+ * erreur :
+ * - message d'erreur si l'envoi a échoué
  */
 export async function enregistrerRelance(
   supabase: SupabaseClient,
   chanteurId: string,
   typeRelanceId: number,
   contexteType: string | null = null,
-  contexteId: string | null = null
+  contexteId: string | null = null,
+  resultatEnvoi: string | null = null,
+  messageId: string | null = null,
+  erreur: string | null = null
 ) {
+
   const { data, error } = await supabase
     .from("relances_envois")
     .insert({
@@ -130,16 +166,23 @@ export async function enregistrerRelance(
       contexte_type: contexteType,
       contexte_id: contexteId,
       date_envoi: new Date().toISOString(),
+
+      resultat_envoi: resultatEnvoi,
+      message_id: messageId,
+      erreur: erreur,
     })
     .select()
     .single();
+
 
   if (error) {
     throw error;
   }
 
+
   return data;
 }
+
 
 // ============================================================
 // Gmail : envoyer un mail via OAuth2
@@ -151,10 +194,12 @@ type MailRelance = {
   text: string;
 };
 
+
 function base64UrlEncode(value: string): string {
   const bytes = new TextEncoder().encode(value);
 
   let binary = "";
+
   for (const byte of bytes) {
     binary += String.fromCharCode(byte);
   }
@@ -165,38 +210,63 @@ function base64UrlEncode(value: string): string {
     .replace(/=+$/, "");
 }
 
+
 async function obtenirAccessToken(): Promise<string> {
-  const clientId = Deno.env.get("GMAIL_IEUVDE_CLIENT_ID");
-  const clientSecret = Deno.env.get("GMAIL_IEUVDE_CLIENT_SECRET");
-  const refreshToken = Deno.env.get("GMAIL_IEUVDE_REFRESH_TOKEN");
+
+  const clientId =
+    Deno.env.get("GMAIL_IEUVDE_CLIENT_ID");
+
+  const clientSecret =
+    Deno.env.get("GMAIL_IEUVDE_CLIENT_SECRET");
+
+  const refreshToken =
+    Deno.env.get("GMAIL_IEUVDE_REFRESH_TOKEN");
+
 
   if (!clientId || !clientSecret || !refreshToken) {
+
     throw new Error(
       "Secrets Gmail manquants : GMAIL_IEUVDE_CLIENT_ID, GMAIL_IEUVDE_CLIENT_SECRET ou GMAIL_IEUVDE_REFRESH_TOKEN"
     );
   }
 
-  const response = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
-      refresh_token: refreshToken,
-      grant_type: "refresh_token",
-    }),
-  });
+
+  const response = await fetch(
+    "https://oauth2.googleapis.com/token",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/x-www-form-urlencoded",
+      },
+
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }),
+    }
+  );
+
 
   const data = await response.json();
 
+
   if (!response.ok) {
-    console.error("Erreur récupération access token :", data);
+
+    console.error(
+      "Erreur récupération access token :",
+      data
+    );
+
     throw new Error(
-      data.error_description || "Impossible d'obtenir l'access token Gmail"
+      data.error_description ||
+      "Impossible d'obtenir l'access token Gmail"
     );
   }
+
 
   return data.access_token;
 }
@@ -209,9 +279,13 @@ export async function envoyerMailRelance_OLD({
 }: MailRelance) {
 
   // 1. Obtenir un access_token valide
-  const accessToken = await obtenirAccessToken();
+
+  const accessToken =
+    await obtenirAccessToken();
+
 
   // 2. Construire le mail MIME
+
   const mimeMessage = [
     `To: ${to}`,
     `Subject: ${subject}`,
@@ -221,41 +295,64 @@ export async function envoyerMailRelance_OLD({
     text,
   ].join("\r\n");
 
+
   // 3. Encoder en base64url pour Gmail
-  const raw = base64UrlEncode(mimeMessage);
+
+  const raw =
+    base64UrlEncode(mimeMessage);
+
 
   // 4. Envoyer via Gmail API
+
   const response = await fetch(
     "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
     {
       method: "POST",
+
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        Authorization:
+          `Bearer ${accessToken}`,
+
+        "Content-Type":
+          "application/json",
       },
+
       body: JSON.stringify({
         raw,
       }),
     }
   );
 
+
   const data = await response.json();
 
+
   if (!response.ok) {
-    console.error("Erreur Gmail :", data);
+
+    console.error(
+      "Erreur Gmail :",
+      data
+    );
 
     throw new Error(
-      data.error?.message || "Erreur lors de l'envoi du mail Gmail"
+      data.error?.message ||
+      "Erreur lors de l'envoi du mail Gmail"
     );
   }
 
-  console.log("Mail Gmail envoyé :", data.id);
+
+  console.log(
+    "Mail Gmail envoyé :",
+    data.id
+  );
+
 
   return {
     success: true,
     messageId: data.id,
   };
 }
+
 
 export async function envoyerMailRelance({
   to,
@@ -264,15 +361,30 @@ export async function envoyerMailRelance({
 }: MailRelance) {
 
   if (!to || !to.trim()) {
-    throw new Error("Adresse email destinataire absente");
+    throw new Error(
+      "Adresse email destinataire absente"
+    );
   }
+
+
   const destinataire = to.trim();
-  console.log("DESTINATAIRE GMAIL :", JSON.stringify(to));
-  console.log("DESTINATAIRE GMAIL :", JSON.stringify(destinataire));
+
+
+  console.log(
+    "DESTINATAIRE GMAIL :",
+    JSON.stringify(to)
+  );
+
+  console.log(
+    "DESTINATAIRE GMAIL :",
+    JSON.stringify(destinataire)
+  );
+
 
   // 1. Obtenir un access_token valide
-  const accessToken = await obtenirAccessToken();
 
+  const accessToken =
+    await obtenirAccessToken();
 
 
   // --------------------------------------------------
@@ -283,15 +395,21 @@ export async function envoyerMailRelance({
     "https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs",
     {
       method: "GET",
+
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization:
+          `Bearer ${accessToken}`,
       },
     }
   );
 
-  const signatureData = await signatureResponse.json();
+
+  const signatureData =
+    await signatureResponse.json();
+
 
   if (!signatureResponse.ok) {
+
     console.error(
       "Erreur récupération signature Gmail :",
       signatureData
@@ -308,12 +426,15 @@ export async function envoyerMailRelance({
   // 3. Trouver l'adresse d'envoi principale
   // --------------------------------------------------
 
-  const sendAs = signatureData.sendAs?.find(
-    (item: any) => item.isPrimary === true
-  );
+  const sendAs =
+    signatureData.sendAs?.find(
+      (item: any) =>
+        item.isPrimary === true
+    );
 
 
-  const signature = sendAs?.signature ?? "";
+  const signature =
+    sendAs?.signature ?? "";
 
 
   console.log(
@@ -348,7 +469,7 @@ export async function envoyerMailRelance({
 
   const mimeMessage = [
     `To: ${destinataire}`,
-     `Subject: =?UTF-8?B?${encodeMimeHeader(subject)}?=`,
+    `Subject: =?UTF-8?B?${encodeMimeHeader(subject)}?=`,
     "MIME-Version: 1.0",
     "Content-Type: text/html; charset=UTF-8",
     "",
@@ -360,7 +481,8 @@ export async function envoyerMailRelance({
   // 7. Encoder en base64url
   // --------------------------------------------------
 
-  const raw = base64UrlEncode(mimeMessage);
+  const raw =
+    base64UrlEncode(mimeMessage);
 
 
   // --------------------------------------------------
@@ -371,10 +493,15 @@ export async function envoyerMailRelance({
     "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
     {
       method: "POST",
+
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        Authorization:
+          `Bearer ${accessToken}`,
+
+        "Content-Type":
+          "application/json",
       },
+
       body: JSON.stringify({
         raw,
       }),
@@ -382,7 +509,8 @@ export async function envoyerMailRelance({
   );
 
 
-  const data = await response.json();
+  const data =
+    await response.json();
 
 
   if (!response.ok) {

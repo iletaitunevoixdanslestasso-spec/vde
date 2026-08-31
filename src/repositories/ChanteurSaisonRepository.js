@@ -39,7 +39,20 @@ export class ChanteurSaisonRepository extends BaseRepository {
                     email,
                     telephone,
                     droit_image,
-                    droit_image_workflow
+                    droit_image_workflow,
+                    relances_envois (
+                        id,
+                        chanteur_id,
+                        type_relance_id,
+                        contexte_id,
+                        contexte_type,
+                        date_envoi,
+                        statut,
+                        erreur,
+                        template,
+                        resultat_envoi,
+                        message_id
+                    )
                 ),
                 groupe_id,
                 groupes (
@@ -53,7 +66,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
             .eq("saison_id", saisonId)
             .is("deleted_at", null)
             .is("chanteurs.deleted_at", null)
-            ;
+        ;
     }
 
 

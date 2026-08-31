@@ -88,6 +88,9 @@ button {
 .icon-invitations::before,
 .icon-votes::before,
 .icon-inscription::before,
+.icon-etaterreur::before,
+.icon-alerte::before,
+.icon-avertissement::before
 .icon-profil::before,
 .icon-referentiels::before {
     display: inline-block;
@@ -180,6 +183,15 @@ button {
 
 .icon-votes::before {
     content: "🗳️";
+}
+.icon-etaterreur::before {
+    content: "🔴";
+}
+.icon-alerte::before {
+    content: "🚨";
+}
+.icon-avertissement::before {
+    content: "⚠️";
 }
 
 .icon-inscription::before {

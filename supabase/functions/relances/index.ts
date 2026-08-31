@@ -2,6 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import { relancePupitre } from "./pupitre.ts";
 import { relanceDai } from "./dai.ts";
+import { relanceConcert } from "./concerts.ts";
 
 import {
   envoyerMailRelance,
@@ -103,6 +104,7 @@ Deno.serve(async (req) => {
             email,
             stop_relance_pupitre,
             stop_relance_dai,
+            stop_relance_concert,
             droit_image_workflow
           )
         `)
@@ -166,6 +168,18 @@ Deno.serve(async (req) => {
 
 
       // ------------------------------------------------
+      // 3c. Métier CONCERT
+      // ------------------------------------------------
+
+      const resultatConcert = await relanceConcert(
+        supabase,
+        chanteur,
+        saisonChanteur.id,
+        saison.id
+      );
+
+
+      // ------------------------------------------------
       // 4. Agrégation des textes métier
       // ------------------------------------------------
 
@@ -181,7 +195,23 @@ Deno.serve(async (req) => {
         textesRelance.push(resultatDai.texte);
       }
 
+
+      // ------------------------------------------------
+      // Relances CONCERT
+      // ------------------------------------------------
+
+      for (const relance of resultatConcert.relances) {
+        textesRelance.push(relance.texte);
+      }
+
+
+      // ------------------------------------------------
+      // TEST EXISTANT
+      // ------------------------------------------------
+
       textesRelance.push("pour test je force");
+
+
       // ------------------------------------------------
       // 5. Aucune relance
       // ------------------------------------------------
@@ -203,6 +233,7 @@ Deno.serve(async (req) => {
         continue;
       }
 
+
       // ------------------------------------------------
       // Token d'accès du chanteur
       // ------------------------------------------------
@@ -219,18 +250,26 @@ Deno.serve(async (req) => {
         throw accesError;
       }
 
+
       if (!acces?.token) {
+
         console.log(
           `AUCUN TOKEN D'ACCÈS : ${chanteur.prenom} ${chanteur.nom}`
         );
 
         // On peut continuer sans lien
       }
+
+
       const appUrl = Deno.env.get("APP_URL");
 
       if (!appUrl) {
-        throw new Error("La variable APP_URL n'est pas configurée");
+        throw new Error(
+          "La variable APP_URL n'est pas configurée"
+        );
       }
+
+
       const lienEspaceChanteur = acces?.token
         ? `${appUrl}/chanteur/${acces.token}`
         : null;
@@ -257,9 +296,15 @@ Deno.serve(async (req) => {
         `Informations à compléter - saison ${saison.nom}`;
 
 
-      // ------------------------------------------------
-      // 7. Envoi du mail
-      // ------------------------------------------------
+      // ==================================================
+      // 7. ENVOI DU MAIL
+      // ==================================================
+
+      let resultatMail: {
+        success: boolean;
+        messageId: string;
+      };
+
 
       try {
 
@@ -267,8 +312,10 @@ Deno.serve(async (req) => {
           `ENVOI MAIL : ${chanteur.prenom} ${chanteur.nom}`
         );
 
+
         // const resultatMail = true
-        const resultatMail = await envoyerMailRelance({
+
+        resultatMail = await envoyerMailRelance({
           to: chanteur.email,
           subject,
           text,
@@ -283,8 +330,12 @@ Deno.serve(async (req) => {
         nombreMails++;
 
 
+        // ==================================================
+        // 8. ENREGISTREMENT DES RELANCES - SUCCES
+        // ==================================================
+
         // ------------------------------------------------
-        // 8. Enregistrement PUPITRE
+        // PUPITRE
         // ------------------------------------------------
 
         if (
@@ -297,13 +348,16 @@ Deno.serve(async (req) => {
             chanteur.id,
             resultatPupitre.typeRelanceId,
             "saison",
-            saison.id
+            saison.id,
+            "SUCCES",
+            resultatMail.messageId,
+            null
           );
         }
 
 
         // ------------------------------------------------
-        // 9. Enregistrement DAI
+        // DAI
         // ------------------------------------------------
 
         if (
@@ -316,8 +370,33 @@ Deno.serve(async (req) => {
             chanteur.id,
             resultatDai.typeRelanceId,
             "saison",
-            saison.id
+            saison.id,
+            "SUCCES",
+            resultatMail.messageId,
+            null
           );
+        }
+
+
+        // ------------------------------------------------
+        // CONCERT
+        // ------------------------------------------------
+
+        for (const relance of resultatConcert.relances) {
+
+          if (resultatConcert.typeRelanceId !== null) {
+
+            await enregistrerRelance(
+              supabase,
+              chanteur.id,
+              resultatConcert.typeRelanceId,
+              "saison_rendezvous",
+              relance.saisonRendezvousId,
+              "SUCCES",
+              resultatMail.messageId,
+              null
+            );
+          }
         }
 
 
@@ -328,6 +407,7 @@ Deno.serve(async (req) => {
           email: chanteur.email,
           pupitre: resultatPupitre.necessaire,
           dai: resultatDai.necessaire,
+          concert: resultatConcert.relances.length > 0,
           mail_envoye: true,
           mail_contenet: text,
           message_id: resultatMail.messageId,
@@ -336,10 +416,120 @@ Deno.serve(async (req) => {
 
       } catch (error) {
 
+        // ==================================================
+        // 9. ERREUR ENVOI MAIL
+        // ==================================================
+
+        const erreur =
+          error instanceof Error
+            ? error.message
+            : String(error);
+
+
         console.error(
           `ERREUR ENVOI MAIL : ${chanteur.prenom} ${chanteur.nom}`,
           error
         );
+
+
+        // ==================================================
+        // ENREGISTREMENT DES RELANCES - ERREUR
+        // ==================================================
+
+        // ------------------------------------------------
+        // PUPITRE
+        // ------------------------------------------------
+
+        if (
+          resultatPupitre.necessaire &&
+          resultatPupitre.typeRelanceId !== null
+        ) {
+
+          try {
+
+            await enregistrerRelance(
+              supabase,
+              chanteur.id,
+              resultatPupitre.typeRelanceId,
+              "saison",
+              saison.id,
+              "ERREUR",
+              null,
+              erreur
+            );
+
+          } catch (erreurEnregistrement) {
+
+            console.error(
+              "ERREUR ENREGISTREMENT RELANCE PUPITRE :",
+              erreurEnregistrement
+            );
+          }
+        }
+
+
+        // ------------------------------------------------
+        // DAI
+        // ------------------------------------------------
+
+        if (
+          resultatDai.necessaire &&
+          resultatDai.typeRelanceId !== null
+        ) {
+
+          try {
+
+            await enregistrerRelance(
+              supabase,
+              chanteur.id,
+              resultatDai.typeRelanceId,
+              "saison",
+              saison.id,
+              "ERREUR",
+              null,
+              erreur
+            );
+
+          } catch (erreurEnregistrement) {
+
+            console.error(
+              "ERREUR ENREGISTREMENT RELANCE DAI :",
+              erreurEnregistrement
+            );
+          }
+        }
+
+
+        // ------------------------------------------------
+        // CONCERT
+        // ------------------------------------------------
+
+        for (const relance of resultatConcert.relances) {
+
+          if (resultatConcert.typeRelanceId !== null) {
+
+            try {
+
+              await enregistrerRelance(
+                supabase,
+                chanteur.id,
+                resultatConcert.typeRelanceId,
+                "saison_rendezvous",
+                relance.saisonRendezvousId,
+                "ERREUR",
+                null,
+                erreur
+              );
+
+            } catch (erreurEnregistrement) {
+
+              console.error(
+                "ERREUR ENREGISTREMENT RELANCE CONCERT :",
+                erreurEnregistrement
+              );
+            }
+          }
+        }
 
 
         resultats.push({
@@ -349,11 +539,9 @@ Deno.serve(async (req) => {
           email: chanteur.email,
           pupitre: resultatPupitre.necessaire,
           dai: resultatDai.necessaire,
+          concert: resultatConcert.relances.length > 0,
           mail_envoye: false,
-          erreur:
-            error instanceof Error
-              ? error.message
-              : String(error),
+          erreur,
         });
       }
     }

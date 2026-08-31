@@ -66,8 +66,30 @@ const columns = [
 
     },
     {
+        field: "mail_envoyes",
+        header: "relances",
+        type: "text",
+        editType: "readonly",
+        hideInForm: true,
+
+        render: (v, row) => {
+            v = row.chanteurs.relances_envois.sort((a,b)=>  b.id- a.id )
+            if (v[0].erreur ) {
+                return {
+                    title: `${v[0].erreur}`,
+                    cssClass: "dai-status icon-etaterreur"
+                };
+            }
+
+            return {
+                title: "Validé",
+                cssClass: "dai-status icon-valider"
+            };
+        }
+    },
+    {
         field: "droit_image_workflow",
-        header: "Droit à l'image",
+        header: "D.à I.",
         type: "text",
         editType: "readonly",
         hideInForm: true,

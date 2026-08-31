@@ -30,7 +30,6 @@ export class ChanteurSaisonService extends BaseService {
         this.groupeRepository = new GroupeRepository("groupes");
     }
     async getAll() {
-
         const saisonId = this.context.saisonId;
         const { data, error } = await this.repository.findBySaison(saisonId);
         if (error) {
@@ -39,7 +38,6 @@ export class ChanteurSaisonService extends BaseService {
                 errors: error
             };
         }
-
         // j'enlève des lignes de la able liaison les lignes dontle referentiel est null
         const filteredData = data.filter(item => item.chansons !== null);
         filteredData.sort((a, b) =>
