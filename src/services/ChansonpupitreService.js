@@ -10,10 +10,13 @@ export class ChansonpupitreService extends BaseService {
         this.pupitreRepository = new PupitreRepository('pupitres');
     }
     async getAll() {
-        console.log(this.context)
+        console.log(this.context);
+
         const chansonId = this.context.chansonId;
-        console.log("chansonId", chansonId)
+        console.log("chansonId", chansonId);
+
         const { data, error } = await this.repository.findBySaison(chansonId);
+
         if (error) {
             return {
                 success: false,
@@ -21,18 +24,18 @@ export class ChansonpupitreService extends BaseService {
             };
         }
 
-        data.sort((a, b) =>
+        // Supprime les lignes dont le pupitre a été supprimé
+        const filteredData = data.filter(item => item.pupitres !== null);
+
+        filteredData.sort((a, b) =>
             a.chansons.titre.localeCompare(b.chansons.titre)
         );
 
         return {
             success: true,
-            data
+            data: filteredData
         };
-        // return this.repository.findBySaison(chansonId);
-
     }
-
     /**
      * Liste des chansons pouvant être ajoutés
      */

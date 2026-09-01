@@ -36,8 +36,18 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
                 )
             `)
             .eq("saison_id", saisonId)
+
+            // saison_chansons actif
             .is("deleted_at", null)
-            .is("chansons.deleted_at", null);
+
+            // chanson active
+            .is("chansons.deleted_at", null)
+
+            // chanson_pupitres actifs
+            .is("chansons.chanson_pupitres.deleted_at", null)
+
+            // pupitres actifs
+            .is("chansons.chanson_pupitres.pupitres.deleted_at", null);
 
         if (error) {
             throw error;

@@ -18,7 +18,7 @@ const columns = [
         required: true,
         render: (v, row) => {
             console.log(row)
-            return `${row.pupitres.nom}`;
+            return `${row?.pupitres?.nom ?? 'putpitre supprime'}`;
         }
 
     },

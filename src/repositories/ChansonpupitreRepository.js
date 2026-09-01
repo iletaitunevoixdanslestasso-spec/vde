@@ -18,12 +18,12 @@ export class ChansonpupitreRepository extends BaseRepository {
                 id,
                 ordre,
                 pupitre_id,
-                pupitres (
+                pupitres!inner (
                     id,
                     nom
                 ),
                 chanson_id,
-                chansons (
+                chansons!inner (
                     id,
                     titre
                 ),
@@ -32,6 +32,8 @@ export class ChansonpupitreRepository extends BaseRepository {
             `)
             .eq("chanson_id", chansonId)
             .is("deleted_at", null)
+            .is("pupitres.deleted_at", null)
+            .is("chansons.deleted_at", null)
             .order("ordre", {
                 ascending: true
             })
