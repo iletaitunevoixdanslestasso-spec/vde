@@ -1,10 +1,13 @@
+import { ReferentielDocumentMapper } from "../mappers/ReferentielDocumentMapper";
 import { DocumentTypeRepository } from "../repositories/DocumentTypeRepository";
+import { ReferentielDocumentRepository } from "../repositories/ReferentielDocumentRepository";
+import { ReferentielDocumentValidator } from "../validators/ReferentielDocumentValidator";
 import { BaseService } from "./BaseService";
 import StorageService from "./StorageService";
 
 export class ReferentielDocumentService extends BaseService {
 
-    constructor(repository, validator, mapper) {
+    constructor(repository  = new ReferentielDocumentRepository(), validator = new ReferentielDocumentValidator(), mapper= new ReferentielDocumentMapper()) {
         super(repository, validator, mapper);
         this.documentTypeRepository = new DocumentTypeRepository("document_types");
     }
@@ -61,7 +64,7 @@ export class ReferentielDocumentService extends BaseService {
 
                 return {
                     ...document,
-                    document_url: url
+                    document_url: url,
                 };
             })
         );
@@ -105,7 +108,10 @@ export class ReferentielDocumentService extends BaseService {
         };
     }
 
-    async findDocumentsChanteur() {
+    async findDocumentsChanteur(token) {
+
+        return await StorageService.getChanteurDocuments(token);
+
         const { data, error } =
             await this.repository.findDocumentsChanteur();
 
@@ -144,6 +150,53 @@ export class ReferentielDocumentService extends BaseService {
             success: true,
             data: enrichedData
         };
+    }
+    async saveParoles({
+        id = null,
+        chansonTitre,
+        path
+    }) {
+
+        // Récupérer le type de document "paroles"
+        const {
+            data: documentType,
+            error: documentTypeError
+        } = await this.documentTypeRepository.findByCode(
+            "paroles"
+        );
+
+        if (documentTypeError) {
+            return {
+                success: false,
+                error: documentTypeError.message
+            };
+        }
+
+        if (!documentType) {
+            return {
+                success: false,
+                error: "Le type de document 'paroles' n'existe pas."
+            };
+        }
+
+        const document = {
+            titre: `Paroles - ${chansonTitre}`,
+            document_type_id: documentType.id,
+            path
+        };
+
+        /*
+         * Si id est présent :
+         * BaseService.save() fera UPDATE.
+         *
+         * Si id est absent :
+         * BaseService.save() fera INSERT.
+         */
+        if (id) {
+            document.id = id;
+        }
+
+        return this.save(document);
     }
 
 }

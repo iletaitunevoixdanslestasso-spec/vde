@@ -42,7 +42,20 @@ export default function TokenGuard() {
 
       // 3. Stocker les informations
       localStorage.setItem("token", token);
-      localStorage.setItem("chanteur", JSON.stringify(user));
+      // localStorage.setItem("chanteur", JSON.stringify(user));
+      localStorage.setItem(
+        "chanteur",
+        JSON.stringify({
+          ...user.chanteur,
+          saisonChanteur: user.saisonChanteur,
+          saisonId: user.saisonId,
+          saison: user.saison
+        })
+      );
+      console.log(
+        "TOKEN GUARD USER STOCKÉ",
+        user
+      );
 
       // 4. Comparer les saisons
       const tokenSaisonId = user.saisonId;

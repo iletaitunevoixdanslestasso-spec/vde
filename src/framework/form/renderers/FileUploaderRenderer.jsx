@@ -74,7 +74,9 @@ export default function FileUploaderRenderer({
 
         return {
             field: field.field,
-            path: result.path
+            result,
+            path: result.path,
+            name:result.file.name,
         };
 
     }, [
@@ -102,6 +104,7 @@ export default function FileUploaderRenderer({
      *   valeur déjà présente ou null
      */
     const storagePath =
+
         field.signedUpload
             ? `${form.id}/droit_image.pdf`
             : (
@@ -124,10 +127,13 @@ export default function FileUploaderRenderer({
             showUploadButton={false}
 
             onUploaded={(result) => {
-
+                console.log(field)
+                console.log(result)
                 onChange(
+                    result,
                     field.field,
-                    result.path
+                    result.path,
+                    // result.file.name,
                 );
 
             }}

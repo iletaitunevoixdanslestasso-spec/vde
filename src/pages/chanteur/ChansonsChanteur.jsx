@@ -15,7 +15,8 @@ export default function ChansonsChanteur() {
     );
 
     const saisonId = data?.saisonId;
-    const chanteurId = data?.chanteur?.chanteur_id;
+    // const chanteurId = data?.chanteur?.chanteur_id;
+    const chanteurId = data?.id;
     const token = localStorage.getItem("token");
 
     const controller =

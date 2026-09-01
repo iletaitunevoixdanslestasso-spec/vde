@@ -1,4 +1,5 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createSupabaseAdmin, validateChanteurToken } from "../_shared/chanteur.ts";
+import { createSignedDownloadUrl } from "../_shared/storage.ts";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -22,71 +23,32 @@ Deno.serve(async (req) => {
 
         const token = body?.token;
 
-        if (!token) {
-            return new Response(
-                JSON.stringify({
-                    error: "Token chanteur manquant"
-                }),
-                {
-                    status: 400,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
-        /*
-         * Client Supabase avec clé service
-         * utilisée uniquement côté Edge Function.
-         */
-        const supabaseAdmin = createClient(
-            Deno.env.get("SUPABASE_URL") ?? "",
-            Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-        );
+        const supabaseAdmin =
+            createSupabaseAdmin();
 
         /*
          * ----------------------------------------------------
          * 1. Validation du token chanteur
          * ----------------------------------------------------
          */
+
         const {
-            data: profil,
-            error: profilError
-        } = await supabaseAdmin.rpc(
-            "get_mon_profil",
-            {
-                p_token: token,
-            }
+            chanteur,
+            error: validationError,
+            status: validationStatus
+        } = await validateChanteurToken(
+            supabaseAdmin,
+            token
         );
 
-        if (profilError) {
+        if (validationError) {
+
             return new Response(
                 JSON.stringify({
-                    error: profilError.message
+                    error: validationError
                 }),
                 {
-                    status: 500,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
-        const chanteur = Array.isArray(profil)
-            ? profil[0]
-            : profil;
-
-        if (!chanteur?.id) {
-            return new Response(
-                JSON.stringify({
-                    error: "Token chanteur invalide"
-                }),
-                {
-                    status: 401,
+                    status: validationStatus,
                     headers: {
                         ...corsHeaders,
                         "Content-Type": "application/json",
@@ -97,17 +59,15 @@ Deno.serve(async (req) => {
 
         /*
          * ----------------------------------------------------
-         * 2. Recherche du DAI personnel du chanteur
+         * 2. Recherche du DAI personnel
          * ----------------------------------------------------
-         *
-         * Le path est déjà stocké dans :
-         *
-         * chanteurs.droit_image
-         *
          */
-        const path = chanteur.droit_image;
+
+        const path =
+            chanteur.droit_image;
 
         if (!path) {
+
             return new Response(
                 JSON.stringify({
                     error:
@@ -125,24 +85,23 @@ Deno.serve(async (req) => {
 
         /*
          * ----------------------------------------------------
-         * 3. Création de l'URL signée
+         * 3. URL signée
          * ----------------------------------------------------
          */
+
         const {
-            data: signedUrl,
+            url,
             error: signedUrlError
-        } = await supabaseAdmin
-            .storage
-            .from("chanteur-documents")
-            .createSignedUrl(
-                path,
-                3600,
-                {
-                    download: true
-                }
-            );
+        } = await createSignedDownloadUrl(
+            supabaseAdmin,
+            "chanteur-documents",
+            path,
+            3600,
+            true
+        );
 
         if (signedUrlError) {
+
             return new Response(
                 JSON.stringify({
                     error: signedUrlError.message
@@ -162,10 +121,11 @@ Deno.serve(async (req) => {
          * 4. Retour
          * ----------------------------------------------------
          */
+
         return new Response(
             JSON.stringify({
                 path,
-                url: signedUrl.signedUrl,
+                url,
                 workflow:
                     chanteur.droit_image_workflow
             }),

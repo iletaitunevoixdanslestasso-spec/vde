@@ -24,7 +24,15 @@ const columns = [
     // },
     {
         hideInTable:true,
+        hideInForm:true,
         field: "paroles",
+        header: "referentiel_document",
+        type: "text",
+    },
+    {
+        hideInTable:true,
+        field: "referentiel_documents",
+        mapped:false,
         header: "Parole à mettre en ligne",
         type: "fileUploader",
         bucket: "referentiel-documents",
@@ -32,6 +40,7 @@ const columns = [
         documentTypeCode: "paroles",
         // editType: "readonly",
         render: (v, row) => {
+            console.log(v, row)
             let path = row?.referentiel_documents?.path || ''
             return `${path}`
         }

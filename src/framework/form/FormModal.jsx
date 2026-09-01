@@ -73,22 +73,31 @@ export default function FormModal({
 
     const handleSave = async (form) => {
 
+        console.log("form", form)
         let finalForm = { ...form };
 
         if (fileUpload) {
 
             const result = await fileUpload();
+            console.log(result)
 
-            if (result === null) {
-                return;
-            }
+            if (result !== null) {
 
-            if (!result.skipped) {
 
-                finalForm = {
-                    ...finalForm,
-                    [result.field]: result.path
-                };
+
+                if (!result.skipped) {
+
+                    const docuemtnreferentiel = {
+                        path: result.path,
+                    };
+                    console.log(docuemtnreferentiel)
+                    finalForm = {
+                        ...finalForm,
+                        referentiel_documents_path: result.path,
+                        [result.field]: result.path
+                    };
+                    console.log(finalForm)
+                }
             }
         }
 

@@ -84,6 +84,7 @@ const FileUploader = forwardRef(function FileUploader({
             const uploadedResult = {
                 ...result,
                 url,
+                file,
             };
 
             setUploaded(uploadedResult);
@@ -111,7 +112,7 @@ const FileUploader = forwardRef(function FileUploader({
     };
 
 
-    const uploadWithSignedToken = async (signedToken) => {
+    const uploadWithSignedToken_old = async (signedToken) => {
 
         if (!file) {
             setError("Aucun fichier sélectionné.");
@@ -123,7 +124,12 @@ const FileUploader = forwardRef(function FileUploader({
 
         setUploading(true);
         setError(null);
-
+        console.log(
+            bucket,
+            path,
+            signedToken,
+            file
+        )
         try {
 
             const result =
@@ -172,7 +178,81 @@ const FileUploader = forwardRef(function FileUploader({
             setUploading(false);
         }
     };
+    const uploadWithSignedToken = async (signedToken) => {
 
+        if (!file) {
+            setError("Aucun fichier sélectionné.");
+
+            return {
+                skipped: true
+            };
+        }
+
+        setUploading(true);
+        setError(null);
+
+        try {
+
+            // Le signed token contient le chemin autorisé
+            const payload = JSON.parse(
+                atob(
+                    signedToken
+                        .split(".")[1]
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/")
+                )
+            );
+
+            const signedPath = payload.url?.replace(
+                `${bucket}/`,
+                ""
+            );
+
+            if (!signedPath) {
+                throw new Error(
+                    "Impossible de récupérer le chemin depuis le token signé."
+                );
+            }
+
+            console.log("SIGNED PATH :", signedPath);
+
+            const result =
+                await StorageService.uploadToSignedUrl(
+                    bucket,
+                    signedPath,
+                    signedToken,
+                    file
+                );
+
+            const uploadedResult = {
+                ...result,
+                path: signedPath,
+            };
+
+            setUploaded(uploadedResult);
+
+            onUploaded?.(uploadedResult);
+
+            return uploadedResult;
+
+        } catch (error) {
+
+            console.error(
+                "FileUploader signed upload error",
+                error
+            );
+
+            setError(
+                error?.message ||
+                "Une erreur est survenue pendant l'upload."
+            );
+
+            return null;
+
+        } finally {
+            setUploading(false);
+        }
+    };
 
     useImperativeHandle(ref, () => ({
         upload,
@@ -207,10 +287,14 @@ const FileUploader = forwardRef(function FileUploader({
 
             {uploaded && (
                 <div>
+                    {console.log(uploaded)}
                     <p>
                         <strong>Upload terminé</strong>
                     </p>
 
+                    <p>
+                        NOM : {file.name}
+                    </p>
                     <p>
                         Path : {uploaded.path}
                     </p>

@@ -47,7 +47,7 @@ class StorageService {
         return data;
     }
 
-    async createSignedUrl(bucket, path, expiresIn = 3600) {
+    async createSignedUrl_old(bucket, path, expiresIn = 3600) {
         const { data, error } = await supabase.storage
             .from(bucket)
             .createSignedUrl(path, expiresIn);
@@ -58,7 +58,42 @@ class StorageService {
 
         return data.signedUrl;
     }
+    async createSignedUrl(bucket, path, expiresIn = 3600) {
+        try {
+            const cleanPath =
+                typeof path === "string"
+                    ? path
+                    : path?.path;
 
+            if (!cleanPath) {
+                console.error("StorageService.createSignedUrl : path invalide", path);
+                return null;
+            }
+
+            const { data, error } = await supabase.storage
+                .from(bucket)
+                .createSignedUrl(cleanPath, expiresIn);
+
+            if (error) {
+                console.error(
+                    "Erreur création URL signée :",
+                    cleanPath,
+                    error
+                );
+                return null;
+            }
+
+            return data?.signedUrl ?? null;
+
+        } catch (error) {
+            console.error(
+                "Erreur inattendue createSignedUrl :",
+                error
+            );
+
+            return null;
+        }
+    }
     async createSignedUploadUrl(bucket, path) {
         const { data, error } = await supabase.storage
             .from(bucket)
@@ -73,7 +108,7 @@ class StorageService {
         return data;
     }
 
-    async uploadToSignedUrl(bucket, path, token, file) {
+    async uploadToSignedUrl_old(bucket, path, token, file) {
         const { data, error } = await supabase.storage
             .from(bucket)
             .uploadToSignedUrl(
@@ -92,7 +127,46 @@ class StorageService {
         return data;
     }
 
-    async createChanteurDroitImageUpload(token) {
+    async uploadToSignedUrl(bucket, path, token, file) {
+        console.log(bucket)
+        console.log( path)
+        console.log( token)
+        console.log( file)
+        const cleanPath =
+            typeof path === "string"
+                ? path
+                : path?.path;
+
+        if (!cleanPath) {
+            throw new Error(
+                `uploadToSignedUrl : path invalide : ${JSON.stringify(path)}`
+            );
+        }
+
+        if (!token) {
+            throw new Error("uploadToSignedUrl : token manquant");
+        }
+
+        if (!file) {
+            throw new Error("uploadToSignedUrl : fichier manquant");
+        }
+
+        const { data, error } = await supabase.storage
+            .from(bucket)
+            .uploadToSignedUrl(
+                cleanPath,
+                token,
+                file
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    }
+
+    async createChanteurDroitImageUpload_old(token) {
         const response = await fetch(
             `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-chanteur-droit-image-upload`,
             {
@@ -117,6 +191,63 @@ class StorageService {
         }
 
         return result;
+    }
+    async createChanteurDroitImageUpload(token) {
+
+        return await this.callChanteurFunction(
+            "create-chanteur-droit-image-upload",
+            token
+        );
+    }
+
+    async getChanteurDocuments(token) {
+
+        return await this.callChanteurFunction(
+            "get-chanteur-documents",
+            token
+        );
+    }
+
+    async callChanteurFunction(functionName, token, body = {}) {
+
+        const response = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`,
+            {
+                method: "POST",
+                headers: {
+                    "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    token,
+                    ...body
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.error ||
+                `Erreur lors de l'appel à ${functionName}.`
+            );
+        }
+
+        return result;
+    }
+
+    async getChansonParoles(token, chansonId) {
+
+        const result = await this.callChanteurFunction(
+            "get-chanteur-chanson-paroles",
+            token,
+            {
+                chansonId
+            }
+        );
+
+        return result?.data || null;
     }
 }
 

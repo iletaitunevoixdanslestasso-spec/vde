@@ -43,7 +43,9 @@ export class ChansonRepository extends BaseRepository {
                 paroles,
                 referentiel_documents(
                 id,
-                path
+                titre,
+                path,
+                document_type_id
                 ),
                 titre
 

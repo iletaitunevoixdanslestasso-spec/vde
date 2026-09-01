@@ -14,6 +14,7 @@ export default function ConcertsChanteur() {
     const [saving, setSaving] = useState(null);
     const [error, setError] = useState(null);
     const {
+        token,
         chanteur,
         loadingChanteur,
         setChanteur
@@ -22,7 +23,7 @@ export default function ConcertsChanteur() {
 
     const saisonId = chanteur?.saison_id;
     const chanteurId = chanteur?.id;
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
 
     const controller =
         saisonconcertConfig.controller;

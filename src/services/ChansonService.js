@@ -1,6 +1,8 @@
+import { ReferentielDocumentConfig } from "../config/entities/ReferentielDocument.config";
 import { DocumentTypeRepository } from "../repositories/DocumentTypeRepository";
 import { ReferentielDocumentRepository } from "../repositories/ReferentielDocumentRepository";
 import { BaseService } from "./BaseService";
+import { ReferentielDocumentService } from "./ReferentielDocumentService";
 import StorageService from "./StorageService";
 
 
@@ -10,6 +12,12 @@ export class ChansonService extends BaseService {
         super(repository, validator, mapper);
         this.referentielDocumentRepository = new ReferentielDocumentRepository("referentiel_documents");
         this.documentTypeRepository = new DocumentTypeRepository("document_types");
+        this.referentielDocumentService =
+            new ReferentielDocumentService(
+                // this.referentielDocumentRepository,
+                // null,
+                // null
+            );
     }
     async getAvailableReferentielDocumentParoles() {
 
@@ -35,12 +43,14 @@ export class ChansonService extends BaseService {
             data: filteredData
         };
     }
-    async save(data) {
+    async save_old(data) {
 
         const form = {
             ...data
         };
-
+        console.log(data)
+        console.log(form)
+        return
         /*
          * Un upload vient de FileUploader sous forme de path Storage.
          *
@@ -94,6 +104,69 @@ export class ChansonService extends BaseService {
         }
 
         // 4. sauvegarde normale de la chanson
+        return super.save(form);
+    }
+
+    async save(data) {
+
+        const form = {
+            ...data
+        };
+        console.log("form", form)
+        console.log("data", data)
+
+        if (form.referentiel_documents) {
+            // 1. récupérer le type "paroles"
+
+            const {
+                data: documentType,
+                error: documentTypeError
+            } = await this.documentTypeRepository.findByCode("paroles");
+
+            console.log(data)
+            console.log(documentType)
+            
+            if (documentTypeError) {
+                return {
+                    success: false,
+                    error: documentTypeError.message
+                };
+            }
+            if (!documentType) {
+                return {
+                    success: false,
+                    error: "Le type de document 'paroles' n'existe pas."
+                };
+            }
+            // 2 contrcution du referentieldocument
+            console.log(documentType)
+            const document = {
+                path: data.referentiel_documents_path,
+                titre: `Paroles - ${form.titre}`,
+                id:form.paroles,
+                document_type_id: documentType.id,
+            }
+            console.log(document)
+            const referentiel_documents = ReferentielDocumentConfig
+
+            const result =
+                await referentiel_documents.service.save(
+                    document
+                );
+
+            console.log(result)
+            if (!result.success) {
+                return result;
+            }
+            form.paroles = result.data.id;
+
+            delete form.referentiel_documents;
+        }
+        
+        if (!this.isUuid(form.paroles)) {
+
+        } 
+        form.paroles = this.isUuid(form.paroles) ?  form.paroles : null
         return super.save(form);
     }
 

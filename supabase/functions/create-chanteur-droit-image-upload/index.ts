@@ -1,4 +1,7 @@
-import { createClient } from "npm:@supabase/supabase-js@2";
+import {
+    createSupabaseAdmin,
+    validateChanteurToken
+} from "../_shared/chanteur.ts";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -22,77 +25,32 @@ Deno.serve(async (req) => {
 
         const token = body?.token;
 
-        if (!token) {
-            return new Response(
-                JSON.stringify({
-                    error: "Token chanteur manquant"
-                }),
-                {
-                    status: 400,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
+        const supabaseAdmin =
+            createSupabaseAdmin();
 
         /*
-         * Client ADMIN / SERVICE
-         *
-         * La clé secrète reste uniquement côté serveur.
+         * ----------------------------------------------------
+         * 1. Validation du token chanteur
+         * ----------------------------------------------------
          */
-        const supabaseAdmin = createClient(
-            Deno.env.get("SUPABASE_URL") ?? "",
-            Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-        );
 
-        /*
-         * Vérification du token métier chanteur
-         *
-         * On réutilise ta RPC existante.
-         */
         const {
-            data: profil,
-            error: profilError,
-        } = await supabaseAdmin.rpc(
-            "get_mon_profil",
-            {
-                p_token: token,
-            }
+            chanteur,
+            error: validationError,
+            status: validationStatus
+        } = await validateChanteurToken(
+            supabaseAdmin,
+            token
         );
 
-        if (profilError) {
-            console.error(
-                "get_mon_profil error",
-                profilError
-            );
+        if (validationError) {
 
             return new Response(
                 JSON.stringify({
-                    error: "Impossible de vérifier le token"
+                    error: validationError
                 }),
                 {
-                    status: 500,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
-        const chanteur = Array.isArray(profil)
-            ? profil[0]
-            : profil;
-
-        if (!chanteur?.id) {
-            return new Response(
-                JSON.stringify({
-                    error: "Token chanteur invalide"
-                }),
-                {
-                    status: 401,
+                    status: validationStatus,
                     headers: {
                         ...corsHeaders,
                         "Content-Type": "application/json",
@@ -102,23 +60,25 @@ Deno.serve(async (req) => {
         }
 
         /*
-         * On impose nous-mêmes le nom du fichier.
-         *
-         * Le navigateur ne décide donc pas du chemin Storage.
+         * ----------------------------------------------------
+         * 2. Nom imposé du fichier
+         * ----------------------------------------------------
          */
+
         const path =
             `${chanteur.id}/droit_image.pdf`;
 
         /*
-         * URL d'upload signée
-         *
-         * La fonction serveur utilise la clé secrète,
-         * donc elle peut créer cette autorisation.
+         * ----------------------------------------------------
+         * 3. URL d'upload signée
+         * ----------------------------------------------------
          */
+
         const {
             data: signedUpload,
             error: signedUploadError,
-        } = await supabaseAdmin.storage
+        } = await supabaseAdmin
+            .storage
             .from("chanteur-documents")
             .createSignedUploadUrl(
                 path,
@@ -128,6 +88,7 @@ Deno.serve(async (req) => {
             );
 
         if (signedUploadError) {
+
             console.error(
                 "createSignedUploadUrl error",
                 signedUploadError
@@ -146,6 +107,12 @@ Deno.serve(async (req) => {
                 }
             );
         }
+
+        /*
+         * ----------------------------------------------------
+         * 4. Retour
+         * ----------------------------------------------------
+         */
 
         return new Response(
             JSON.stringify({

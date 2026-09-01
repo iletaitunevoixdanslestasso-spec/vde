@@ -3,7 +3,7 @@ import { BaseRepository } from "./BaseRepository";
 
 export class ReferentielDocumentRepository extends BaseRepository {
 
-    constructor(table) {
+    constructor(table="referentiel_documents") {
         super(table);
     }
     async findByDocumentTypeId(documentTypeId) {

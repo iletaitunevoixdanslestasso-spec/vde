@@ -21,13 +21,14 @@ export class ReferentielDocumentController extends BaseController {
                 : []
         };
     }
-    async loadDocumentsChanteur() {
+    async loadDocumentsChanteur(token) {
 
         const documents =
-            await this.service.findDocumentsChanteur();
-        console.log(documents)
-        return documents
-        
-    }    
+            await this.service.findDocumentsChanteur(token);
+
+        console.log(documents);
+
+        return documents;
+    }
 
 }

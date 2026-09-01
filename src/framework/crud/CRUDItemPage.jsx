@@ -87,7 +87,11 @@ export default function CRUDItemPage({
             }
 
             const item = result.data[0];
-            setChanteur(item)
+            console.log("item", item)
+            setChanteur(prev => ({
+                ...item,
+                saisonChanteur: prev?.saisonChanteur
+            }));
             setItem(item);
             setForm(item);
 
@@ -113,6 +117,7 @@ export default function CRUDItemPage({
 
 
     useEffect(() => {
+        console.log("chanteur",chanteur)
         setItem(chanteur);
         setForm(chanteur);
         setLoading(false);

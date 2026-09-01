@@ -44,7 +44,7 @@ const columns = [
     {
         mapped: false,
         field: "document_url",
-        header: "Document",
+        header: "Document 2",
         type: "text",
         hideInForm: true,
 

@@ -1,4 +1,5 @@
 import { BaseResponse } from "../core/framework/BaseResponse";
+import { supabase } from "../core/supabase/client";
 import { RendezvouRepository } from "../repositories/RendezvouRepository";
 import { SaisonConcertChanteurRepository } from "../repositories/SaisonConcertChanteurRepository";
 import { BaseService } from "./BaseService";
@@ -39,7 +40,20 @@ export class SaisonconcertService extends BaseService {
             )
         ]);
 
+
+        const { data: { session }, error: sessionError } =
+    await supabase.auth.getSession();
+
+console.log("SUPABASE SESSION :", session);
+console.log("SUPABASE SESSION ERROR :", sessionError);
+console.log("TOKEN LOCALSTORAGE :", localStorage.getItem("token"));
+  console.log("SAISON CONCERTS", saisonConcerts);
+    console.log("SAISON CONCERTS DATA", saisonConcerts.data);
+    console.log("SAISON CONCERTS ERROR", saisonConcerts.error);
+
         console.log("participations", participations)
+        console.log("TOKEN LOCALSTORAGE :", localStorage.getItem("token"));
+console.log("TOKEN COMPLET :", token);
         const data = saisonConcerts.data.map(concert => {
             const participation = participations.data.find(
                 participation =>
@@ -59,6 +73,7 @@ export class SaisonconcertService extends BaseService {
         };
     }
     async saveParticipation(token, chanteur,concertId,saison_rendezvous_id,participe) {
+        console.log(token, chanteur,concertId,saison_rendezvous_id,participe)
         const {data,error} =  await this.saisonConcertChanteurRepository.saveParticipation(token,saison_rendezvous_id, chanteur.saisonChanteur.id, participe )
         if(!data)
             return BaseResponse.error([], "erreur dans la requête")

@@ -1,5 +1,11 @@
-import { createSupabaseAdmin, validateChanteurToken } from "../_shared/chanteur.ts";
-import { createSignedDownloadUrl } from "../_shared/storage.ts";
+import {
+    createSupabaseAdmin,
+    validateChanteurToken
+} from "../_shared/chanteur.ts";
+
+import {
+    createSignedDownloadUrl
+} from "../_shared/storage.ts";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -22,6 +28,22 @@ Deno.serve(async (req) => {
         const body = await req.json();
 
         const token = body?.token;
+        const chansonId = body?.chansonId;
+
+        if (!chansonId) {
+            return new Response(
+                JSON.stringify({
+                    error: "Identifiant de chanson manquant"
+                }),
+                {
+                    status: 400,
+                    headers: {
+                        ...corsHeaders,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        }
 
         const supabaseAdmin =
             createSupabaseAdmin();
@@ -33,6 +55,7 @@ Deno.serve(async (req) => {
          */
 
         const {
+            chanteur,
             error: validationError,
             status: validationStatus
         } = await validateChanteurToken(
@@ -58,25 +81,45 @@ Deno.serve(async (req) => {
 
         /*
          * ----------------------------------------------------
-         * 2. Recherche du type de document
+         * 2. Vérifier que la chanson existe
          * ----------------------------------------------------
          */
 
         const {
-            data: documentType,
-            error: documentTypeError
+            data: chanson,
+            error: chansonError
         } = await supabaseAdmin
-            .from("document_types")
-            .select("id")
-            .eq("code", "droit_image")
+            .from("chansons")
+            .select(`
+                id,
+                titre,
+                paroles,
+                referentiel_documents!chansons_paroles_fkey (
+                    id,
+                    titre,
+                    path,
+                    document_type_id,
+                    document_types!inner (
+                        id,
+                        code,
+                        libelle
+                    )
+                )
+            `)
+            .eq("id", chansonId)
             .is("deleted_at", null)
             .maybeSingle();
 
-        if (documentTypeError) {
+        if (chansonError) {
+
+            console.error(
+                "get chanson paroles error",
+                chansonError
+            );
 
             return new Response(
                 JSON.stringify({
-                    error: documentTypeError.message
+                    error: chansonError.message
                 }),
                 {
                     status: 500,
@@ -88,12 +131,11 @@ Deno.serve(async (req) => {
             );
         }
 
-        if (!documentType) {
+        if (!chanson) {
 
             return new Response(
                 JSON.stringify({
-                    error:
-                        "Type de document droit_image introuvable"
+                    error: "Chanson introuvable"
                 }),
                 {
                     status: 404,
@@ -107,48 +149,26 @@ Deno.serve(async (req) => {
 
         /*
          * ----------------------------------------------------
-         * 3. Recherche du template
+         * 3. Vérifier les paroles
          * ----------------------------------------------------
          */
 
-        const {
-            data: template,
-            error: templateError
-        } = await supabaseAdmin
-            .from("referentiel_documents")
-            .select("path")
-            .eq(
-                "document_type_id",
-                documentType.id
-            )
-            .is("deleted_at", null)
-            .maybeSingle();
+        const document =
+            chanson.referentiel_documents;
 
-        if (templateError) {
+        if (
+            !document ||
+            document.document_types?.code !== "paroles" ||
+            !document.path
+        ) {
 
             return new Response(
                 JSON.stringify({
-                    error: templateError.message
+                    success: true,
+                    data: null
                 }),
                 {
-                    status: 500,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
-        if (!template?.path) {
-
-            return new Response(
-                JSON.stringify({
-                    error:
-                        "Template droit à l'image indisponible"
-                }),
-                {
-                    status: 404,
+                    status: 200,
                     headers: {
                         ...corsHeaders,
                         "Content-Type": "application/json",
@@ -169,9 +189,9 @@ Deno.serve(async (req) => {
         } = await createSignedDownloadUrl(
             supabaseAdmin,
             "referentiel-documents",
-            template.path,
+            document.path,
             3600,
-            true
+            false
         );
 
         if (signedUrlError) {
@@ -198,8 +218,13 @@ Deno.serve(async (req) => {
 
         return new Response(
             JSON.stringify({
-                path: template.path,
-                url
+                success: true,
+                data: {
+                    id: document.id,
+                    titre: document.titre,
+                    path: document.path,
+                    url
+                }
             }),
             {
                 status: 200,
@@ -213,7 +238,7 @@ Deno.serve(async (req) => {
     } catch (error) {
 
         console.error(
-            "get-chanteur-droit-image-template",
+            "get-chanteur-chanson-paroles",
             error
         );
 

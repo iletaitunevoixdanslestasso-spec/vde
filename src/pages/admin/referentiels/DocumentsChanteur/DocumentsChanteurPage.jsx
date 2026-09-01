@@ -10,6 +10,7 @@ import "../../../../styles/espaceChanteur_documents.css";
 export default function DocumentsChanteurPage(context = {}) {
 
     const {
+        token,
         chanteur,
         loadingChanteur
     } = useChanteur();
@@ -37,7 +38,7 @@ export default function DocumentsChanteurPage(context = {}) {
                 setError(null);
 
                 const result =
-                    await controller.loadDocumentsChanteur();
+                    await controller.loadDocumentsChanteur(token);
 
                 if (!result.success) {
 

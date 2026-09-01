@@ -58,77 +58,48 @@ Deno.serve(async (req) => {
 
         /*
          * ----------------------------------------------------
-         * 2. Recherche du type de document
+         * 2. Recherche des documents chanteur
          * ----------------------------------------------------
          */
 
         const {
-            data: documentType,
-            error: documentTypeError
-        } = await supabaseAdmin
-            .from("document_types")
-            .select("id")
-            .eq("code", "droit_image")
-            .is("deleted_at", null)
-            .maybeSingle();
-
-        if (documentTypeError) {
-
-            return new Response(
-                JSON.stringify({
-                    error: documentTypeError.message
-                }),
-                {
-                    status: 500,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
-        if (!documentType) {
-
-            return new Response(
-                JSON.stringify({
-                    error:
-                        "Type de document droit_image introuvable"
-                }),
-                {
-                    status: 404,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
-        /*
-         * ----------------------------------------------------
-         * 3. Recherche du template
-         * ----------------------------------------------------
-         */
-
-        const {
-            data: template,
-            error: templateError
+            data: documents,
+            error: documentsError
         } = await supabaseAdmin
             .from("referentiel_documents")
-            .select("path")
-            .eq(
-                "document_type_id",
-                documentType.id
+            .select(`
+                id,
+                titre,
+                path,
+                document_type_id,
+                document_types!inner (
+                    id,
+                    code,
+                    libelle
+                )
+            `)
+            .in(
+                "document_types.code",
+                [
+                    "choriste",
+                    "adherent"
+                ]
             )
             .is("deleted_at", null)
-            .maybeSingle();
+            .order("titre", {
+                ascending: true
+            });
 
-        if (templateError) {
+        if (documentsError) {
+
+            console.error(
+                "findDocumentsChanteur error",
+                documentsError
+            );
 
             return new Response(
                 JSON.stringify({
-                    error: templateError.message
+                    error: documentsError.message
                 }),
                 {
                     status: 500,
@@ -140,66 +111,62 @@ Deno.serve(async (req) => {
             );
         }
 
-        if (!template?.path) {
-
-            return new Response(
-                JSON.stringify({
-                    error:
-                        "Template droit à l'image indisponible"
-                }),
-                {
-                    status: 404,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
-        }
-
         /*
          * ----------------------------------------------------
-         * 4. URL signée
+         * 3. URLs signées
          * ----------------------------------------------------
          */
 
-        const {
-            url,
-            error: signedUrlError
-        } = await createSignedDownloadUrl(
-            supabaseAdmin,
-            "referentiel-documents",
-            template.path,
-            3600,
-            true
-        );
+        const documentsAvecUrl =
+            await Promise.all(
+                (documents || []).map(
+                    async document => {
 
-        if (signedUrlError) {
+                        if (!document?.path) {
 
-            return new Response(
-                JSON.stringify({
-                    error: signedUrlError.message
-                }),
-                {
-                    status: 500,
-                    headers: {
-                        ...corsHeaders,
-                        "Content-Type": "application/json",
-                    },
-                }
+                            return {
+                                ...document,
+                                downloadUrl: null
+                            };
+                        }
+
+                        const {
+                            url,
+                            error: signedUrlError
+                        } = await createSignedDownloadUrl(
+                            supabaseAdmin,
+                            "referentiel-documents",
+                            document.path,
+                            3600,
+                            false
+                        );
+
+                        if (signedUrlError) {
+
+                            return {
+                                ...document,
+                                downloadUrl: null
+                            };
+                        }
+
+                        return {
+                            ...document,
+                            downloadUrl: url
+                        };
+                    }
+                )
             );
-        }
 
         /*
          * ----------------------------------------------------
-         * 5. Retour
+         * 4. Retour
          * ----------------------------------------------------
          */
 
         return new Response(
             JSON.stringify({
-                path: template.path,
-                url
+                success: true,
+                data: documentsAvecUrl
             }),
             {
                 status: 200,
@@ -213,7 +180,7 @@ Deno.serve(async (req) => {
     } catch (error) {
 
         console.error(
-            "get-chanteur-droit-image-template",
+            "get-chanteur-documents",
             error
         );
 
