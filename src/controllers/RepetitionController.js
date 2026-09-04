@@ -53,5 +53,14 @@ export class RepetitionController extends BaseController {
             };
         }
     }
+    manageSaisonRepetitionChanteur(repetition, load) {
 
+        console.log(
+            "repetionCOntroller.manageSaisonRepetitionChanteur",
+            repetition
+        );
+        console.log(this.context)
+        return (`/admin/saison/${this.context.saisonNom}/repetition/${repetition.date}/chanteurs`);
+
+    }    
 }

@@ -99,9 +99,20 @@ const columns = [
 
 
 ];
-
 const actions = [
-];
+    {
+        label: "Chanteurs",
+        title: "Chanteurs",
+        cssClass: "icon-groupes",
+        action: "manageSaisonRepetitionChanteur"
+    },
+    {
+        label: "Chansonpoubrrzls",
+        title: "Chansonpoubrrzl",
+        cssClass: "icon-chanson",
+        action: "manageSaisonConcertChanson"
+    },
+]
 
 
 export const repetitionConfig = createEntityConfig({

@@ -134,6 +134,17 @@ export default function CRUDPage({ config, context = {} }) {
 
                 break;
             }
+            case "manageSaisonRepetitionChanteur": {
+                console.log(row)
+
+                const urlConcertChanson =
+                    controller.manageSaisonRepetitionChanteur(row, load);
+                console.log(urlConcertChanson)
+                context.selectObjet(row);
+                navigate(urlConcertChanson);
+
+                break;
+            }
 
 
             case "delete":

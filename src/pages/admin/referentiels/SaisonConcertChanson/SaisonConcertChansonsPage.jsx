@@ -17,10 +17,6 @@ export default function SaisonConcertChansonsPage() {
     console.log(concertSelectionne)
     console.log(saisonSelectionne)
 
-    if(!saisonSelectionne){
-        navigate(`/admin`)
-        return
-    }
     if(!concertSelectionne){
         navigate(`/admin/saison/${saisonSelectionne.nom}/concerts`)
         return

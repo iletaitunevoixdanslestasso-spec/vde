@@ -16,12 +16,11 @@ export default function ChansonsSaisonPage() {
     const [session, setSession] = useState(null);
     const { saisonSelectionne } = useSaison();
     const { selectChanson } = useChanson();
-    
-    if(!saisonSelectionne){
+
+    if (!saisonSelectionne) {
         navigate(`/admin`)
         return
     }
-    
     return (
         <CRUDPage
             config={saisonchansonConfig}

@@ -51,12 +51,13 @@ import ConcertSaisonPage from "../pages/admin/saisons/ConcertSaisonPage";
 import { ConcertProvider } from "../components/contexts/ConcertContext";
 import SaisonconcertPage from "../pages/admin/referentiels/saisonconcert/SaisonconcertPage";
 import SaisonConcertChansonsPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonConcertChansonsPage";
-import ConcertsChanteur from "../pages/chanteur/ConcertChanteur";
+import ConcertsChanteur from "../pages/chanteur/ConcertsChanteur";
 import { ChanteurProvider } from "../components/contexts/ChanteurContext";
 import LieuxPage from "../pages/admin/referentiels/Lieux/LieuxPage";
 import DocumentsChanteur from "../pages/chanteur/DocumentsChanteur";
 import DocumentsChanteurPage from "../pages/admin/referentiels/DocumentsChanteur/DocumentsChanteurPage";
 import InvitationSaisonPage from "../pages/admin/referentiels/invitationSaison/InvitationSaisonPage";
+import SaisonRepetitionChanteursPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonRepetitionChanteursPage";
 
 
 export default function Router() {
@@ -188,6 +189,10 @@ export default function Router() {
                             <Route
                                 path="saison/:saison_nom/repetition"
                                 element={<RepetitionPage />}
+                            />
+                            <Route
+                                path="saison/:saison_nom/repetition/:titre/chanteurs"
+                                element={<SaisonRepetitionChanteursPage />}
                             />
 
                             <Route

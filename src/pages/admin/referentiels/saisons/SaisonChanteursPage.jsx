@@ -13,11 +13,11 @@ export default function SaisonChanteursPage() {
     const { saisonSelectionne } = useSaison();
     console.log("saisonSelectionne", saisonSelectionne)
     // const { saison_nom } = useParams();
-    if(!saisonSelectionne){
+
+    if (!saisonSelectionne) {
         navigate(`/admin`)
         return
     }
-    
     return (
         <CRUDPage
             config={saisonChanteurConfig}

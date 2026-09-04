@@ -27,6 +27,7 @@ export function SaisonProvider({ children }) {
     // c'est la saison ACTIVE il n'y en a qu'une
     const [saisonActive, setSaisonActive] = useState(null);
     const [saisonSelectionne, setSaisonSelectionne] = useState(null);
+    const [saisonSelectionneObjet, setSaisonSelectionneObjet] = useState(null);
     const [saisons, setSaisons] = useState([]);
 
 
@@ -103,6 +104,12 @@ export function SaisonProvider({ children }) {
         setSaisonSelectionne(saison);
     };
 
+    const updateSaisonSelectionneObjet = (objet) => {
+
+
+        setSaisonSelectionneObjet(objet);
+    };
+
 
     return (
         <SaisonContext.Provider
@@ -110,11 +117,13 @@ export function SaisonProvider({ children }) {
                 saisons,
                 saisonActive,
                 saisonSelectionne,
+                saisonSelectionneObjet,
 
                 refresh,
 
                 updateSaisonActive,
-                updateSaisonSelectionne
+                updateSaisonSelectionne,
+                updateSaisonSelectionneObjet,
             }}
         >
             {children}

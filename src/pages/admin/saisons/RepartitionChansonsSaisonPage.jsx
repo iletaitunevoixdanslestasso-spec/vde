@@ -14,11 +14,11 @@ export default function RepartitionChansonsSaisonPage() {
     const navigate = useNavigate();
     const [session, setSession] = useState(null);
     const { saisonSelectionne } = useSaison();
-    if(!saisonSelectionne){
+
+    if (!saisonSelectionne) {
         navigate(`/admin`)
         return
     }
-    
     return (
         <CRUDPage
             config={saisonchansonConfig}
