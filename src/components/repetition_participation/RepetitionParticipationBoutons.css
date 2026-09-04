@@ -1,0 +1,119 @@
+/* =========================================================
+   PARTICIPATION
+   ========================================================= */
+
+.participation-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    min-height: 48px;
+}
+
+/* =========================================================
+   BOUTONS
+   ========================================================= */
+
+.participation-button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+
+    font-size: 1.25rem;
+    line-height: 1;
+
+    cursor: pointer;
+
+    opacity: 0.35;
+
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease,
+        background 0.2s ease;
+}
+
+.participation-button:hover:not(:disabled) {
+    opacity: 0.75;
+    transform: scale(1.15);
+}
+
+.participation-button.selected {
+    width: 58px;
+    height: 58px;
+
+    font-size: 2.5rem;
+
+    opacity: 1;
+
+    background: #f7f7f7;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.participation-button:disabled {
+    cursor: default;
+    opacity: 0.3;
+}
+
+.participation-button.selected:disabled {
+    opacity: 1;
+}
+
+/* =========================================================
+   ENREGISTREMENT
+   ========================================================= */
+
+.participation-saving {
+    margin-top: 5px;
+
+    font-size: 0.7rem;
+
+    color: #999;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .participation-buttons {
+        gap: 6px;
+
+        min-height: 42px;
+    }
+
+    .participation-button {
+        width: 30px;
+        height: 30px;
+
+        font-size: 1rem;
+    }
+
+    .participation-button.selected {
+        width: 52px;
+        height: 52px;
+
+        font-size: 2.2rem;
+    }
+
+    .participation-saving {
+        font-size: 0.62rem;
+    }
+}

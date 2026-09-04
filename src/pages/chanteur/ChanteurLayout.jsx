@@ -12,6 +12,7 @@ import "../../styles/espaceChanteur_popinrepetition.css";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import { repetitionConfig } from "../../config/entities/repetition.config";
 import RepetitionParticipation from "../../components/RepetitionParticipation";
+import RepetitionParticipationControllerChanteur from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
 
 function ChanteurLayoutContent() {
 
@@ -268,7 +269,7 @@ function ChanteurLayoutContent() {
 
             {popinOpened && repetitionDuJour && (
 
-                <RepetitionParticipation
+                <RepetitionParticipationControllerChanteur
 
                     repetition={repetitionDuJour}
 

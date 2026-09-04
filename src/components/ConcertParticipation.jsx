@@ -2,6 +2,7 @@ import { useState } from "react";
 import NotificationService from "../services/NotificationService";
 import { saisonconcertConfig } from "../config/entities/saisonconcert.config";
 import { useChanteur } from "./contexts/ChanteurContext";
+import RepetitionParticipationBoutons from "./repetition_participation/RepetitionParticipationBoutons";
 
 
 export default function ConcertParticipation({
@@ -79,7 +80,23 @@ export default function ConcertParticipation({
             }
         );
     };
+    return (
+        <div className="concert-participation">
 
+            <label className="concert-participation-label">
+                Ma participation
+            </label>
+
+            <RepetitionParticipationBoutons
+                participation={concert.participation}
+                saving={saving}
+                onParticipationChange={
+                    handleParticipationChange
+                }
+            />
+
+        </div>
+    );
     return (
         <div className="concert-participation">
 

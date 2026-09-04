@@ -332,6 +332,7 @@ export default function CRUDPage({ config, context = {} }) {
             <DataTable
                 data={items}
                 config={config}
+                context={context}
                 onAction={handleAction}
                 onReorder={handleReorder}
             />

@@ -4,6 +4,7 @@ import "./DataTable.css"
 export default function DataTable({
     data = [],
     config = {},
+    context = {},
     onAction,
     onReorder
 }) {
@@ -307,7 +308,8 @@ export default function DataTable({
         const value = column.render
             ? column.render(
                 row[column.field],
-                row
+                row,
+                context
             )
             : row[column.field];
 
