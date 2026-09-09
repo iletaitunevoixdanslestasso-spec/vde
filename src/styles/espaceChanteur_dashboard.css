@@ -602,13 +602,14 @@
    TYPES DE RENDEZ-VOUS
    ========================================================= */
 
+
 .rendezvous-type-repet {
-    border-left: 4px solid var(--rendezvous-repetition-color, #777);
+    border-left: 4px solid var(--rendezvous-repetition-color, #8b7bb8);
 }
 
 .rendezvous-type-repet .dashboard-rendezvous-type-label {
-    background: var(--rendezvous-repetition-bg, #f0f0f0);
-    color: var(--rendezvous-repetition-text, #555);
+    background: var(--rendezvous-repetition-bg, #f3f0fa);
+    color: var(--rendezvous-repetition-text, #66558f);
 }
 
 /* =========================================================
@@ -624,7 +625,20 @@
     color: var(--rendezvous-concert-text, #3d6388);
 }
 
-/* =========================================================
+/* ====/* =========================================================
+   REGROUPEMENTS
+   ========================================================= */
+
+.rendezvous-type-regroup {
+    border-left: 4px solid #78a982;
+}
+
+.rendezvous-type-regroup .dashboard-rendezvous-type-label {
+    background: #edf7ef;
+    color: #4f7958;
+}
+
+=====================================================
    CHARGEMENT / VIDE
    ========================================================= */
 
