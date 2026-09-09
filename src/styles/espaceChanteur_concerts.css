@@ -797,3 +797,598 @@
         font-size: 0.65rem;
     }
 }
+
+/* =========================================================
+   BOUTON CHANSONS DU CONCERT
+   ========================================================= */
+
+.concert-icon-button {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: transparent;
+
+    font-size: 1.15rem;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.concert-icon-button:hover:not(:disabled) {
+    background: #e9e9ea;
+
+    transform: scale(1.06);
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.concert-icon-button:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.concert-icon-button:focus-visible {
+    outline: 2px solid #999;
+    outline-offset: 2px;
+}
+
+.concert-icon-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.concert-icon-spinner {
+    display: inline-block;
+
+    font-size: 1.15rem;
+
+    animation: concert-icon-spin 0.8s linear infinite;
+}
+
+@keyframes concert-icon-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   POPIN - OVERLAY
+   ========================================================= */
+
+.concert-chansons-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    box-sizing: border-box;
+
+    background: rgba(25, 25, 28, 0.48);
+
+    backdrop-filter: blur(5px);
+
+    animation: concert-modal-overlay-in 0.18s ease;
+}
+
+@keyframes concert-modal-overlay-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   POPIN
+   ========================================================= */
+
+.concert-chansons-modal {
+    width: 100%;
+    max-width: 580px;
+    max-height: min(720px, calc(100vh - 48px));
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 18px;
+
+    background: #fff;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.18);
+
+    animation: concert-modal-in 0.22s ease;
+}
+
+@keyframes concert-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
+
+.concert-chansons-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    padding: 20px 20px 17px;
+
+    border-bottom: 1px solid #eeeeef;
+
+    background: #fff;
+}
+
+.concert-chansons-modal-title-wrapper {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.concert-chansons-modal-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #f1f1f2;
+
+    font-size: 1.15rem;
+}
+
+.concert-chansons-modal-eyebrow {
+    margin-bottom: 3px;
+
+    font-size: 0.68rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+
+    color: #999;
+}
+
+.concert-chansons-modal-title {
+    margin: 0;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 1.3rem;
+    line-height: 1.25;
+
+    color: #222;
+
+    overflow-wrap: anywhere;
+}
+
+.concert-chansons-close {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #f4f4f5;
+
+    color: #666;
+
+    font-size: 1.55rem;
+    font-weight: 300;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.concert-chansons-close:hover {
+    background: #e9e9ea;
+    color: #222;
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   CONTENU
+   ========================================================= */
+
+.concert-chansons-modal-content {
+    min-height: 0;
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 16px 20px 20px;
+}
+
+
+/* =========================================================
+   LISTE
+   ========================================================= */
+
+.concert-chansons-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.concert-chanson-item {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    min-height: 52px;
+
+    padding: 7px 10px 7px 7px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #e9e9ea;
+    border-radius: 11px;
+
+    background: #fafafa;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.concert-chanson-item:hover {
+    background: #fff;
+
+    border-color: #ddd;
+
+    transform: translateX(2px);
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.05);
+}
+
+.concert-chanson-number {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #eeeeef;
+
+    color: #666;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.concert-chanson-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.concert-chanson-title {
+    display: block;
+
+    color: #333;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    overflow-wrap: anywhere;
+}
+
+.concert-chanson-arrow {
+    flex: 0 0 auto;
+
+    color: #aaa;
+
+    font-size: 1.25rem;
+
+    transition:
+        transform 0.15s ease,
+        color 0.15s ease;
+}
+
+.concert-chanson-item:hover .concert-chanson-arrow {
+    color: #666;
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   AUCUNE CHANSON
+   ========================================================= */
+
+.concert-chansons-empty {
+    min-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    color: #888;
+}
+
+.concert-chansons-empty-icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 5px;
+
+    border-radius: 14px;
+
+    background: #f3f3f4;
+
+    font-size: 1.3rem;
+}
+
+.concert-chansons-empty strong {
+    color: #444;
+
+    font-size: 0.9rem;
+}
+
+.concert-chansons-empty span {
+    max-width: 300px;
+
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.concert-chansons-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 13px 20px;
+
+    border-top: 1px solid #eeeeef;
+
+    background: #fafafa;
+
+    color: #999;
+
+    font-size: 0.72rem;
+}
+
+.concert-chansons-close-button {
+    padding: 7px 13px;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #555;
+
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.concert-chansons-close-button:hover {
+    background: #f2f2f3;
+    border-color: #ccc;
+    color: #222;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .concert-chansons-overlay {
+        align-items: flex-end;
+
+        padding: 0;
+    }
+
+    .concert-chansons-modal {
+        width: 100%;
+        max-width: none;
+        max-height: 88vh;
+
+        border-radius: 18px 18px 0 0;
+
+        border-bottom: 0;
+
+        animation: concert-modal-mobile-in 0.25s ease;
+    }
+
+    @keyframes concert-modal-mobile-in {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .concert-chansons-modal-header {
+        padding: 16px 14px 14px;
+    }
+
+    .concert-chansons-modal-title-wrapper {
+        gap: 9px;
+    }
+
+    .concert-chansons-modal-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+
+        border-radius: 10px;
+
+        font-size: 1rem;
+    }
+
+    .concert-chansons-modal-eyebrow {
+        font-size: 0.62rem;
+    }
+
+    .concert-chansons-modal-title {
+        font-size: 1.08rem;
+    }
+
+    .concert-chansons-close {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+
+        border-radius: 9px;
+    }
+
+    .concert-chansons-modal-content {
+        padding: 12px 12px 16px;
+    }
+
+    .concert-chansons-list {
+        gap: 6px;
+    }
+
+    .concert-chanson-item {
+        min-height: 48px;
+
+        gap: 10px;
+
+        padding: 6px 8px 6px 6px;
+
+        border-radius: 10px;
+    }
+
+    .concert-chanson-number {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+
+        border-radius: 8px;
+
+        font-size: 0.7rem;
+    }
+
+    .concert-chanson-title {
+        font-size: 0.82rem;
+    }
+
+    .concert-chanson-arrow {
+        font-size: 1.1rem;
+    }
+
+    .concert-chansons-modal-footer {
+        padding: 11px 14px;
+
+        padding-bottom:
+            max(11px, env(safe-area-inset-bottom));
+
+        font-size: 0.68rem;
+    }
+
+    .concert-chansons-close-button {
+        padding: 7px 11px;
+
+        font-size: 0.7rem;
+    }
+}

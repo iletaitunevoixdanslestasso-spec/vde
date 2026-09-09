@@ -39,26 +39,44 @@ export class SaisonConcertController extends ConcertController {
             { onSuccess, onError }
         );
     }
-    async saveParticipation(token,chanteur,concertId, saison_rendezvous,participe, cbSuccess, cbError) {
+    async saveParticipation(token, chanteur, concertId, saison_rendezvous, participe, cbSuccess, cbError) {
         let result = await this.service.saveParticipation(token, chanteur, concertId, saison_rendezvous, participe)
-        if(result.success)
+        if (result.success)
             return cbSuccess(result)
         return cbError(result)
     }
     async save(form, onSuccess, onError) {
         console.log("SaisonConcertController save", form);
-        const {data, error} = await this.service.findTypeConcert()
-        if(error){}
+        const { data, error } = await this.service.findTypeConcert()
+        if (error) { }
 
         console.log(data)
         const newForm = {
             ...form,
-            rendezvous_type_id:data.id
+            rendezvous_type_id: data.id
         }
         console.log(newForm)
 
         return this.handle(
             () => this.service.saveSaisonConcert(newForm),
+            {
+                onSuccess,
+                onError
+            }
+        );
+    }
+
+    getChansonsConcert(
+        token,
+        saisonRendezvousId,
+        onSuccess,
+        onError
+    ) {
+
+        return this.handle(
+            () => this.service.getChansonsByConcert(
+                saisonRendezvousId
+            ),
             {
                 onSuccess,
                 onError

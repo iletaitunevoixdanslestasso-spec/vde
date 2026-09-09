@@ -12,6 +12,10 @@ export default function ConcertsChanteur() {
     const [concerts, setConcerts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(null);
+    const [concertChansons, setConcertChansons] = useState({});
+    const [chansonsLoading, setChansonsLoading] = useState(null);
+    const [concertChansonsOpen, setConcertChansonsOpen] = useState(null);
+
     const [error, setError] = useState(null);
     const {
         token,
@@ -28,6 +32,98 @@ export default function ConcertsChanteur() {
     const controller =
         saisonconcertConfig.controller;
 
+
+
+    const handleShowChansons_old = async (concert) => {
+
+        const saisonRendezvousId = concert.saison_rendezvous[0] ? concert.saison_rendezvous[0].id : false;
+        console.log('concert', concert)
+        if (!saisonRendezvousId) {
+            console.error("saison_rendezvous_id absent", concert);
+            return;
+        }
+
+        setChansonsLoading(concert.id);
+
+        controller.getChansonsConcert(
+            token,
+            saisonRendezvousId,
+            (result) => {
+                setConcertChansons(current => ({
+                    ...current,
+                    [concert.id]: result || []
+                }));
+
+                setChansonsLoading(null);
+            },
+            (err) => {
+                console.error("Erreur chargement chansons", err);
+                setChansonsLoading(null);
+            }
+        );
+    };
+
+    const handleShowChansons = async (concert) => {
+
+        const saisonRendezvousId =
+            concert.saison_rendezvous?.[0]?.id;
+
+        console.log("concert", concert);
+
+        if (!saisonRendezvousId) {
+            console.error(
+                "saison_rendezvous_id absent",
+                concert
+            );
+            return;
+        }
+
+        // Si déjà chargé, on ouvre simplement la popin
+        if (concertChansons[concert.id]) {
+            setConcertChansonsOpen(concert.id);
+            return;
+        }
+
+        setChansonsLoading(concert.id);
+
+        try {
+
+            const result = await controller.getChansonsConcert(
+                token,
+                saisonRendezvousId
+            );
+
+            console.log("chansons concert", result);
+            const chansons = result?.data || [];
+
+            setConcertChansons(current => ({
+                ...current,
+                [concert.id]: chansons
+            }));
+
+            setConcertChansonsOpen(concert.id);
+
+        } catch (err) {
+
+            console.error(
+                "Erreur chargement chansons",
+                err
+            );
+
+            setError(
+                "Impossible de charger les chansons du concert."
+            );
+
+        } finally {
+
+            setChansonsLoading(null);
+
+        }
+    };
+
+    const handleCloseChansons = () => {
+        setConcertChansonsOpen(null);
+    };
     /*
      * =====================================================
      * CHARGEMENT DES CONCERTS
@@ -377,7 +473,22 @@ export default function ConcertsChanteur() {
                                 <div className="concert-main">
 
                                     <div className="concert-icon">
-                                        🎵
+                                        <button
+                                            type="button"
+                                            className="concert-icon-button"
+                                            onClick={() => handleShowChansons(concert)}
+                                            title="Voir les chansons du concert"
+                                            aria-label={`Voir les chansons de ${concert.titre}`}
+                                            disabled={chansonsLoading === concert.id}
+                                        >
+                                            {chansonsLoading === concert.id ? (
+                                                <span className="concert-icon-spinner">
+                                                    ↻
+                                                </span>
+                                            ) : (
+                                                "🎵"
+                                            )}
+                                        </button>
                                     </div>
 
                                     <div className="concert-title-content">
@@ -510,6 +621,188 @@ export default function ConcertsChanteur() {
                 })}
 
             </section>
+            {/* =================================================
+    POPIN CHANSONS DU CONCERT
+   ================================================= */}
+
+            {concertChansonsOpen && (() => {
+
+                const concert =
+                    concerts.find(
+                        item => item.id === concertChansonsOpen
+                    );
+
+                const chansons =
+                    concertChansons[concertChansonsOpen] || [];
+
+                const chansonsTriees = [...chansons].sort(
+                    (a, b) => {
+
+                        if (a.ordre == null) return 1;
+                        if (b.ordre == null) return -1;
+
+                        return a.ordre - b.ordre;
+                    }
+                );
+
+                return (
+                    <div
+                        className="concert-chansons-overlay"
+                        onClick={handleCloseChansons}
+                    >
+
+                        <div
+                            className="concert-chansons-modal"
+                            onClick={event => event.stopPropagation()}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="concert-chansons-title"
+                        >
+
+                            {/* ================================
+                    EN-TÊTE POPIN
+                   ================================= */}
+
+                            <header className="concert-chansons-modal-header">
+
+                                <div className="concert-chansons-modal-title-wrapper">
+
+                                    <div className="concert-chansons-modal-icon">
+                                        🎵
+                                    </div>
+
+                                    <div>
+
+                                        <div className="concert-chansons-modal-eyebrow">
+                                            Programme
+                                        </div>
+
+                                        <h2
+                                            id="concert-chansons-title"
+                                            className="concert-chansons-modal-title"
+                                        >
+                                            {concert?.titre || "Concert"}
+                                        </h2>
+
+                                    </div>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="concert-chansons-close"
+                                    onClick={handleCloseChansons}
+                                    aria-label="Fermer"
+                                    title="Fermer"
+                                >
+                                    ×
+                                </button>
+
+                            </header>
+
+                            {/* ================================
+                    CONTENU
+                   ================================= */}
+
+                            <div className="concert-chansons-modal-content">
+
+                                {chansonsTriees.length === 0 ? (
+
+                                    <div className="concert-chansons-empty">
+
+                                        <div className="concert-chansons-empty-icon">
+                                            🎶
+                                        </div>
+
+                                        <strong>
+                                            Aucune chanson
+                                        </strong>
+
+                                        <span>
+                                            Aucune chanson n'est actuellement
+                                            associée à ce concert.
+                                        </span>
+
+                                    </div>
+
+                                ) : (
+
+                                    <div className="concert-chansons-list">
+
+                                        {chansonsTriees.map(
+                                            (chanson, index) => {
+
+                                                const titre =
+                                                    chanson
+                                                        .saison_chansons
+                                                        ?.chansons
+                                                        ?.titre ||
+                                                    "Titre inconnu";
+
+                                                return (
+                                                    <div
+                                                        key={chanson.id}
+                                                        className="concert-chanson-item"
+                                                    >
+
+                                                        <div className="concert-chanson-number">
+                                                            {chanson.ordre ??
+                                                                index + 1}
+                                                        </div>
+
+                                                        <div className="concert-chanson-content">
+
+                                                            <span className="concert-chanson-title">
+                                                                {titre}
+                                                            </span>
+
+                                                        </div>
+
+                                                        <span className="concert-chanson-arrow">
+                                                            ›
+                                                        </span>
+
+                                                    </div>
+                                                );
+
+                                            }
+                                        )}
+
+                                    </div>
+
+                                )}
+
+                            </div>
+
+                            {/* ================================
+                    PIED
+                   ================================= */}
+
+                            <footer className="concert-chansons-modal-footer">
+
+                                <span>
+                                    {chansonsTriees.length}{" "}
+                                    {chansonsTriees.length > 1
+                                        ? "chansons"
+                                        : "chanson"}
+                                </span>
+
+                                <button
+                                    type="button"
+                                    className="concert-chansons-close-button"
+                                    onClick={handleCloseChansons}
+                                >
+                                    Fermer
+                                </button>
+
+                            </footer>
+
+                        </div>
+
+                    </div>
+                );
+
+            })()}
 
         </main>
     );

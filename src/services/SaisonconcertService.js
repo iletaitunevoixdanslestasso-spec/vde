@@ -80,4 +80,18 @@ console.log("TOKEN COMPLET :", token);
         return BaseResponse.success(data)
         // let result = this.service.saveParticipation(token, saisonId, chanteurId, concertId, saison_rendezvous, participe)
     }
+
+async getChansonsByConcert(saisonRendezvousId) {
+
+    const { data, error } =
+        await this.repository.findChansonsByConcert(
+            saisonRendezvousId
+        );
+
+    if (error) {
+        return BaseResponse.error([], error.message);
+    }
+
+    return BaseResponse.success(data);
+}    
 }
