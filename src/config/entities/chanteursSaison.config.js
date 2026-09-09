@@ -74,7 +74,7 @@ const columns = [
 
         render: (v, row) => {
             v = row.chanteurs.relances_envois.sort((a,b)=>  b.id- a.id )
-            if (v[0].erreur ) {
+            if (v[0] && v[0].erreur ) {
                 return {
                     title: `${v[0].erreur}`,
                     cssClass: "dai-status icon-etaterreur"
