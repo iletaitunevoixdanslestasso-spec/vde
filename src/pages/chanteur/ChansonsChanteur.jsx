@@ -3,6 +3,62 @@ import { Link } from "react-router-dom";
 
 import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
 import "../../styles/espaceChanteur_chansons.css";
+
+
+
+
+function ChansonsPageHeader({ subtitle, count = null }) {
+    return (
+        <header className="chansons-page-header">
+
+            <div className="chansons-page-header-icon">
+                🎵
+            </div>
+
+            <div className="chansons-page-header-content">
+
+                <div className="chansons-page-eyebrow">
+                    Mon espace
+                </div>
+
+                <h1 className="chansons-page-title">
+                    Mes chansons
+                </h1>
+
+                {subtitle && (
+                    <p className="chansons-page-subtitle">
+                        {subtitle}
+                    </p>
+                )}
+
+            </div>
+
+            {count !== null && (
+                <div className="chansons-page-count">
+                    <strong>
+                        {count}
+                    </strong>
+
+                    <span>
+                        {count > 1
+                            ? "chansons"
+                            : "chanson"}
+                    </span>
+                </div>
+            )}
+
+        </header>
+    );
+}
+
+
+
+
+
+
+
+
+
 export default function ChansonsChanteur() {
 
     const [chansons, setChansons] = useState([]);
@@ -172,27 +228,9 @@ export default function ChansonsChanteur() {
         return (
             <main className="chansons-page">
 
-                <header className="chansons-page-header">
-
-                    <div className="chansons-page-header-icon">
-                        🎵
-                    </div>
-
-                    <div>
-                        <div className="chansons-page-eyebrow">
-                            Mon espace
-                        </div>
-
-                        <h1 className="chansons-page-title">
-                            Mes chansons
-                        </h1>
-
-                        <p className="chansons-page-subtitle">
-                            Chargement de vos chansons...
-                        </p>
-                    </div>
-
-                </header>
+                <ChansonsPageHeader
+                    subtitle="Chargement de vos chansons..."
+                />
 
                 <div className="chansons-loading">
                     <span className="chansons-loading-icon">
@@ -219,39 +257,10 @@ export default function ChansonsChanteur() {
         return (
             <main className="chansons-page">
 
-                <header className="chansons-page-header">
-
-                    <div className="chansons-page-header-icon">
-                        🎵
-                    </div>
-
-                    <div>
-                        <div className="chansons-page-eyebrow">
-                            Mon espace
-                        </div>
-
-                        <h1 className="chansons-page-title">
-                            Mes chansons
-                        </h1>
-                    </div>
-
-                </header>
+                <ChansonsPageHeader />
 
                 <div className="chansons-empty">
-                    <div className="chansons-empty-icon">
-                        📅
-                    </div>
-
-                    <div>
-                        <strong>
-                            Aucune saison active
-                        </strong>
-
-                        <p>
-                            Aucune saison n'est actuellement
-                            disponible.
-                        </p>
-                    </div>
+                    GROS PROBLEME DE CONF
                 </div>
 
             </main>
@@ -269,28 +278,10 @@ export default function ChansonsChanteur() {
         return (
             <main className="chansons-page">
 
-                <header className="chansons-page-header">
 
-                    <div className="chansons-page-header-icon">
-                        🎵
-                    </div>
-
-                    <div>
-                        <div className="chansons-page-eyebrow">
-                            Mon espace
-                        </div>
-
-                        <h1 className="chansons-page-title">
-                            Mes chansons
-                        </h1>
-
-                        <p className="chansons-page-subtitle">
-                            Les chansons disponibles pour
-                            cette saison apparaîtront ici.
-                        </p>
-                    </div>
-
-                </header>
+                <ChansonsPageHeader
+                    subtitle="Les chansons disponibles pour cette saison apparaîtront ici."
+                />
 
                 <div className="chansons-empty">
                     <div className="chansons-empty-icon">
@@ -326,43 +317,10 @@ export default function ChansonsChanteur() {
                 EN-TÊTE
                ================================================= */}
 
-            <header className="chansons-page-header">
-
-                <div className="chansons-page-header-icon">
-                    🎵
-                </div>
-
-                <div className="chansons-page-header-content">
-
-                    <div className="chansons-page-eyebrow">
-                        Mon espace
-                    </div>
-
-                    <h1 className="chansons-page-title">
-                        Mes chansons
-                    </h1>
-
-                    <p className="chansons-page-subtitle">
-                        Retrouvez vos chansons, choisissez votre
-                        pupitre et accédez aux paroles et aux
-                        fichiers audio.
-                    </p>
-
-                </div>
-
-                <div className="chansons-page-count">
-                    <strong>
-                        {chansons.length}
-                    </strong>
-
-                    <span>
-                        {chansons.length > 1
-                            ? "chansons"
-                            : "chanson"}
-                    </span>
-                </div>
-
-            </header>
+            <ChansonsPageHeader
+                subtitle="Retrouvez vos chansons, choisissez votre pupitre et accédez aux paroles et aux fichiers audio."
+                count={chansons.length}
+            />
 
             {/* =================================================
                 MESSAGE D'ERREUR

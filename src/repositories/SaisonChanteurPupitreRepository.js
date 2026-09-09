@@ -47,13 +47,19 @@ export class SaisonChanteurPupitreRepository extends BaseRepository {
             .is("chansons.chanson_pupitres.deleted_at", null)
 
             // pupitres actifs
-            .is("chansons.chanson_pupitres.pupitres.deleted_at", null);
+            .is("chansons.chanson_pupitres.pupitres.deleted_at", null)
+            ;
 
         if (error) {
             throw error;
         }
-
-        return data || [];
+        return (data || []).sort((a, b) =>
+            a.chansons.titre.localeCompare(
+                b.chansons.titre,
+                "fr",
+                { sensitivity: "base" }
+            )
+        );
     }
 
     /**

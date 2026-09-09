@@ -16,9 +16,24 @@ const columns = [
         required: true,
         render: (v, row) => {
             return `${row?.saison_chansons?.chansons?.titre}`
-        }
+        },
+        editType: "readonly",
 
     },
+        {
+        field: "ordre",
+        header: "ordre",
+        type: "number",
+        // source: "availablePupitres",
+        // editType: "readonly",
+        // required: true,
+        // render: (v, row) => {
+        //     console.log(row)
+        //     return `${row.pupitres.nom}`;
+        // }
+
+    },
+    
         // {
         //     mapped:false,
         //     field: "paroles_url",
@@ -76,6 +91,8 @@ export const SaisonConcertChansonConfig = createEntityConfig({
 
 
     columns,
-    actions
+    actions,
+    dragAndDrop: true,
+    orderField: "ordre"
 
 });
