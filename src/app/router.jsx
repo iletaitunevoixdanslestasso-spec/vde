@@ -58,6 +58,8 @@ import DocumentsChanteur from "../pages/chanteur/DocumentsChanteur";
 import DocumentsChanteurPage from "../pages/admin/referentiels/DocumentsChanteur/DocumentsChanteurPage";
 import InvitationSaisonPage from "../pages/admin/referentiels/invitationSaison/InvitationSaisonPage";
 import SaisonRepetitionChanteursPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonRepetitionChanteursPage";
+import Confidentialite from "../pages/public/Confidentialite";
+import CGU from "../pages/public/CGU";
 
 
 export default function Router() {
@@ -69,8 +71,18 @@ export default function Router() {
                 <Routes>
 
                     {/* HOME */}
+                    {/* INFORMATIONS LEGALES */}
                     <Route path="/" element={<Home />} />
 
+                    <Route
+                        path="/confidencialite"
+                        element={<Confidentialite />}
+                    />
+
+                    <Route
+                        path="/cgu"
+                        element={<CGU />}
+                    />
                     {/* ERROR */}
                     <Route path="/invalid-token" element={<InvalidToken />} />
 

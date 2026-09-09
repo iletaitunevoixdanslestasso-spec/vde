@@ -1,4 +1,5 @@
 import { supabase } from "../core/supabase/client";
+import NotificationService from "./NotificationService";
 
 export class MailService {
 
@@ -21,12 +22,20 @@ export class MailService {
 
         if (error) {
             console.error("Erreur envoi invitation :", error);
+            NotificationService.error(
+                "Erreur envoi invitation :" + error
+            );
             throw error;
-        }
-
-        if (!data?.success) {
+        } else if (!data?.success) {
+            NotificationService.error(
+                "Erreur lors de l'envoi du mail"
+            );
             throw new Error(
                 data?.error || "Erreur lors de l'envoi du mail"
+            );
+        } else {
+            NotificationService.success(
+                "mail envoyé avec succès."
             );
         }
 
