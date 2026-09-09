@@ -96,7 +96,25 @@ export class ChansonpupitreRepository extends BaseRepository {
 
         return Promise.all(promises);
     }
-
+    async findByPupitreAndChanson(pupitreId, chansonId) {
+        return this.supabase
+            .from(this.table)
+            .select("id, deleted_at")
+            .eq("pupitre_id", pupitreId)
+            .eq("chanson_id", chansonId)
+            .maybeSingle();
+    }
+    async reactivate(id, data = {}) {
+        return this.supabase
+            .from(this.table)
+            .update({
+                deleted_at: null,
+                ...data
+            })
+            .eq("id", id)
+            .select()
+            .single();
+    }
 }
 
 

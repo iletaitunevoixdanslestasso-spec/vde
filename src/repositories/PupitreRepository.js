@@ -22,6 +22,7 @@ export class PupitreRepository extends BaseRepository {
             )
         `)
             .eq("chanson_pupitres.chanson_id", chansonId)
+            .is("deleted_at", null)
             .order(orderBy, { ascending: true });
     }      
 

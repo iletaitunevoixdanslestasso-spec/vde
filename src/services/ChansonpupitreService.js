@@ -81,49 +81,73 @@ export class ChansonpupitreService extends BaseService {
      * Ajout d'un chanson dans une saison
      */
     async addPupitre(chansonPupitre) {
+
         const chansonId = this.context.chansonId;
-        const pupitreId = chansonPupitre.pupitre_id
-        const ordre = chansonPupitre.ordre
-        console.log("pupitreId", pupitreId)
-        console.log("chansonId", chansonId)
-        const { data: exists, error: existsError } =
-            await this.repository.exists(
+        const pupitreId = chansonPupitre.pupitre_id;
+
+        const ordre =
+            chansonPupitre.ordre === "" ||
+                chansonPupitre.ordre === null ||
+                chansonPupitre.ordre === undefined
+                ? null
+                : Number(chansonPupitre.ordre);
+
+        console.log("pupitreId", pupitreId);
+        console.log("chansonId", chansonId);
+
+        const { data: existing, error: existingError } =
+            await this.repository.findByPupitreAndChanson(
                 pupitreId,
                 chansonId
             );
-        console.log(exists)
-        console.log(existsError)
 
-        if (exists) {
-            return BaseResponse.error(
-                [],
-                "Ce pupitre est déjà associé à cette chanson",
-                {
-                    action: "reactivateChansonSaison",
-                    pupitreId,
-                    chansonId
-                }
-            );
+        if (existingError) {
+            return BaseResponse.error([], existingError.message);
         }
 
+        // Ligne existante
+        if (existing) {
 
+            // Déjà active
+            if (existing.deleted_at === null) {
+                return BaseResponse.error(
+                    [],
+                    "Ce pupitre est déjà associé à cette chanson"
+                );
+            }
+
+            // Ligne supprimée → réactivation
+            const { data, error } =
+                await this.repository.reactivate(
+                    existing.id,
+                    {
+                        ordre,
+                        audio_url: chansonPupitre.audio_url || null
+                    }
+                );
+
+            if (error) {
+                return BaseResponse.error([], error.message);
+            }
+
+            return BaseResponse.success(data);
+        }
+
+        // Aucune ligne existante → création
         const { data, error } =
             await this.repository.insert({
                 pupitre_id: pupitreId,
                 chanson_id: chansonId,
-                ordre: ordre,
-                audio_url: chansonPupitre.audio_url
+                ordre,
+                audio_url: chansonPupitre.audio_url || null
             });
-
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-
         return BaseResponse.success(data);
     }
-
     async updateOrdres(rows) {
         return this.repository.updateOrdres(rows);
     }
