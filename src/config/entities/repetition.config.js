@@ -106,12 +106,7 @@ const actions = [
         cssClass: "icon-groupes",
         action: "manageSaisonRepetitionChanteur"
     },
-    {
-        label: "Chansonpoubrrzls",
-        title: "Chansonpoubrrzl",
-        cssClass: "icon-chanson",
-        action: "manageSaisonConcertChanson"
-    },
+
 ]
 
 

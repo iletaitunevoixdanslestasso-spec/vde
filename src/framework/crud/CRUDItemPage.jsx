@@ -259,7 +259,7 @@ export default function CRUDItemPage({
                 <p className="crud-item-subtitle">
                     {loading
                         ? `Chargement de vos informations...`
-                        : `mes informaitons personnelles`
+                        : `mes informations personnelles`
                     }
                 </p>
             </div>

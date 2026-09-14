@@ -20,14 +20,15 @@ export class BaseMapper {
 
         const result = {};
         this.columns.forEach(column => {
-            if (column.mapped !== false)
+            if (column.mapped !== false) {
                 if (column.type === "number") {
                     entity[column.field] =
                         entity[column.field] === "" || entity[column.field] == null
                             ? null
                             : Number(entity[column.field]);
                 }
-            result[column.field] = entity[column.field];
+                result[column.field] = entity[column.field];
+            }
         });
 
         return result;
