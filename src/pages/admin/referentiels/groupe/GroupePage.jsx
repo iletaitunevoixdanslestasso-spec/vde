@@ -21,7 +21,7 @@ export default function GroupePage() {
         <CRUDPage
             config={groupeConfig}
             context={{
-                title: `${groupeConfig.title} : ${saisonSelectionne.nom} ${saisonSelectionne.active ? "⭐" : "📅"}`,
+                title: `${groupeConfig.title}`,
                 saisonId: saisonSelectionne.id
             }}
         />

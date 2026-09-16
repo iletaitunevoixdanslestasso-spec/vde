@@ -10,7 +10,7 @@ import { GroupesController } from "../../controllers/GroupesController";
 const columns = [
     {
         field: "nom",
-        header: "BLBNom",
+        header: "Nom",
         type: "text",
         required: true
     },
@@ -30,7 +30,7 @@ export const groupeConfig = createEntityConfig({
 
     entity: "groupe",
 
-    title: "TODO",
+    title: "Gestion des groupes",
 
     table: "groupes",
 

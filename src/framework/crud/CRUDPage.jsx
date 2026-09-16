@@ -5,6 +5,7 @@ import FormModal from "../form/FormModal";
 import { useNavigate } from "react-router-dom";
 import NotificationService from "../../services/NotificationService";
 import "./../styles/CRUDPage.css";
+import { useSaison } from "../../components/contexts/SaisonContext";
 export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function CRUDPage({ config, context = {} }) {
     const [errors, setErrors] = useState([]);
     const [controller, setController] = useState(config.controller);
     const [formContext, setFormContext] = useState({});
-
+    const { saisonSelectionne } = useSaison();
 
     // INITIALISATION
     useEffect(() => {
@@ -294,10 +295,13 @@ export default function CRUDPage({ config, context = {} }) {
     return (
         <div>
 
-            {/* TITLE */}
+
 
             <h1>
-                {title}
+                {title} {context.saisonId  && (<>
+                    {saisonSelectionne.nom}
+                    <label className={saisonSelectionne.active ? `icon-saisonactive` : 'icon-saisons'}></label>
+                    </>)}
             </h1>
 
 

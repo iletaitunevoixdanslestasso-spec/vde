@@ -27,7 +27,7 @@ export default function ConcertSaisonPage() {
         <CRUDPage
             config={configLocal}
             context={{
-                title: `${configLocal.title} : ${saisonSelectionne.nom} ${saisonSelectionne.active ? "⭐" : "📅"}`,
+                title: `${configLocal.title}`,
                 saisonId: saisonSelectionne.id,
                 saisonNom: saisonSelectionne.nom,
                 selectConcert: selectConcert
