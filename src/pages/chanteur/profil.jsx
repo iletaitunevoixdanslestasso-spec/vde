@@ -11,6 +11,10 @@ const profilConfig = {
         { field: "prenom", header: "Prénom", type: "text", required: true },
         { field: "email", header: "Email", type: "text", required: true },
         { field: "telephone", header: "Téléphone", type: "text", required: true },
+        { field: "date_naissance", header: "Date de naissance", type: "date", required: true },
+        { field: "rue", header: "Numéro et rue", type: "text", required: true },
+        { field: "code_postal", header: "Code postal", type: "text", required: true },
+        { field: "ville", header: "Ville", type: "text", required: true },
         {
             field: "groupe_id",
             header: "Groupe",

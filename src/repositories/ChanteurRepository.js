@@ -49,6 +49,10 @@ export class ChanteurRepository extends BaseRepository {
                 p_groupe_id: data.groupe_id,
                 p_pupitre_id: data.pupitre_id,
                 p_telephone: data.telephone,
+                p_rue: data.rue,
+                p_ville: data.ville,
+                p_date_naissance: data.date_naissance,
+                p_code_postal: data.code_postal,
                 p_droit_image: data.droit_image ?? null
             }
         );
