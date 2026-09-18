@@ -99,7 +99,7 @@ const columns = [
     {
         field: "presence",
         header: "P / N / A",
-        mapped: "false",
+        mapped: false,
         hideInForm: true,
         type: "text",
         render: (v, row) => {
