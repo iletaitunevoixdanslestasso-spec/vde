@@ -145,6 +145,7 @@ export class ChansonService extends BaseService {
                 titre: `Paroles - ${form.titre}`,
                 id:form.paroles,
                 document_type_id: documentType.id,
+                deleted_at: null
             }
             console.log(document)
             const referentiel_documents = ReferentielDocumentConfig

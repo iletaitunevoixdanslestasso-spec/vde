@@ -11,6 +11,7 @@ import FileRenderer from "../../framework/form/renderers/FileRenderer";
 const FileUploader = forwardRef(function FileUploader({
     bucket,
     path,
+    folder,
     accept = "*/*",
     maxSize = null,
     disabled = false,
@@ -68,9 +69,16 @@ const FileUploader = forwardRef(function FileUploader({
         setError(null);
 
         try {
+            const uploadPath =
+                path ||
+                (folder
+                    ? `${folder}/${file.name}`
+                    : file.name
+                );
+
             const result = await StorageService.upload(
                 bucket,
-                path || file.name,
+                uploadPath,
                 file
             );
 

@@ -307,7 +307,7 @@ export default function AdminMenu() {
                                         <span
                                             className={
                                                 saison.active
-                                                    ? "icon-saison-active"
+                                                    ? "icon-saisonactive"
                                                     : "icon-saison"
                                             }
                                         >

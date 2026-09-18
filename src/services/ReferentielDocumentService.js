@@ -1,3 +1,4 @@
+import { BaseResponse } from "../core/framework/BaseResponse";
 import { ReferentielDocumentMapper } from "../mappers/ReferentielDocumentMapper";
 import { DocumentTypeRepository } from "../repositories/DocumentTypeRepository";
 import { ReferentielDocumentRepository } from "../repositories/ReferentielDocumentRepository";
@@ -7,12 +8,12 @@ import StorageService from "./StorageService";
 
 export class ReferentielDocumentService extends BaseService {
 
-    constructor(repository  = new ReferentielDocumentRepository(), validator = new ReferentielDocumentValidator(), mapper= new ReferentielDocumentMapper()) {
+    constructor(repository = new ReferentielDocumentRepository(), validator = new ReferentielDocumentValidator(), mapper = new ReferentielDocumentMapper()) {
         super(repository, validator, mapper);
         this.documentTypeRepository = new DocumentTypeRepository("document_types");
     }
 
-    async getAvailableDocumentTypes() {
+    async getAvailableDocumentTypes_old() {
 
         const { data, error } =
             await this.documentTypeRepository.findAllActive();
@@ -28,6 +29,44 @@ export class ReferentielDocumentService extends BaseService {
         return {
             success: true,
             data
+        };
+    }
+    async getAvailableDocumentTypes(currentDocumentId = null) {
+
+        const { data: types, error } =
+            await this.documentTypeRepository.findAllActive();
+
+        if (error) {
+            return {
+                success: false,
+                data: [],
+                error: error.message
+            };
+        }
+
+        const {
+            data: droitImageDocuments,
+            error: droitImageError
+        } = await this.repository.findDroitImage();
+
+        if (droitImageError) {
+            return {
+                success: false,
+                data: [],
+                error: droitImageError.message
+            };
+        }
+
+        const droitImageExisteAilleurs =
+            droitImageDocuments.some(
+                document => document.id !== currentDocumentId
+            );
+
+        return {
+            success: true,
+            data: droitImageExisteAilleurs
+                ? types.filter(type => type.code !== "droit_image")
+                : types
         };
     }
 
@@ -198,5 +237,85 @@ export class ReferentielDocumentService extends BaseService {
 
         return this.save(document);
     }
+    async save(entity) {
 
+        const {
+            data: documentType,
+            error: documentTypeError
+        } = await this.documentTypeRepository.findById(
+            entity.document_type_id
+        );
+
+        if (documentTypeError) {
+            return BaseResponse.error(
+                [],
+                documentTypeError.message
+            );
+        }
+
+        if (documentType?.code === "droit_image") {
+
+            const {
+                data: documents,
+                error
+            } = await this.repository.findDroitImage();
+
+            if (error) {
+                return BaseResponse.error(
+                    [],
+                    error.message
+                );
+            }
+
+            const autreDroitImageExiste =
+                documents.some(
+                    document => document.id !== entity.id
+                );
+
+            if (autreDroitImageExiste) {
+                return BaseResponse.error(
+                    [{
+                        field: "document_type_id",
+                        message:
+                            "Un document Droit à l'image existe déjà."
+                    }],
+                    "Un seul document Droit à l'image est autorisé."
+                );
+            }
+        }
+
+        return super.save(entity);
+    }
+    async delete(id) {
+        // 1. Récupérer le document avant suppression
+        const { data: document, error } =
+            await this.repository.findById(id);
+
+        if (error) {
+            return BaseResponse.error(
+                [],
+                error.message
+            );
+        }
+
+        // 2. Supprimer réellement le fichier du bucket
+        if (document?.path) {
+
+            try {
+                await StorageService.remove(
+                    "referentiel-documents",
+                    document.path
+                );
+            } catch (error) {
+
+                return BaseResponse.error(
+                    [],
+                    `Impossible de supprimer le fichier : ${error.message}`
+                );
+            }
+        }
+
+        // 3. Soft delete de la ligne
+        return super.delete(id);
+    }
 }

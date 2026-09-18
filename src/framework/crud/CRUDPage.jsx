@@ -56,7 +56,7 @@ export default function CRUDPage({ config, context = {} }) {
                 if (controller.prepareForm) {
 
                     const extraContext =
-                        await controller.prepareForm();
+                        await controller.prepareForm(row);
 
                     setFormContext({
                         ...context,
@@ -196,7 +196,7 @@ export default function CRUDPage({ config, context = {} }) {
         if (controller.prepareForm) {
 
             const extraContext =
-                await controller.prepareForm();
+                await controller.prepareForm(null);
 
             setFormContext({
                 ...context,

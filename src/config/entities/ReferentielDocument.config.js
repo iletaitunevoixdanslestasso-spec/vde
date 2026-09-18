@@ -29,7 +29,7 @@ const columns = [
         },
         editType: "readonly",
     },
-    
+
     {
         field: "path",
         header: "Document",
@@ -64,7 +64,13 @@ const columns = [
                 `📄 ${path}`
             );
         }
-    }
+    },
+    {
+        field: "deleted_at",
+        type: "date",
+        hideInTable: true,
+        hideInForm: true
+    },
 ];
 
 const actions = [

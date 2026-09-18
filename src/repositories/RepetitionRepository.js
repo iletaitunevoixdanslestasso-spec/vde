@@ -7,7 +7,7 @@ export class RepetitionRepository extends RendezvouRepository {
     constructor(table) {
         super(table);
     }
-    async findBySaison(saisonId) {
+    async findBySaison_old(saisonId) {
         return this.supabase
             .from(this.table)
             .select(`
@@ -41,7 +41,47 @@ export class RepetitionRepository extends RendezvouRepository {
             .eq("saison_id", saisonId)
             ;
     }
+    async findBySaison(saisonId) {
+        return this.supabase
+            .from("vue_repetitions")
+            .select(`
+            id,
+            accompagne,
+            date,
+            description,
+            repetitions_type_id,
 
+            repetitions_type(
+                id,
+                libelle,
+                duree
+            ),
+
+            rendezvous_id,
+
+            rendezvous(
+                lieux(
+                    rue,
+                    ville,
+                    code_postale,
+                    description
+                ),
+                titre,
+                description,
+                rendezvous_type(
+                    id,
+                    libelle
+                )
+            ),
+
+            presents,
+            absents,
+            ne_sait_pas
+        `)
+            .is("deleted_at", null)
+            .gte("date", new Date().toISOString().split("T")[0])
+            .eq("saison_id", saisonId);
+    }
     async findDuJourPourChanteur(saisonId, saisonChanteurId) {
 
         const aujourdHui = new Date()

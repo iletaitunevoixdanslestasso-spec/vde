@@ -3,7 +3,7 @@ import { BaseRepository } from "./BaseRepository";
 
 export class ReferentielDocumentRepository extends BaseRepository {
 
-    constructor(table="referentiel_documents") {
+    constructor(table = "referentiel_documents") {
         super(table);
     }
     async findByDocumentTypeId(documentTypeId) {
@@ -74,5 +74,17 @@ export class ReferentielDocumentRepository extends BaseRepository {
             data,
             error
         };
+    }
+    async findDroitImage() {
+        return this.supabase
+            .from(this.table)
+            .select(`
+            *,
+            document_types!inner (
+                code
+            )
+        `)
+            .eq("document_types.code", "droit_image")
+            .is("deleted_at", null);
     }
 }

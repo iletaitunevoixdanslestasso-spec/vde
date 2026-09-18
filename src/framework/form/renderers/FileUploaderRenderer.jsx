@@ -76,7 +76,7 @@ export default function FileUploaderRenderer({
             field: field.field,
             result,
             path: result.path,
-            name:result.file.name,
+            name: result.file.name,
         };
 
     }, [
@@ -89,6 +89,9 @@ export default function FileUploaderRenderer({
     useEffect(() => {
 
         onFileUploadReady?.(upload);
+        return () => {
+            onFileUploadReady?.(null);
+        };
 
     }, [
         onFileUploadReady,
@@ -103,29 +106,37 @@ export default function FileUploaderRenderer({
      * Pour les autres usages :
      *   valeur déjà présente ou null
      */
-    const storagePath =
-
-        field.signedUpload
-            ? `${form.id}/droit_image.pdf`
-            : (
-                form[field.field]
-                || null
-            );
 
 
+const isDroitImage =
+    !!context.droitImageTypeId &&
+    form.document_type_id === context.droitImageTypeId;
+
+
+
+const existingValue = form[field.field];
+
+const existingPath =
+    typeof existingValue === "string"
+        ? existingValue
+        : existingValue?.path || null;
+
+const storagePath =
+    field.signedUpload
+        ? `${form.id}/droit_image.pdf`
+        : isDroitImage
+            ? "droit_image/droit_image.pdf"
+            : existingPath;
+
+            
     return (
         <FileUploader
-
             ref={uploaderRef}
-
             bucket={field.bucket}
-
             path={storagePath}
-
             accept={field.accept}
-
+            folder={field.documentTypeCode}
             showUploadButton={false}
-
             onUploaded={(result) => {
                 console.log(field)
                 console.log(result)

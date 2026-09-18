@@ -32,7 +32,7 @@ export default function FormModal({
 
         if (!open) return;
 
-        setFileUpload(null);
+        // setFileUpload(null);
 
         if (initialData) {
 
@@ -73,7 +73,9 @@ export default function FormModal({
 
     const handleSave = async (form) => {
 
-        console.log("form", form)
+
+        console.log("FORM AVANT UPLOAD", form);
+        console.log("FILE UPLOAD CALLBACK", fileUpload);
         let finalForm = { ...form };
 
         if (fileUpload) {
