@@ -10,6 +10,14 @@ export class RepetitionController extends BaseController {
     async prepareForm() {
 
         const saisonId = this.context.saisonId;
+
+        const liste = await this.service.findLieux();
+        console.log(liste)
+        const lieux = liste.map(item => ({
+            ...item,
+            value: `${item.nom} ${item.description}`
+        }));
+
         const {success, data,error, message} = await this.service.getAvailableType(saisonId);
         console.log(success, data,error, message)
         if (!success) {
@@ -22,7 +30,7 @@ export class RepetitionController extends BaseController {
                     value: `${type.libelle}`,
                 };
             });
-        return { availableType }
+        return { availableType, lieux }
 
 
     }

@@ -92,6 +92,146 @@ const columns = [
         },
     },
     {
+        field: "lieu_mode",
+        header: "Lieu",
+        type: "select",
+        hideInTable: true,
+        options: [
+            { value: "existant", label: "Choisir un lieu existant" },
+            { value: "nouveau", label: "Créer un nouveau lieu" }
+        ]
+    },
+
+    {
+        field: "lieu_id",
+        mapped: false,
+        header: "Lieu existant",
+        type: "select",
+        source: "lieux",
+        hideInTable: true,
+        dependsOn: {
+            field: "lieu_mode",
+            value: "existant"
+        }
+    },
+
+    {
+        field: "lieu_nom",
+        header: "Nom",
+        
+        type: "text",
+        dependsOn: {
+            field: "lieu_mode",
+            value: "nouveau"
+        },
+        render: (v, row) => {
+            let rendezvous = row.rendezvous ?? false
+            return rendezvous?.lieux?.nom || ''
+        },
+        // render: (v, row) => {
+        //     console.log(row)
+        //     if (!row.lieux)
+        //         return ``
+        //     return `${row?.lieux?.nom || ''}`
+        // },
+        sortValue: (row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.nom || ''}  `;
+        }
+
+    },
+
+    {
+        field: "lieu_rue",
+        header: "Rue",
+        type: "text",
+        hideInTable: true,
+        dependsOn: {
+            field: "lieu_mode",
+            value: "nouveau"
+        },
+        render: (v, row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.rue || ''}`
+        },
+        sortValue: (row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.rue || ''}`;
+        },
+
+    },
+
+    {
+        field: "lieu_ville",
+        header: "Ville",
+        hideInTable: true,
+        type: "text",
+        dependsOn: {
+            field: "lieu_mode",
+            value: "nouveau"
+        },
+        render: (v, row) => {
+            let rendezvous = row.rendezvous ?? false
+            console.log("rendezvous",rendezvous)
+            if (!rendezvous.lieux)
+                return ''
+            return `${rendezvous.lieux.ville || ''}`
+        },
+        sortValue: (row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.ville || ''}`;
+        },
+
+    },
+
+    {
+        field: "lieu_code_postale",
+        header: "Code postal",
+        hideInTable: true,
+        type: "text",
+        dependsOn: {
+            field: "lieu_mode",
+            value: "nouveau"
+        },
+        render: (v, row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.code_postale || ''}`
+        },
+        sortValue: (row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.code_postale || ''}`;
+        },
+
+    },
+
+    {
+        field: "lieu_description",
+        header: "le lieu",
+        type: "textarea",
+        dependsOn: {
+            field: "lieu_mode",
+            value: "nouveau"
+        },
+        render: (v, row) => {
+            let rendezvous = row.rendezvous ?? false
+            if (!rendezvous?.lieux)
+                return ''
+            return `${rendezvous?.lieux?.description || ''}`
+        },
+        sortValue: (row) => {
+            if (!row.lieux)
+                return ''
+            return `${row?.lieux.description || ''}`;
+        },
+
+    },
+    {
         field: "description",
         header: "Description",
         type: "textarea",

@@ -74,7 +74,7 @@ function TodoItem({
 function RendezvousRow({ item, onInfo, onParticipation }) {
 
   const isConcert = item.typeCode === "concert";
-
+  console.log(item)
   const participationIcon =
     item.participation === true
       ? "icon-accepted"
@@ -124,7 +124,7 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
             <button
               type="button"
               className="dashboard-rendezvous-info-button"
-              onClick={() => onInfo(item)}
+              onClick={() => onInfo(item, "lieu")}
             >
               <span className="dashboard-rendezvous-lieu-ville">
                 {item.lieu.nom}
@@ -139,7 +139,7 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
           <button
             type="button"
             className="dashboard-rendezvous-info-button"
-            onClick={() => onInfo(item)}
+            onClick={() => onInfo(item, "description")}
           >
             <span className="icon icon-info" />
             Infos
@@ -195,6 +195,8 @@ export default function DashboardChanteur() {
 
   const token = localStorage.getItem("token");
   const [selectedRendezvous, setSelectedRendezvous] = useState(null);
+
+  const [selectedRendezvousInfoType, setSelectedRendezvousInfoType] = useState(null);
   const controller = chanteurConfig.controller;
 
   const rendezvouController =
@@ -338,13 +340,12 @@ export default function DashboardChanteur() {
             typeLibelle:
               `Répétition ${item.repetitions_type?.libelle}` ||
               "Répétition",
-
+            lieu: item.rendezvous.lieux,
             date: item.date,
             debut: debut,
-            description:
-              item.description ||
+            description: `${item.description ||
               item.rendezvous?.titre ||
-              ""
+              ""} ${item.accompagne ? 'INSTRUMENTAL' : 'A CAPELA'}`
 
           }
         });
@@ -384,7 +385,15 @@ export default function DashboardChanteur() {
 
     }
   }
+  function openRendezvousInfo(item, type) {
+    setSelectedRendezvous(item);
+    setSelectedRendezvousInfoType(type);
+  }
 
+  function closeRendezvousInfo() {
+    setSelectedRendezvous(null);
+    setSelectedRendezvousInfoType(null);
+  }
 
   /*
    * Chargement initial
@@ -944,7 +953,7 @@ export default function DashboardChanteur() {
                     <RendezvousRow
                       key={item.key}
                       item={item}
-                      onInfo={setSelectedRendezvous}
+                      onInfo={openRendezvousInfo}
                       onParticipation={setSelectedConcert}
                     />
                   ))}
@@ -960,7 +969,7 @@ export default function DashboardChanteur() {
       {selectedRendezvous && (
         <div
           className="dashboard-modal-overlay"
-          onClick={() => setSelectedRendezvous(null)}
+          onClick={closeRendezvousInfo}
         >
           <div
             className="dashboard-modal"
@@ -970,63 +979,79 @@ export default function DashboardChanteur() {
             <button
               type="button"
               className="dashboard-modal-close"
-              onClick={() => setSelectedRendezvous(null)}
+              onClick={closeRendezvousInfo}
             >
               ×
             </button>
 
-            <h3>
-              {selectedRendezvous.lieu?.nom}
-            </h3>
 
-            {selectedRendezvous.lieu && (
-              <div className="dashboard-modal-lieu">
+            {/* =========================================
+          POPUP LIEU
+      ========================================= */}
 
-                <div>
-                  {selectedRendezvous.lieu.rue}
-                </div>
+            {selectedRendezvousInfoType === "lieu" && (
+              <>
+                <h3>
+                  {selectedRendezvous.lieu?.nom}
+                </h3>
 
-                <div>
-                  {selectedRendezvous.lieu.code_postale}{" "}
-                  {selectedRendezvous.lieu.ville}
-                </div>
+                {selectedRendezvous.lieu && (
+                  <div className="dashboard-modal-lieu">
 
-                {selectedRendezvous.lieu.description && (
-                  <div className="dashboard-modal-lieu-description">
-                    {selectedRendezvous.lieu.description}
+                    <div>
+                      {selectedRendezvous.lieu.rue}
+                    </div>
+
+                    <div>
+                      {selectedRendezvous.lieu.code_postale}{" "}
+                      {selectedRendezvous.lieu.ville}
+                    </div>
+
+                    {selectedRendezvous.lieu.description && (
+                      <div className="dashboard-modal-lieu-description">
+                        {selectedRendezvous.lieu.description}
+                      </div>
+                    )}
+
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        [
+                          selectedRendezvous.lieu.nom,
+                          selectedRendezvous.lieu.rue,
+                          selectedRendezvous.lieu.code_postale,
+                          selectedRendezvous.lieu.ville
+                        ]
+                          .filter(Boolean)
+                          .join(", ")
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="dashboard-modal-map-button"
+                    >
+                      <span className="icon icon-location"></span>
+                      Voir sur Google Maps
+                    </a>
+
                   </div>
                 )}
-
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    [
-                      selectedRendezvous.lieu.nom,
-                      selectedRendezvous.lieu.rue,
-                      selectedRendezvous.lieu.code_postale,
-                      selectedRendezvous.lieu.ville
-                    ]
-                      .filter(Boolean)
-                      .join(", ")
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="dashboard-modal-map-button"
-                >
-                  <span className="icon icon-location"></span>
-                  Voir sur Google Maps
-                </a>
-
-              </div>
+              </>
             )}
 
-            {selectedRendezvous.description && (
-              <div className="dashboard-modal-description">
 
-                <h4>Description</h4>
+            {/* =========================================
+          POPUP INFORMATIONS
+      ========================================= */}
 
-                {selectedRendezvous.description}
+            {selectedRendezvousInfoType === "description" && (
+              <>
+                <h3>
+                  {selectedRendezvous.typeLibelle}
+                </h3>
 
-              </div>
+                <div className="dashboard-modal-description">
+                  {selectedRendezvous.description}
+                </div>
+              </>
             )}
 
           </div>

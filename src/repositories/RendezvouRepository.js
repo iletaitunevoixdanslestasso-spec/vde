@@ -262,6 +262,24 @@ export class RendezvouRepository extends BaseRepository {
 
         return lieu;
     }
+
+    async updateLieu(rendezvousId, lieuId) {
+
+        const { data, error } = await this.supabase
+            .from("rendezvous")
+            .update({
+                lieu_id: lieuId
+            })
+            .eq("id", rendezvousId)
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    }
     async createSaisonRendezvous(data) {
 
         const { data: lieu, error } =

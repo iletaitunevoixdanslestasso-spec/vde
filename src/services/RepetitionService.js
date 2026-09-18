@@ -60,6 +60,11 @@ export class RepetitionService extends BaseService {
 
     }
 
+    async findLieux() {
+
+        return this.rendezvousRepository.findLieux();
+
+    }
     async getAvailableType(saisonId) {
 
         const { data, error } =
@@ -79,7 +84,7 @@ export class RepetitionService extends BaseService {
         return BaseResponse.success(data);
     }
 
-    async save(entity) {
+    async save_old(entity) {
         console.log(entity)
         const { data: rendezvous, error } =
             await this.rendezvousRepository.findTypeRepetition();
@@ -95,6 +100,130 @@ export class RepetitionService extends BaseService {
         };
 
         return super.save(entityToSave);
+    }
+
+    async save(form) {
+
+        console.log(
+            "RepetitionService.save",
+            form
+        );
+
+
+        /*
+         * =========================================================
+         * RECUPERATION DU RENDEZ-VOUS "REPETITION"
+         * =========================================================
+         */
+
+        const { data: rendezvous, error } =
+            await this.rendezvousRepository.findTypeRepetition();
+
+        if (error) {
+            return BaseResponse.error(
+                [],
+                error.message
+            );
+        }
+
+        console.log(
+            "rendezvous repetition",
+            rendezvous
+        );
+
+
+        /*
+         * =========================================================
+         * GESTION DU LIEU
+         * =========================================================
+         */
+
+        let lieuId = form.lieu_id || null;
+
+
+        /*
+         * Nouveau lieu :
+         * on crée d'abord le lieu
+         */
+        if (form.lieu_mode === "nouveau") {
+
+            const lieu =
+                await this.rendezvousRepository.createLieu({
+                    nom: form.lieu_nom,
+                    rue: form.lieu_rue,
+                    ville: form.lieu_ville,
+                    code_postale: form.lieu_code_postale,
+                    description: form.lieu_description
+                });
+
+            lieuId = lieu.id;
+        }
+
+
+        console.log(
+            "lieuId",
+            lieuId
+        );
+
+
+        /*
+         * =========================================================
+         * ASSOCIATION DU LIEU AU RENDEZ-VOUS
+         * =========================================================
+         *
+         * Le lieu appartient au rendez-vous générique
+         * "Répétition chorale", PAS à la répétition.
+         */
+
+        if (lieuId) {
+
+            await this.rendezvousRepository.updateLieu(
+                rendezvous.id,
+                lieuId
+            );
+        }
+
+
+        /*
+         * =========================================================
+         * CREATION / MODIFICATION DE LA REPETITION
+         * =========================================================
+         *
+         * PAS DE lieu_id ici.
+         */
+
+        const entityToSave = {
+
+            id: form.id || null,
+
+            date: form.date,
+
+            repetitions_type_id:
+                form.repetitions_type_id,
+
+            accompagne:
+                form.accompagne,
+
+            description:
+                form.description,
+
+            rendezvous_id:
+                rendezvous.id,
+
+            saison_id:
+                this.context.saisonId
+        };
+
+
+        console.log(
+            "RepetitionService.save entityToSave",
+            entityToSave
+        );
+
+
+        return super.save(
+            entityToSave
+        );
     }
 
     async findDuJourPourChanteur(saisonId, saisonChanteurId) {

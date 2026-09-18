@@ -44,16 +44,16 @@ export class SaisonconcertService extends BaseService {
         const { data: { session }, error: sessionError } =
     await supabase.auth.getSession();
 
-console.log("SUPABASE SESSION :", session);
-console.log("SUPABASE SESSION ERROR :", sessionError);
-console.log("TOKEN LOCALSTORAGE :", localStorage.getItem("token"));
-  console.log("SAISON CONCERTS", saisonConcerts);
-    console.log("SAISON CONCERTS DATA", saisonConcerts.data);
-    console.log("SAISON CONCERTS ERROR", saisonConcerts.error);
+// console.log("SUPABASE SESSION :", session);
+// console.log("SUPABASE SESSION ERROR :", sessionError);
+// console.log("TOKEN LOCALSTORAGE :", localStorage.getItem("token"));
+//   console.log("SAISON CONCERTS", saisonConcerts);
+//     console.log("SAISON CONCERTS DATA", saisonConcerts.data);
+//     console.log("SAISON CONCERTS ERROR", saisonConcerts.error);
 
-        console.log("participations", participations)
-        console.log("TOKEN LOCALSTORAGE :", localStorage.getItem("token"));
-console.log("TOKEN COMPLET :", token);
+//         console.log("participations", participations)
+//         console.log("TOKEN LOCALSTORAGE :", localStorage.getItem("token"));
+// console.log("TOKEN COMPLET :", token);
         const data = saisonConcerts.data.map(concert => {
             const participation = participations.data.find(
                 participation =>

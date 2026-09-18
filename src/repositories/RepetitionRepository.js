@@ -62,6 +62,7 @@ export class RepetitionRepository extends RendezvouRepository {
             rendezvous(
                 lieux(
                     rue,
+                    nom,
                     ville,
                     code_postale,
                     description
