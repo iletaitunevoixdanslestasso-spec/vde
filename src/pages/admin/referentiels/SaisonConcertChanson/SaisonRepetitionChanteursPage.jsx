@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import CRUDPage from "../../../../framework/crud/CRUDPage";
 import { useSaison } from "../../../../components/contexts/SaisonContext";
 // import { saisonrepetitionchanteursConfig } from "../../../../config/entities/saisonrepetitionchanteurs.config";
-import { formatDate } from "../../../../helper/helper";
+import { formatDate, formatDateFileName } from "../../../../helper/helper";
 import { useEffect } from "react";
 import { saisonrepetitionchanteursConfig } from "../../../../config/entities/saisonrepetitionchanteur.config";
 
@@ -25,7 +25,9 @@ export default function SaisonRepetitionChanteursPage() {
         }
     }, [saisonSelectionne, navigate, saisonSelectionneObjet]);
 
-
+    console.log(saisonSelectionneObjet.date)
+let fileName =formatDateFileName(saisonSelectionneObjet?.date)
+console.log(fileName)
     return (
         <CRUDPage
             config={{
@@ -38,6 +40,8 @@ export default function SaisonRepetitionChanteursPage() {
             }}
 
             context={{
+                exportExcel:{fileName},
+                nouveau:true,
                 saisonId: saisonSelectionne?.id,
                 repetitionId: saisonSelectionneObjet?.id,
                 saisonSelectionneObjet

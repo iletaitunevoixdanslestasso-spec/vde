@@ -6,6 +6,13 @@ export function formatDate(date) {
         year: "numeric"
     });
 }
+export function formatDateFileName(date) {
+    if (!date) return "";
+
+    return date
+        .substring(0, 10)
+        .replaceAll("-", "_");
+}
 export function formatDuration(minutes) {
     if (minutes == null || minutes < 0) {
         return "";

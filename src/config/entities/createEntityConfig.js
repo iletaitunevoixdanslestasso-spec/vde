@@ -8,6 +8,9 @@ import { BaseMapper } from "../../mappers/BaseMapper";
 
 import { baseConfig } from "./base.config";
 
+// render      // affichage React
+// sortValue   // valeur textuelle pour tri + export par défaut
+// exportValue // uniquement si l'export doit être différent
 
 export function createEntityConfig({
     entity,

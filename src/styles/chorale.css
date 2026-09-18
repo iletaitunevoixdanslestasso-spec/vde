@@ -14,10 +14,6 @@
     box-sizing: border-box;
 }
 
-button {
-    background-color: azure;
-}
-
 .chorale-layout {
     min-height: 100vh;
     display: flex;
@@ -70,6 +66,7 @@ button {
 /* Structure commune */
 
 .icon-new::before,
+.icon-excel::before,
 .icon-save::before,
 .icon-edit::before,
 .icon-delete::before,
@@ -104,7 +101,9 @@ button {
 .icon-new::before {
     content: "➕";
 }
-
+.icon-excel::before {
+    content: "📊";
+}
 .icon-save::before {
     content: "💾";
 }
@@ -246,13 +245,136 @@ button {
    CRUD page
    ========================================================= */
 
-.crud-new-button {
-    margin-bottom: 10px;
+/* =========================================================
+   CRUD ACTIONS
+   ========================================================= */
+
+.crud-page-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 16px;
 }
 
+
+.crud-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+
+    padding: 8px 14px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #475569;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, .04);
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease,
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+
+.crud-action-button:hover {
+    background: #f5f3ff;
+
+    border-color: #c4b5fd;
+
+    color: #4f46e5;
+
+    box-shadow:
+        0 4px 10px rgba(79, 70, 229, .08);
+
+    transform: translateY(-1px);
+}
+
+
+.crud-action-button:active {
+    transform: translateY(0);
+}
+
+
+.crud-action-button:focus-visible {
+    outline: 2px solid #8b5cf6;
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   EXPORT EXCEL
+   ========================================================= */
+
+.crud-export-button {
+    background: #f0fdf4;
+
+    border-color: #bbf7d0;
+
+    color: #15803d;
+}
+
+
+.crud-export-button:hover {
+    background: #dcfce7;
+
+    border-color: #86efac;
+
+    color: #166534;
+}
+
+
+.crud-export-button:disabled {
+    opacity: .45;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
 .crud-errors {
     color: red;
     margin-bottom: 10px;
+}
+
+/* =========================================================
+   CRUD action mobil
+   ========================================================= */
+@media (max-width: 700px) {
+
+    .crud-page-actions {
+        gap: 8px;
+
+        margin-bottom: 12px;
+    }
+
+
+    .crud-action-button {
+        min-height: 42px;
+
+        padding: 8px 12px;
+
+        font-size: 12px;
+    }
+
 }
 
 /* =========================================================

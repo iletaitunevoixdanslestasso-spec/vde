@@ -10,7 +10,9 @@ import { SaisonrepetitionchanteurValidator } from "../../validators/Saisonrepeti
 import { createEntityConfig } from "./createEntityConfig";
 import RepetitionParticipationControllerAdmin from "../../components/repetition_participation/RepetitionParticipationControllerAdmin";
 
-
+// render      // affichage React
+// sortValue   // valeur textuelle pour tri + export par défaut
+// exportValue // uniquement si l'export doit être différent
 
 const columns = [
 
@@ -48,6 +50,15 @@ const columns = [
         type: "select",
 
         source: "participations",
+        exportValue: (row) => {
+
+            const participation =
+                row.repetition_chanteurs?.[0];
+
+            return participation?.participe === true
+                ? "Oui"
+                : "Non";
+        },        
         render: (v, row, context) => {
 
             return React.createElement(

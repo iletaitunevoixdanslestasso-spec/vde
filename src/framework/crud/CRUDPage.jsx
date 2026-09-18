@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import NotificationService from "../../services/NotificationService";
 import "./../styles/CRUDPage.css";
 import { useSaison } from "../../components/contexts/SaisonContext";
+import ExcelService from "../../services/ExcelService";
 export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
@@ -292,16 +293,50 @@ export default function CRUDPage({ config, context = {} }) {
         await load();
     };
 
+    // export excel
+    const handleExportExcel = () => {
+
+        const excelContext =
+            typeof context.exportExcel === "object"
+                ? context.exportExcel
+                : {};
+
+
+        const excelConfig = {
+            columns:
+                excelContext.columns ??
+                config.excel?.columns ??
+                config.columns,
+
+            fileName:
+                excelContext.fileName ??
+                config.excel?.fileName ??
+                config.entity ??
+                "export",
+
+            sheetName:
+                excelContext.sheetName ??
+                config.excel?.sheetName ??
+                "Export"
+        };
+
+
+        ExcelService.exportToExcel(
+            items,
+            excelConfig
+        );
+    };
+
     return (
         <div>
 
 
 
             <h1>
-                {title} {context.saisonId  && (<>
+                {title} {context.saisonId && (<>
                     {saisonSelectionne.nom}
                     <label className={saisonSelectionne.active ? `icon-saisonactive` : 'icon-saisons'}></label>
-                    </>)}
+                </>)}
             </h1>
 
 
@@ -320,17 +355,28 @@ export default function CRUDPage({ config, context = {} }) {
                 </div>
             )}
 
+            <div className="crud-page-actions">
 
-            {/* CREATE BUTTON */}
+                {context.nouveau !== false && (
+                    <button
+                        className="icon-new crud-action-button"
+                        onClick={handleAdd}
+                    >
+                        <span>Nouveau</span>
+                    </button>
+                )}
 
-            <button
-                className="icon-new crud-new-button"
-                onClick={handleAdd}
-            >
-                Nouveau
-            </button>
+                {context.exportExcel && (
+                    <button
+                        className="icon-excel crud-action-button crud-export-button"
+                        onClick={handleExportExcel}
+                        disabled={items.length === 0}
+                    >
+                        <span>Export Excel</span>
+                    </button>
+                )}
 
-
+            </div>
             {/* TABLE */}
 
             <DataTable
