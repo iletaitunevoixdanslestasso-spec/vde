@@ -167,8 +167,6 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
 }
 
 
-
-
 export default function DashboardChanteur() {
 
 
@@ -183,6 +181,11 @@ export default function DashboardChanteur() {
 
   const [rendezvous, setRendezvous] = useState([]);
   const [loadingRendezvous, setLoadingRendezvous] = useState(true);
+  const [rendezvousSort, setRendezvousSort] = useState({
+    field: "date",
+    direction: "asc"
+  });
+  const [rendezvousTypeFilter, setRendezvousTypeFilter] = useState("all");
 
   const [savingRelanceDAI, setSavingRelanceDai] = useState(false);
   const [savingRelancePupitre, setSavingRelancePupitre] = useState(false);
@@ -278,7 +281,9 @@ export default function DashboardChanteur() {
               type: typeCode,
 
               typeCode,
-
+              typeNom:
+                rendezvous.rendezvous_type?.libelle ||
+                "Rendez-vous",
               typeLibelle:
                 `${rendezvous.rendezvous_type?.libelle ||
                 "Rendez-vous"} ${rendezvous.titre}`,
@@ -325,7 +330,7 @@ export default function DashboardChanteur() {
             typeCode:
               item.rendezvous?.rendezvous_type?.code ||
               "repet",
-
+            typeNom: "Répétition",
             /*
             * On identifie explicitement
             * l'occurrence comme répétition.
@@ -514,6 +519,30 @@ export default function DashboardChanteur() {
   }
 
 
+
+  function changeRendezvousSort(field) {
+
+    setRendezvousSort(prev => {
+
+      if (prev.field === field) {
+        return {
+          field,
+          direction:
+            prev.direction === "asc"
+              ? "desc"
+              : "asc"
+        };
+      }
+
+      return {
+        field,
+        direction: "asc"
+      };
+    });
+  }
+
+
+
   if (loading || loadingChanteur) {
 
     return (
@@ -553,6 +582,70 @@ export default function DashboardChanteur() {
 
 
   const toutEstFait = !todoDai && !todoPupitre && !todoParticipation
+
+  const rendezvousFiltres =
+    rendezvousTypeFilter === "all"
+      ? rendezvous
+      : rendezvous.filter(
+        item => item.typeCode === rendezvousTypeFilter
+      );
+
+  const rendezvousTries = [...rendezvousFiltres].sort((a, b) => {
+
+    let comparaison = 0;
+
+    switch (rendezvousSort.field) {
+
+      case "type":
+        comparaison = (a.typeLibelle || "").localeCompare(
+          b.typeLibelle || "",
+          "fr",
+          {
+            sensitivity: "base"
+          }
+        );
+        break;
+
+
+      case "date":
+      default:
+        comparaison =
+          new Date(a.date) -
+          new Date(b.date);
+        break;
+    }
+
+
+    /*
+     * En cas d'égalité sur le type,
+     * on trie ensuite par date.
+     */
+    if (
+      comparaison === 0 &&
+      rendezvousSort.field === "type"
+    ) {
+      comparaison =
+        new Date(a.date) -
+        new Date(b.date);
+    }
+
+
+    return rendezvousSort.direction === "asc"
+      ? comparaison
+      : -comparaison;
+  });
+
+  const rendezvousTypes = [
+    ...new Map(
+      rendezvous.map(item => [
+        item.typeCode,
+        {
+          code: item.typeCode,
+          libelle: item.typeNom
+        }
+      ])
+    ).values()
+  ];
 
   return (
 
@@ -776,14 +869,78 @@ export default function DashboardChanteur() {
               rendezvous.length > 0 && (
 
                 <div className="dashboard-rendezvous-list">
+                  <div className="dashboard-rendezvous-filters">
 
-                  <div className="dashboard-rendezvous-header">
-                    <div>Type</div>
-                    <div>Date</div>
-                    <div>Informations</div>
+                    <label htmlFor="rendezvous-type-filter">
+                      Afficher :
+                    </label>
+
+                    <select
+                      id="rendezvous-type-filter"
+                      value={rendezvousTypeFilter}
+                      onChange={event =>
+                        setRendezvousTypeFilter(event.target.value)
+                      }
+                    >
+                      <option value="all">
+                        Tous les types
+                      </option>
+
+                      {rendezvousTypes.map(type => (
+                        <option
+                          key={type.code}
+                          value={type.code}
+                        >
+                          {type.libelle}
+                        </option>
+                      ))}
+
+                    </select>
+
                   </div>
 
-                  {rendezvous.map(item => (
+
+                  <div className="dashboard-rendezvous-header">
+
+                    <button
+                      type="button"
+                      className="dashboard-rendezvous-sort"
+                      onClick={() => changeRendezvousSort("type")}
+                    >
+                      Type
+
+                      {rendezvousSort.field === "type" && (
+                        <span className="dashboard-rendezvous-sort-icon">
+                          {rendezvousSort.direction === "asc"
+                            ? "▲"
+                            : "▼"}
+                        </span>
+                      )}
+                    </button>
+
+
+                    <button
+                      type="button"
+                      className="dashboard-rendezvous-sort"
+                      onClick={() => changeRendezvousSort("date")}
+                    >
+                      Date
+
+                      {rendezvousSort.field === "date" && (
+                        <span className="dashboard-rendezvous-sort-icon">
+                          {rendezvousSort.direction === "asc"
+                            ? "▲"
+                            : "▼"}
+                        </span>
+                      )}
+                    </button>
+
+
+                    <div>Informations</div>
+
+                  </div>
+
+                  {rendezvousTries.map(item => (
                     <RendezvousRow
                       key={item.key}
                       item={item}
@@ -796,8 +953,9 @@ export default function DashboardChanteur() {
 
               )}
           </div>
-        )}
-      </section>
+        )
+        }
+      </section >
 
       {selectedRendezvous && (
         <div
@@ -875,50 +1033,52 @@ export default function DashboardChanteur() {
         </div>
       )}
 
-      {selectedConcert && (
-        <div
-          className="dashboard-modal-overlay"
-          onClick={() => setSelectedConcert(null)}
-        >
+      {
+        selectedConcert && (
           <div
-            className="dashboard-modal"
-            onClick={event => event.stopPropagation()}
+            className="dashboard-modal-overlay"
+            onClick={() => setSelectedConcert(null)}
           >
-
-            <button
-              type="button"
-              className="dashboard-modal-close"
-              onClick={() => setSelectedConcert(null)}
+            <div
+              className="dashboard-modal"
+              onClick={event => event.stopPropagation()}
             >
-              ×
-            </button>
 
-            <h3>
-              {selectedConcert.titre}
-            </h3>
+              <button
+                type="button"
+                className="dashboard-modal-close"
+                onClick={() => setSelectedConcert(null)}
+              >
+                ×
+              </button>
 
-            <ConcertParticipation
-              concert={selectedConcert}
-              onParticipationChange={(concertId, participe) => {
-                console.log(concertId, participe)
-                setRendezvous(current =>
-                  current.map(item =>
-                    item.id === concertId
-                      ? {
-                        ...item,
-                        participation: participe
-                      }
-                      : item
-                  )
-                );
+              <h3>
+                {selectedConcert.titre}
+              </h3>
 
-                setSelectedConcert(null);
-              }}
-            />
+              <ConcertParticipation
+                concert={selectedConcert}
+                onParticipationChange={(concertId, participe) => {
+                  console.log(concertId, participe)
+                  setRendezvous(current =>
+                    current.map(item =>
+                      item.id === concertId
+                        ? {
+                          ...item,
+                          participation: participe
+                        }
+                        : item
+                    )
+                  );
 
+                  setSelectedConcert(null);
+                }}
+              />
+
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </div >
   );
 }

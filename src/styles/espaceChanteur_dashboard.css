@@ -97,6 +97,47 @@
   transform: scale(0.96);
 }
 
+.dashboard-rendezvous-sort {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dashboard-rendezvous-sort:hover {
+  text-decoration: underline;
+}
+
+.dashboard-rendezvous-sort-icon {
+  font-size: 0.7em;
+}
+.dashboard-rendezvous-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-rendezvous-filters label {
+  font-weight: 600;
+}
+
+.dashboard-rendezvous-filters select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: white;
+}
 
 /* Mobile */
 @media (max-width: 600px) {
