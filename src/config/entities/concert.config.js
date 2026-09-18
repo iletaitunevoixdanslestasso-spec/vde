@@ -9,14 +9,16 @@ import { ConcertMapper } from "../../mappers/ConcertMapper";
 const columns = [
     { field: "titre", header: "Titre", type: "text" },
 
-    { field: "date", header: "Date", type: "date" , 
+    {
+        field: "date", header: "Date", type: "date",
         render: (value) => {
-        if (!value) {
-            return "";
-        }
+            if (!value) {
+                return "";
+            }
 
-        return new Date(value).toLocaleDateString("fr-FR");
-    }},
+            return new Date(value).toLocaleDateString("fr-FR");
+        }
+    },
     { field: "description", header: "infos", type: "textarea" },
     { field: "heure_debut", header: "début", type: "time" },
     { field: "heure_rdv", header: "rdv", type: "time" },
@@ -50,7 +52,7 @@ const columns = [
             value: "existant"
         }
     },
-    
+
     {
         field: "lieu_nom",
         header: "Nom",
@@ -83,12 +85,12 @@ const columns = [
             value: "nouveau"
         },
         render: (v, row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.rue || ''}`
         },
         sortValue: (row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.rue || ''}`;
         },
@@ -104,12 +106,12 @@ const columns = [
             value: "nouveau"
         },
         render: (v, row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.ville || ''}`
         },
         sortValue: (row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.ville || ''}`;
         },
@@ -125,12 +127,12 @@ const columns = [
             value: "nouveau"
         },
         render: (v, row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.code_postale || ''}`
         },
         sortValue: (row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.code_postale || ''}`;
         },
@@ -146,17 +148,33 @@ const columns = [
             value: "nouveau"
         },
         render: (v, row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.description || ''}`
         },
         sortValue: (row) => {
-            if(!row.lieux)
+            if (!row.lieux)
                 return ''
             return `${row?.lieux.description || ''}`;
         },
 
-    }
+    },
+    {
+        field: "presence",
+        header: "P / N / A",
+        mapped: "false",
+        hideInForm: true,
+        type: "text",
+        render: (v, row) => {
+            return {
+                value: `${row.presents} / ${row.ne_sait_pas} / ${row.absents}`,
+                cssClass: "data-table-nowrap"
+            };
+        },
+        sortValue: (row) => {
+            return row.presents ?? 0;
+        },
+    },
 ];
 
 const actions = [

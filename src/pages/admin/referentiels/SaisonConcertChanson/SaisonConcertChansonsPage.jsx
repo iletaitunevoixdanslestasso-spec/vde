@@ -14,24 +14,30 @@ export default function SaisonConcertChansonsPage() {
     const [session, setSession] = useState(null);
     const { selectConcert, concertSelectionne } = useConcert();
     const { selectSaison, saisonSelectionne } = useSaison();
-    console.log(concertSelectionne)
-    console.log(saisonSelectionne)
 
-    if(!concertSelectionne){
-        navigate(`/admin/saison/${saisonSelectionne.nom}/concerts`)
-        return
+
+    useEffect(() => {
+        if (!saisonSelectionne || !concertSelectionne) {
+            navigate("/admin");
+            return
+        }
+    }, [saisonSelectionne, concertSelectionne, navigate]);
+
+    // IMPORTANT : empêche le rendu avant la redirection
+    if (!saisonSelectionne || !concertSelectionne) {
+        return null;
     }
 
     return (
         <CRUDPage
             config={{
                 ...SaisonConcertChansonConfig,
-                title:`Les chansons pour ${concertSelectionne.titre}`
+                title: `Les chansons pour ${concertSelectionne.titre}`
             }}
             context={{
-                saisonId:saisonSelectionne.id,
-                concertId:concertSelectionne.id,
-                saisonConcertId:concertSelectionne.saison_rendezvous[0].id,
+                saisonId: saisonSelectionne?.id,
+                concertId: concertSelectionne?.id,
+                saisonConcertId: concertSelectionne?.saison_rendezvous[0].id,
             }}
 
         />

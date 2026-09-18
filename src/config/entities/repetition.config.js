@@ -96,6 +96,19 @@ const columns = [
         header: "Description",
         type: "textarea",
     },
+    {
+        field: "presence",
+        header: "P / N / A",
+        mapped: "false",
+        hideInForm: true,
+        type: "text",
+        render: (v, row) => {
+            return `${row.presents} / ${row.ne_sait_pas} / ${row.absents}`
+        },
+        sortValue: (row) => {
+            return row.presents ?? 0;
+        },
+    },
 
 
 ];

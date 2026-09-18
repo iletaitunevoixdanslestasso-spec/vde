@@ -11,7 +11,7 @@ export class SaisonConcertChansonRepository extends BaseRepository {
             .from(this.table)
             .select(`
                 *,
-                saison_chansons!left(
+                saison_chansons!inner(
                     *,
                     chansons(*
                     )

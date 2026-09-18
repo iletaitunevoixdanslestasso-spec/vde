@@ -11,12 +11,13 @@
     white-space: nowrap;
 }
 
-
 .data-table-cell-no-word-break {
     overflow-wrap: normal !important;
     word-break: normal !important;
     hyphens: none !important;
 }
+
+
 /* =========================================================
    TOOLBAR
    ========================================================= */
@@ -161,6 +162,7 @@
 
     background: #f8fafc;
 }
+
 .data-table-table thead th:first-child {
     top: 0;
     left: 0;
@@ -171,6 +173,8 @@
 .data-table-table td:first-child {
     box-shadow: 2px 0 4px rgba(15, 23, 42, .06);
 }
+
+
 /* =========================================================
    EN-TÊTES DE COLONNES
    ========================================================= */
@@ -216,6 +220,7 @@
     gap: 7px;
 }
 
+
 /* =========================================================
    PREMIÈRE COLONNE FIXE
    ========================================================= */
@@ -247,6 +252,7 @@
 .data-table-row:hover td:first-child {
     background: #fafafa;
 }
+
 
 /* =========================================================
    TRI
@@ -373,7 +379,7 @@
 .data-table-actions-header {
     width: 1%;
 
-    padding: 13px 16px;
+    padding: 13px 12px;
 
     border-bottom: 1px solid #e5e7eb;
 
@@ -393,8 +399,10 @@
 
 .data-table-actions-cell {
     text-align: right;
-
     white-space: nowrap;
+
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .data-table-actions {
@@ -403,13 +411,20 @@
     justify-content: flex-end;
     align-items: center;
 
-    gap: 6px;
+    gap: 5px;
 }
 
+
+/*
+ * Bouton d'action
+ *
+ * Plus compact que précédemment.
+ */
 .data-table-action {
+    min-width: 0;
     min-height: 34px;
 
-    padding: 7px 10px;
+    padding: 6px 8px;
 
     border: 1px solid #e2e8f0;
     border-radius: 9px;
@@ -434,9 +449,85 @@
     align-items: center;
     justify-content: center;
 
-    gap: 6px;
+    /*
+     * Espace entre l'icône et le texte.
+     *
+     * Avant : 6px
+     * Maintenant : 3px
+     */
+    gap: 3px;
 }
 
+
+/*
+ * IMPORTANT
+ *
+ * Dans ton HTML tu peux avoir :
+ *
+ * <span class="data-table-action-icon"></span>
+ * <span class="data-table-action-label"></span>
+ *
+ * Si ces éléments sont vides, on les retire complètement
+ * du layout flex.
+ *
+ * Cela évite qu'ils créent des espaces inutiles.
+ */
+.data-table-action-icon:empty,
+.data-table-action-label:empty {
+    display: none;
+}
+
+
+/*
+ * Bouton contenant uniquement une icône.
+ *
+ * Exemple :
+ *
+ * <button class="data-table-action icon-edit">
+ *     ...
+ * </button>
+ *
+ * Le bouton devient carré et l'icône est centrée.
+ */
+.data-table-action:has(.data-table-action-label:empty) {
+    width: 34px;
+    min-width: 34px;
+
+    height: 34px;
+    min-height: 34px;
+
+    padding: 0;
+}
+
+
+/*
+ * Bouton contenant réellement un texte.
+ *
+ * Il prend uniquement la largeur nécessaire.
+ */
+.data-table-action:has(.data-table-action-label:not(:empty)) {
+    width: auto;
+    min-width: 0;
+
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+
+/*
+ * Si l'icône est générée directement par la classe
+ * icon-edit, icon-delete, etc. via ::before,
+ * elle reste centrée dans le bouton.
+ */
+.data-table-action::before {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+
+/*
+ * Hover
+ */
 .data-table-action:hover {
     background: #f8fafc;
 
@@ -447,14 +538,37 @@
     transform: translateY(-1px);
 }
 
+
+/*
+ * Conteneur de l'icône
+ */
 .data-table-action-icon {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
     font-size: 16px;
 
     line-height: 1;
+
+    flex: 0 0 auto;
+
+    margin: 0;
+    padding: 0;
 }
 
+
+/*
+ * Texte du bouton
+ */
 .data-table-action-label {
     white-space: nowrap;
+
+    line-height: 1;
+
+    margin: 0;
+    padding: 0;
 }
 
 
@@ -563,6 +677,9 @@
 .data-table-page-navigation {
     font-size: 20px;
 }
+.data-table-nowrap {
+    white-space: nowrap;
+}
 
 
 /* =========================================================
@@ -577,8 +694,25 @@
         padding-right: 12px;
     }
 
+    /*
+     * Les boutons restent compacts.
+     */
     .data-table-action {
-        padding: 6px 8px;
+        padding: 5px 7px;
+        gap: 3px;
+    }
+
+    /*
+     * Bouton avec uniquement une icône.
+     */
+    .data-table-action:has(.data-table-action-label:empty) {
+        width: 34px;
+        min-width: 34px;
+
+        height: 34px;
+        min-height: 34px;
+
+        padding: 0;
     }
 
 }
@@ -682,16 +816,38 @@
        Actions mobile
        ----------------------------------------- */
 
-    .data-table-actions {
-        gap: 5px;
+    .data-table-actions-cell {
+        padding-left: 6px;
+        padding-right: 6px;
     }
 
-    .data-table-action {
-        width: 40px !important;
-        min-width: 40px !important;
+    .data-table-actions {
+        gap: 4px;
+    }
 
-        height: 40px !important;
-        min-height: 40px !important;
+
+    /*
+     * Sur mobile on masque le texte.
+     *
+     * Les boutons deviennent donc uniquement des icônes.
+     */
+    .data-table-action-label {
+        display: none !important;
+    }
+
+
+    /*
+     * Bouton mobile compact.
+     *
+     * Avant : 40px
+     * Maintenant : 36px
+     */
+    .data-table-action {
+        width: 36px !important;
+        min-width: 36px !important;
+
+        height: 36px !important;
+        min-height: 36px !important;
 
         padding: 0 !important;
 
@@ -699,12 +855,14 @@
 
         align-items: center;
         justify-content: center;
+
+        gap: 0 !important;
     }
 
-    .data-table-action-label {
-        display: none !important;
-    }
 
+    /*
+     * Icône parfaitement centrée.
+     */
     .data-table-action-icon {
         display: inline-flex;
 
@@ -714,10 +872,22 @@
         font-size: 18px;
 
         line-height: 1;
+
+        margin: 0;
+        padding: 0;
     }
 
+
+    /*
+     * Si l'icône vient de ::before
+     */
+    .data-table-action::before {
+        margin: 0 !important;
+    }
+
+
     .data-table-actions-header {
-        padding: 11px 12px;
+        padding: 11px 8px;
 
         font-size: 10px;
     }
@@ -770,12 +940,22 @@
         font-size: 12px;
     }
 
-    .data-table-action {
-        width: 38px !important;
-        min-width: 38px !important;
 
-        height: 38px !important;
-        min-height: 38px !important;
+    /*
+     * Encore légèrement plus compact
+     * sur les très petits écrans.
+     */
+    .data-table-action {
+        width: 34px !important;
+        min-width: 34px !important;
+
+        height: 34px !important;
+        min-height: 34px !important;
+    }
+
+    .data-table-actions-cell {
+        padding-left: 4px;
+        padding-right: 4px;
     }
 
 }

@@ -59,7 +59,7 @@ export class RendezvouRepository extends BaseRepository {
             .order('date', { ascending: true });
         ;
     }
-    async findBySaisonAndTypeConcert(saisonId) {
+    async findBySaisonAndTypeConcert_old(saisonId) {
         console.log("findBySaisonAndTypeConcert", saisonId)
         return this.supabase
             .from(this.table)
@@ -78,6 +78,76 @@ export class RendezvouRepository extends BaseRepository {
             .eq("saison_rendezvous.saison_id", saisonId)
             .order('date', { ascending: true });
         ;
+    }
+    async findBySaisonAndTypeConcert(saisonId) {
+
+        const { data, error } = await this.supabase
+            .from("vue_saison_rendezvous_participation")
+            .select(`
+            saison_rendezvous_id,
+            saison_id,
+            rendezvous_id,
+
+            presents,
+            absents,
+            ne_sait_pas,
+
+            rendezvous!inner(
+                *,
+                
+                lieux(*),
+
+                saison_rendezvous!inner(*),
+
+                rendezvous_type!inner(
+                    id,
+                    libelle,
+                    code
+                )
+            )
+        `)
+            .eq("saison_id", saisonId)
+            .eq("rendezvous.rendezvous_type.code", "concert")
+            .is("rendezvous.deleted_at", null);
+
+        if (error) {
+            return {
+                data: null,
+                error
+            };
+        }
+
+        /*
+         * Remise au format historique attendu
+         * par ConcertService
+         */
+        const result = data.map(row => {
+
+            const rendezvous = row.rendezvous;
+
+            return {
+                ...rendezvous,
+
+                /*
+                 * Les compteurs viennent de la vue
+                 */
+                presents: row.presents ?? 0,
+                absents: row.absents ?? 0,
+                ne_sait_pas: row.ne_sait_pas ?? 0
+            };
+        });
+
+        /*
+         * Même tri qu'avant
+         */
+        result.sort((a, b) => {
+            return new Date(a.date) - new Date(b.date);
+        });
+
+        return {
+            data: result,
+            error: null
+        };
     }
 
     async findByTypeConcert() {
