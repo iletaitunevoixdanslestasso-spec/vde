@@ -209,7 +209,7 @@ Deno.serve(async (req) => {
       // TEST EXISTANT
       // ------------------------------------------------
 
-      textesRelance.push("pour test je force");
+      // textesRelance.push("pour test je force");
 
 
       // ------------------------------------------------
