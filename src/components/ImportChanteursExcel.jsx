@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { supabase } from "../core/supabase/client";
+import { useSaison } from "./contexts/SaisonContext";
 
 export default function ImportChanteursExcel({ saisonId }) {
     const fileInputRef = useRef(null);
-
+    const { saisonSelectionne, saisonActive } = useSaison();
     const [fichier, setFichier] = useState(null);
     const [lignes, setLignes] = useState([]);
     const [erreursLecture, setErreursLecture] = useState([]);
@@ -358,8 +359,10 @@ export default function ImportChanteursExcel({ saisonId }) {
             }}
         >
             <h2>
-                Importer des chanteurs dans la saison ACTIVE
-                <label className="icon-saisonactive"></label>
+                Importer des chanteurs dans la saison SELECTIONNEE : {saisonSelectionne.nom}
+                {saisonActive.id == saisonId && 
+                (<label className="icon-saisonactive"></label>)
+                }
             </h2>
 
             <p>

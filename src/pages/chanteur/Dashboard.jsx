@@ -7,6 +7,7 @@ import { repetitionConfig } from "../../config/entities/repetition.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 import ConcertParticipation from "../../components/ConcertParticipation";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
+import { truncateText } from "../../helper/helper";
 
 
 function formatRendezvousDate(date) {
@@ -82,6 +83,10 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
         ? "icon-cancel"
         : "icon-unknown";
 
+  const libelle = item?.lieu 
+  ?`${item?.lieu?.nom ? item?.lieu?.nom :  '' } ${item?.lieu?.ville ? ` à ${item.lieu.ville.toUpperCase()}` : 'A définir'}`
+  : false
+
 
   return (
     <div
@@ -123,12 +128,13 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
 
             <button
               type="button"
+              alt={libelle}
+              title={libelle}
               className="dashboard-rendezvous-info-button"
               onClick={() => onInfo(item, "lieu")}
             >
               <span className="dashboard-rendezvous-lieu-ville">
-                {item.lieu.nom}
-                {item.lieu.ville && ` à ${item.lieu.ville.toUpperCase()}`}
+                {truncateText(libelle)}
               </span>
             </button>
 

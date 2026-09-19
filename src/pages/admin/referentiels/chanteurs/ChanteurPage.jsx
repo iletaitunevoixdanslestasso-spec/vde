@@ -38,7 +38,7 @@ export default function ChanteurPage() {
         config={chanteurConfig} />;
     </div>
     <div><ImportChanteursExcel
-      saisonId={saisonActive.id}
+      saisonId={saisonSelectionne.id}
     />  </div>
   </div>)
 }

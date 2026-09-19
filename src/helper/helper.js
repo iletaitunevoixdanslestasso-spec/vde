@@ -38,3 +38,15 @@ export function formatDuration(minutes) {
 
     return result.join(" ");
 }
+
+export function truncateText(value, maxLength = 25) {
+    if (!value) return "";
+
+    const text = value.trim();
+
+    if (text.length <= maxLength) {
+        return text;
+    }
+
+    return text.slice(0, maxLength - 3).trim() + "...";
+}
