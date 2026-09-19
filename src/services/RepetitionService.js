@@ -14,7 +14,7 @@ export class RepetitionService extends BaseService {
     async getForDashboard(saisonId) {
 
         const { data, error } =
-            await this.repository.findBySaison(saisonId);
+            await this.repository.findBySaison(saisonId, new Date().toISOString().split("T")[0]);
 
         console.log(data)
         if (error) {

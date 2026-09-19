@@ -41,7 +41,7 @@ export class RepetitionRepository extends RendezvouRepository {
             .eq("saison_id", saisonId)
             ;
     }
-    async findBySaison(saisonId) {
+    async findBySaison(saisonId, date="1000-01-01") {
         return this.supabase
             .from("vue_repetitions")
             .select(`
@@ -80,7 +80,7 @@ export class RepetitionRepository extends RendezvouRepository {
             ne_sait_pas
         `)
             .is("deleted_at", null)
-            .gte("date", new Date().toISOString().split("T")[0])
+            .gte("date", date)
             .eq("saison_id", saisonId);
     }
     async findDuJourPourChanteur(saisonId, saisonChanteurId) {
