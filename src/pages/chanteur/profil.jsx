@@ -18,11 +18,13 @@ const profilConfig = {
         {
             field: "groupe_id",
             header: "Groupe",
-            type: "select",
+            type: "text",
             source: "availableGroupes",
             required: true,
+            editType: "readonly",
             render: (v, row) => {
-                return `${row.groupes?.nom || "doit choisir"}`;
+                console.log(row)
+                return `${row.gnom || "doit choisir"}`;
             }
         },
         {
