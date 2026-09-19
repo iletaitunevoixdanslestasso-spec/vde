@@ -352,7 +352,7 @@ export default function ChansonsChanteur() {
 
                 <div>
                     <strong>
-                        Choisissez votre pupitre
+                        Je choisis mon pupitre
                     </strong>
 
                     <span>
@@ -469,7 +469,7 @@ export default function ChansonsChanteur() {
                                         htmlFor={`pupitre-${chanson.chanson_id}`}
                                         className="chanson-pupitre-label"
                                     >
-                                        Votre pupitre
+                                        Mon pupitre
                                     </label>
 
                                     <select
