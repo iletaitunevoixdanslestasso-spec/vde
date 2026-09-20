@@ -93,7 +93,7 @@ export default function ChanteurMenu({chanteur}) {
                     </span>
                 </button>
 
-{/* 
+
                 <button
                     type="button"
                     className={
@@ -107,7 +107,7 @@ export default function ChanteurMenu({chanteur}) {
                     <span className="chanteur-menu-label">
                         Répétitions
                     </span>
-                </button> */}
+                </button>
                 <button
                     type="button"
                     className={

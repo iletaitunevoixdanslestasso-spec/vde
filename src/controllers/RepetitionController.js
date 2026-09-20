@@ -18,13 +18,13 @@ export class RepetitionController extends BaseController {
             value: `${item.nom} ${item.description}`
         }));
 
-        const {success, data,error, message} = await this.service.getAvailableType(saisonId);
-        console.log(success, data,error, message)
+        const { success, data, error, message } = await this.service.getAvailableType(saisonId);
+        console.log(success, data, error, message)
         if (!success) {
             return {};
         }
         const availableType = data
-        .map(type => {
+            .map(type => {
                 return {
                     id: type.id,
                     value: `${type.libelle}`,
@@ -45,7 +45,7 @@ export class RepetitionController extends BaseController {
             console.log(data)
             return {
                 success: true,
-                data:data.data
+                data: data.data
             };
 
         } catch (error) {
@@ -70,5 +70,24 @@ export class RepetitionController extends BaseController {
         console.log(this.context)
         return (`/admin/saison/${this.context.saisonNom}/repetition/${repetition.date}/chanteurs`);
 
-    }    
+    }
+
+    getMesRepetitions(
+        saisonId,
+        saisonChanteurId,
+        onSuccess,
+        onError
+    ) {
+
+        return this.handle(
+            () => this.service.getMesRepetitions(
+                saisonId,
+                saisonChanteurId
+            ),
+            {
+                onSuccess,
+                onError
+            }
+        );
+    }
 }

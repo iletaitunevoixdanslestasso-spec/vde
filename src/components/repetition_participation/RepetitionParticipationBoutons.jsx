@@ -3,6 +3,7 @@ import "./RepetitionParticipationBoutons.css";
 export default function RepetitionParticipationBoutons({
     participation,
     saving,
+    disabled = false,
     onParticipationChange
 }) {
     return (
@@ -15,9 +16,8 @@ export default function RepetitionParticipationBoutons({
                         ? "selected"
                         : ""
                 }`}
-                disabled={saving}
+                disabled={saving || disabled}
                 title="Je participe"
-                aria-label="Je participe"
                 onClick={() =>
                     onParticipationChange(true)
                 }
@@ -32,9 +32,8 @@ export default function RepetitionParticipationBoutons({
                         ? "selected"
                         : ""
                 }`}
-                disabled={saving}
+                disabled={saving || disabled}
                 title="Je ne participe pas"
-                aria-label="Je ne participe pas"
                 onClick={() =>
                     onParticipationChange(false)
                 }
@@ -49,9 +48,8 @@ export default function RepetitionParticipationBoutons({
                         ? "selected"
                         : ""
                 }`}
-                disabled={saving}
+                disabled={saving || disabled}
                 title="Je ne sais pas"
-                aria-label="Je ne sais pas"
                 onClick={() =>
                     onParticipationChange(null)
                 }

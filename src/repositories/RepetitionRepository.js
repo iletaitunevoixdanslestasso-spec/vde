@@ -41,7 +41,7 @@ export class RepetitionRepository extends RendezvouRepository {
             .eq("saison_id", saisonId)
             ;
     }
-    async findBySaison(saisonId, date="1000-01-01") {
+    async findBySaison(saisonId, date = "1000-01-01") {
         return this.supabase
             .from("vue_repetitions")
             .select(`
@@ -147,5 +147,23 @@ export class RepetitionRepository extends RendezvouRepository {
                 p_participe: participe
             }
         );
+    }
+
+    async findParticipationsBySaisonChanteur(
+        saisonId,
+        saisonChanteurId
+    ) {
+        return this.supabase
+            .from("repetition_chanteurs")
+            .select(`
+            repetition_id,
+            participe,
+            repetitions!inner (
+                saison_id
+            )
+        `)
+            .eq("saison_chanteur_id", saisonChanteurId)
+            .eq("repetitions.saison_id", saisonId)
+            .is("deleted_at", null);
     }
 }

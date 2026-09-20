@@ -247,4 +247,71 @@ export class RepetitionService extends BaseService {
         );
     }
 
+    async getMesRepetitions(
+        saisonId,
+        saisonChanteurId
+    ) {
+
+        const [
+            repetitions,
+            participations
+        ] = await Promise.all([
+
+            this.repository.findBySaison(
+                saisonId
+            ),
+
+            this.repository.findParticipationsBySaisonChanteur(
+                saisonId,
+                saisonChanteurId
+            )
+        ]);
+
+
+        if (repetitions.error) {
+            return BaseResponse.error(
+                [],
+                repetitions.error.message
+            );
+        }
+
+        if (participations.error) {
+            return BaseResponse.error(
+                [],
+                participations.error.message
+            );
+        }
+
+
+        const data = repetitions.data.map(
+            repetition => {
+
+                const participation =
+                    participations.data.find(
+                        item =>
+                            item.repetition_id === repetition.id
+                    );
+
+                return {
+                    ...repetition,
+
+                    participation:
+                        participation
+                            ? participation.participe
+                            : null
+                };
+            }
+        );
+
+
+        data.sort(
+            (a, b) =>
+                new Date(a.date) -
+                new Date(b.date)
+        );
+
+
+        return BaseResponse.success(data);
+    }
+
 }

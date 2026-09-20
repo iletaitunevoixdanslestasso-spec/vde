@@ -60,6 +60,7 @@ import InvitationSaisonPage from "../pages/admin/referentiels/invitationSaison/I
 import SaisonRepetitionChanteursPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonRepetitionChanteursPage";
 import Confidentialite from "../pages/public/Confidentialite";
 import CGU from "../pages/public/CGU";
+import RepetitionsChanteur from "../pages/chanteur/RepetitionsChanteur";
 
 
 export default function Router() {
@@ -130,7 +131,7 @@ export default function Router() {
 
                                 <Route
                                     path="repetitions"
-                                    element={<Repetitions />}
+                                    element={<RepetitionsChanteur />}
                                 />
                                 <Route
                                     path="documents"
