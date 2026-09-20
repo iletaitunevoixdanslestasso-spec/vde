@@ -7,4 +7,29 @@ export class LieuxController extends BaseController {
         super(service);
     }
 
+
+    async pourRepetition(row, load) {
+
+        const result =
+            await this.service.setPourRepetition(
+                row.id
+            );
+
+
+        if (!result.success) {
+
+            console.error(
+                "Erreur setPourRepetition",
+                result.message
+            );
+
+            return result;
+        }
+
+
+        await load();
+
+        return result;
+    }
+
 }

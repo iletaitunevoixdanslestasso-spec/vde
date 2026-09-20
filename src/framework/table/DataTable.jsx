@@ -144,7 +144,7 @@ export default function DataTable({
      * =========================================================
      */
 
-    const sortedData = useMemo(() => {
+    const sortedData_old = useMemo(() => {
 
         if (!sort.field) {
             return filteredData;
@@ -217,6 +217,136 @@ export default function DataTable({
         });
 
     }, [filteredData, sort, columns]);
+
+    const sortedData = useMemo(() => {
+
+        /*
+         * PRIORITÉ DE LIGNE
+         * Permet par exemple de garder un élément
+         * toujours en première position.
+         */
+        const comparePriority = (a, b) => {
+
+            if (typeof config.rowPriority !== "function") {
+                return 0;
+            }
+
+            const priorityA =
+                Number(config.rowPriority(a)) || 0;
+
+            const priorityB =
+                Number(config.rowPriority(b)) || 0;
+
+            return priorityB - priorityA;
+        };
+
+
+        /*
+         * Aucun tri demandé par l'utilisateur
+         */
+        if (!sort.field) {
+
+            return [...filteredData].sort(
+                comparePriority
+            );
+        }
+
+
+        const column = columns.find(
+            col => col.field === sort.field
+        );
+
+        if (!column) {
+
+            return [...filteredData].sort(
+                comparePriority
+            );
+        }
+
+
+        return [...filteredData].sort((a, b) => {
+
+            /*
+             * La priorité passe TOUJOURS avant
+             * le tri demandé par l'utilisateur.
+             */
+            const priorityComparison =
+                comparePriority(a, b);
+
+            if (priorityComparison !== 0) {
+                return priorityComparison;
+            }
+
+
+            const valueA = column.sortValue
+                ? column.sortValue(a)
+                : a[column.field];
+
+            const valueB = column.sortValue
+                ? column.sortValue(b)
+                : b[column.field];
+
+
+            if (valueA == null && valueB == null) {
+                return 0;
+            }
+
+            if (valueA == null) {
+                return 1;
+            }
+
+            if (valueB == null) {
+                return -1;
+            }
+
+
+            if (
+                typeof valueA === "number" &&
+                typeof valueB === "number"
+            ) {
+                return sort.direction === "asc"
+                    ? valueA - valueB
+                    : valueB - valueA;
+            }
+
+
+            if (
+                valueA instanceof Date ||
+                valueB instanceof Date
+            ) {
+
+                const dateA = new Date(valueA);
+                const dateB = new Date(valueB);
+
+                return sort.direction === "asc"
+                    ? dateA - dateB
+                    : dateB - dateA;
+            }
+
+
+            const comparison =
+                String(valueA).localeCompare(
+                    String(valueB),
+                    "fr",
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                );
+
+
+            return sort.direction === "asc"
+                ? comparison
+                : -comparison;
+
+        });
+
+    }, [
+        filteredData,
+        sort,
+        columns,
+        config.rowPriority
+    ]);
 
 
     /*
@@ -344,8 +474,18 @@ export default function DataTable({
 
         const visibleActions = actions.filter(action => {
 
+            // Règle générique permettant à une config
+            // d'interdire la suppression de certaines lignes
+            if (
+                action.action === "delete" &&
+                typeof config.canDelete === "function" &&
+                !config.canDelete(row, data, context)
+            ) {
+                return false;
+            }
+
             if (typeof action.condition === "function") {
-                return action.condition(row);
+                return action.condition(row,data, context);
             }
 
             return true;
@@ -569,7 +709,7 @@ export default function DataTable({
                                                 ? "data-table-cell-nowrap"
                                                 : ""
                                             } data-table-cell-no-word-break`
-                                        } 
+                                        }
                                         data-label={col.header}
                                     >
                                         {renderValue(col, row)}
