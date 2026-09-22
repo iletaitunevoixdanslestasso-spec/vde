@@ -461,7 +461,7 @@ export default function ConcertsChanteur() {
                     return (
                         <article
                             key={concert.id}
-                            className="concert-card"
+                            className="concert-card rendezvous-type-concert"
                         >
 
                             <div className="concert-row">

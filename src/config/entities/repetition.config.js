@@ -95,8 +95,10 @@ const columns = [
         field: "lieu_mode",
         header: "Lieu",
         type: "select",
+         mapped: false,
         hideInTable: true,
         options: [
+            { value: "repetion", label: "lieu de répétition par défaut" },
             { value: "existant", label: "Choisir un lieu existant" },
             { value: "nouveau", label: "Créer un nouveau lieu" }
         ]

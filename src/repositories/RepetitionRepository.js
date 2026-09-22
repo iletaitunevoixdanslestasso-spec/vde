@@ -71,7 +71,8 @@ export class RepetitionRepository extends RendezvouRepository {
                 description,
                 rendezvous_type(
                     id,
-                    libelle
+                    libelle,
+                    code
                 )
             ),
 

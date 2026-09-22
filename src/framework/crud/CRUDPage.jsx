@@ -66,10 +66,11 @@ export default function CRUDPage({ config, context = {} }) {
                 }
                 // setEditItem(row);
                 //ajout d'un attribut par defaut 
-                const formItem = {
-                    ...row,
-                    lieu_mode: row.lieu_id ? "existant" : "nouveau"
-                };
+                const formItem =
+                    typeof controller.prepareEditItem === "function"
+                        ? await controller.prepareEditItem(row)
+                        : { ...row };
+                        
                 setEditItem(formItem);
                 setOpen(true);
 

@@ -19,7 +19,8 @@ export default function RepetitionPage() {
     }, [saisonSelectionne, navigate]);
 
 
-
+    if(!saisonSelectionne)
+        return
 
     return (
         <CRUDPage

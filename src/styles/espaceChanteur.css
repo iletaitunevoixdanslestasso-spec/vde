@@ -652,6 +652,39 @@
     font-family: inherit;
 }
 
+
+/* =========================================================
+   COULEURS TYPES DE RENDEZ-VOUS
+   ========================================================= */
+
+.chanteur-layout {
+    /* Répétition classique */
+    --rendezvous-repetition-color: #8b7bb8;
+    --rendezvous-repetition-bg: #f3f0fa;
+    --rendezvous-repetition-text: #66558f;
+
+    /* Répétition spéciale */
+    --rendezvous-repetition-spe-color: #d97706;
+    --rendezvous-repetition-spe-bg: #fffaf0;
+    --rendezvous-repetition-spe-label-bg: #ffedd5;
+    --rendezvous-repetition-spe-text: #9a4f08;
+
+    /* Concert */
+    --rendezvous-concert-color: #4f7cac;
+    --rendezvous-concert-bg: #eef5fb;
+    --rendezvous-concert-text: #3d6388;
+
+    /* Regroupement */
+    --rendezvous-regroup-color: #78a982;
+    --rendezvous-regroup-bg: #edf7ef;
+    --rendezvous-regroup-text: #4f7958;
+
+    min-height: 100vh;
+    display: flex;
+    background: var(--chanteur-background, #f7f7f8);
+    color: var(--text-primary, #333);
+}
+
 /* =========================================================
    RESPONSIVE TABLETTE
    ========================================================= */

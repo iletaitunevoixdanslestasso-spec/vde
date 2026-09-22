@@ -243,9 +243,7 @@
     display: grid;
 
     grid-template-columns:
-        minmax(200px, 1.6fr)
-        minmax(180px, 1fr)
-        minmax(180px, 1fr);
+        minmax(200px, 1.6fr) minmax(180px, 1fr) minmax(180px, 1fr);
 
     align-items: center;
 
@@ -1217,6 +1215,47 @@
 
     font-size: 0.78rem;
     line-height: 1.45;
+}
+
+/* =========================================================
+   TYPES DE RÉPÉTITIONS
+   ========================================================= */
+
+
+
+.rendezvous-type-repetition_spe,
+.rendezvous-type-concert,
+.rendezvous-type-regroup,
+.rendezvous-type-repet {
+    border-left-width: 1px;
+    border-right-width: 1px;
+}
+.repetition-card.rendezvous-type-repet {
+    border-left-color: var(--rendezvous-repetition-color);
+    border-right-color: var(--rendezvous-repetition-color);
+}
+.concert-card.rendezvous-type-concert {
+    border-left-color: var(--rendezvous-concert-color);
+    border-right-color: var(--rendezvous-concert-color);
+}
+
+/* =========================================================
+   RÉPÉTITION SPÉCIALE
+   ========================================================= */
+
+.repetition-card.rendezvous-type-repetition_spe {
+    border-left-color: var(--rendezvous-repetition-spe-color);
+    border-right: var(--rendezvous-repetition-spe-color);
+
+    background: var(--rendezvous-repetition-spe-bg);
+}
+
+.repetition-card.rendezvous-type-repetition_spe .concert-icon {
+    background: var(--rendezvous-repetition-spe-label-bg);
+}
+
+.repetition-card.rendezvous-type-repetition_spe .concert-titre {
+    color: var(--rendezvous-repetition-spe-text);
 }
 
 

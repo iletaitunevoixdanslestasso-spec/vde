@@ -134,55 +134,242 @@ export class RepetitionService extends BaseService {
 
         /*
          * =========================================================
-         * GESTION DU LIEU
+         * RENDEZ-VOUS ACTUEL DE LA REPETITION
          * =========================================================
          */
 
-        let lieuId = form.lieu_id || null;
+        let rendezvousActuel = null;
 
 
-        /*
-         * Nouveau lieu :
-         * on crée d'abord le lieu
-         */
-        if (form.lieu_mode === "nouveau") {
+        if (form.rendezvous_id) {
 
-            const lieu =
-                await this.rendezvousRepository.createLieu({
-                    nom: form.lieu_nom,
-                    rue: form.lieu_rue,
-                    ville: form.lieu_ville,
-                    code_postale: form.lieu_code_postale,
-                    description: form.lieu_description
-                });
+            const {
+                data,
+                error
+            } =
+                await this.rendezvousRepository
+                    .findRendezvousById(
+                        form.rendezvous_id
+                    );
 
-            lieuId = lieu.id;
+
+            if (error) {
+
+                return BaseResponse.error(
+                    [],
+                    error.message
+                );
+            }
+
+
+            rendezvousActuel = data;
         }
 
 
         console.log(
-            "lieuId",
-            lieuId
+            "rendezvous actuel",
+            rendezvousActuel
         );
 
 
         /*
+         * Est-ce que la répétition utilise actuellement
+         * un rendez-vous spécifique ?
+         */
+        const rendezvousActuelEstSpecifique =
+            rendezvousActuel
+                ?.rendezvous_type
+                ?.code === "repetition_spe";
+
+
+        /*
          * =========================================================
-         * ASSOCIATION DU LIEU AU RENDEZ-VOUS
+         * RENDEZ-VOUS CIBLE
          * =========================================================
-         *
-         * Le lieu appartient au rendez-vous générique
-         * "Répétition chorale", PAS à la répétition.
          */
 
-        if (lieuId) {
+        let rendezvousId = rendezvous.id;
 
-            await this.rendezvousRepository.updateLieu(
-                rendezvous.id,
-                lieuId
-            );
+
+        /*
+         * =========================================================
+         * MODE : LIEU DE REPETITION PAR DEFAUT
+         * =========================================================
+         *
+         * Rien à créer.
+         *
+         * La répétition pointe simplement vers
+         * le rendez-vous générique de type "repet".
+         */
+
+        if (form.lieu_mode === "repetition") {
+
+            rendezvousId =
+                rendezvous.id;
         }
 
+
+        /*
+         * =========================================================
+         * MODE : LIEU EXISTANT
+         * =========================================================
+         */
+
+        else if (form.lieu_mode === "existant") {
+
+            const lieuId =
+                form.lieu_id;
+
+
+            if (!lieuId) {
+
+                return BaseResponse.error(
+                    [],
+                    "Vous devez choisir un lieu."
+                );
+            }
+
+
+            /*
+             * La répétition possède déjà son
+             * rendez-vous spécifique.
+             *
+             * On le réutilise.
+             */
+            if (rendezvousActuelEstSpecifique) {
+
+                const rdvSpecifique =
+                    await this.rendezvousRepository
+                        .updateRepetitionSpecific(
+                            rendezvousActuel.id,
+                            {
+                                lieuId,
+                                date: form.date
+                            }
+                        );
+
+
+                rendezvousId =
+                    rdvSpecifique.id;
+            }
+
+            /*
+             * Elle utilisait auparavant
+             * le rendez-vous générique.
+             *
+             * On crée son rendez-vous spécifique.
+             */
+            else {
+
+                const rdvSpecifique =
+                    await this.rendezvousRepository
+                        .createRepetitionSpecific({
+                            rendezvousSource:
+                                rendezvous,
+
+                            lieuId,
+
+                            date:
+                                form.date
+                        });
+
+
+                rendezvousId =
+                    rdvSpecifique.id;
+            }
+        }
+
+
+        /*
+         * =========================================================
+         * MODE : NOUVEAU LIEU
+         * =========================================================
+         */
+
+        else if (form.lieu_mode === "nouveau") {
+
+            /*
+             * Création du lieu
+             */
+
+            const lieu =
+                await this.rendezvousRepository
+                    .createLieu({
+
+                        nom:
+                            form.lieu_nom,
+
+                        rue:
+                            form.lieu_rue,
+
+                        ville:
+                            form.lieu_ville,
+
+                        code_postale:
+                            form.lieu_code_postale,
+
+                        description:
+                            form.lieu_description
+
+                    });
+
+
+            /*
+             * Un rendez-vous spécifique existe déjà :
+             * on le réutilise.
+             */
+
+            if (rendezvousActuelEstSpecifique) {
+
+                const rdvSpecifique =
+                    await this.rendezvousRepository
+                        .updateRepetitionSpecific(
+                            rendezvousActuel.id,
+                            {
+                                lieuId:
+                                    lieu.id,
+
+                                date:
+                                    form.date
+                            }
+                        );
+
+
+                rendezvousId =
+                    rdvSpecifique.id;
+            }
+
+            /*
+             * Sinon création du rendez-vous spécifique.
+             */
+
+            else {
+
+                const rdvSpecifique =
+                    await this.rendezvousRepository
+                        .createRepetitionSpecific({
+
+                            rendezvousSource:
+                                rendezvous,
+
+                            lieuId:
+                                lieu.id,
+
+                            date:
+                                form.date
+                        });
+
+
+                rendezvousId =
+                    rdvSpecifique.id;
+            }
+        }
+
+
+        console.log(
+            "rendezvousId utilisé par la répétition",
+            rendezvousId
+        );
 
         /*
          * =========================================================
@@ -194,9 +381,11 @@ export class RepetitionService extends BaseService {
 
         const entityToSave = {
 
-            id: form.id || null,
+            id:
+                form.id || null,
 
-            date: form.date,
+            date:
+                form.date,
 
             repetitions_type_id:
                 form.repetitions_type_id,
@@ -207,8 +396,17 @@ export class RepetitionService extends BaseService {
             description:
                 form.description,
 
+            /*
+             * C'est ça qui change.
+             *
+             * Soit :
+             * rendez-vous générique "repet"
+             *
+             * soit :
+             * rendez-vous individuel "repetition_spe"
+             */
             rendezvous_id:
-                rendezvous.id,
+                rendezvousId,
 
             saison_id:
                 this.context.saisonId

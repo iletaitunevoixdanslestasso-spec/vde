@@ -188,16 +188,14 @@ export default function RepetitionsChanteur() {
                         const passed =
                             isPast(repetition.date);
 
-                        const lieu =
-                            repetition
-                                .rendezvous
-                                ?.lieux;
+                        const lieu = repetition.rendezvous?.lieux;
+                        const rendezvousType = repetition.rendezvous?.rendezvous_type?.code || "repet";
 
                         return (
 
                             <article
                                 key={repetition.id}
-                                className="concert-card"
+                                className={`concert-card repetition-card rendezvous-type-${rendezvousType}`}
                             >
 
                                 <div className="concert-row">

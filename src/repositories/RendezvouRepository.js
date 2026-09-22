@@ -235,7 +235,8 @@ export class RendezvouRepository extends BaseRepository {
             rue,
             ville,
             code_postale,
-            description
+            description,
+            repetition
         `)
             .is("deleted_at", null)
             .order("ville")
@@ -296,5 +297,153 @@ export class RendezvouRepository extends BaseRepository {
         return lieu;
     }
 
+    async findLieuRepetition() {
 
+        return this.supabase
+            .from("lieux")
+            .select(`
+            id,
+            nom,
+            rue,
+            ville,
+            code_postale,
+            description,
+            repetition
+        `)
+            .eq("repetition", true)
+            .is("deleted_at", null)
+            .maybeSingle();
+    }
+
+    async findRendezvousById(id) {
+
+        return this.supabase
+            .from("rendezvous")
+            .select(`
+            *,
+            lieux(*),
+            rendezvous_type(
+                id,
+                code,
+                libelle
+            )
+        `)
+            .eq("id", id)
+            .maybeSingle();
+    }
+
+
+    async findRendezvousTypeByCode(code) {
+
+        return this.supabase
+            .from("rendezvous_type")
+            .select(`
+            id,
+            code,
+            libelle
+        `)
+            .eq("code", code)
+            .is("deleted_at", null)
+            .maybeSingle();
+    }
+
+
+    async createRepetitionSpecific({
+        rendezvousSource,
+        lieuId,
+        date
+    }) {
+
+        const {
+            data: type,
+            error: typeError
+        } =
+            await this.findRendezvousTypeByCode(
+                "repetition_spe"
+            );
+
+
+        if (typeError) {
+            throw typeError;
+        }
+
+        if (!type) {
+            throw new Error(
+                "Le type de rendez-vous repetition_spe n'existe pas."
+            );
+        }
+
+
+        const { data, error } =
+            await this.supabase
+                .from("rendezvous")
+                .insert({
+
+                    rendezvous_type_id:
+                        type.id,
+
+                    lieu_id:
+                        lieuId,
+
+                    /*
+                     * On reprend les caractéristiques
+                     * du rendez-vous répétition générique.
+                     */
+                    titre:
+                        rendezvousSource.titre,
+
+                    date:
+                        date,
+
+                    heure_rdv:
+                        rendezvousSource.heure_rdv,
+
+                    heure_debut:
+                        rendezvousSource.heure_debut,
+
+                    duree_previsionnelle:
+                        rendezvousSource.duree_previsionnelle,
+
+                    description:
+                        rendezvousSource.description
+
+                })
+                .select()
+                .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    }
+
+
+    async updateRepetitionSpecific(
+        rendezvousId,
+        {
+            lieuId,
+            date
+        }
+    ) {
+
+        const { data, error } =
+            await this.supabase
+                .from("rendezvous")
+                .update({
+                    lieu_id: lieuId,
+                    date
+                })
+                .eq("id", rendezvousId)
+                .select()
+                .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    }
 }

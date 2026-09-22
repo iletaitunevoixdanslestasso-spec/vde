@@ -6,6 +6,34 @@ export class RepetitionController extends BaseController {
     constructor(service) {
         super(service);
     }
+    prepareEditItem(row) {
+
+        const rendezvous =
+            row.rendezvous;
+
+
+        const isRepetitionDefault =
+            rendezvous
+                ?.rendezvous_type
+                ?.code === "repet";
+
+
+        return {
+
+            ...row,
+
+            lieu_mode:
+                isRepetitionDefault
+                    ? "repetition"
+                    : "existant",
+
+            lieu_id:
+                isRepetitionDefault
+                    ? null
+                    : rendezvous?.lieu_id ?? null
+
+        };
+    }
 
     async prepareForm() {
 
