@@ -2,15 +2,7 @@ Jour anniversaire
     CHORISTE CONCERNE POPUP JOYEUX ANNIVERSAIRE 
     LES AUTRES  / PENSEZ 0 SOUHAITER UN JOYEUX ANNIVERSAIRE AU choriste concerné
 
-répétition
-    - defnir unlieu par defaut : lien repition - lieu
-    - dans lieu - unique donc tant que null possiblite de choix
-        - dans lieu list : faire apparaitre en 
-    ESPACE chanteur
-        si jour de repetion : 
-                si pas leiu par defaut SPECIFIER L'information
-        dans dashboard
-                si pas leiu par defaut : bouton WARNING
+
 relance
     - si repetition hedomaodaire n'est pas lieu par defaut => envoye unmail pour dire Attention Lieu de répéptition différnet
 

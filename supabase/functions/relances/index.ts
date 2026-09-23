@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { relancePupitre } from "./pupitre.ts";
 import { relanceDai } from "./dai.ts";
 import { relanceConcert } from "./concerts.ts";
+import { relanceRepetitionLieu } from "./repetition-lieu.ts";
 
 import {
   envoyerMailRelance,
@@ -125,6 +126,44 @@ Deno.serve(async (req) => {
 
     let nombreMails = 0;
 
+    // --------------------------------------------------
+    // Lieu par défaut des répétitions
+    // --------------------------------------------------
+
+    const {
+      data: lieuRepetitionParDefaut,
+      error: lieuRepetitionParDefautError
+    } = await supabase
+      .from("lieux")
+      .select(`
+    id,
+    nom,
+    rue,
+    ville,
+    code_postale
+  `)
+      .eq("repetition", true)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+
+    if (lieuRepetitionParDefautError) {
+      throw lieuRepetitionParDefautError;
+    }
+
+
+    if (!lieuRepetitionParDefaut) {
+      throw new Error(
+        "Aucun lieu par défaut n'est configuré pour les répétitions"
+      );
+    }
+
+
+    console.log(
+      `LIEU REPETITION PAR DEFAUT : ` +
+      `${lieuRepetitionParDefaut.nom ?? lieuRepetitionParDefaut.id}`
+    );
+
 
     // ==================================================
     // 3. Traitement chanteur par chanteur
@@ -178,6 +217,18 @@ Deno.serve(async (req) => {
         saison.id
       );
 
+      // ------------------------------------------------
+      // 3d. Métier LIEU REPETITION
+      // ------------------------------------------------
+
+      const resultatRepetitionLieu =
+        await relanceRepetitionLieu(
+          supabase,
+          chanteur,
+          saisonChanteur.id,
+          saison.id,
+          lieuRepetitionParDefaut
+        );
 
       // ------------------------------------------------
       // 4. Agrégation des textes métier
@@ -194,7 +245,14 @@ Deno.serve(async (req) => {
       if (resultatDai.necessaire && resultatDai.texte) {
         textesRelance.push(resultatDai.texte);
       }
-
+      if (
+        resultatRepetitionLieu.necessaire &&
+        resultatRepetitionLieu.texte
+      ) {
+        textesRelance.push(
+          resultatRepetitionLieu.texte
+        );
+      }
 
       // ------------------------------------------------
       // Relances CONCERT
@@ -399,6 +457,27 @@ Deno.serve(async (req) => {
           }
         }
 
+        // ------------------------------------------------
+        // LIEU REPETITION
+        // ------------------------------------------------
+
+        if (
+          resultatRepetitionLieu.necessaire &&
+          resultatRepetitionLieu.typeRelanceId !== null &&
+          resultatRepetitionLieu.repetitionId !== null
+        ) {
+
+          await enregistrerRelance(
+            supabase,
+            chanteur.id,
+            resultatRepetitionLieu.typeRelanceId,
+            "repetition",
+            resultatRepetitionLieu.repetitionId,
+            "SUCCES",
+            resultatMail.messageId,
+            null
+          );
+        }
 
         resultats.push({
           chanteur_id: chanteur.id,
@@ -531,6 +610,37 @@ Deno.serve(async (req) => {
           }
         }
 
+        // ------------------------------------------------
+        // LIEU REPETITION
+        // ------------------------------------------------
+
+        if (
+          resultatRepetitionLieu.necessaire &&
+          resultatRepetitionLieu.typeRelanceId !== null &&
+          resultatRepetitionLieu.repetitionId !== null
+        ) {
+
+          try {
+
+            await enregistrerRelance(
+              supabase,
+              chanteur.id,
+              resultatRepetitionLieu.typeRelanceId,
+              "repetition",
+              resultatRepetitionLieu.repetitionId,
+              "ERREUR",
+              null,
+              erreur
+            );
+
+          } catch (erreurEnregistrement) {
+
+            console.error(
+              "ERREUR ENREGISTREMENT RELANCE LIEU REPETITION :",
+              erreurEnregistrement
+            );
+          }
+        }
 
         resultats.push({
           chanteur_id: chanteur.id,
@@ -540,6 +650,7 @@ Deno.serve(async (req) => {
           pupitre: resultatPupitre.necessaire,
           dai: resultatDai.necessaire,
           concert: resultatConcert.relances.length > 0,
+          repetition_lieu: resultatRepetitionLieu.necessaire,
           mail_envoye: false,
           erreur,
         });
