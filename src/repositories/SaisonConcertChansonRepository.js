@@ -58,7 +58,8 @@ export class SaisonConcertChansonRepository extends BaseRepository {
             saison_id,
             chansons (
                 id,
-                titre
+                titre,
+                audio            
             ),
             saison_concert_chansons!left (
                 id,

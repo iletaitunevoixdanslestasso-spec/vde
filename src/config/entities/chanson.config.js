@@ -23,16 +23,16 @@ const columns = [
     //     required: true
     // },
     {
-        hideInTable:true,
-        hideInForm:true,
+        hideInTable: true,
+        hideInForm: true,
         field: "paroles",
         header: "referentiel_document",
         type: "text",
     },
     {
-        hideInTable:true,
+        hideInTable: true,
         field: "referentiel_documents",
-        mapped:false,
+        mapped: false,
         header: "Parole à mettre en ligne",
         type: "fileUploader",
         bucket: "referentiel-documents",
@@ -48,7 +48,7 @@ const columns = [
 
     },
     {
-        mapped:false,
+        mapped: false,
         field: "paroles_url",
         header: "Paroles",
         type: "text",
@@ -70,7 +70,31 @@ const columns = [
                 `📄 ${path}`
             );
         }
-    }
+    },
+    {
+        field: "audio",
+        header: "lien audio",
+        type: "text",
+        required: false,
+
+        render: (v, row) => {
+            console.log (v, row)
+            if (!v) {
+                return "Aucun audio";
+            }
+            let path = row?.audio || ''
+            return React.createElement(
+                "a",
+                {
+                    href: v,
+                    target: "_blank",
+                    rel: "noopener noreferrer"
+                },
+                `📄 ${path}`
+            );
+        }
+    },
+
 ];
 
 

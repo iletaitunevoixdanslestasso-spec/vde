@@ -22,6 +22,7 @@ export class SaisonchansonRepository extends BaseRepository {
                 chansons (
                     id,
                     titre,
+                    audio,
                     referentiel_documents(
                     path
                     )

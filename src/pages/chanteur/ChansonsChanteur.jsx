@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Volume2, Music2 } from "lucide-react";
 
 import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
 import "../../styles/espaceChanteur_chansons.css";
@@ -396,9 +397,30 @@ export default function ChansonsChanteur() {
 
                                 <div className="chanson-main">
 
-                                    <div className="chanson-icon">
-                                        🎵
-                                    </div>
+                                    {chanson.audio ? (
+                                        <a
+                                            className="chanson-icon chanson-icon-audio"
+                                            href={chanson.audio}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title="Écouter la chanson"
+                                        >
+                                            <Music2
+                                                size={24}
+                                                strokeWidth={2.2}
+                                                className="chanson-audio-note"
+                                            />
+                                            <Volume2
+                                                size={24}
+                                                strokeWidth={2.2}
+                                                className="chanson-audio-volume"
+                                            />
+                                        </a>
+                                    ) : (
+                                        <div className="chanson-icon">
+                                            <Music2 size={24} />
+                                        </div>
+                                    )}
 
                                     <div className="chanson-title-content">
 
@@ -529,7 +551,11 @@ export default function ChansonsChanteur() {
                                         >
 
                                             <span className="chanson-action-icon">
-                                                🔊
+                                                <Volume2
+                                                    size={24}
+                                                    strokeWidth={2.2}
+                                                    className="chanson-audio-volume"
+                                                />
                                             </span>
 
                                             <span className="chanson-action-content">

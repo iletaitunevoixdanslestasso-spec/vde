@@ -19,6 +19,83 @@
 }
 
 /* =========================================================
+   icone note pour chanson audio
+   ========================================================= */
+
+.chanson-icon-audio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.chanson-audio-note {
+    animation: chanson-audio-note-pulse 1.4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+.chanson-icon-audio:hover .chanson-audio-note {
+    animation-duration: 0.7s;
+}
+
+@keyframes chanson-audio-note-pulse {
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    35% {
+        transform: scale(1.16) rotate(-6deg);
+    }
+
+    65% {
+        transform: scale(1.08) rotate(5deg);
+    }
+}
+
+.chanson-audio-volume {
+    animation: chanson-audio-volume 1.2s ease-in-out infinite;
+    transform-origin: left center;
+}
+
+@keyframes chanson-audio-volume {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.15);
+        opacity: 0.75;
+    }
+}
+.chanson-audio-volume {
+    animation: chanson-audio-volume 1s ease-in-out infinite;
+}
+
+@keyframes chanson-audio-volume {
+    0%,
+    100% {
+        transform: translateX(0) scale(1);
+    }
+
+    25% {
+        transform: translateX(1px) scale(1.08);
+    }
+
+    50% {
+        transform: translateX(0) scale(1.14);
+    }
+
+    75% {
+        transform: translateX(-1px) scale(1.08);
+    }
+}
+
+
+/* =========================================================
    HEADER
    ========================================================= */
 

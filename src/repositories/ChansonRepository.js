@@ -13,6 +13,7 @@ export class ChansonRepository extends BaseRepository {
             .select(`
             id,
             titre,
+            audio,
             saison_chansons!left (
                 saisons(nom),
                 id,
@@ -41,6 +42,7 @@ export class ChansonRepository extends BaseRepository {
                 id,
                 deleted_at,
                 paroles,
+                audio,
                 referentiel_documents(
                 id,
                 titre,
