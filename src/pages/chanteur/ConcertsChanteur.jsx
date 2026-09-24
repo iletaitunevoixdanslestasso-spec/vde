@@ -37,7 +37,7 @@ export default function ConcertsChanteur() {
     const handleShowChansons_old = async (concert) => {
 
         const saisonRendezvousId = concert.saison_rendezvous[0] ? concert.saison_rendezvous[0].id : false;
-        console.log('concert', concert)
+        console.error('concert', concert)
         if (!saisonRendezvousId) {
             console.error("saison_rendezvous_id absent", concert);
             return;
@@ -68,7 +68,7 @@ export default function ConcertsChanteur() {
         const saisonRendezvousId =
             concert.saison_rendezvous?.[0]?.id;
 
-        console.log("concert", concert);
+        console.error("concert", concert);
 
         if (!saisonRendezvousId) {
             console.error(
@@ -93,7 +93,7 @@ export default function ConcertsChanteur() {
                 saisonRendezvousId
             );
 
-            console.log("chansons concert", result);
+            console.error("chansons concert", result);
             const chansons = result?.data || [];
 
             setConcertChansons(current => ({
@@ -146,7 +146,7 @@ export default function ConcertsChanteur() {
             chanteurId,
 
             (result) => {
-                console.log("result", result)
+                console.error("result", result)
                 setConcerts(result || []);
                 setLoading(false);
             },
@@ -603,7 +603,7 @@ export default function ConcertsChanteur() {
                                     // chanteur={chanteur}
                                     // controller={controller}
                                     onParticipationChange={(concertId, participation) => {
-                                        console.log("participation", participation)
+                                        console.error("participation", participation)
                                         setConcerts(current =>
                                             current.map(item =>
                                                 item.id === concertId

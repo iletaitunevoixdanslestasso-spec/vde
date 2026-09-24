@@ -99,7 +99,7 @@ export class ChanteurSaisonService extends BaseService {
     }
 
     async save(data) {
-        console.log(data)
+        console.error(data)
         if (this.validator) {
             const validation = this.validator.validate(data);
 

@@ -26,7 +26,7 @@ export class ChanteurService extends BaseService {
 
         const result = await super.getAll(orderBy);
 
-        console.log("CHANTEUR getAll result", result);
+        console.error("CHANTEUR getAll result", result);
 
         if (!result.success || !result.data?.length) {
             return result;

@@ -35,7 +35,7 @@ export default function TestStorage() {
                 file
             );
 
-            console.log("UPLOAD OK", uploadResult);
+            console.error("UPLOAD OK", uploadResult);
 
             const signedUrl =
                 await StorageService.createSignedUrl(
@@ -44,7 +44,7 @@ export default function TestStorage() {
                     3600
                 );
 
-            console.log("URL SIGNED OK", signedUrl);
+            console.error("URL SIGNED OK", signedUrl);
 
             setResult({
                 upload: uploadResult,

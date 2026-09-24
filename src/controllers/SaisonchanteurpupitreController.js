@@ -30,7 +30,7 @@ export class SaisonChanteurPupitreController extends BaseController {
         onSuccess,
         onError
     ) {
-        console.log("CONTROLLER SAVE PUPITRE", {
+        console.error("CONTROLLER SAVE PUPITRE", {
             token,
             saisonId,
             chanteurId,
@@ -50,5 +50,68 @@ export class SaisonChanteurPupitreController extends BaseController {
                 onError
             }
         );
+    }
+    async saveLead(
+        token,
+        saisonId,
+        chanteurId,
+        saisonChansonId,
+        lead,
+        onSuccess,
+        onError
+    ) {
+        console.error(
+            token,
+            saisonId,
+            chanteurId,
+            saisonChansonId,
+            lead,
+            onSuccess,
+            onError
+        )
+        try {
+
+            const result =
+                await this.service.saveLead(
+                    token,
+                    saisonChansonId,
+                    lead
+                );
+
+
+            if (!result.success) {
+
+                throw new Error(
+                    result.message ||
+                    "Impossible de modifier le lead."
+                );
+            }
+
+
+            if (onSuccess) {
+                onSuccess(result.data);
+            }
+
+
+            return result;
+
+        } catch (error) {
+
+            console.error(
+                "Erreur saveLead",
+                error
+            );
+
+
+            if (onError) {
+                onError(error);
+            }
+
+
+            return {
+                success: false,
+                message: error.message
+            };
+        }
     }
 }

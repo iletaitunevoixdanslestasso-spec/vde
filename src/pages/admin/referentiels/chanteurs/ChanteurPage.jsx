@@ -14,7 +14,7 @@ export default function ChanteurPage() {
   useEffect(() => { 
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      console.log(session);
+      console.error(session);
       setSession(session);
     };
 
@@ -26,8 +26,8 @@ export default function ChanteurPage() {
         return
     }
 
-  console.log("saisonActive.id", saisonActive.id)  
-  console.log("saisonSelectionne.id", saisonSelectionne.id)  
+  console.error("saisonActive.id", saisonActive.id)  
+  console.error("saisonSelectionne.id", saisonSelectionne.id)  
 
 
   return(

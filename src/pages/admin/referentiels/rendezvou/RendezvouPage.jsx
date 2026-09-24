@@ -16,7 +16,7 @@ export default function RendezvouPage() {
             const { data: { session } } =
                 await supabase.auth.getSession();
 
-            console.log(session);
+            console.error(session);
 
             setSession(session);
 

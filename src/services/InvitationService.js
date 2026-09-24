@@ -10,14 +10,14 @@ export class InvitationService extends ConcertService {
 
     async getAllBySaison() {
         const saisonId = this.context.saisonId;
-        console.log("INVITATION getAllBySaison", saisonId)
+        console.error("INVITATION getAllBySaison", saisonId)
         const { data, error } = await this.rendezvouRepository.findBySaisonAndTypeAutres(saisonId);
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-        console.log(data)
+        console.error(data)
 
         if (data) {
             data
@@ -37,11 +37,11 @@ export class InvitationService extends ConcertService {
     }
     async saveSaisonConcert(form) {
         // enregistrement le lieu sinicessaire, le rendezvous
-        console.log("saveSaisonConcert", form);
+        console.error("saveSaisonConcert", form);
         const saisonId = this.context.saisonId;
         const { data, success } = await this.save(form);
-        console.log("saveSaisonConcert", data);
-        console.log("saveSaisonConcert", success);
+        console.error("saveSaisonConcert", data);
+        console.error("saveSaisonConcert", success);
         let saison_rendezvous_id = null;
         if(form.saison_rendezvous && form.saison_rendezvous.length)
             saison_rendezvous_id = form.saison_rendezvous[0].id;
@@ -53,7 +53,7 @@ export class InvitationService extends ConcertService {
                     saison_id: saisonId,
                     rendezvous_id: data.id,
                 });
-                console.log(saison_rendezvous)
+                console.error(saison_rendezvous)
                 saison_rendezvous_id = saison_rendezvous.id
             }
 
@@ -62,7 +62,7 @@ export class InvitationService extends ConcertService {
             ...data,
             saison_rendezvous_id : saison_rendezvous_id
         }
-        console.log(newData)
+        console.error(newData)
         return BaseResponse.success(newData);
 
     }

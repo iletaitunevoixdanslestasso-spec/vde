@@ -4,7 +4,7 @@ export async function relanceDai(
   supabase: SupabaseClient
 ) {
 
-  console.log("=== RELANCE DAI ===");
+  console.error("=== RELANCE DAI ===");
 
   // --------------------------------------------------
   // 1. Récupérer les chanteurs
@@ -41,7 +41,7 @@ export async function relanceDai(
 
     if (chanteur.stop_relance_dai === true) {
 
-      console.log(
+      console.error(
         `STOP DAI : ${chanteur.prenom} ${chanteur.nom}`
       );
 
@@ -54,7 +54,7 @@ export async function relanceDai(
 
     if (chanteur.droit_image_workflow === 2) {
 
-      console.log(
+      console.error(
         `OK DAI : ${chanteur.prenom} ${chanteur.nom}`
       );
 
@@ -65,7 +65,7 @@ export async function relanceDai(
     // Relance nécessaire
     // ----------------------------------------------
 
-    console.log(
+    console.error(
       `RELANCE DAI : ${chanteur.prenom} ${chanteur.nom}`
     );
 

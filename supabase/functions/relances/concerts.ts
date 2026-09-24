@@ -37,7 +37,7 @@ export async function relanceConcert(
   saisonId: string
 ): Promise<ResultatRelanceConcert> {
 
-  console.log(
+  console.error(
     `=== VERIFICATION RELANCE CONCERT : ${chanteur.prenom} ${chanteur.nom} ===`
   );
 
@@ -47,7 +47,7 @@ export async function relanceConcert(
 
   if (chanteur.stop_relance_concert === true) {
 
-    console.log(
+    console.error(
       `STOP CONCERT : ${chanteur.prenom} ${chanteur.nom}`
     );
 
@@ -126,7 +126,7 @@ export async function relanceConcert(
 
   if (!concerts || concerts.length === 0) {
 
-    console.log(
+    console.error(
       `AUCUN CONCERT A VENIR : ${chanteur.prenom} ${chanteur.nom}`
     );
 
@@ -177,7 +177,7 @@ export async function relanceConcert(
       participation &&
       participation.participe !== null
     ) {
-      console.log(
+      console.error(
         `PARTICIPATION DEJA RENSEIGNEE : ` +
         `${chanteur.prenom} ${chanteur.nom} ` +
         `=> ${rendezvous.titre}`
@@ -200,7 +200,7 @@ export async function relanceConcert(
 
     if (!doitRelancer) {
 
-      console.log(
+      console.error(
         `RELANCE DEJA ENVOYEE : ` +
         `${chanteur.prenom} ${chanteur.nom} ` +
         `=> ${rendezvous.titre}`
@@ -239,7 +239,7 @@ export async function relanceConcert(
       texte,
     });
 
-    console.log(
+    console.error(
       `RELANCE CONCERT NECESSAIRE : ` +
       `${chanteur.prenom} ${chanteur.nom} ` +
       `=> ${rendezvous.titre}`

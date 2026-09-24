@@ -20,7 +20,7 @@ export class BaseMapper {
 
         const result = {};
         this.columns.forEach(column => {
-            console.log(column)
+            console.error(column)
             if (column.mapped !== false) {
                 if (column.type === "number") {
                     entity[column.field] =
@@ -30,10 +30,10 @@ export class BaseMapper {
                 }
 
                 if (column.type === "date") {
-                    console.log(entity)
-                    console.log(entity[column.field])
+                    console.error(entity)
+                    console.error(entity[column.field])
                     let value = entity[column.field];
-                    console.log(value)
+                    console.error(value)
 
                     value = value === "" || value == null
                         ? null
@@ -42,7 +42,7 @@ export class BaseMapper {
                 }
                 result[column.field] = entity[column.field];
             }
-            console.log("result", result)
+            console.error("result", result)
         });
 
         return result;

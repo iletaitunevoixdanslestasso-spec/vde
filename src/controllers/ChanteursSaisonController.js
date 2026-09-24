@@ -20,7 +20,7 @@ export class ChanteursSaisonController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getBySaison",
             saisonId
         );
@@ -84,7 +84,7 @@ export class ChanteursSaisonController extends BaseController {
      */
     async getAvailableChanteurs(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getAvailableChanteurs",
             saisonId
         );
@@ -99,7 +99,7 @@ export class ChanteursSaisonController extends BaseController {
      */
     async reactivate(chanteurId, saisonId) {
         // const saisonId = this.context.saisonId;
-        console.log(
+        console.error(
             "SaisonChanteurController.reactivate",
             saisonId,
             chanteurId
@@ -120,7 +120,7 @@ export class ChanteursSaisonController extends BaseController {
      */
     async removeChanteur(id) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.removeChanteur",
             id
         );
@@ -129,22 +129,22 @@ export class ChanteursSaisonController extends BaseController {
     }
 
     generateAccessLink(saisonchanteur) {
-        console.log("generateAccessLink", saisonchanteur);
+        console.error("generateAccessLink", saisonchanteur);
         return this.accesController.generateLink(saisonchanteur);
     }
     copyAccessLink(saisonChanteurs) {
-        console.log(saisonChanteurs)
+        console.error(saisonChanteurs)
         const token = saisonChanteurs.acces.length ? saisonChanteurs.acces[0].token : 'aucun accès généré'
         navigator.clipboard.writeText(token);
         const url = `${window.location.origin}/chanteur/${token}`;
         navigator.clipboard.writeText(url);
     }
     async sendAccessLink(saisonChanteurs) {
-        console.log(saisonChanteurs)
+        console.error(saisonChanteurs)
         const result = await this.accesController.generateLink(saisonChanteurs);
 
         // pour l'instant console (on fera email étape 9)
-        console.log("Lien à envoyer :", result.url);
+        console.error("Lien à envoyer :", result.url);
         await this.mailService.sendInvitation(
             saisonChanteurs.chanteurs,
             result.url

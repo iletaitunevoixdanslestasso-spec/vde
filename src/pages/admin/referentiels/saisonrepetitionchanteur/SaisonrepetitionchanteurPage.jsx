@@ -16,7 +16,7 @@ export default function SaisonrepetitionchanteurPage() {
             const { data: { session } } =
                 await supabase.auth.getSession();
 
-            console.log(session);
+            console.error(session);
 
             setSession(session);
 

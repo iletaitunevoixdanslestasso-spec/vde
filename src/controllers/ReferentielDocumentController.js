@@ -54,7 +54,7 @@ export class ReferentielDocumentController extends BaseController {
         const documents =
             await this.service.findDocumentsChanteur(token);
 
-        console.log(documents);
+        console.error(documents);
 
         return documents;
     }

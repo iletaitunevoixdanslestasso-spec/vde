@@ -12,7 +12,7 @@ export class RendezvouController extends BaseController {
 
             const data =
                 await this.service.getForDashboard(chanteur);
-            console.log(data)
+            console.error(data)
             const dataAdapte = []
             data.data.map((sr) => {
                 const participe = sr.saison_concert_chanteurs.length

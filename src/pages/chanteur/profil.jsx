@@ -23,7 +23,7 @@ const profilConfig = {
             required: true,
             editType: "readonly",
             render: (v, row) => {
-                console.log(row)
+                console.error(row)
                 return `${row.gnom || "doit choisir"}`;
             }
         },

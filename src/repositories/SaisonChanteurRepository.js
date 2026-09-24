@@ -23,7 +23,7 @@ export class SaisonChanteurRepository extends BaseRepository {
 
 
     async insert(data) {
-        console.log(data)
+        console.error(data)
         // const result = await this.supabase
         //     .from(this.table)
         //     .insert(data)
@@ -37,7 +37,7 @@ export class SaisonChanteurRepository extends BaseRepository {
             "hint": null,
             "message": "duplicate key value violates unique constraint \"saison_chanteurs_saison_id_chanteur_id_key\""
         };
-        console.log(result)
+        console.error(result)
         return result;
     }
 

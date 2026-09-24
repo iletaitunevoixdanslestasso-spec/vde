@@ -39,7 +39,7 @@ export class RendezvouRepository extends BaseRepository {
     }
 
     async findBySaisonAndTypeAutres(saisonId) {
-        console.log("findBySaisonAndTypeAutres", saisonId)
+        console.error("findBySaisonAndTypeAutres", saisonId)
         return this.supabase
             .from(this.table)
             .select(`
@@ -60,7 +60,7 @@ export class RendezvouRepository extends BaseRepository {
         ;
     }
     async findBySaisonAndTypeConcert_old(saisonId) {
-        console.log("findBySaisonAndTypeConcert", saisonId)
+        console.error("findBySaisonAndTypeConcert", saisonId)
         return this.supabase
             .from(this.table)
             .select(`

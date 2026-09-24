@@ -10,7 +10,7 @@ export class AccesController {
     }
 
     async generateLink(saisonchanteur) {
-        console.log("AccesController.generateLink", saisonchanteur);
+        console.error("AccesController.generateLink", saisonchanteur);
         return this.service.generateLink(saisonchanteur);
     }
 

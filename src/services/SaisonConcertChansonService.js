@@ -17,7 +17,7 @@ export class SaisonConcertChansonService extends BaseService {
         if (error) {
             return BaseResponse.error([], error.message);
         }
-        console.log('findAllNotDelete', data)
+        console.error('findAllNotDelete', data)
         const dataAjuste = []
         data.map((scc) => {
             dataAjuste.push(
@@ -49,7 +49,7 @@ export class SaisonConcertChansonService extends BaseService {
         //     chanson.saison_chansons.every(sc => sc.deleted_at !== null)
         // );
 
-        console.log(chansons)
+        console.error(chansons)
         return BaseResponse.success(chansons);
     }
 
@@ -186,9 +186,9 @@ export class SaisonConcertChansonService extends BaseService {
     async addSaisonChanson(entity) {
         const saisonConcertId = this.context.saisonConcertId
         const saisonChansonId = entity.saison_chanson_id
-        console.log("saisonConcertId", saisonConcertId)
-        console.log("entity", entity)
-        console.log("saisonChansonId", saisonChansonId)
+        console.error("saisonConcertId", saisonConcertId)
+        console.error("entity", entity)
+        console.error("saisonChansonId", saisonChansonId)
 
         const { data: exists, error: existsError } =
             await this.repository.exists(

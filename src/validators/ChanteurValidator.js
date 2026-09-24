@@ -3,7 +3,7 @@ import { BaseValidator } from "./BaseValidator";
 export class ChanteurValidator extends BaseValidator {
 
     validate(chanteur) {
-        console.log(chanteur)
+        console.error(chanteur)
         return super.validate(chanteur);
 
         // validations spécifiques

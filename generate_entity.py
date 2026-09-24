@@ -217,7 +217,7 @@ export default function {cls}Page() {{
             const {{ data: {{ session }} }} =
                 await supabase.auth.getSession();
 
-            console.log(session);
+            console.error(session);
 
             setSession(session);
 

@@ -20,7 +20,7 @@ export default function Testdivers() {
         file
       );
 
-      console.log("UPLOAD OK", result);
+      console.error("UPLOAD OK", result);
 
       const url = await StorageService.createSignedUrl(
         "referentiel-documents",
@@ -28,7 +28,7 @@ export default function Testdivers() {
         3600
       );
 
-      console.log("URL SIGNED OK", url);
+      console.error("URL SIGNED OK", url);
 
     } catch (error) {
       console.error("STORAGE ERROR", error);
@@ -54,7 +54,7 @@ export default function Testdivers() {
 
     const result = await response.json();
 
-    console.log("EDGE FUNCTION", response.status, result);
+    console.error("EDGE FUNCTION", response.status, result);
   };
   const testEdgeFunction2 = async () => {
     const token = localStorage.getItem("token");
@@ -75,7 +75,7 @@ export default function Testdivers() {
 
     const result = await response.json();
 
-    console.log("EDGE FUNCTION", response.status, result);
+    console.error("EDGE FUNCTION", response.status, result);
   };
   const testSignedUpload = async () => {
     try {
@@ -85,7 +85,7 @@ export default function Testdivers() {
       const authorization =
         await StorageService.createChanteurDroitImageUpload(token);
 
-      console.log(
+      console.error(
         "SIGNED UPLOAD AUTH",
         authorization
       );
@@ -108,7 +108,7 @@ export default function Testdivers() {
           file
         );
 
-      console.log(
+      console.error(
         "SIGNED UPLOAD OK",
         result
       );
@@ -138,7 +138,7 @@ export default function Testdivers() {
 
       const result = await response.json();
 
-      console.log("RELANCES", response.status, result);
+      console.error("RELANCES", response.status, result);
 
     } catch (error) {
       console.error("RELANCES ERROR", error);

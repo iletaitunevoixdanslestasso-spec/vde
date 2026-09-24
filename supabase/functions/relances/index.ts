@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     );
 
 
-    console.log("=== MOTEUR DE RELANCES ===");
+    console.error("=== MOTEUR DE RELANCES ===");
 
 
     // --------------------------------------------------
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
 
     if (!saison) {
 
-      console.log("AUCUNE SAISON ACTIVE");
+      console.error("AUCUNE SAISON ACTIVE");
 
       return new Response(
         JSON.stringify({
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
     }
 
 
-    console.log(
+    console.error(
       `SAISON ACTIVE : ${saison.nom} (${saison.id})`
     );
 
@@ -117,7 +117,7 @@ Deno.serve(async (req) => {
     }
 
 
-    console.log(
+    console.error(
       `NOMBRE DE CHANTEURS : ${saisonChanteurs?.length ?? 0}`
     );
 
@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
     }
 
 
-    console.log(
+    console.error(
       `LIEU REPETITION PAR DEFAUT : ` +
       `${lieuRepetitionParDefaut.nom ?? lieuRepetitionParDefaut.id}`
     );
@@ -178,7 +178,7 @@ Deno.serve(async (req) => {
       }
 
 
-      console.log(
+      console.error(
         `=== ${chanteur.prenom} ${chanteur.nom} ===`
       );
 
@@ -276,7 +276,7 @@ Deno.serve(async (req) => {
 
       if (textesRelance.length === 0) {
 
-        console.log(
+        console.error(
           `AUCUNE RELANCE : ${chanteur.prenom} ${chanteur.nom}`
         );
 
@@ -311,7 +311,7 @@ Deno.serve(async (req) => {
 
       if (!acces?.token) {
 
-        console.log(
+        console.error(
           `AUCUN TOKEN D'ACCÈS : ${chanteur.prenom} ${chanteur.nom}`
         );
 
@@ -366,7 +366,7 @@ Deno.serve(async (req) => {
 
       try {
 
-        console.log(
+        console.error(
           `ENVOI MAIL : ${chanteur.prenom} ${chanteur.nom}`
         );
 
@@ -380,7 +380,7 @@ Deno.serve(async (req) => {
         });
 
 
-        console.log(
+        console.error(
           `MAIL ENVOYE : ${chanteur.prenom} ${chanteur.nom} - ${resultatMail.messageId}`
         );
 

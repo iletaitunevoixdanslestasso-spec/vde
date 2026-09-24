@@ -10,7 +10,7 @@ export default function ChansonpupitrePage() {
     const navigate = useNavigate();
     const [session, setSession] = useState(null);
     const { chansonSelectionnee } = useChanson();
-    console.log("chansonSelectionnee", chansonSelectionnee)
+    console.error("chansonSelectionnee", chansonSelectionnee)
     if(!chansonSelectionnee){
         navigate(`/admin`)
         return
@@ -22,7 +22,7 @@ export default function ChansonpupitrePage() {
             const { data: { session } } =
                 await supabase.auth.getSession();
 
-            console.log(session);
+            console.error(session);
 
             setSession(session);
 

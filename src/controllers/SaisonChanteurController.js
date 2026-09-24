@@ -18,7 +18,7 @@ export class SaisonChanteurController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getBySaison",
             saisonId
         );
@@ -46,7 +46,7 @@ export class SaisonChanteurController extends BaseController {
      */
     async getAvailableChanteurs(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getAvailableChanteurs",
             saisonId
         );
@@ -61,7 +61,7 @@ export class SaisonChanteurController extends BaseController {
      */
     async addChanteur(saisonId, chanteurId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.addChanteur",
             {
                 saisonId,
@@ -82,7 +82,7 @@ export class SaisonChanteurController extends BaseController {
      */
     async removeChanteur(id) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.removeChanteur",
             id
         );

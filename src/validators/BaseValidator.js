@@ -5,12 +5,12 @@ export class BaseValidator {
     }
     validate(entity) {
         this.errors = [];
-        console.log(entity)
-        console.log(this.columns)
+        console.error(entity)
+        console.error(this.columns)
         this.columns
             .filter(c => c.required)
             .forEach(c => {
-                console.log(c)
+                console.error(c)
                 const value = entity[c.field];
 
                 if (

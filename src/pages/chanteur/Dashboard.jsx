@@ -75,7 +75,6 @@ function TodoItem({
 function RendezvousRow({ item, onInfo, onParticipation }) {
 
   const isConcert = item.typeCode === "concert";
-  console.log(item)
   const participationIcon =
     item.participation === true
       ? "icon-accepted"
@@ -276,7 +275,6 @@ export default function DashboardChanteur() {
 
             // const rendezvous = item.rendezvous;
             const rendezvous = item;
-            console.log(rendezvous)
             const lieu = rendezvous?.lieux || null;
             const typeCode =
               rendezvous.rendezvous_type?.code ||
@@ -1090,7 +1088,6 @@ export default function DashboardChanteur() {
               <ConcertParticipation
                 concert={selectedConcert}
                 onParticipationChange={(concertId, participe) => {
-                  console.log(concertId, participe)
                   setRendezvous(current =>
                     current.map(item =>
                       item.id === concertId

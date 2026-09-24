@@ -24,40 +24,10 @@ const columns = [
         field: "ordre",
         header: "ordre",
         type: "number",
-        // source: "availablePupitres",
-        // editType: "readonly",
-        // required: true,
-        // render: (v, row) => {
-        //     console.log(row)
-        //     return `${row.pupitres.nom}`;
-        // }
+
 
     },
     
-        // {
-        //     mapped:false,
-        //     field: "paroles_url",
-        //     header: "Paroles",
-        //     type: "text",
-        //     hideInForm: true,
-    
-        //     render: (v, row) => {
-
-        //         if (!v) {
-        //             return "Aucune parole";
-        //         }
-        //         let path = row?.saison_chansons?.chansons?.referentiel_documents?.path || ''
-        //         return React.createElement(
-        //             "a",
-        //             {
-        //                 href: v,
-        //                 target: "_blank",
-        //                 rel: "noopener noreferrer"
-        //             },
-        //             `📄 ${path}`
-        //         );
-        //     }
-        // },
 
 ];
 

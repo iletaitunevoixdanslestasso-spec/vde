@@ -10,8 +10,8 @@ function ChanteurProvider_old({ children }) {
     // const saisonChanteur = JSON.parse(localStorage.getItem("chanteur")).chanteur;
     const stored = JSON.parse(localStorage.getItem("chanteur"));
 
-console.log("LOCALSTORAGE CHANTEUR", stored);
-console.log("LOCALSTORAGE SAISON CHANTEUR", stored?.chanteur);
+console.error("LOCALSTORAGE CHANTEUR", stored);
+console.error("LOCALSTORAGE SAISON CHANTEUR", stored?.chanteur);
 
 const saisonChanteur = stored?.chanteur ?? null;
 
@@ -131,12 +131,12 @@ export function ChanteurProvider({ children }) {
                     saisonChanteur
                 };
 
-                console.log(
+                console.error(
                     "CHANTEUR FINAL",
                     dataAvecSaison
                 );
 
-                console.log(
+                console.error(
                     "SAISON CHANTEUR",
                     dataAvecSaison.saisonChanteur
                 );

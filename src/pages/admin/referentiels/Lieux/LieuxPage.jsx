@@ -16,7 +16,7 @@ export default function LieuxPage() {
             const { data: { session } } =
                 await supabase.auth.getSession();
 
-            console.log(session);
+            console.error(session);
 
             setSession(session);
 

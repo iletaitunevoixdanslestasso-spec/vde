@@ -62,12 +62,7 @@ const columns = [
             value: "nouveau"
         },
         render: (v, row) => row.lieux?.nom || '',
-        // render: (v, row) => {
-        //     console.log(row)
-        //     if (!row.lieux)
-        //         return ``
-        //     return `${row?.lieux?.nom || ''}`
-        // },
+
         sortValue: (row) => {
             if (!row.lieux)
                 return ''

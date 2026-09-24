@@ -71,13 +71,75 @@ export default function ChansonsChanteur() {
         localStorage.getItem("chanteur") || "null"
     );
 
+    const [savingLead, setSavingLead] =
+        useState(null);
+
     const saisonId = data?.saisonId;
+    console.error("data", data)
+    console.error("saisonId", saisonId)
     // const chanteurId = data?.chanteur?.chanteur_id;
     const chanteurId = data?.id;
     const token = localStorage.getItem("token");
 
     const controller =
         saisonchanteurpupitreConfig.controller;
+
+
+    function handleLeadChange(chanson) {
+
+        const nouveauLead = !chanson.lead;
+
+        setSavingLead(
+            chanson.saisonChansonId
+        );
+
+        setError(null);
+
+        controller.saveLead(
+            token,
+            saisonId,
+            chanteurId,
+            chanson.saisonChansonId,
+            nouveauLead,
+
+            (result) => {
+
+                setChansons(current =>
+                    current.map(item => {
+
+                        if (
+                            item.saisonChansonId !==
+                            chanson.saisonChansonId
+                        ) {
+                            return item;
+                        }
+
+                        return {
+                            ...item,
+                            lead: result.lead,
+                            lead_id: result.id
+                        };
+                    })
+                );
+
+                setSavingLead(null);
+            },
+
+            (err) => {
+
+                console.error(
+                    "Erreur modification lead",
+                    err
+                );
+
+                setError(
+                    "Impossible d'enregistrer le lead."
+                );
+
+                setSavingLead(null);
+            }
+        );
+    }
 
     /*
      * =====================================================
@@ -427,6 +489,28 @@ export default function ChansonsChanteur() {
                                         <h2 className="chanson-titre">
                                             {chanson.titre}
                                         </h2>
+
+                                        <button
+                                            type="button"
+                                            className={`chanson-lead-button ${chanson.lead ? "selected" : ""
+                                                }`}
+                                            onClick={() =>
+                                                handleLeadChange( chanson )
+                                            }
+                                            title={
+                                                chanson.lead
+                                                    ? "Je fais un lead sur cette chanson"
+                                                    : "Indiquer que je fais un lead"
+                                            }
+                                        >
+                                            <span className="chanson-lead-icon">
+                                                {chanson.lead ? "🎤⭐" : "🎤"}
+                                            </span>
+
+                                            <span className="chanson-lead-label">
+                                                Lead
+                                            </span>
+                                        </button>
 
                                     </div>
 

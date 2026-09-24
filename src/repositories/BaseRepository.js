@@ -50,7 +50,7 @@ export class BaseRepository {
 
         const { data: sessionData } = await this.supabase.auth.getSession();
 
-        console.log("SESSION SUPABASE", sessionData.session);
+        console.error("SESSION SUPABASE", sessionData.session);
         return this.supabase.from(this.table).insert(data).select("*").single();
     }
 
@@ -64,7 +64,7 @@ export class BaseRepository {
     }
 
     async delete(id, extraFields = {}) {
-        console.log("par ici")
+        console.error("par ici")
         return await this.softDelete(id, extraFields )
         // return this.supabase.from(this.table).delete().eq("id", id);
     }

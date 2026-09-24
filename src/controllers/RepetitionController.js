@@ -40,14 +40,14 @@ export class RepetitionController extends BaseController {
         const saisonId = this.context.saisonId;
 
         const liste = await this.service.findLieux();
-        console.log(liste)
+        console.error(liste)
         const lieux = liste.map(item => ({
             ...item,
             value: `${item.nom} ${item.description}`
         }));
 
         const { success, data, error, message } = await this.service.getAvailableType(saisonId);
-        console.log(success, data, error, message)
+        console.error(success, data, error, message)
         if (!success) {
             return {};
         }
@@ -70,7 +70,7 @@ export class RepetitionController extends BaseController {
 
             const data =
                 await this.service.getForDashboard(saisonId);
-            console.log(data)
+            console.error(data)
             return {
                 success: true,
                 data: data.data
@@ -91,11 +91,11 @@ export class RepetitionController extends BaseController {
     }
     manageSaisonRepetitionChanteur(repetition, load) {
 
-        console.log(
+        console.error(
             "repetionCOntroller.manageSaisonRepetitionChanteur",
             repetition
         );
-        console.log(this.context)
+        console.error(this.context)
         return (`/admin/saison/${this.context.saisonNom}/repetition/${repetition.date}/chanteurs`);
 
     }

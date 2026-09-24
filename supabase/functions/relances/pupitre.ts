@@ -28,7 +28,7 @@ export async function relancePupitre(
   saisonId: string
 ): Promise<ResultatRelancePupitre> {
 
-  console.log(
+  console.error(
     `=== VERIFICATION RELANCE PUPITRE : ${chanteur.prenom} ${chanteur.nom} ===`
   );
 
@@ -38,7 +38,7 @@ export async function relancePupitre(
 
   if (chanteur.stop_relance_pupitre === true) {
 
-    console.log(
+    console.error(
       `STOP PUPITRE : ${chanteur.prenom} ${chanteur.nom}`
     );
 
@@ -99,7 +99,7 @@ export async function relancePupitre(
 
   if (pupitrePrincipal) {
 
-    console.log(
+    console.error(
       `OK PUPITRE : ${chanteur.prenom} ${chanteur.nom}`
     );
 
@@ -126,7 +126,7 @@ export async function relancePupitre(
 
   if (!doitRelancer) {
 
-    console.log(
+    console.error(
       `RELANCE PUPITRE DEJA ENVOYEE : ${chanteur.prenom} ${chanteur.nom}`
     );
 
@@ -143,7 +143,7 @@ export async function relancePupitre(
   // 6. Relance réellement nécessaire
   // --------------------------------------------------
 
-  console.log(
+  console.error(
     `RELANCE PUPITRE NECESSAIRE : ${chanteur.prenom} ${chanteur.nom}`
   );
 

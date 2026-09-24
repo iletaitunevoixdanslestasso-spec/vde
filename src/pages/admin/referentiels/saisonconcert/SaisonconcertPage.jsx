@@ -13,8 +13,8 @@ export default function SaisonconcertPage() {
     const { saisonSelectionne, saisonActive } = useSaison();
     const { concertSelectionne } = useConcert();
     const navigate = useNavigate();
-    console.log(saisonSelectionne)
-    console.log(concertSelectionne)
+    console.error(saisonSelectionne)
+    console.error(concertSelectionne)
 
     if(!saisonSelectionne || !concertSelectionne){
         navigate(`/admin`)

@@ -17,7 +17,6 @@ const columns = [
         editType: "readonly",
         required: true,
         render: (v, row) => {
-            console.log(row)
             return `${row?.pupitres?.nom ?? 'putpitre supprime'}`;
         }
 
@@ -26,13 +25,7 @@ const columns = [
         field: "ordre",
         header: "ordre",
         type: "number",
-        // source: "availablePupitres",
-        // editType: "readonly",
-        // required: true,
-        // render: (v, row) => {
-        //     console.log(row)
-        //     return `${row.pupitres.nom}`;
-        // }
+
 
     },
     {

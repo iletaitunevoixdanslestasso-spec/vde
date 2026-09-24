@@ -39,7 +39,7 @@ function ChanteurLayoutContent() {
 
     useEffect(() => {
 
-        console.log("CHANCHEUR :", chanteur);
+        console.error("CHANCHEUR :", chanteur);
 
         if (!chanteur?.id) {
             return;
@@ -55,13 +55,13 @@ function ChanteurLayoutContent() {
                     chanteur.saisonChanteur?.id;
 
                 if (!saisonId || !saisonChanteurId) {
-                    console.log(
+                    console.error(
                         "Informations saison/chanteur manquantes"
                     );
                     return;
                 }
 
-                console.log(
+                console.error(
                     "Vérification répétition :",
                     saisonId,
                     saisonChanteurId
@@ -74,7 +74,7 @@ function ChanteurLayoutContent() {
                             saisonChanteurId
                         );
 
-                console.log(
+                console.error(
                     "Répétition du jour :",
                     data,
                     error
@@ -96,7 +96,7 @@ function ChanteurLayoutContent() {
 
                 if (!data) {
 
-                    console.log(
+                    console.error(
                         "Aucune répétition aujourd'hui"
                     );
 
@@ -111,7 +111,7 @@ function ChanteurLayoutContent() {
                     data.repetition_chanteurs?.[0]?.participe
                     ?? null;
 
-                console.log(
+                console.error(
                     "Participation :",
                     participation
                 );
@@ -122,7 +122,7 @@ function ChanteurLayoutContent() {
 
                 if (participationRepondue) {
 
-                    console.log(
+                    console.error(
                         "Participation déjà répondue dans la session"
                     );
 
@@ -136,7 +136,7 @@ function ChanteurLayoutContent() {
 
                 if (participation !== null) {
 
-                    console.log(
+                    console.error(
                         "Participation déjà enregistrée :",
                         participation
                     );
@@ -150,7 +150,7 @@ function ChanteurLayoutContent() {
                 // → ouvrir la popin
                 // ------------------------------------------
 
-                console.log(
+                console.error(
                     "Aucune participation → ouverture de la popin"
                 );
 

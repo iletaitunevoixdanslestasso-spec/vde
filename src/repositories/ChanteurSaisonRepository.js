@@ -74,7 +74,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
      * Vérifie si un chanteur est déjà associé
      */
     async exists(saisonId, chanteurId) {
-        console.log(saisonId, chanteurId)
+        console.error(saisonId, chanteurId)
         return this.supabase
             .from(this.table)
             .select("id")

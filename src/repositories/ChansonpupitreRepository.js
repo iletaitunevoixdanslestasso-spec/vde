@@ -11,7 +11,7 @@ export class ChansonpupitreRepository extends BaseRepository {
      * Liste les chansons associés à une saison
      */
     async findBySaison(chansonId) {
-        console.log("chansonId", chansonId)
+        console.error("chansonId", chansonId)
         return this.supabase
             .from(this.table)
             .select(`

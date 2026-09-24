@@ -15,7 +15,7 @@ export class ChansonpupitreController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.log(
+        console.error(
             "ChansonpupitreController.getBySaison",
             saisonId
         );
@@ -23,8 +23,8 @@ export class ChansonpupitreController extends BaseController {
         return this.service.getBySaison(saisonId);
     }
     async prepareForm() {
-        console.log(this.context)
-        console.log(this.service)
+        console.error(this.context)
+        console.error(this.service)
         const chansonId = this.context.chansonId;
         const res = await this.service.getAvailablePupitres(chansonId);
 
@@ -69,7 +69,7 @@ export class ChansonpupitreController extends BaseController {
      */
     async getAvailableChansons(saisonId) {
 
-        console.log(
+        console.error(
             "ChansonpupitreController.getAvailableChansons",
             saisonId
         );
@@ -83,7 +83,7 @@ export class ChansonpupitreController extends BaseController {
      */
     async getAvailableChansons(saisonId) {
 
-        console.log(
+        console.error(
             "ChansonpupitreController.getAvailableChansons",
             saisonId
         );
@@ -98,7 +98,7 @@ export class ChansonpupitreController extends BaseController {
      */
     async reactivate(chansonId, saisonId) {
         // const saisonId = this.context.saisonId;
-        console.log(
+        console.error(
             "ChansonpupitreController.reactivate",
             saisonId,
             chansonId
@@ -119,7 +119,7 @@ export class ChansonpupitreController extends BaseController {
      */
     async removeChanteur(id) {
 
-        console.log(
+        console.error(
             "ChansonpupitreController.removeChanteur",
             id
         );
@@ -128,11 +128,11 @@ export class ChansonpupitreController extends BaseController {
     }
 
     generateAccessLink(saisonchanson) {
-        console.log("generateAccessLink", saisonchanson);
+        console.error("generateAccessLink", saisonchanson);
         return this.accesController.generateLink(saisonchanson);
     }
     copyAccessLink(saisonChansons) {
-        console.log(saisonChansons)
+        console.error(saisonChansons)
         const token = saisonChansons.acces.length ? saisonChansons.acces[0].token : 'aucun accès généré'
         navigator.clipboard.writeText(token);
     }
@@ -140,7 +140,7 @@ export class ChansonpupitreController extends BaseController {
         const result = await this.accesController.generateLink(saisonChansons);
 
         // pour l'instant console (on fera email étape 9)
-        console.log("Lien à envoyer :", result.url);
+        console.error("Lien à envoyer :", result.url);
 
         return result;
     }

@@ -3,7 +3,7 @@ import { BaseValidator } from "./BaseValidator";
 export class SaisonChanteursValidator extends BaseValidator {
 
     validate(SaisonChanteurs) {
-        console.log(SaisonChanteurs)
+        console.error(SaisonChanteurs)
         this.errors = [];
 
         if (!SaisonChanteurs.chanteur_id) {

@@ -3,7 +3,7 @@ export default function HiddenRenderer({
     form,
     onChange
 }) {
-    console.log(field)
+    console.error(field)
     return (
         <input
             type="hidden"

@@ -16,7 +16,7 @@ export class RepetitionService extends BaseService {
         const { data, error } =
             await this.repository.findBySaison(saisonId, new Date().toISOString().split("T")[0]);
 
-        console.log(data)
+        console.error(data)
         if (error) {
             return BaseResponse.error([], error.message);
         }
@@ -78,14 +78,14 @@ export class RepetitionService extends BaseService {
         //     chanson.saison_chansons.length === 0 ||
         //     chanson.saison_chansons.every(sc => sc.deleted_at !== null)
         // );
-        console.log(data)
+        console.error(data)
         const baserReponse = BaseResponse.success(data);
-        console.log(baserReponse)
+        console.error(baserReponse)
         return BaseResponse.success(data);
     }
 
     async save_old(entity) {
-        console.log(entity)
+        console.error(entity)
         const { data: rendezvous, error } =
             await this.rendezvousRepository.findTypeRepetition();
 
@@ -104,7 +104,7 @@ export class RepetitionService extends BaseService {
 
     async save(form) {
 
-        console.log(
+        console.error(
             "RepetitionService.save",
             form
         );
@@ -126,7 +126,7 @@ export class RepetitionService extends BaseService {
             );
         }
 
-        console.log(
+        console.error(
             "rendezvous repetition",
             rendezvous
         );
@@ -166,7 +166,7 @@ export class RepetitionService extends BaseService {
         }
 
 
-        console.log(
+        console.error(
             "rendezvous actuel",
             rendezvousActuel
         );
@@ -366,7 +366,7 @@ export class RepetitionService extends BaseService {
         }
 
 
-        console.log(
+        console.error(
             "rendezvousId utilisé par la répétition",
             rendezvousId
         );
@@ -413,7 +413,7 @@ export class RepetitionService extends BaseService {
         };
 
 
-        console.log(
+        console.error(
             "RepetitionService.save entityToSave",
             entityToSave
         );

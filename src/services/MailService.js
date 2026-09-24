@@ -6,8 +6,8 @@ export class MailService {
     async sendInvitation(chanteur, url) {
         const email = chanteur.email
         const prenom = chanteur.prenom
-        console.log("Envoi mail à :", email);
-        console.log("Lien :", url);
+        console.error("Envoi mail à :", email);
+        console.error("Lien :", url);
 
         const { data, error } = await supabase.functions.invoke(
             "mail",

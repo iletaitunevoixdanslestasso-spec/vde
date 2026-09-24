@@ -138,8 +138,8 @@ const storagePath =
             folder={field.documentTypeCode}
             showUploadButton={false}
             onUploaded={(result) => {
-                console.log(field)
-                console.log(result)
+                console.error(field)
+                console.error(result)
                 onChange(
                     result,
                     field.field,

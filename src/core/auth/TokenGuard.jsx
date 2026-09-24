@@ -52,7 +52,7 @@ export default function TokenGuard() {
           saison: user.saison
         })
       );
-      console.log(
+      console.error(
         "TOKEN GUARD USER STOCKÉ",
         user
       );

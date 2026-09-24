@@ -11,7 +11,7 @@ export class SaisonchansonController extends BaseController {
     managePupitres(saisonchanson, load) {
         const chanson=saisonchanson.chansons
 
-        console.log(
+        console.error(
             "SaisonchansonController.managePupitres",
             chanson
         );
@@ -27,7 +27,7 @@ export class SaisonchansonController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getBySaison",
             saisonId
         );
@@ -80,7 +80,7 @@ export class SaisonchansonController extends BaseController {
      */
     async getAvailableChansons(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getAvailableChansons",
             saisonId
         );
@@ -95,7 +95,7 @@ export class SaisonchansonController extends BaseController {
      */
     async reactivate(chansonId, saisonId) {
         // const saisonId = this.context.saisonId;
-        console.log(
+        console.error(
             "SaisonChanteurController.reactivate",
             saisonId,
             chansonId
@@ -116,7 +116,7 @@ export class SaisonchansonController extends BaseController {
      */
     async removeChanteur(id) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.removeChanteur",
             id
         );

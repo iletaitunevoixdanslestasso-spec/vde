@@ -111,15 +111,15 @@ export class SaisonchansonService extends BaseService {
     async addChanson(chansonId) {
         const saisonId = this.context.saisonId;
 
-        console.log("chansonId", chansonId)
-        console.log("saisonId", saisonId)
+        console.error("chansonId", chansonId)
+        console.error("saisonId", saisonId)
         const { data: exists, error: existsError } =
             await this.repository.exists(
                 saisonId,
                 chansonId
             );
-        console.log(exists)
-        console.log(existsError)
+        console.error(exists)
+        console.error(existsError)
 
         if (exists) {
             return BaseResponse.error(

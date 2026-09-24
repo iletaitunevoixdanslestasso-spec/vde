@@ -1,3 +1,4 @@
+import { SaisonChansonLeadRepository } from "../repositories/SaisonChansonLeadRepository";
 import { BaseService } from "./BaseService";
 import StorageService from "./StorageService";
 
@@ -5,6 +6,7 @@ export class SaisonChanteurPupitreService extends BaseService {
 
     constructor(repository, validator, mapper) {
         super(repository, validator, mapper);
+        this.leadRepository = new SaisonChansonLeadRepository();
     }
 
 
@@ -29,7 +31,8 @@ export class SaisonChanteurPupitreService extends BaseService {
 
         const [
             saisonChansons,
-            mesPupitres
+            mesPupitres,
+            mesLeads
         ] = await Promise.all([
 
             this.repository.findChansonsAvecPupitres(
@@ -40,9 +43,20 @@ export class SaisonChanteurPupitreService extends BaseService {
                 token,
                 saisonId,
                 chanteurId
+            ),
+            this.leadRepository.findByToken(
+                token
             )
-
         ]);
+
+        const leadsParChanson = new Map(
+
+            mesLeads.map(lead => [
+                lead.saison_chanson_id,
+                lead
+            ])
+
+        );
 
         /*
          * =====================================================
@@ -87,7 +101,7 @@ export class SaisonChanteurPupitreService extends BaseService {
          * =====================================================
          */
 
-        console.log(
+        console.error(
             "SAISON CHANSONS",
             saisonChansons
         );
@@ -268,9 +282,12 @@ export class SaisonChanteurPupitreService extends BaseService {
                  * Résultat de la chanson
                  * =================================================
                  */
+                const lead =
+                    leadsParChanson.get(item.id);
+                const saisonChansonId = item.id;
 
                 return {
-
+                    saisonChansonId,
                     chanson_id:
                         chanson.id,
 
@@ -278,6 +295,13 @@ export class SaisonChanteurPupitreService extends BaseService {
                         chanson.titre,
                     audio:
                         chanson.audio,
+                    /*
+                     * LEAD
+                     */
+
+                    lead: !!lead,
+
+                    lead_id: lead?.id || null,
 
                     documentUrl,
 
@@ -313,196 +337,7 @@ export class SaisonChanteurPupitreService extends BaseService {
 
         };
     }
-    async getMesChansons_old(token, saisonId, chanteurId) {
 
-        const [
-            saisonChansons,
-            mesPupitres
-        ] = await Promise.all([
-
-            this.repository.findChansonsAvecPupitres(
-                saisonId
-            ),
-
-            this.repository.findBySaisonAndChanteur(
-                token,
-                saisonId,
-                chanteurId
-            )
-
-        ]);
-
-
-        /*
-         * Pupitre principal du chanteur
-         *
-         * chanson_id = NULL
-         * principal = true
-         */
-        const pupitrePrincipal =
-            mesPupitres.find(
-                item =>
-                    item.chanson_id === null &&
-                    item.principal === true
-            );
-
-
-        /*
-         * Choix spécifiques par chanson
-         */
-        const choixParChanson = new Map();
-
-        mesPupitres
-            .filter(item => item.chanson_id !== null)
-            .forEach(item => {
-
-                choixParChanson.set(
-                    item.chanson_id,
-                    item
-                );
-
-            });
-
-
-
-
-
-        /*
-         * Construction des chansons
-         */
-        console.log("SAISON CHANSONS", saisonChansons);
-
-        saisonChansons.forEach(item => {
-            if (!item.chansons) {
-                console.warn(
-                    "⚠️ chanson introuvable pour saison_chansons :",
-                    item
-                );
-            }
-        });
-
-        const data = await Promise.all(
-            saisonChansons.map(async item => {
-
-                const chanson = item.chansons;
-
-                /*
-                 * Document de la chanson
-                 */
-                const document = chanson.referentiel_documents;
-
-                let documentUrl = null;
-
-                if (document?.path) {
-
-                    documentUrl =
-                        await StorageService.createSignedUrl(
-                            "referentiel-documents",
-                            document.path,
-                            3600
-                        );
-
-                    console.log("url", documentUrl);
-                }
-
-                /*
-                 * Pupitres disponibles pour cette chanson
-                 */
-                // const pupitres = (chanson.chanson_pupitres || [])
-                //     .filter(cp => cp.pupitres)
-                //     .map(cp => ({
-                //         ...cp,
-                //         id: cp.pupitre_id,
-                //         nom: cp.pupitres.nom
-                //     }));
-                const pupitres = Array.from(
-                    new Map(
-                        (chanson.chanson_pupitres || [])
-                            .filter(cp => cp.pupitres)
-                            .map(cp => [
-                                cp.pupitre_id,
-                                {
-                                    ...cp,
-                                    id: cp.pupitre_id,
-                                    nom: cp.pupitres.nom
-                                }
-                            ])
-                    ).values()
-                );
-
-                /*
-                 * Choix spécifique éventuel
-                 */
-                const choixSpecifique =
-                    choixParChanson.get(item.chanson_id);
-
-                /*
-                 * Vérifier si le pupitre principal
-                 * est disponible pour cette chanson.
-                 */
-                const principalAutorise =
-                    pupitrePrincipal &&
-                    pupitres.some(
-                        pupitre =>
-                            pupitre.id ===
-                            pupitrePrincipal.pupitre_id
-                    );
-
-                /*
-                 * Déterminer le pupitre affiché
-                 */
-                let pupitreChoisi = null;
-
-                if (choixSpecifique) {
-
-                    pupitreChoisi = {
-                        id: choixSpecifique.id,
-                        pupitre_id: choixSpecifique.pupitre_id,
-                        principal: false
-                    };
-
-                }
-                else if (principalAutorise) {
-
-                    pupitreChoisi = {
-                        id: pupitrePrincipal.id,
-                        pupitre_id: pupitrePrincipal.pupitre_id,
-                        principal: true
-                    };
-                }
-                /**
-                 * audio du pupitre chsois
-                */
-                let audio_pupitre = null;
-                if (pupitreChoisi)
-                    audio_pupitre = pupitres.find(item => item.pupitre_id === pupitreChoisi.pupitre_id)
-
-                return {
-
-                    chanson_id: chanson.id,
-
-                    titre: chanson.titre,
-
-                    documentUrl,
-                    path: document?.path,
-                    audio_pupitre,
-                    pupitres,
-
-                    pupitreChoisi,
-
-                    choixSpecifique: !!choixSpecifique
-
-                };
-
-            })
-        );
-
-
-        return {
-            success: true,
-            data
-        };
-    }
 
 
     /**
@@ -547,5 +382,24 @@ export class SaisonChanteurPupitreService extends BaseService {
                 ]
             };
         }
+    }
+    async saveLead(
+        token,
+        saisonChansonId,
+        lead
+    ) {
+
+        const result =
+            await this.leadRepository.setLead(
+                token,
+                saisonChansonId,
+                lead
+            );
+
+
+        return {
+            success: true,
+            data: result
+        };
     }
 }

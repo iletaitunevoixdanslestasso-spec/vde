@@ -17,14 +17,14 @@ export class ConcertService extends BaseService {
 
     async getAllBySaison() {
         const saisonId = this.context.saisonId;
-        console.log("tconcert service getAllBySaison", saisonId)
+        console.error("tconcert service getAllBySaison", saisonId)
         const { data, error } = await this.rendezvouRepository.findBySaisonAndTypeConcert(saisonId);
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-        console.log(data)
+        console.error(data)
 
         if (data) {
             data
@@ -38,14 +38,14 @@ export class ConcertService extends BaseService {
     }
 
     async getAll() {
-        console.log("concerceservice getALL")
+        console.error("concerceservice getALL")
         const { data, error } = await this.rendezvouRepository.findByTypeConcert();
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-        console.log(data)
+        console.error(data)
 
         if (data) {
             data
@@ -60,11 +60,11 @@ export class ConcertService extends BaseService {
 
     async saveSaisonConcert(form) {
         // enregistrement le lieu sinicessaire, le rendezvous
-        console.log("saveSaisonConcert", form);
+        console.error("saveSaisonConcert", form);
         const saisonId = this.context.saisonId;
         const { data, success } = await this.save(form);
-        console.log("saveSaisonConcert", data);
-        console.log("saveSaisonConcert", success);
+        console.error("saveSaisonConcert", data);
+        console.error("saveSaisonConcert", success);
         let saison_rendezvous_id = null;
         if(form.saison_rendezvous && form.saison_rendezvous.length)
             saison_rendezvous_id = form.saison_rendezvous[0].id;
@@ -76,7 +76,7 @@ export class ConcertService extends BaseService {
                     saison_id: saisonId,
                     rendezvous_id: data.id,
                 });
-                console.log(saison_rendezvous)
+                console.error(saison_rendezvous)
                 saison_rendezvous_id = saison_rendezvous.id
             }
 
@@ -85,7 +85,7 @@ export class ConcertService extends BaseService {
             ...data,
             saison_rendezvous_id : saison_rendezvous_id
         }
-        console.log(newData)
+        console.error(newData)
         return BaseResponse.success(newData);
 
     }
@@ -95,7 +95,7 @@ export class ConcertService extends BaseService {
         return res
     }
     async save(form) {
-        console.log(form)
+        console.error(form)
         let lieuId = form.lieu_id || null;
         let rendezvousId = form.id || null;
 
@@ -111,7 +111,7 @@ export class ConcertService extends BaseService {
 
             lieuId = lieu.id;
         }
-        console.log("lieuid", lieuId)
+        console.error("lieuid", lieuId)
         // const { data: rendezvous_type, error } =
         //     await this.rendezvouRepository.findTypeConcert();
         const concert = {

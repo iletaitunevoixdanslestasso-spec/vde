@@ -46,7 +46,7 @@ export class SaisonChanteurService extends BaseService {
                 errors: error
             };
         }
-        console.log(data)
+        console.error(data)
         data.sort((a, b) =>
             a.chanteurs.nom.localeCompare(b.chanteurs.nom)
         );
@@ -135,7 +135,7 @@ export class SaisonChanteurService extends BaseService {
 
 
     async save(data) {
-        console.log(data)
+        console.error(data)
         if (this.validator) {
             const validation = this.validator.validate(data);
 
@@ -163,10 +163,10 @@ export class SaisonChanteurService extends BaseService {
      * Ajout d'un chanteur dans une saison
      */
     async addChanteur(chanteurId) {
-        console.log("chanteurId", chanteurId);
+        console.error("chanteurId", chanteurId);
         if (this.validator) {
             const validation = this.validator.validate(chanteurId);
-            console.log("validation", validation);
+            console.error("validation", validation);
             if (!validation.valid) {
                 return BaseResponse.error(validation.errors);
             }
@@ -174,7 +174,7 @@ export class SaisonChanteurService extends BaseService {
         const saisonId = this.context.saisonId;
 
 
-        console.log(saisonId, chanteurId)
+        console.error(saisonId, chanteurId)
         const { data: exists } =
             await this.repository.exists(
                 saisonId,
@@ -211,7 +211,7 @@ export class SaisonChanteurService extends BaseService {
     }
 
     async insert(data) {
-        console.log(data)
+        console.error(data)
         const result = await this.repository.insert(data);
 
         if (result.error?.code === "23505") {
@@ -221,7 +221,7 @@ export class SaisonChanteurService extends BaseService {
             );
         }
 
-        console.log(result)
+        console.error(result)
         if (result.error) {
             return BaseResponse.error(
                 [],
@@ -229,7 +229,7 @@ export class SaisonChanteurService extends BaseService {
             );
         }
         BaseResponse.success(result.data)
-        console.log(BaseResponse)
+        console.error(BaseResponse)
         return BaseResponse.success(result.data);
     }
 

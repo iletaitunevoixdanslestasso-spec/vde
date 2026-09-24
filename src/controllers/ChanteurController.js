@@ -49,7 +49,7 @@ export class ChanteurController extends BaseController {
 
 
     generateAccessLink(chanteur) {
-        console.log("generateAccessLink", chanteur);
+        console.error("generateAccessLink", chanteur);
         return this.accesController.generateLink(chanteur);
     }
     copyAccessLink(link) {
@@ -57,11 +57,11 @@ export class ChanteurController extends BaseController {
         navigator.clipboard.writeText(url);
     }
     async sendAccessLink(chanteur) {
-        console.log(chanteur)
+        console.error(chanteur)
         const result = await this.accesController.generateLink(chanteur);
 
         // pour l'instant console (on fera email étape 9)
-        console.log("Lien à envoyer :", result.url);
+        console.error("Lien à envoyer :", result.url);
 
         return result;
     }

@@ -39,7 +39,7 @@ export async function relanceRepetitionLieu(
     lieuParDefautId: string
 ): Promise<ResultatRelanceRepetitionLieu> {
 
-    console.log(
+    console.error(
         `=== VERIFICATION LIEU PROCHAINE REPETITION : ` +
         `${chanteur.prenom} ${chanteur.nom} ===`
     );
@@ -162,7 +162,7 @@ export async function relanceRepetitionLieu(
         repetitions.length === 0
     ) {
 
-        console.log(
+        console.error(
             `AUCUNE REPETITION A VENIR : ` +
             `${chanteur.prenom} ${chanteur.nom}`
         );
@@ -194,7 +194,7 @@ export async function relanceRepetitionLieu(
         prochaineRepetition.rendezvous;
 
 
-    console.log(
+    console.error(
         `PROCHAINE REPETITION : ` +
         `${rendezvous.titre} ` +
         `${prochaineRepetition.date} ` +
@@ -208,7 +208,7 @@ export async function relanceRepetitionLieu(
 
     if (!rendezvous.lieu_id) {
 
-        console.log(
+        console.error(
             `LIEU NON RENSEIGNE : ` +
             `${rendezvous.titre}`
         );
@@ -236,7 +236,7 @@ export async function relanceRepetitionLieu(
         rendezvous.lieu_id === lieuParDefautId
     ) {
 
-        console.log(
+        console.error(
             `LIEU PAR DEFAUT : ` +
             `${rendezvous.titre}`
         );
@@ -305,7 +305,7 @@ export async function relanceRepetitionLieu(
         participation?.participe === false
     ) {
 
-        console.log(
+        console.error(
             `NE PARTICIPE PAS : ` +
             `${chanteur.prenom} ${chanteur.nom} ` +
             `=> ${rendezvous.titre}`
@@ -348,7 +348,7 @@ export async function relanceRepetitionLieu(
 
     if (!doitRelancer) {
 
-        console.log(
+        console.error(
             `RELANCE LIEU REPETITION DEJA ENVOYEE : ` +
             `${chanteur.prenom} ${chanteur.nom} ` +
             `=> ${rendezvous.titre}`
@@ -424,7 +424,7 @@ export async function relanceRepetitionLieu(
     // 11. Relance nécessaire
     // ==================================================
 
-    console.log(
+    console.error(
         `RELANCE LIEU REPETITION NECESSAIRE : ` +
         `${chanteur.prenom} ${chanteur.nom} ` +
         `=> ${rendezvous.titre} / ${nomLieu}`

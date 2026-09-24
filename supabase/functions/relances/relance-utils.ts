@@ -38,7 +38,7 @@ export async function peutRelancer(
     .order("date_envoi", { ascending: false })
     .limit(1);
 
-  console.log(
+  console.error(
     `peutRelancer : ${chanteurId} ${typeRelanceId}`
   );
 
@@ -59,7 +59,7 @@ export async function peutRelancer(
   const { data, error } = await query;
 
 
-  console.log(
+  console.error(
     "peutRelancer RESULTAT :",
     JSON.stringify({
       chanteurId,
@@ -84,7 +84,7 @@ export async function peutRelancer(
   const dateEnvoi = data[0].date_envoi;
 
 
-  console.log(
+  console.error(
     `peutRelancer  dateEnvoi: ${dateEnvoi} `
   );
 
@@ -104,18 +104,18 @@ export async function peutRelancer(
     dernierEnvoi.toISOString().slice(0, 10);
 
 
-  console.log(
+  console.error(
     `peutRelancer  dateAujourdhui: ${dateAujourdhui} `
   );
 
-  console.log(
+  console.error(
     `peutRelancer  dateDernierEnvoi: ${dateDernierEnvoi} `
   );
 
 
   if (dateDernierEnvoi === dateAujourdhui) {
 
-    console.log(
+    console.error(
       "peutRelancer COMPARAISON :",
       JSON.stringify({
         dateEnvoi,
@@ -341,7 +341,7 @@ export async function envoyerMailRelance_OLD({
   }
 
 
-  console.log(
+  console.error(
     "Mail Gmail envoyé :",
     data.id
   );
@@ -370,12 +370,12 @@ export async function envoyerMailRelance({
   const destinataire = to.trim();
 
 
-  console.log(
+  console.error(
     "DESTINATAIRE GMAIL :",
     JSON.stringify(to)
   );
 
-  console.log(
+  console.error(
     "DESTINATAIRE GMAIL :",
     JSON.stringify(destinataire)
   );
@@ -437,7 +437,7 @@ export async function envoyerMailRelance({
     sendAs?.signature ?? "";
 
 
-  console.log(
+  console.error(
     "Signature Gmail récupérée :",
     signature ? "OUI" : "NON"
   );
@@ -527,7 +527,7 @@ export async function envoyerMailRelance({
   }
 
 
-  console.log(
+  console.error(
     "Mail Gmail envoyé :",
     data.id
   );

@@ -17,7 +17,7 @@ export default function AdminLogin() {
       return;
     }
 
-    console.log("Login OK", data);
+    console.error("Login OK", data);
     if (data.session) {
       navigate("/admin");
     }    

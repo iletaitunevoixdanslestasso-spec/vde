@@ -8,11 +8,11 @@ export class SaisonInvitationController extends ConcertController {
     }
     manageSaisonConcertChanson(concert, load) {
 
-        console.log(
+        console.error(
             "SaisonConcertController.manageChanson",
             concert
         );
-        console.log(this.context)
+        console.error(this.context)
         return (`/admin/saison/${this.context.saisonNom}/concert/${concert.titre}/chansons`);
 
         return (`/admin/chanson/${saison.nom}/chanteurs`);
@@ -22,26 +22,26 @@ export class SaisonInvitationController extends ConcertController {
     async prepareForm() {
 
         const lieuxConcert = await super.prepareForm();
-        console.log(lieuxConcert)
+        console.error(lieuxConcert)
         const lieux =  lieuxConcert.lieux
         const listeType = await this.service.findType();
-        console.log(listeType)
+        console.error(listeType)
         const rendezvous_type = listeType.map(item => ({
             ...item,
             value: `${item.libelle} ${item.description}`
         }));
-        console.log(lieux)
-        console.log(rendezvous_type)
+        console.error(lieux)
+        console.error(rendezvous_type)
         const res = {
             lieux,
             rendezvous_type
         }
-        console.log(res)
+        console.error(res)
         return res;
     }
 
     async save(form, onSuccess, onError) {
-        console.log("SaisonINVITATIONController save", form);
+        console.error("SaisonINVITATIONController save", form);
 
         return this.handle(
             () => this.service.saveSaisonConcert(form),
@@ -68,7 +68,7 @@ export class SaisonInvitationController extends ConcertController {
         );
     }
     async load(onSuccess, onError) {
-        console.log("SaisonConcertController")
+        console.error("SaisonConcertController")
         return this.handle(
             () => this.service.getAllBySaison(),
             { onSuccess, onError }

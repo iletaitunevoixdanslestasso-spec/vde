@@ -40,7 +40,6 @@ const columns = [
         documentTypeCode: "paroles",
         // editType: "readonly",
         render: (v, row) => {
-            console.log(v, row)
             let path = row?.referentiel_documents?.path || ''
             return `${path}`
         }
@@ -78,7 +77,6 @@ const columns = [
         required: false,
 
         render: (v, row) => {
-            console.log (v, row)
             if (!v) {
                 return "Aucun audio";
             }

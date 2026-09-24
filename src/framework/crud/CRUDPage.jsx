@@ -78,7 +78,7 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "repartition":
-                console.log("repartition", row)
+                console.error("repartition", row)
                 setEditItem(row);
                 setOpen(true);
 
@@ -104,10 +104,10 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "managePupitres": {
-                console.log(row)
+                console.error(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
-                console.log(urlPutpitre)
+                console.error(urlPutpitre)
                 context.selectChanson(row);
 
                 navigate(urlPutpitre);
@@ -115,10 +115,10 @@ export default function CRUDPage({ config, context = {} }) {
                 break;
             }
             case "manageSaisonChansonPupitres": {
-                console.log(row)
+                console.error(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
-                console.log(urlPutpitre)
+                console.error(urlPutpitre)
                 context.selectChanson(row.chansons);
 
                 navigate(urlPutpitre);
@@ -127,22 +127,22 @@ export default function CRUDPage({ config, context = {} }) {
             }
 
             case "manageSaisonConcertChanson": {
-                console.log(row)
+                console.error(row)
 
                 const urlConcertChanson =
                     controller.manageSaisonConcertChanson(row, load);
-                console.log(urlConcertChanson)
+                console.error(urlConcertChanson)
                 context.selectConcert(row);
                 navigate(urlConcertChanson);
 
                 break;
             }
             case "manageSaisonRepetitionChanteur": {
-                console.log(row)
+                console.error(row)
 
                 const urlConcertChanson =
                     controller.manageSaisonRepetitionChanteur(row, load);
-                console.log(urlConcertChanson)
+                console.error(urlConcertChanson)
                 context.selectObjet(row);
                 navigate(urlConcertChanson);
 
@@ -276,7 +276,7 @@ export default function CRUDPage({ config, context = {} }) {
 
         } catch (e) {
 
-            console.log(
+            console.error(
                 "handleSave error",
                 e
             );

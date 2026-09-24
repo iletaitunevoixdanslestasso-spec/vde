@@ -74,14 +74,14 @@ export default function FormModal({
     const handleSave = async (form) => {
 
 
-        console.log("FORM AVANT UPLOAD", form);
-        console.log("FILE UPLOAD CALLBACK", fileUpload);
+        console.error("FORM AVANT UPLOAD", form);
+        console.error("FILE UPLOAD CALLBACK", fileUpload);
         let finalForm = { ...form };
 
         if (fileUpload) {
 
             const result = await fileUpload();
-            console.log(result)
+            console.error(result)
 
             if (result !== null) {
 
@@ -92,13 +92,13 @@ export default function FormModal({
                     const docuemtnreferentiel = {
                         path: result.path,
                     };
-                    console.log(docuemtnreferentiel)
+                    console.error(docuemtnreferentiel)
                     finalForm = {
                         ...finalForm,
                         referentiel_documents_path: result.path,
                         [result.field]: result.path
                     };
-                    console.log(finalForm)
+                    console.error(finalForm)
                 }
             }
         }

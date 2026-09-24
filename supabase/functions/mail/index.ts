@@ -41,8 +41,8 @@ Deno.serve(async (req) => {
       "À très vite !",
     ].join("\n");
 
-    console.log("ENVOI INVITATION :", email);
-    console.log("LIEN :", url);
+    console.error("ENVOI INVITATION :", email);
+    console.error("LIEN :", url);
 
     const resultat = await envoyerMailRelance({
       to: email,

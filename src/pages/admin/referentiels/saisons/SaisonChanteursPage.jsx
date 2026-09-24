@@ -11,7 +11,7 @@ export default function SaisonChanteursPage() {
     const navigate = useNavigate();
     const [session, setSession] = useState(null);
     const { saisonSelectionne } = useSaison();
-    console.log("saisonSelectionne", saisonSelectionne)
+    console.error("saisonSelectionne", saisonSelectionne)
     // const { saison_nom } = useParams();
 
     if (!saisonSelectionne) {

@@ -54,8 +54,8 @@ export class BaseController {
     }
 
     async load(setState) {
-        console.log("Lbasecontroller load")
-        console.log("this.service", this.service)
+        console.error("Lbasecontroller load")
+        console.error("this.service", this.service)
         return this.handle(
             () => this.service.getAll(),
             {

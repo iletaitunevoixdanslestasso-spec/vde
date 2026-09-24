@@ -45,11 +45,11 @@ export class BaseService {
 
     // 💾 SAVE (CREATE / UPDATE)
     async save(entity) {
-        console.log("BaseService.save", entity);
+        console.error("BaseService.save", entity);
         // 🧠 VALIDATION (optionnelle)
         if (this.validator) {
             const validation = this.validator.validate(entity);
-            console.log("validation", validation);
+            console.error("validation", validation);
             if (!validation.valid) {
                 return BaseResponse.error(validation.errors);
             }
@@ -58,7 +58,7 @@ export class BaseService {
         let result;
         
         const dbEntity = this.mapper ? this.mapper.toDb(entity) : entity;
-        console.log("dbEntity", dbEntity);
+        console.error("dbEntity", dbEntity);
         if (entity.id) {
             result = await this.update(entity.id, dbEntity);
         } else {
@@ -68,7 +68,7 @@ export class BaseService {
         if (result.error) {
             return BaseResponse.error([], result.error.message);
         }
-        console.log("result", result);
+        console.error("result", result);
 
         return BaseResponse.success(this.mapper.toUi(result.data));
     }

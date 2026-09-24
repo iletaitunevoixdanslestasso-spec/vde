@@ -11,7 +11,7 @@ export class ChansonController extends BaseController {
     managePupitres(chanson, load) {
 
         
-        console.log(
+        console.error(
             "ChansonController.managePupitres",
             chanson
         );

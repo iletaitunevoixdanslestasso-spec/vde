@@ -132,7 +132,7 @@ const FileUploader = forwardRef(function FileUploader({
 
         setUploading(true);
         setError(null);
-        console.log(
+        console.error(
             bucket,
             path,
             signedToken,
@@ -222,7 +222,7 @@ const FileUploader = forwardRef(function FileUploader({
                 );
             }
 
-            console.log("SIGNED PATH :", signedPath);
+            console.error("SIGNED PATH :", signedPath);
 
             const result =
                 await StorageService.uploadToSignedUrl(
@@ -295,7 +295,7 @@ const FileUploader = forwardRef(function FileUploader({
 
             {uploaded && (
                 <div>
-                    {console.log(uploaded)}
+                    {console.error(uploaded)}
                     <p>
                         <strong>Upload terminé</strong>
                     </p>

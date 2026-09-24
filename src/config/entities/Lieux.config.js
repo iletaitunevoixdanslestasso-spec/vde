@@ -62,7 +62,6 @@ const actions = [
          * défini pour les répétitions.
          */
         condition: (row, data) => {
-            console.log(row, data)
 
             return !data.some(
                 lieu => lieu.repetition === true

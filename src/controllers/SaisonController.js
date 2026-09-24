@@ -35,8 +35,8 @@ export class SaisonController extends BaseController {
             (data) => {
                 // Si la saison modifiée est la saison active,
                 // on demande au contexte de la recharger
-                console.log(data)
-                console.log(this.context)
+                console.error(data)
+                console.error(this.context)
                 this.context?.refresh();
                 onSuccess?.(data);
             },
@@ -46,7 +46,7 @@ export class SaisonController extends BaseController {
 
     manageChanteurs(saison, load) {
 
-        console.log(
+        console.error(
             "SaisonController.manageChanteurs",
             saison
         );

@@ -4,7 +4,7 @@ export async function relancePupitre(
   supabase: SupabaseClient
 ) {
 
-  console.log("=== RELANCE PUPITRE ===");
+  console.error("=== RELANCE PUPITRE ===");
 
   // --------------------------------------------------
   // 1. Saison active
@@ -76,7 +76,7 @@ export async function relancePupitre(
 
     if (chanteur.stop_relance_pupitre === true) {
 
-      console.log(
+      console.error(
         `STOP PUPITRE : ${chanteur.prenom} ${chanteur.nom}`
       );
 
@@ -106,7 +106,7 @@ export async function relancePupitre(
 
     if (pupitrePrincipal) {
 
-      console.log(
+      console.error(
         `OK PUPITRE : ${chanteur.prenom} ${chanteur.nom}`
       );
 
@@ -117,7 +117,7 @@ export async function relancePupitre(
     // Relance nécessaire
     // ----------------------------------------------
 
-    console.log(
+    console.error(
       `RELANCE PUPITRE : ${chanteur.prenom} ${chanteur.nom}`
     );
 

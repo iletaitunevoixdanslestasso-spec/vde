@@ -15,7 +15,7 @@ export class GroupesController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.log(
+        console.error(
             "groupe.getBySaison",
             saisonId
         );
@@ -68,7 +68,7 @@ export class GroupesController extends BaseController {
      */
     async getAvailableChansons(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getAvailableChansons",
             saisonId
         );
@@ -82,7 +82,7 @@ export class GroupesController extends BaseController {
      */
     async getAvailableChansons(saisonId) {
 
-        console.log(
+        console.error(
             "SaisonChanteurController.getAvailableChansons",
             saisonId
         );

@@ -128,10 +128,10 @@ class StorageService {
     }
 
     async uploadToSignedUrl(bucket, path, token, file) {
-        console.log(bucket)
-        console.log( path)
-        console.log( token)
-        console.log( file)
+        console.error(bucket)
+        console.error( path)
+        console.error( token)
+        console.error( file)
         const cleanPath =
             typeof path === "string"
                 ? path

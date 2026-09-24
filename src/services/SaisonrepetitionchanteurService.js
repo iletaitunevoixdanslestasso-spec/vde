@@ -9,7 +9,7 @@ export class SaisonrepetitionchanteurService extends BaseService {
     }
 
     async findBySaisonAndRepetition() {
-        console.log(this.context);
+        console.error(this.context);
 
 
 
@@ -26,8 +26,8 @@ export class SaisonrepetitionchanteurService extends BaseService {
         //     a.chansons.titre.localeCompare(b.chansons.titre)
         // );
 
-        console.log("service data", data)
-        console.log("service success", success)
+        console.error("service data", data)
+        console.error("service success", success)
         return {
             success: true,
             data

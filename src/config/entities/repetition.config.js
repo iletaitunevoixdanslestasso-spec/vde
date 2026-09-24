@@ -28,7 +28,6 @@ const columns = [
         header: "Rendez-vous",
         type: "hidden",
         render: (v, row) => {
-            console.log(row)
             // const token = row.acces.length ? row.acces[0].token : ''
             return `${row.rendezvous.description}`
         },
@@ -130,12 +129,7 @@ const columns = [
             let rendezvous = row.rendezvous ?? false
             return rendezvous?.lieux?.nom || ''
         },
-        // render: (v, row) => {
-        //     console.log(row)
-        //     if (!row.lieux)
-        //         return ``
-        //     return `${row?.lieux?.nom || ''}`
-        // },
+
         sortValue: (row) => {
             if (!row.lieux)
                 return ''
@@ -177,7 +171,6 @@ const columns = [
         },
         render: (v, row) => {
             let rendezvous = row.rendezvous ?? false
-            console.log("rendezvous",rendezvous)
             if (!rendezvous.lieux)
                 return ''
             return `${rendezvous.lieux.ville || ''}`

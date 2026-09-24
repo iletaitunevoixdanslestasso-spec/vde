@@ -37,7 +37,7 @@ export class ChansonService extends BaseService {
         const filteredData = data.filter(item => item.document_types !== null);
 
 
-        console.log(data)
+        console.error(data)
         return {
             success: true,
             data: filteredData
@@ -48,8 +48,8 @@ export class ChansonService extends BaseService {
         const form = {
             ...data
         };
-        console.log(data)
-        console.log(form)
+        console.error(data)
+        console.error(form)
         return
         /*
          * Un upload vient de FileUploader sous forme de path Storage.
@@ -112,8 +112,8 @@ export class ChansonService extends BaseService {
         const form = {
             ...data
         };
-        console.log("form", form)
-        console.log("data", data)
+        console.error("form", form)
+        console.error("data", data)
 
         if (form.referentiel_documents) {
             // 1. récupérer le type "paroles"
@@ -123,8 +123,8 @@ export class ChansonService extends BaseService {
                 error: documentTypeError
             } = await this.documentTypeRepository.findByCode("paroles");
 
-            console.log(data)
-            console.log(documentType)
+            console.error(data)
+            console.error(documentType)
             
             if (documentTypeError) {
                 return {
@@ -139,7 +139,7 @@ export class ChansonService extends BaseService {
                 };
             }
             // 2 contrcution du referentieldocument
-            console.log(documentType)
+            console.error(documentType)
             const document = {
                 path: data.referentiel_documents_path,
                 titre: `Paroles - ${form.titre}`,
@@ -147,7 +147,7 @@ export class ChansonService extends BaseService {
                 document_type_id: documentType.id,
                 deleted_at: null
             }
-            console.log(document)
+            console.error(document)
             const referentiel_documents = ReferentielDocumentConfig
 
             const result =
@@ -155,7 +155,7 @@ export class ChansonService extends BaseService {
                     document
                 );
 
-            console.log(result)
+            console.error(result)
             if (!result.success) {
                 return result;
             }

@@ -90,10 +90,10 @@ export class RepetitionRepository extends RendezvouRepository {
             .toISOString()
             .split("T")[0];
 
-        console.log("findDuJourPourChanteur");
-        console.log("saisonId :", saisonId);
-        console.log("saisonChanteurId :", saisonChanteurId);
-        console.log("aujourdHui :", aujourdHui);
+        console.error("findDuJourPourChanteur");
+        console.error("saisonId :", saisonId);
+        console.error("saisonChanteurId :", saisonChanteurId);
+        console.error("aujourdHui :", aujourdHui);
 
         return this.supabase
             .from("repetitions")

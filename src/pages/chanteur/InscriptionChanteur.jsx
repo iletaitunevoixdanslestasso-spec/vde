@@ -20,7 +20,7 @@ export default function InscriptionChanteur() {
             3
         );
 
-        console.log(
+        console.error(
             "Inscription envoyée",
             result
         );

@@ -312,7 +312,7 @@ export default function ImportChanteursExcel({ saisonId }) {
                 return;
             }
 
-            console.log(
+            console.error(
                 "Résultat import chanteurs :",
                 data
             );
