@@ -367,7 +367,7 @@ export default function RepresentationChoeur({
                         ARC
                  
 
-                    <path
+                        <path
                         className="choeur-arc-ligne"
                         d={`
                             M ${centreX - rayonX}
@@ -400,6 +400,13 @@ export default function RepresentationChoeur({
                             const chanteurs =
                                 pupitre.chanteurs || [];
 
+                            const choristes = chanteurs.filter(
+                                chanteur => !chanteur.lead
+                            );
+
+                            const leads = chanteurs.filter(
+                                chanteur => chanteur.lead
+                            );
                             const angleCentre =
                                 getPositionPupitre(
                                     pupitreIndex
@@ -484,40 +491,93 @@ export default function RepresentationChoeur({
                                         CHANTEURS
                                     ================================= */}
 
-                                    {chanteurs.map(
-                                        (
-                                            chanteur,
-                                            chanteurIndex
-                                        ) => {
+                                    {/* Chanteurs sur l’arc du pupitre */}
+                                    {choristes.map((chanteur, chanteurIndex) => {
+                                        const position = getPositionChanteur(
+                                            chanteurIndex,
+                                            choristes.length,
+                                            angleCentre
+                                        );
 
-                                            const position =
-                                                getPositionChanteur(
-                                                    chanteurIndex,
-                                                    chanteurs.length,
-                                                    angleCentre
-                                                );
+                                        const nom =
+                                            `${chanteur.prenom || ""} ${chanteur.nom || ""}`.trim();
 
+                                        return (
+                                            <IconChanteur
+                                                key={chanteur.id || chanteurIndex}
+                                                x={position.x}
+                                                y={position.y}
+                                                couleur={couleur}
+                                                nom={nom}
+                                                index={chanteurIndex}
+                                            />
+                                        );
+                                    })}
 
-                                            const nom =
-                                                `${chanteur.prenom || ""} ${chanteur.nom || ""}`
-                                                    .trim();
+                                    {/* Leads entre leur pupitre et le chef */}
+                                    {leads.map((chanteur, leadIndex) => {
+                                        const positionPupitre = getPositionChanteur(
+                                            0,
+                                            1,
+                                            angleCentre
+                                        );
 
+                                        const chefX = centreX;
+                                        const chefY = viewBoxHeight - 25;
 
-                                            return (
+                                        /*
+                                         * Position à mi-chemin entre le pupitre et le chef.
+                                         */
+                                        const milieuX =
+                                            (positionPupitre.x + chefX) / 2;
+
+                                        const milieuY =
+                                            (positionPupitre.y + chefY) / 2;
+
+                                        /*
+                                         * Plusieurs leads du même pupitre :
+                                         * les répartir côte à côte, perpendiculairement
+                                         * à la direction pupitre → chef.
+                                         */
+                                        const dx = chefX - positionPupitre.x;
+                                        const dy = chefY - positionPupitre.y;
+                                        const distance = Math.hypot(dx, dy) || 1;
+
+                                        const decalage =
+                                            (leadIndex - (leads.length - 1) / 2) * 40;
+
+                                        const x =
+                                            milieuX + (-dy / distance) * decalage;
+
+                                        const y =
+                                            milieuY + (dx / distance) * decalage;
+
+                                        const nom =
+                                            `${chanteur.prenom || ""} ${chanteur.nom || ""}`.trim();
+
+                                        return (
+                                            <g key={chanteur.id || `lead-${leadIndex}`}>
                                                 <IconChanteur
-                                                    key={
-                                                        chanteur.id ||
-                                                        chanteurIndex
-                                                    }
-                                                    x={position.x}
-                                                    y={position.y}
+                                                    x={x}
+                                                    y={y}
                                                     couleur={couleur}
-                                                    nom={nom}
-                                                    index={chanteurIndex}
+                                                    nom={`${nom} — Lead`}
+                                                    index={leadIndex}
                                                 />
-                                            );
-                                        }
-                                    )}
+
+                                                <text
+                                                    x={x}
+                                                    y={y + 29}
+                                                    textAnchor="middle"
+                                                    fontSize="10"
+                                                    fontWeight="700"
+                                                    fill={couleur}
+                                                >
+                                                    Lead
+                                                </text>
+                                            </g>
+                                        );
+                                    })}
 
                                 </g>
                             );

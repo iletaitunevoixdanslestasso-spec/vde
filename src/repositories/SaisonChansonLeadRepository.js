@@ -57,4 +57,23 @@ export class SaisonChansonLeadRepository
 
         return data?.[0] || null;
     }
+
+    async findBySaisonAndChanson(saisonId, chansonId) {
+        return await this.supabase
+            .from(this.table)
+            .select(`
+            id,
+            saison_chanson_id,
+            saison_chanteur_id,
+            saison_chansons!inner (
+                id,
+                saison_id,
+                chanson_id
+            )
+        `)
+            .eq("saison_chansons.saison_id", saisonId)
+            .eq("saison_chansons.chanson_id", chansonId)
+            .is("saison_chansons.deleted_at", null)
+            .is("deleted_at", null);
+    }
 }

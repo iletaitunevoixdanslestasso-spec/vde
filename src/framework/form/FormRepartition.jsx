@@ -70,7 +70,18 @@ export default function FormRepartition({
             data.chansonPupitres
         );
 
-        let chanteurs = data.saisonChanteurs || [];
+        const leadIds = new Set(
+            (data.saisonChansonLeads || []).map(
+                lead => lead.saison_chanteur_id
+            )
+        );
+
+        let chanteurs = (data.saisonChanteurs || []).map(
+            chanteur => ({
+                ...chanteur,
+                lead: leadIds.has(chanteur.id)
+            })
+        );
 
         // En mode concert :
         // on ne garde que les chanteurs qui participent
@@ -301,7 +312,8 @@ export default function FormRepartition({
                         id: chanteur.id,
                         chanteur_id: chanteur.chanteur_id,
                         prenom: chanteur.chanteurs?.prenom,
-                        nom: chanteur.chanteurs?.nom
+                        nom: chanteur.chanteurs?.nom,
+                        lead: chanteur.lead === true
                     }));
 
 

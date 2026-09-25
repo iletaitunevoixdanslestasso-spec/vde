@@ -1,4 +1,5 @@
 import { BaseResponse } from "../core/framework/BaseResponse";
+import { SaisonChansonLeadRepository } from "../repositories/SaisonChansonLeadRepository";
 // import { ChansonpupitreRepository } from "../repositories/ChansonpupitreRepository";
 // import { SaisonChanteurPupitreRepository } from "../repositories/SaisonChanteurPupitreRepository";
 // import { SaisonChanteurRepository } from "../repositories/SaisonChanteurRepository";
@@ -11,6 +12,8 @@ export default class RepartitionService {
         saisonChanteurRepository,
         saisonChanteurPupitreRepository
     ) {
+        this.saisonChansonLeadRepository =
+            new SaisonChansonLeadRepository();
         this.chansonPupitreRepository =
             chansonPupitreRepository;
 
@@ -38,7 +41,11 @@ export default class RepartitionService {
 
             // 3. Tous les chanteurs de la saison
             this.saisonChanteurRepository
-                .findBySaison(saisonId)
+                .findBySaison(saisonId),
+
+            // 3. Tous les lead de la saison
+            this.saisonChansonLeadRepository
+                .findBySaisonAndChanson(saisonId, chansonId)
         ];
 
         // 4. Si concert : récupérer les participations
@@ -53,6 +60,7 @@ export default class RepartitionService {
             chansonPupitresResponse,
             saisonChanteurPupitresResponse,
             saisonChanteursResponse,
+            saisonChansonLeadsResponse,
             saisonConcertChanteursResponse
         ] = await Promise.all(requests);
 
@@ -81,6 +89,13 @@ export default class RepartitionService {
                 saisonChanteursResponse.error.message
             );
         }
+        if (saisonChansonLeadsResponse.error) {
+            return BaseResponse.error(
+                [],
+                saisonChansonLeadsResponse.error.message
+            );
+        }
+
 
         if (
             saisonConcertId &&
@@ -109,7 +124,10 @@ export default class RepartitionService {
                 saisonChanteurPupitresResponse.data || [],
 
             saisonConcertChanteurs:
-                saisonConcertChanteursResponse?.data || []
+                saisonConcertChanteursResponse?.data || [],
+
+            saisonChansonLeads:
+                saisonChansonLeadsResponse.data || [],
 
         });
     }
