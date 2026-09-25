@@ -87,6 +87,20 @@
     white-space: nowrap;
 }
 
+.participation-button:disabled,
+.participation-button.selected:disabled {
+    opacity: 0.30 !important;
+    filter: grayscale(100%) !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* important si .selected applique ensuite d'autres styles */
+.participation-button.selected:disabled {
+    opacity: 0.30;
+    filter: grayscale(100%);
+}
+
 /* =========================================================
    MOBILE
    ========================================================= */
