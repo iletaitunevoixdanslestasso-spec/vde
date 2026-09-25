@@ -90,6 +90,7 @@
 .icon-alerte::before,
 .icon-avertissement::before,
 .icon-profil::before,
+.icon-telechargement::before,
 .icon-referentiels::before {
     display: inline-block;
     /* width: 24px; */
@@ -98,6 +99,9 @@
 
 
 /* Actions */
+.icon-telechargement::before {
+    content: "⬇️";
+}
 .icon-chanteursaison {
     display: inline-flex;
     align-items: center;

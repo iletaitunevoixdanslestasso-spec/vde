@@ -6,6 +6,7 @@ import { SaisonchansonValidator } from "../../validators/SaisonchansonValidator"
 import { SaisonchansonMapper } from "../../mappers/SaisonchansonMapper";
 import { SaisonchansonController } from "../../controllers/SaisonchansonController";
 import React from "react";
+import { truncateText } from "../../helper/helper";
 
 const columns = [
     {
@@ -19,30 +20,33 @@ const columns = [
         }
 
     },
-        {
-            mapped:false,
-            field: "paroles_url",
-            header: "Paroles",
-            type: "text",
-            hideInForm: true,
-    
-            render: (v, row) => {
+    {
+        mapped: false,
+        field: "paroles_url",
+        header: "Paroles",
+        type: "text",
+        hideInForm: true,
 
-                if (!v) {
-                    return "Aucune parole";
-                }
-                let path = row?.chansons.referentiel_documents?.path || ''
-                return React.createElement(
-                    "a",
-                    {
-                        href: v,
-                        target: "_blank",
-                        rel: "noopener noreferrer"
-                    },
-                    `📄 ${path}`
-                );
+        render: (v, row) => {
+            console.log(v)
+            console.log(row)
+            if (!v) {
+                return "Aucune parole";
             }
-        },
+            let path = row?.chansons.titre || ''
+            return React.createElement(
+                "button",
+                {
+                    type: "button",
+                    className: "data-table-action  icon-telechargement",
+                    title: "Télécharger",
+                    onClick: () => {
+                        window.open(v, "_blank", "noopener,noreferrer");
+                    }
+                }
+            );
+        }
+    },
 
 ];
 
@@ -53,11 +57,12 @@ const actions = [
         cssClass: "icon-pupitres",
         action: "manageSaisonChansonPupitres"
     },
-    { 
-        label: "Répartition", 
-        title: "affichage de la Répartition", 
-        cssClass: "icon-chanteursaison", 
-        action: "repartition" },
+    {
+        label: "Répartition",
+        title: "affichage de la Répartition",
+        cssClass: "icon-chanteursaison",
+        action: "repartition"
+    },
     {
         title: "Supprimer",
         action: "delete",
@@ -72,7 +77,7 @@ export const saisonchansonConfig = createEntityConfig({
     entity: "saisonchanson",
     icon: designation,
     title: "Chansons de la saison",
-    countLabel : {
+    countLabel: {
         plural: `${designation}s`,
         singular: designation,
     },
