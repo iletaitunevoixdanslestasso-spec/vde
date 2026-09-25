@@ -100,7 +100,7 @@ export const chansonConfig = createEntityConfig({
 
     entity: "chanson",
 
-    title: "🎵 les Chansons",
+    title: "les Chansons",
 
     table: "chansons",
 
@@ -116,7 +116,7 @@ export const chansonConfig = createEntityConfig({
     actions: [
         {
             label: "Pupitres",
-            cssClass: "icon-pupitres",
+            cssClass: "icon-pupitre",
             action: "managePupitres"
         }
     ]

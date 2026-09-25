@@ -76,13 +76,13 @@
 .icon-chanteurs::before,
 .icon-chanson::before,
 .icon-groupe::before,
-.icon-concerts::before,
+.icon-concert::before,
 .icon-chanteurSaison::before,
 .icon-saisonactive::before,
 .icon-repetition::before,
 .icon-lieux::before,
-.icon-pupitres::before,
-.icon-documents::before,
+.icon-pupitre::before,
+.icon-document::before,
 .icon-invitation::before,
 .icon-votes::before,
 .icon-inscription::before,
@@ -180,7 +180,7 @@
     content: "👥";
 }
 
-.icon-concerts::before {
+.icon-concert::before {
     content: "🎤";
 }
 .icon-saisonactive::before {
@@ -191,11 +191,11 @@
     content: "🗓";
 }
 
-.icon-pupitres::before {
+.icon-pupitre::before {
     content: "🎼";
 }
 
-.icon-documents::before {
+.icon-document::before {
     content: "📄";
 }
 

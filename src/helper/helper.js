@@ -38,6 +38,20 @@ export function formatDuration(minutes) {
 
     return result.join(" ");
 }
+export function isPast(date) {
+
+    if (!date) {
+        return false;
+    }
+
+    const repetitionDate = new Date(date);
+    const today = new Date();
+
+    repetitionDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return repetitionDate < today;
+}
 
 export function truncateText(value, maxLength = 25) {
     if (!value) return "";

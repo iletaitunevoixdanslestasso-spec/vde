@@ -19,6 +19,7 @@ const profilConfig = {
             field: "groupe_id",
             header: "Groupe",
             type: "text",
+            className:"icon-groupe",
             source: "availableGroupes",
             required: true,
             editType: "readonly",
@@ -31,6 +32,7 @@ const profilConfig = {
             field: "pupitre_id",
             header: "Pupitre par défaut",
             type: "select",
+            className:"icon-pupitre",
             source: "availablePupitres",
             required: true,
             render: (v, row) => {

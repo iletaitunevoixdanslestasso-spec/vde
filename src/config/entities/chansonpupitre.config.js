@@ -52,13 +52,15 @@ const columns = [
 const actions = [
 ];
 
-
+const designation ="pupitre"
 export const chansonpupitreConfig = createEntityConfig({
 
     entity: "chansonpupitre",
-
+    icon:designation,
     title: "Les pupitres",
-
+    countLabel : {
+        singular  : designation
+    },
     table: "chanson_pupitres",
 
 

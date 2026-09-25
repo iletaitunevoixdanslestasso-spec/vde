@@ -123,6 +123,52 @@
     color: #888;
 }
 
+
+/* =========================================================
+   ICONE MUSIQUE - liste des concerts
+   ========================================================= */
+
+.concert-music-note {
+    display: inline-block;
+
+    animation:
+        concert-music-note-pulse
+        1.4s
+        ease-in-out
+        infinite;
+
+    transform-origin: center;
+}
+
+
+/* animation plus dynamique au survol du bouton */
+.concert-icon-button:hover .concert-music-note {
+    animation-duration: 0.7s;
+}
+
+
+@keyframes concert-music-note-pulse {
+
+    0%,
+    100% {
+        transform:
+            scale(1)
+            rotate(0deg);
+    }
+
+    35% {
+        transform:
+            scale(1.18)
+            rotate(-8deg);
+    }
+
+    65% {
+        transform:
+            scale(1.08)
+            rotate(7deg);
+    }
+}
+
 /* =========================================================
    AIDE
    ========================================================= */

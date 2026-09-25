@@ -81,7 +81,7 @@ export default function ChanteurMenu({chanteur}) {
                 <button
                     type="button"
                     className={
-                        `chanteur-menu-item icon-concerts ` +
+                        `chanteur-menu-item icon-concert ` +
                         (isActive("/concerts")
                             ? "active"
                             : "")
@@ -111,7 +111,7 @@ export default function ChanteurMenu({chanteur}) {
                 <button
                     type="button"
                     className={
-                        `chanteur-menu-item icon-documents ` +
+                        `chanteur-menu-item icon-document ` +
                         (isActive("/documents")
                             ? "active"
                             : "")

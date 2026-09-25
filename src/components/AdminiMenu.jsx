@@ -390,7 +390,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-concerts"
+                                                className="admin-menu-item icon-concert"
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -525,7 +525,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-pupitres"
+                                className="admin-menu-item icon-pupitre"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/pupitres"
@@ -538,7 +538,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-documents"
+                                className="admin-menu-item icon-document"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/documents"
@@ -551,7 +551,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-concerts"
+                                className="admin-menu-item icon-concert"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/concerts"

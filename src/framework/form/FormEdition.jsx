@@ -88,7 +88,7 @@ export default function FormEdition({
                             className="form-edition-field"
                         >
 
-                            <label>
+                            <label className={f?.className}>
                                 {f.header} :
                             </label>
 

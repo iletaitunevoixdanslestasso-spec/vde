@@ -190,10 +190,10 @@ button {
 .icon-chanteurs::before,
 .icon-chanson::before,
 .icon-groupe::before,
-.icon-concerts::before,
+.icon-concert::before,
 .icon-repetition::before,
-.icon-pupitres::before,
-.icon-documents::before,
+.icon-pupitre::before,
+.icon-document::before,
 .icon-invitation::before,
 .icon-votes::before,
 .icon-inscription::before,
@@ -259,7 +259,7 @@ button {
     content: "👥";
 }
 
-.icon-concerts::before {
+.icon-concert::before {
     content: "🎤";
 }
 
@@ -267,11 +267,11 @@ button {
     content: "🗓";
 }
 
-.icon-pupitres::before {
+.icon-pupitre::before {
     content: "🎼";
 }
 
-.icon-documents::before {
+.icon-document::before {
     content: "📄";
 }
 

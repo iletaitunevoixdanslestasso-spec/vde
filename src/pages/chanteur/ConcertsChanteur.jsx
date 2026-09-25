@@ -6,6 +6,7 @@ import { saisonconcertConfig } from "../../config/entities/saisonconcert.config"
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 import NotificationService from "../../services/NotificationService";
 import ConcertParticipation from "../../components/ConcertParticipation";
+import { isPast } from "../../helper/helper";
 
 export default function ConcertsChanteur() {
 
@@ -146,7 +147,7 @@ export default function ConcertsChanteur() {
             chanteurId,
 
             (result) => {
-                console.error("result", result)
+
                 setConcerts(result || []);
                 setLoading(false);
             },
@@ -240,7 +241,7 @@ export default function ConcertsChanteur() {
 
                 <header className="concerts-page-header">
 
-                    <div className="concerts-page-header-icon">
+                    <div className="concerts-page-header-icon icon-concert">
                         🎵
                     </div>
 
@@ -296,7 +297,7 @@ export default function ConcertsChanteur() {
 
                 <header className="concerts-page-header">
 
-                    <div className="concerts-page-header-icon">
+                    <div className="concerts-page-header-icon icon-concert">
                         🎵
                     </div>
 
@@ -359,8 +360,7 @@ export default function ConcertsChanteur() {
 
             <header className="concerts-page-header">
 
-                <div className="concerts-page-header-icon">
-                    🎵
+                <div className="concerts-page-header-icon  icon-concert">
                 </div>
 
                 <div className="concerts-page-header-content">
@@ -448,7 +448,8 @@ export default function ConcertsChanteur() {
             <section className="concerts-list">
 
                 {concerts.map(concert => {
-
+                    const passed =
+                        isPast(concert.date);
                     const isSaving =
                         saving === concert.id;
 
@@ -486,7 +487,9 @@ export default function ConcertsChanteur() {
                                                     ↻
                                                 </span>
                                             ) : (
-                                                "🎵"
+                                                <span className="concert-music-note" aria-hidden="true">
+                                                    🎵
+                                                </span>
                                             )}
                                         </button>
                                     </div>
@@ -599,6 +602,7 @@ export default function ConcertsChanteur() {
 
                                 <ConcertParticipation
                                     concert={concert}
+                                    disabled={passed}
                                     // token={token}
                                     // chanteur={chanteur}
                                     // controller={controller}

@@ -53,7 +53,7 @@ const columns = [
 const actions = [
     {
         label: "Pupitres",
-        cssClass: "icon-pupitres",
+        cssClass: "icon-pupitre",
         action: "manageSaisonChansonPupitres"
     },
     {

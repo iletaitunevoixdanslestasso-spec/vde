@@ -76,13 +76,15 @@ const columns = [
 const actions = [
 ];
 
-
+const designation ="document"
 export const ReferentielDocumentConfig = createEntityConfig({
 
     entity: "ReferentielDocument",
-
+    icon:designation,
+    countLabel : {
+        singular  : designation
+    },
     title: "Documents",
-    icon:"documents",
     table: "referentiel_documents",
 
 

@@ -10,7 +10,6 @@ export default function ChansonpupitrePage() {
     const navigate = useNavigate();
     const [session, setSession] = useState(null);
     const { chansonSelectionnee } = useChanson();
-    console.error("chansonSelectionnee", chansonSelectionnee)
     if(!chansonSelectionnee){
         navigate(`/admin`)
         return
@@ -21,8 +20,6 @@ export default function ChansonpupitrePage() {
 
             const { data: { session } } =
                 await supabase.auth.getSession();
-
-            console.error(session);
 
             setSession(session);
 
@@ -39,7 +36,7 @@ export default function ChansonpupitrePage() {
         <CRUDPage
             config={chansonpupitreConfig}
             context={{
-                title: `🎵 ${chansonSelectionnee.titre} : ${chansonpupitreConfig.title}`,
+                title: `${chansonSelectionnee.titre} : ${chansonpupitreConfig.title}`,
                 chansonId: chansonSelectionnee.id
             }}
 

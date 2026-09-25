@@ -16,7 +16,7 @@ const actions= [
 
 export const pupitreConfig = createEntityConfig({
     entity: "pupitre",
-    title: "🎼 les Pupitres",
+    title: "les Pupitres",
     table: "pupitres",
     Repository: PupitreRepository,
     Service: PupitreService,

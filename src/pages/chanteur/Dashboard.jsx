@@ -774,7 +774,7 @@ export default function DashboardChanteur() {
                   to={`/chanteur/${token}/concerts`}
                   className="todo-button"
                 >
-                  <span className="icon icon-concerts" />
+                  <span className="icon icon-concert" />
                   concerts
                 </Link>.
               </TodoItem>

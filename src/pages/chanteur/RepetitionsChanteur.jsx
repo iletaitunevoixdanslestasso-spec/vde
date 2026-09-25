@@ -10,22 +10,10 @@ import { useChanteur }
 
 import RepetitionParticipationControllerChanteur
     from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
+import { isPast } from "../../helper/helper";
 
 
-function isPast(date) {
 
-    if (!date) {
-        return false;
-    }
-
-    const repetitionDate = new Date(date);
-    const today = new Date();
-
-    repetitionDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    return repetitionDate < today;
-}
 
 
 export default function RepetitionsChanteur() {
@@ -128,8 +116,7 @@ export default function RepetitionsChanteur() {
 
             <header className="concerts-page-header">
 
-                <div className="concerts-page-header-icon">
-                    🎤
+                <div className="concerts-page-header-icon icon-repetition">
                 </div>
 
                 <div className="concerts-page-header-content">
@@ -202,8 +189,7 @@ export default function RepetitionsChanteur() {
 
                                     <div className="concert-main">
 
-                                        <div className="concert-icon">
-                                            🎤
+                                        <div className="concert-icon  icon-repetition">
                                         </div>
 
                                         <div className="concert-title-content">

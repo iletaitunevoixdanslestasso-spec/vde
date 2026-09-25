@@ -7,6 +7,7 @@ import RepetitionParticipationBoutons from "./repetition_participation/Repetitio
 
 export default function ConcertParticipation({
     concert,
+    disabled,
     onParticipationChange,
 }) {
     const token = localStorage.getItem("token");    
@@ -90,6 +91,7 @@ export default function ConcertParticipation({
             <RepetitionParticipationBoutons
                 participation={concert.participation}
                 saving={saving}
+                disabled={disabled}
                 onParticipationChange={
                     handleParticipationChange
                 }
@@ -97,55 +99,5 @@ export default function ConcertParticipation({
 
         </div>
     );
-    return (
-        <div className="concert-participation">
 
-            <label className="concert-participation-label">
-                Ma participation
-            </label>
-
-            <div className="concert-participation-buttons">
-
-                <button
-                    type="button"
-                    className={`concert-participation-button ${
-                        concert.participation === true
-                            ? "selected"
-                            : ""
-                    }`}
-                    disabled={saving}
-                    title="Je participe"
-                    onClick={() =>
-                        handleParticipationChange(true)
-                    }
-                >
-                    👍
-                </button>
-
-                <button
-                    type="button"
-                    className={`concert-participation-button ${
-                        concert.participation === false
-                            ? "selected"
-                            : ""
-                    }`}
-                    disabled={saving}
-                    title="Je ne participe pas"
-                    onClick={() =>
-                        handleParticipationChange(false)
-                    }
-                >
-                    ❌
-                </button>
-
-            </div>
-
-            {saving && (
-                <span className="concert-saving">
-                    Enregistrement...
-                </span>
-            )}
-
-        </div>
-    );
 }

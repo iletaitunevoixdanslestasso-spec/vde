@@ -108,7 +108,7 @@ export const chanteurConfig = createEntityConfig({
     entity,
     title,
     table,
-    icon:'groupes',
+    icon:'groupe',
     Repository: ChanteurRepository,
     Service: ChanteurService,
     Validator: ChanteurValidator,
