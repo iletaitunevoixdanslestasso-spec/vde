@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./../styles/representationChoeur.css";
+import { useSaison } from "./contexts/SaisonContext";
 
 function IconChanteur({
     x,
@@ -54,6 +55,8 @@ export default function RepresentationChoeur({
     const choeurRef = useRef(null);
     const [pleinEcran, setPleinEcran] = useState(false);
     const [erreurPleinEcran, setErreurPleinEcran] = useState("");
+    const { saisonSelectionne } = useSaison();
+
 
     useEffect(() => {
         const synchroniserPleinEcran = () => {
@@ -528,11 +531,16 @@ export default function RepresentationChoeur({
                                         /*
                                          * Position à mi-chemin entre le pupitre et le chef.
                                          */
+                                        // 0 = au pupitre ; 1 = au chef.
+                                        const progressionVersChef = 0.6;
+
                                         const milieuX =
-                                            (positionPupitre.x + chefX) / 2;
+                                            positionPupitre.x +
+                                            (chefX - positionPupitre.x) * progressionVersChef;
 
                                         const milieuY =
-                                            (positionPupitre.y + chefY) / 2;
+                                            positionPupitre.y +
+                                            (chefY - positionPupitre.y) * progressionVersChef;
 
                                         /*
                                          * Plusieurs leads du même pupitre :
@@ -616,7 +624,7 @@ export default function RepresentationChoeur({
                         y={viewBoxHeight - 2}
                         textAnchor="middle"
                     >
-                        Chef de chœur
+                        {saisonSelectionne?.chef_choeur?.prenom}
                     </text>
 
                 </svg>

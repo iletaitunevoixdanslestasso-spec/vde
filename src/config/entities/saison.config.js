@@ -6,23 +6,42 @@ import { SaisonValidator } from "../../validators/SaisonValidator";
 import { SaisonMapper } from "../../mappers/SaisonMapper";
 import { SaisonController } from "../../controllers/SaisonController";
 
-    const actions = [
-        { label: "Activer",cssClass:"icon-saisonactive", action: "activate" },
-        // { label: "👥 Chanteurs", action: "manageChanteurs" },
-    ];
+const actions = [
+    { label: "Activer", cssClass: "icon-saisonactive", action: "activate" },
+    // { label: "👥 Chanteurs", action: "manageChanteurs" },
+];
 
-    const columns= [
-        { field: "nom", header: "Nom", type: "text" , required:true},
-        { field: "date_debut", header: "Début", type: "date" , required:true},
-        { field: "date_fin", header: "Fin", type: "date" , required:true},
-        {
-            field: "active",
-            header: "Active",
-            type: "boolean",
-            hideInForm: true,
-            render: (v) => (v ? "⭐" : "")
-        }
-    ];   
+const columns = [
+    { field: "nom", header: "Nom", type: "text", required: true },
+    {
+        field: "chef_choeur", header: "Chef de choeur",
+        type: "select",
+        source: "availableAdherents",
+        required: true,
+        render: (v, row) => {
+            console.log (v, row)
+            if(row?.chef_choeur)
+                return `${row.chef_choeur.nom} ${row.chef_choeur.prenom}`;
+            return ''
+        },
+        sortValue: (row) => {
+            if(row?.chef_choeur)
+                return `${row.chef_choeur?.nom ?? ""} ${row.chef_choeur?.prenom ?? ""}`;
+            return ''
+        },
+        // editType: "readonly",
+
+    },
+    { field: "date_debut", header: "Début", type: "date", required: true },
+    { field: "date_fin", header: "Fin", type: "date", required: true },
+    {
+        field: "active",
+        header: "Active",
+        type: "boolean",
+        hideInForm: true,
+        render: (v) => (v ? "⭐" : "")
+    }
+];
 
 export const saisonConfig = createEntityConfig({
     entity: "saison",

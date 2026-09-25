@@ -1,5 +1,6 @@
 import { BaseService } from "./BaseService";
 import { BaseResponse } from "../core/framework/BaseResponse";
+import { ChanteurRepository } from "../repositories/ChanteurRepository";
 
 
 
@@ -9,6 +10,7 @@ export class SaisonService extends BaseService {
 
     constructor(repository, validator, mapper) {
         super(repository, validator, mapper);
+        this.chanteurRepository = new ChanteurRepository('chanteurs');
     }
 
     async getAll(orderBy = "date_debut") {
@@ -46,5 +48,28 @@ export class SaisonService extends BaseService {
             "Saison activée"
         );
     }
+
+  /**
+     * Liste des chanteurs pouvant être ajoutés
+     */
+    async getAvailableAdherents() {
+
+
+        // 1 - tous les chanteurs actifs
+        const {
+            data: chanteurs,
+            error: errorChanteurs
+        } = await this.chanteurRepository.findAll();
+
+
+        if (errorChanteurs) {
+            return BaseResponse.error([], errorChanteurs.message);
+        }
+
+
+
+        return BaseResponse.success(chanteurs);
+    }
+
 
 }

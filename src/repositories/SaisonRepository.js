@@ -11,7 +11,14 @@ export class SaisonRepository extends BaseRepository {
 
         const { data, error } = await supabase
             .from("saisons")
-            .select("*")
+            .select(`id,nom, date_debut, date_fin, deleted_at, active, 
+                chef_choeur,
+                chef_choeur!left (
+                    id,
+                    nom,
+                    prenom
+                )
+            `)
             // .not("deleted_at", "is", null)
             .is("deleted_at", null)
             .order(orderBy, { ascending: true })
