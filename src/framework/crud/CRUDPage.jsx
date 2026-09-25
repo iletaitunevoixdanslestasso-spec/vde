@@ -7,6 +7,7 @@ import NotificationService from "../../services/NotificationService";
 import "./../styles/CRUDPage.css";
 import { useSaison } from "../../components/contexts/SaisonContext";
 import ExcelService from "../../services/ExcelService";
+import { truncateText } from "../../helper/helper";
 export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
@@ -341,22 +342,25 @@ export default function CRUDPage({ config, context = {} }) {
             <div className="crud-page-header">
 
                 <h1>
-                    <span className={`icon-${config?.icon}`}>
-                        {title}
+                    <span className={`icon-${config?.icon} crud-page-title-icon`} alt="{title}" title="{title}">
+                        <span className="crud-page-title-text">
 
-                        {context.saisonId && (
-                            <>
-                                {` ${saisonSelectionne.nom}`}
+                            {truncateText(title)}
 
-                                <label
-                                    className={
-                                        saisonSelectionne.active
-                                            ? "icon-saisonactive"
-                                            : "icon-saison"
-                                    }
-                                />
-                            </>
-                        )}
+                            {context.saisonId && (
+                                <>
+                                    {` ${saisonSelectionne.nom}`}
+
+                                    <label
+                                        className={
+                                            saisonSelectionne.active
+                                                ? "icon-saisonactive"
+                                                : "icon-saison"
+                                        }
+                                    />
+                                </>
+                            )}
+                        </span>
                     </span>
                 </h1>
 

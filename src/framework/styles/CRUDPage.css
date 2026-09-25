@@ -206,6 +206,81 @@
         font-size: 13px;
     }
 
+    .crud-page-header {
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    /*
+     * Le titre prend tout l'espace disponible
+     * mais ne peut pas pousser le compteur hors écran.
+     */
+    .crud-page-header h1 {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .crud-page-title-icon {
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    /*
+     * Titre trop long :
+     * "Chansons du concert de printe..."
+     */
+    .crud-page-title-text {
+        display: block;
+        min-width: 0;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }    
+    /*
+     * Compteur sur deux lignes :
+     *
+     *      42
+     *   chansons
+     */
+    .crud-page-count {
+        flex: 0 0 auto;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        gap: 0;
+
+        max-width: 80px;
+        min-width: 50px;
+
+        text-align: center;
+
+        line-height: 1.1;
+    }
+
+    .crud-page-count strong {
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .crud-page-count span {
+        margin-top: 0.2rem;
+
+        max-width: 100%;
+
+        font-size: 0.72rem;
+        line-height: 1;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }    
+
 }
 
 
