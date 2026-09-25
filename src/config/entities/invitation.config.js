@@ -166,9 +166,8 @@ const actions= [
 
 export const invitationConfig = createEntityConfig({
 
-    entity: "invitations",
+    entity: "invitation",
     title: "TODO",
-
     table: "rendezvous",
 
 

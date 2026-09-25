@@ -32,7 +32,31 @@
     font-weight: 700;
     line-height: 1.2;
 }
+.crud-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
 
+.crud-page-header h1 {
+    margin-right: 1rem;
+}
+
+.crud-page-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.crud-page-count strong {
+    font-size: 1.4rem;
+}
+
+.crud-page-count span {
+    font-size: 0.9rem;
+}
 
 /* =========================================================
    BOUTON NOUVEAU

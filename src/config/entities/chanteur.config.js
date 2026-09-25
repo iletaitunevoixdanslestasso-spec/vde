@@ -9,7 +9,7 @@ import { ChanteurController } from "../../controllers/ChanteurController";
 import React from "react";
 
 
-const entity = "chanteurs";
+const entity = "chanteur";
 const title = "les Adhérents";
 const table = "chanteurs";
 const columns = [

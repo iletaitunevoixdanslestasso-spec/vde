@@ -56,7 +56,7 @@ const actions = [
     { 
         label: "Répartition", 
         title: "affichage de la Répartition", 
-        cssClass: "icon-groupes", 
+        cssClass: "icon-chanteursaison", 
         action: "repartition" },
     {
         title: "Supprimer",
@@ -65,13 +65,17 @@ const actions = [
     },
 ];
 
+const designation = "chanson"
 
 export const saisonchansonConfig = createEntityConfig({
 
     entity: "saisonchanson",
-
-    title: "🎵 Chansons de la saison",
-
+    icon: designation,
+    title: "Chansons de la saison",
+    countLabel : {
+        plural: `${designation}s`,
+        singular: designation,
+    },
     table: "saison_chansons",
 
 

@@ -28,7 +28,7 @@ const actions= [
 
 export const groupeConfig = createEntityConfig({
 
-    entity: "groupes",
+    entity: "groupe",
 
     title: "Gestion des groupes",
 

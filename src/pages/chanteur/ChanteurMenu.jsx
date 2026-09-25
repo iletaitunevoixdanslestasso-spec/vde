@@ -65,7 +65,7 @@ export default function ChanteurMenu({chanteur}) {
                 <button
                     type="button"
                     className={
-                        `chanteur-menu-item icon-chansons ` +
+                        `chanteur-menu-item icon-chanson ` +
                         (isActive("/chansons")
                             ? "active"
                             : "")
@@ -97,7 +97,7 @@ export default function ChanteurMenu({chanteur}) {
                 <button
                     type="button"
                     className={
-                        `chanteur-menu-item icon-repetitions ` +
+                        `chanteur-menu-item icon-repetition ` +
                         (isActive("/repetitions")
                             ? "active"
                             : "")

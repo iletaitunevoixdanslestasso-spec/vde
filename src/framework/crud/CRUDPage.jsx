@@ -12,6 +12,7 @@ export default function CRUDPage({ config, context = {} }) {
     const navigate = useNavigate();
 
     const [items, setItems] = useState([]);
+    const [count, setCount] = useState(null);
     const [title, setTitle] = useState(config.title || "CRUD Page");
     const [open, setOpen] = useState(false);
     const [action, setAction] = useState("edit");
@@ -31,7 +32,11 @@ export default function CRUDPage({ config, context = {} }) {
 
 
     // LOAD
-    const load = () => controller.load(setItems);
+    const load = () =>
+        controller.load((data) => {
+            setItems(data);
+            setCount(data?.length ?? 0);
+        });
 
     useEffect(() => {
 
@@ -70,7 +75,7 @@ export default function CRUDPage({ config, context = {} }) {
                     typeof controller.prepareEditItem === "function"
                         ? await controller.prepareEditItem(row)
                         : { ...row };
-                        
+
                 setEditItem(formItem);
                 setOpen(true);
 
@@ -333,13 +338,45 @@ export default function CRUDPage({ config, context = {} }) {
 
 
 
-            <h1>
-                <span className={`icon-${config?.icon}`}> {title} {context.saisonId && (<>
-                    {saisonSelectionne.nom}
-                    <label className={`${saisonSelectionne.active ? `icon-saisonactive` : 'icon-saisons'}` }></label>
-                </>)}
-                </span>
-            </h1>
+            <div className="crud-page-header">
+
+                <h1>
+                    <span className={`icon-${config?.icon}`}>
+                        {title}
+
+                        {context.saisonId && (
+                            <>
+                                {` ${saisonSelectionne.nom}`}
+
+                                <label
+                                    className={
+                                        saisonSelectionne.active
+                                            ? "icon-saisonactive"
+                                            : "icon-saison"
+                                    }
+                                />
+                            </>
+                        )}
+                    </span>
+                </h1>
+
+                {count !== null && (
+                    <div className="crud-page-count">
+
+                        <strong>
+                            {count}
+                        </strong>
+
+                        <span>
+                            {count > 1
+                                ? config.countLabel?.plural ?? "éléments"
+                                : config.countLabel?.singular ?? "élément"}
+                        </span>
+
+                    </div>
+                )}
+
+            </div>
 
 
             {/* ERRORS */}

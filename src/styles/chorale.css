@@ -72,18 +72,18 @@
 .icon-delete::before,
 .icon-cancel::before,
 .icon-dashboard::before,
-.icon-saisons::before,
+.icon-saison::before,
 .icon-chanteurs::before,
-.icon-chansons::before,
-.icon-groupes::before,
+.icon-chanson::before,
+.icon-groupe::before,
 .icon-concerts::before,
 .icon-chanteurSaison::before,
 .icon-saisonactive::before,
-.icon-repetitions::before,
+.icon-repetition::before,
 .icon-lieux::before,
 .icon-pupitres::before,
 .icon-documents::before,
-.icon-invitations::before,
+.icon-invitation::before,
 .icon-votes::before,
 .icon-inscription::before,
 .icon-etaterreur::before,
@@ -98,10 +98,24 @@
 
 
 /* Actions */
+.icon-chanteursaison {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
 
 .icon-chanteursaison::before {
-    content: "👤🎶";
+    content: "";
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    flex: 0 0 1.4em;
+    background-image: url("/chanteursaison.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
+
 .icon-new::before {
     content: "➕";
 }
@@ -135,7 +149,7 @@
     content: "🏠";
 }
 
-.icon-saisons::before {
+.icon-saison::before {
     content: "📅";
 }
 
@@ -153,11 +167,11 @@
     content: "👍";
 }
 
-.icon-chansons::before {
+.icon-chanson::before {
     content: "🎵";
 }
 
-.icon-groupes::before {
+.icon-groupe::before {
     content: "👥";
 }
 
@@ -168,7 +182,7 @@
     content: "⭐";
 }
 
-.icon-repetitions::before {
+.icon-repetition::before {
     content: "🗓";
 }
 
@@ -180,7 +194,7 @@
     content: "📄";
 }
 
-.icon-invitations::before {
+.icon-invitation::before {
     content: "📨";
 }
 

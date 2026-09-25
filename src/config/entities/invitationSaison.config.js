@@ -15,12 +15,16 @@ const columns = [
 const actions= [
 ];
 
-
+const designation = 'invitation'
 export const invitationSaisonConfig = createEntityConfig({
 
     entity: "invitationSaison",
 
     title: "TODO",
+    icon:designation,
+    countLabel : {
+        singular: designation,
+    },
 
     table: "invitationSaison",
 

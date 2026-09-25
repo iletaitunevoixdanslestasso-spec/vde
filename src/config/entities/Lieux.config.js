@@ -71,13 +71,13 @@ const actions = [
 
 ];
 
-
+const entity =  "Lieux"
 export const LieuxConfig = createEntityConfig({
 
-    entity: "Lieux",
+    entity,
 
     title: "Gestion des lieux",
-
+    countLabel: {plural:entity},
     table: "lieux",
 
 

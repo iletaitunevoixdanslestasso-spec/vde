@@ -186,15 +186,15 @@ button {
 .icon-delete::before,
 .icon-cancel::before,
 .icon-dashboard::before,
-.icon-saisons::before,
+.icon-saison::before,
 .icon-chanteurs::before,
-.icon-chansons::before,
-.icon-groupes::before,
+.icon-chanson::before,
+.icon-groupe::before,
 .icon-concerts::before,
-.icon-repetitions::before,
+.icon-repetition::before,
 .icon-pupitres::before,
 .icon-documents::before,
-.icon-invitations::before,
+.icon-invitation::before,
 .icon-votes::before,
 .icon-inscription::before,
 .icon-profil::before,
@@ -234,10 +234,10 @@ button {
     content: "🏠";
 }
 
-.icon-saisons::before {
+.icon-saison::before {
     content: "📅";
 }
-.icon-repetitions::before {
+.icon-repetition::before {
     content: "🗓";
 }
 .icon-gestion::before {
@@ -251,11 +251,11 @@ button {
     content: "✅";
 }
 
-.icon-chansons::before {
+.icon-chanson::before {
     content: "🎵";
 }
 
-.icon-groupes::before {
+.icon-groupe::before {
     content: "👥";
 }
 
@@ -263,7 +263,7 @@ button {
     content: "🎤";
 }
 
-.icon-repetitions::before {
+.icon-repetition::before {
     content: "🗓";
 }
 
@@ -275,7 +275,7 @@ button {
     content: "📄";
 }
 
-.icon-invitations::before {
+.icon-invitation::before {
     content: "📨";
 }
 

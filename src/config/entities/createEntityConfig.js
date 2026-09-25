@@ -17,6 +17,7 @@ export function createEntityConfig({
     title,
     table,
     icon,
+    countLabel = {},
     columns = [],
 
     Repository = BaseRepository,
@@ -49,6 +50,12 @@ export function createEntityConfig({
 
     icon = icon ?? entity
     icon = icon.toLowerCase()
+    const designation = countLabel?.singular  ?? entity
+    countLabel = {
+        plural : countLabel?.plural ?? `${designation}s`,
+        singular  : designation
+
+    }
     return {
 
         ...baseConfig,
@@ -57,6 +64,7 @@ export function createEntityConfig({
         title,
         table,
         icon,
+        countLabel,
         repository,
         validator,
         mapper,

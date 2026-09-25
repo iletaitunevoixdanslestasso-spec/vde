@@ -73,8 +73,8 @@ const columns = [
         hideInForm: true,
 
         render: (v, row) => {
-            v = row.chanteurs.relances_envois.sort((a,b)=>  b.id- a.id )
-            if (v[0] && v[0].erreur ) {
+            v = row.chanteurs.relances_envois.sort((a, b) => b.id - a.id)
+            if (v[0] && v[0].erreur) {
                 return {
                     title: `${v[0].erreur}`,
                     cssClass: "dai-status icon-etaterreur"
@@ -135,7 +135,7 @@ const columns = [
 
 ];
 const actions = [
-        {
+    {
         title: "Modifier",
         action: "edit",
         cssClass: "icon-edit"
@@ -168,6 +168,9 @@ export const ChanteursSaisonConfig = createEntityConfig({
     entity: "chanteurSaison",
     title: "Choristes de la saison",
     table: "chanteurSaisons",
+    countLabel : {
+        singular: `choriste`,
+    },
     Repository: ChanteurSaisonRepository,
     Service: ChanteurSaisonService,
     Mapper: ChanteurSaisonMapper,

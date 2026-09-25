@@ -249,22 +249,24 @@ const columns = [
 ];
 const actions = [
     {
-        label: "Chanteurs",
-        title: "Chanteurs",
-        cssClass: "icon-groupes",
+        label: "Choristes",
+        cssClass: "icon-chanteursaison",
         action: "manageSaisonRepetitionChanteur"
     },
 
 ]
 
-
+const designation = "répétition"
 export const repetitionConfig = createEntityConfig({
 
     entity: "repetition",
 
-    title: "🗓 les Répétitions",
+    title: "les Répétitions",
 
     table: "repetitions",
+    countLabel : {
+        singular: designation,
+    },    
 
 
     Repository: RepetitionRepository,

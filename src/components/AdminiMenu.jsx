@@ -192,7 +192,7 @@ export default function AdminMenu() {
 
                     <button
                         type="button"
-                        className={`admin-menu-section icon-saisons ${
+                        className={`admin-menu-section icon-saison ${
                             openSaisons ? "open" : ""
                         }`}
                         onClick={toggleSaisons}
@@ -244,7 +244,7 @@ export default function AdminMenu() {
                 <div className="admin-dropdown admin-dropdown-seasons">
 
                     <div className="admin-dropdown-title">
-                        <span className="icon-saisons">
+                        <span className="icon-saison">
                             Saisons
                         </span>
                     </div>
@@ -348,7 +348,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-chansons"
+                                                className="admin-menu-item icon-chanson"
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -362,7 +362,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-repetitions"
+                                                className="admin-menu-item icon-repetition"
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -376,7 +376,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-groupes"
+                                                className="admin-menu-item icon-groupe"
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -403,7 +403,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-invitations"
+                                                className="admin-menu-item icon-invitation"
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -486,7 +486,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-saisons"
+                                className="admin-menu-item icon-saison"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/saisons"
@@ -499,7 +499,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-groupes"
+                                className="admin-menu-item icon-groupe"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/chanteurs"
@@ -512,7 +512,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-chansons"
+                                className="admin-menu-item icon-chanson"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/chansons"
@@ -577,7 +577,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-repetitions"
+                                className="admin-menu-item icon-repetition"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/repetitions"

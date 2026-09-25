@@ -47,7 +47,7 @@ export default function AdminMenu() {
             {/* SAISONS */}
 
             <p
-                className="admin-menu-section icon-saisons"
+                className="admin-menu-section icon-saison"
                 onClick={() => setOpenSaisons(!openSaisons)}
             >
                 Saisons {openSaisons ? "▼" : "▶"}
@@ -86,7 +86,7 @@ export default function AdminMenu() {
                             </p>
 
                             <p
-                                className="admin-menu-item icon-chansons"
+                                className="admin-menu-item icon-chanson"
                                 onClick={() =>
                                     handleClickSaison(
                                         saison,
@@ -98,7 +98,7 @@ export default function AdminMenu() {
                             </p>
 
                             <p
-                                className="admin-menu-item icon-repetitions"
+                                className="admin-menu-item icon-repetition"
                                 onClick={() =>
                                     handleClickSaison(
                                         saison,
@@ -109,7 +109,7 @@ export default function AdminMenu() {
                                 Répétitions
                             </p>
                             <p
-                                className="admin-menu-item icon-groupes"
+                                className="admin-menu-item icon-groupe"
                                 onClick={() =>
                                     handleClickSaison(
                                         saison,
@@ -159,7 +159,7 @@ export default function AdminMenu() {
                 <div>
 
                     <p
-                        className="admin-menu-item icon-saisons"
+                        className="admin-menu-item icon-saison"
                         onClick={() =>
                             navigate("/admin/saisons")
                         }
@@ -177,7 +177,7 @@ export default function AdminMenu() {
                     </p>
 
                     <p
-                        className="admin-menu-item icon-chansons"
+                        className="admin-menu-item icon-chanson"
                         onClick={() =>
                             navigate("/admin/chansons")
                         }
@@ -221,7 +221,7 @@ export default function AdminMenu() {
                     </p>
 
                     <p
-                        className="admin-menu-item icon-repetitions"
+                        className="admin-menu-item icon-repetition"
                         onClick={() =>
                             navigate("/admin/repetitions")
                         }
@@ -230,7 +230,7 @@ export default function AdminMenu() {
                     </p>
 
                     <p
-                        className="admin-menu-item icon-invitations"
+                        className="admin-menu-item icon-invitation"
                         onClick={() =>
                             navigate("/admin/invitations")
                         }

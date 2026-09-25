@@ -37,7 +37,7 @@ const actions = [
     { 
         label: "Répartition", 
         title: "affichage de la Répartition", 
-        cssClass: "icon-groupes", 
+        cssClass: "icon-chanteursaison", 
         action: "repartition"
     },
 
@@ -47,7 +47,7 @@ const actions = [
 export const SaisonConcertChansonConfig = createEntityConfig({
 
     entity: "SaisonConcertChanson",
-
+    icon: "chansons",
     title: "Les chansons",
 
     table: "saison_concert_chansons",
