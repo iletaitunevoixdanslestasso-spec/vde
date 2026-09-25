@@ -336,7 +336,14 @@ export default function FormRepartition({
             ) {
                 couleur = "#16a34a";
             }
-
+            /*
+             * Couleur selon la position du pupitre :
+             * rouge → orange → jaune → vert → bleu → violet.
+             */
+            const teinte = chansonPupitres.length > 1
+                ? 60 + (index / (chansonPupitres.length - 1)) * 220
+                : 60;
+            couleur = `hsl(${teinte}, 75%, 45%)`;
 
             return {
                 id: pupitreId,
@@ -358,9 +365,15 @@ export default function FormRepartition({
 
             <div style={{ marginBottom: 15 }}>
                 <strong>
-                    Chanson : {initialData?.saison_chansons?.chansons?.titre}
+                    Chanson : {initialData?.chansons?.titre}
                 </strong>
             </div>
+
+            <RepresentationChoeur
+                pupitres={getPupitresRepresentation()}
+                titre={initialData?.saison_chansons?.chansons?.titre}
+            />
+
             <DataTable
                 data={saisonChanteurs}
                 config={{
@@ -368,10 +381,7 @@ export default function FormRepartition({
                 }}
             />
 
-            <RepresentationChoeur
-                pupitres={getPupitresRepresentation()}
-                titre={initialData?.saison_chansons?.chansons?.titre}
-            />
+
 
 
         </div>

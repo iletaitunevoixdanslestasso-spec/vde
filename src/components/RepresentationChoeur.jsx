@@ -1,5 +1,5 @@
+import { useEffect, useRef, useState } from "react";
 import "./../styles/representationChoeur.css";
-
 
 function IconChanteur({
     x,
@@ -51,7 +51,57 @@ export default function RepresentationChoeur({
     pupitres = [],
     titre = "Le chœur"
 }) {
+    const choeurRef = useRef(null);
+    const [pleinEcran, setPleinEcran] = useState(false);
+    const [erreurPleinEcran, setErreurPleinEcran] = useState("");
 
+    useEffect(() => {
+        const synchroniserPleinEcran = () => {
+            setPleinEcran(
+                document.fullscreenElement !== null &&
+                document.fullscreenElement === choeurRef.current
+            );
+        };
+
+        document.addEventListener(
+            "fullscreenchange",
+            synchroniserPleinEcran
+        );
+
+        return () => {
+            document.removeEventListener(
+                "fullscreenchange",
+                synchroniserPleinEcran
+            );
+        };
+    }, []);
+
+    const basculerPleinEcran = async () => {
+        const element = choeurRef.current;
+
+        if (!element) return;
+
+        setErreurPleinEcran("");
+
+        try {
+            if (document.fullscreenElement === element) {
+                await document.exitFullscreen();
+            } else if (
+                document.fullscreenEnabled &&
+                element.requestFullscreen
+            ) {
+                await element.requestFullscreen();
+            } else {
+                setErreurPleinEcran(
+                    "Le plein écran n’est pas disponible dans ce navigateur ou ce contexte."
+                );
+            }
+        } catch {
+            setErreurPleinEcran(
+                "Impossible d’activer ou de quitter le plein écran."
+            );
+        }
+    };
     const totalChanteurs =
         pupitres.reduce(
             (total, pupitre) =>
@@ -227,7 +277,10 @@ export default function RepresentationChoeur({
 
 
     return (
-        <div className="representation-choeur">
+        <div
+            ref={choeurRef}
+            className="representation-choeur"
+        >
 
 
             {/* =================================================
@@ -235,25 +288,64 @@ export default function RepresentationChoeur({
             ================================================= */}
 
             <div className="choeur-header">
-
                 <div className="choeur-header-icon">
                     🎵
                 </div>
 
                 <div>
-
                     <h3 className="choeur-title">
                         {titre}
                     </h3>
 
                     <div className="choeur-subtitle">
-                        {totalChanteurs} chanteur
+                        {totalChanteurs} choriste
                         {totalChanteurs > 1 ? "s" : ""}
                     </div>
-
                 </div>
 
+                <button
+                    type="button"
+                    className="choeur-fullscreen-button"
+                    onClick={basculerPleinEcran}
+                    aria-label={
+                        pleinEcran
+                            ? "Quitter le plein écran"
+                            : "Afficher le chœur en plein écran"
+                    }
+                    title={
+                        pleinEcran
+                            ? "Quitter le plein écran"
+                            : "Afficher en plein écran"
+                    }
+                    aria-pressed={pleinEcran}
+                >
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d={
+                                pleinEcran
+                                    ? "M9 3v6H3 M15 3v6h6 M3 15h6v6 M21 15h-6v6"
+                                    : "M8 3H3v5 M16 3h5v5 M3 16v5h5 M21 16v5h-5"
+                            }
+                        />
+                    </svg>
+                </button>
             </div>
+
+            {erreurPleinEcran && (
+                <p role="alert">
+                    {erreurPleinEcran}
+                </p>
+            )}
 
 
             {/* =================================================
