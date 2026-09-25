@@ -28,8 +28,7 @@ const columns = [
         hideInForm: true,
 
         render: (v, row) => {
-            console.log(v)
-            console.log(row)
+
             if (!v) {
                 return "Aucune parole";
             }
