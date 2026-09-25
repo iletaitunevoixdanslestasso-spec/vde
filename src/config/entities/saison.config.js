@@ -26,7 +26,7 @@ import { SaisonController } from "../../controllers/SaisonController";
 
 export const saisonConfig = createEntityConfig({
     entity: "saisons",
-    title: "📅 Saisons",
+    title: "Saisons",
     table: "saisons",
     Repository: SaisonRepository,
     Service: SaisonService,

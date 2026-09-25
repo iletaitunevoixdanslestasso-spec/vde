@@ -82,7 +82,7 @@ export const ReferentielDocumentConfig = createEntityConfig({
     entity: "ReferentielDocument",
 
     title: "Documents",
-
+    icon:"documents",
     table: "referentiel_documents",
 
 

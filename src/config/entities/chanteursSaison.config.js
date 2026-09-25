@@ -166,7 +166,7 @@ const actions = [
 export const ChanteursSaisonConfig = createEntityConfig({
 
     entity: "chanteurSaison",
-    title: "🎤 Choristes de la saison",
+    title: "Choristes de la saison",
     table: "chanteurSaisons",
     Repository: ChanteurSaisonRepository,
     Service: ChanteurSaisonService,

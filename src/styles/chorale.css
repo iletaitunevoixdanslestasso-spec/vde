@@ -77,6 +77,7 @@
 .icon-chansons::before,
 .icon-groupes::before,
 .icon-concerts::before,
+.icon-chanteurSaison::before,
 .icon-saisonactive::before,
 .icon-repetitions::before,
 .icon-lieux::before,
@@ -91,13 +92,16 @@
 .icon-profil::before,
 .icon-referentiels::before {
     display: inline-block;
-    width: 24px;
+    /* width: 24px; */
     margin-right: 6px;
 }
 
 
 /* Actions */
 
+.icon-chanteursaison::before {
+    content: "👤🎶";
+}
 .icon-new::before {
     content: "➕";
 }

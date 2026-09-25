@@ -16,7 +16,7 @@ export function createEntityConfig({
     entity,
     title,
     table,
-
+    icon,
     columns = [],
 
     Repository = BaseRepository,
@@ -47,7 +47,8 @@ export function createEntityConfig({
 
     const controller = new Controller(service);
 
-
+    icon = icon ?? entity
+    icon = icon.toLowerCase()
     return {
 
         ...baseConfig,
@@ -55,7 +56,7 @@ export function createEntityConfig({
         entity,
         title,
         table,
-
+        icon,
         repository,
         validator,
         mapper,

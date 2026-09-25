@@ -287,7 +287,7 @@ export default function AdminMenu() {
                                         }}
                                         type="button"
                                         className={`admin-season ${
-                                            saison.active ? "active" : ""
+                                            openSeason==saison.id ? "active" : ""
                                         }`}
                                         onClick={() => {
 
@@ -334,7 +334,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-chanteurs"
+                                                className="admin-menu-item icon-chanteursaison"
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -499,7 +499,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-chanteurs"
+                                className="admin-menu-item icon-groupes"
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/chanteurs"

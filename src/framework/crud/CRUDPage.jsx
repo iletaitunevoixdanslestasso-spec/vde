@@ -334,10 +334,11 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             <h1>
-                {title} {context.saisonId && (<>
+                <span className={`icon-${config?.icon}`}> {title} {context.saisonId && (<>
                     {saisonSelectionne.nom}
-                    <label className={saisonSelectionne.active ? `icon-saisonactive` : 'icon-saisons'}></label>
+                    <label className={`${saisonSelectionne.active ? `icon-saisonactive` : 'icon-saisons'}` }></label>
                 </>)}
+                </span>
             </h1>
 
 

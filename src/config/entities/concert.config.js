@@ -184,9 +184,9 @@ const actions = [
 
 export const concertConfig = createEntityConfig({
 
-    entity: "concert",
+    entity: "concerts",
 
-    title: "🎤 les Concerts",
+    title: "les Concerts",
 
     table: "rendezvous",
 

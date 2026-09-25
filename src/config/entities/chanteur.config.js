@@ -10,7 +10,7 @@ import React from "react";
 
 
 const entity = "chanteurs";
-const title = "🎤 les Adhérents";
+const title = "les Adhérents";
 const table = "chanteurs";
 const columns = [
     { field: "nom", header: "Nom", type: "text", required: true },
@@ -108,6 +108,7 @@ export const chanteurConfig = createEntityConfig({
     entity,
     title,
     table,
+    icon:'groupes',
     Repository: ChanteurRepository,
     Service: ChanteurService,
     Validator: ChanteurValidator,
