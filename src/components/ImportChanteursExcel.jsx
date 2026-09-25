@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs/dist/exceljs.min.js";
 import { supabase } from "../core/supabase/client";
 import { useSaison } from "./contexts/SaisonContext";
 
@@ -30,9 +30,9 @@ export default function ImportChanteursExcel({ saisonId }) {
             .pop()
             .toLowerCase();
 
-        if (!["xlsx", "xls"].includes(extension)) {
+        if (extension !== "xlsx") {
             setErreursLecture([
-                "Le fichier doit être un fichier Excel (.xlsx ou .xls).",
+                "Le fichier doit être un fichier Excel au format .xlsx.",
             ]);
             return;
         }
@@ -42,12 +42,10 @@ export default function ImportChanteursExcel({ saisonId }) {
         try {
             const buffer = await file.arrayBuffer();
 
-            const workbook = XLSX.read(buffer, {
-                type: "array",
-                cellDates: true,
-            });
+            const workbook = new ExcelJS.Workbook();
+            await workbook.xlsx.load(buffer);
 
-            if (!workbook.SheetNames.length) {
+            if (!workbook.worksheets.length) {
                 setErreursLecture([
                     "Le fichier Excel ne contient aucune feuille.",
                 ]);
@@ -55,17 +53,9 @@ export default function ImportChanteursExcel({ saisonId }) {
             }
 
             // Première feuille
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
+            const worksheet = workbook.worksheets[0];
 
-            // Conversion en tableau d'objets
-            const data = XLSX.utils.sheet_to_json(worksheet, {
-                header: 1,
-                defval: "",
-                raw: false,
-            });
-
-            if (!data.length) {
+            if (worksheet.actualRowCount === 0) {
                 setErreursLecture([
                     "La feuille Excel ne contient aucune donnée.",
                 ]);
@@ -73,11 +63,17 @@ export default function ImportChanteursExcel({ saisonId }) {
             }
 
             const erreurs = [];
+            const lignesNormalisees = [];
 
-            const lignesNormalisees = data
-                .slice(1)
-                .map((row, index) => {
-                    const ligneExcel = index + 2;
+            worksheet.eachRow(
+                { includeEmpty: false },
+                (row, rowNumber) => {
+                    // Ligne 1 = en-têtes
+                    if (rowNumber === 1) {
+                        return;
+                    }
+
+                    const ligneExcel = rowNumber;
 
                     /*
                      * ---------------------------------------------------------
@@ -100,54 +96,54 @@ export default function ImportChanteursExcel({ saisonId }) {
                      * PRÉNOM - colonne A
                      * ---------------------------------------------------------
                      */
-                    const prenom = String(
-                        row[0] ?? ""
-                    ).trim();
+                    const prenom = getCellText(
+                        row.getCell(1)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * NOM - colonne B
                      * ---------------------------------------------------------
                      */
-                    const nom = String(
-                        row[1] ?? ""
-                    ).trim();
+                    const nom = getCellText(
+                        row.getCell(2)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * GROUPE - colonne C
                      * ---------------------------------------------------------
                      */
-                    const groupe = String(
-                        row[2] ?? ""
-                    ).trim();
+                    const groupe = getCellText(
+                        row.getCell(3)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * TÉLÉPHONE - colonne D
                      * ---------------------------------------------------------
                      */
-                    const telephone = String(
-                        row[3] ?? ""
-                    ).trim();
+                    const telephone = getCellText(
+                        row.getCell(4)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * EMAIL - colonne E
                      * ---------------------------------------------------------
                      */
-                    const email = String(
-                        row[4] ?? ""
-                    ).trim();
+                    const email = getCellText(
+                        row.getCell(5)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * ADRESSE POSTALE - colonne F
                      * ---------------------------------------------------------
                      */
-                    const rue = String(
-                        row[5] ?? ""
-                    ).trim();
+                    const rue = getCellText(
+                        row.getCell(6)
+                    );
 
                     /*
                      * ---------------------------------------------------------
@@ -163,30 +159,36 @@ export default function ImportChanteursExcel({ saisonId }) {
                      *
                      * On ne fait surtout pas Number().
                      */
-                    const code_postal = String(
-                        row[6] ?? ""
-                    ).trim();
+                    const code_postal = getCellText(
+                        row.getCell(7)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * VILLE - colonne H
                      * ---------------------------------------------------------
                      */
-                    const ville = String(
-                        row[7] ?? ""
-                    ).trim();
+                    const ville = getCellText(
+                        row.getCell(8)
+                    );
 
                     /*
                      * ---------------------------------------------------------
                      * DATE DE NAISSANCE - colonne I
                      * ---------------------------------------------------------
                      */
-                    const dateNaissanceBrute = String(
-                        row[8] ?? ""
-                    ).trim();
+                    const dateCell = row.getCell(9);
+
+                    const dateNaissanceValeur =
+                        getCellValue(dateCell);
+
+                    const dateNaissanceBrute =
+                        getCellText(dateCell);
 
                     const date_naissance =
-                        normaliserDateExcel(dateNaissanceBrute);
+                        normaliserDateExcel(
+                            dateNaissanceValeur
+                        );
 
                     /*
                      * ---------------------------------------------------------
@@ -224,7 +226,7 @@ export default function ImportChanteursExcel({ saisonId }) {
                      * OBJET FINAL
                      * ---------------------------------------------------------
                      */
-                    return {
+                    lignesNormalisees.push({
                         ligneExcel,
 
                         nom,
@@ -240,8 +242,9 @@ export default function ImportChanteursExcel({ saisonId }) {
                         ville: ville || null,
 
                         date_naissance,
-                    };
-                });
+                    });
+                }
+            );
 
             setLignes(lignesNormalisees);
             setErreursLecture(erreurs);
@@ -386,7 +389,7 @@ export default function ImportChanteursExcel({ saisonId }) {
                 <input
                     ref={fileInputRef}
                     type="file"
-                    accept=".xlsx,.xls"
+                    accept=".xlsx"
                     onChange={handleFileChange}
                 />
             </div>
@@ -697,12 +700,196 @@ export default function ImportChanteursExcel({ saisonId }) {
 
 
 /**
+ * Récupère la valeur utile d'une cellule ExcelJS.
+ *
+ * Gère notamment :
+ * - valeur simple
+ * - date
+ * - formule avec résultat
+ * - texte enrichi
+ * - lien hypertexte
+ */
+function getCellValue(cell) {
+    const value = cell?.value;
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    if (value instanceof Date) {
+        return value;
+    }
+
+    if (typeof value === "object") {
+        if (
+            Object.prototype.hasOwnProperty.call(
+                value,
+                "result"
+            ) &&
+            value.result !== null &&
+            value.result !== undefined
+        ) {
+            return value.result;
+        }
+
+        if (Array.isArray(value.richText)) {
+            return value.richText
+                .map(part => part.text ?? "")
+                .join("");
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                value,
+                "text"
+            )
+        ) {
+            return value.text ?? "";
+        }
+    }
+
+    return value;
+}
+
+
+/**
+ * Retourne une cellule sous forme de texte.
+ *
+ * Pour les nombres possédant un masque Excel composé
+ * de zéros (ex. 00000 ou 00 00 00 00 00), on conserve
+ * les zéros initiaux.
+ *
+ * C'est utile notamment pour :
+ * - les codes postaux
+ * - les numéros de téléphone
+ */
+function getCellText(cell) {
+    const value = getCellValue(cell);
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return "";
+    }
+
+    if (value instanceof Date) {
+        return formatDateISO(value);
+    }
+
+    if (typeof value === "number") {
+        return formatNumberWithExcelMask(
+            value,
+            cell?.numFmt
+        );
+    }
+
+    return String(value).trim();
+}
+
+
+/**
+ * Conserve les zéros initiaux lorsqu'une cellule numérique
+ * utilise un masque Excel du type :
+ *
+ * 00000
+ * 00 00 00 00 00
+ */
+function formatNumberWithExcelMask(value, numFmt) {
+    const format = String(numFmt || "")
+        .split(";")[0]
+        .trim();
+
+    /*
+     * Les formats "General", dates, décimaux, devises, etc.
+     * ne sont pas traités comme des masques de chiffres.
+     */
+    if (
+        !format ||
+        format.toLowerCase() === "general"
+    ) {
+        return String(value);
+    }
+
+    /*
+     * On ne traite ici que les formats constitués
+     * de zéros et de séparateurs usuels.
+     */
+    if (!/^[0\s().+\-/]+$/.test(format)) {
+        return String(value);
+    }
+
+    const zeroCount =
+        (format.match(/0/g) || []).length;
+
+    if (zeroCount === 0) {
+        return String(value);
+    }
+
+    const sign = value < 0 ? "-" : "";
+
+    const digits = String(
+        Math.trunc(Math.abs(value))
+    ).padStart(zeroCount, "0");
+
+    let digitIndex = 0;
+    let result = "";
+
+    for (const character of format) {
+        if (character === "0") {
+            result +=
+                digits[digitIndex] ?? "0";
+
+            digitIndex += 1;
+        } else {
+            result += character;
+        }
+    }
+
+    return sign + result;
+}
+
+
+/**
  * Convertit une date provenant d'Excel
  * en YYYY-MM-DD pour PostgreSQL.
  */
 function normaliserDateExcel(value) {
-    if (!value) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
         return null;
+    }
+
+    /*
+     * ExcelJS convertit normalement une vraie cellule
+     * de type date en objet Date.
+     */
+    if (value instanceof Date) {
+        if (isNaN(value.getTime())) {
+            return null;
+        }
+
+        return formatDateISO(value);
+    }
+
+    /*
+     * Une date Excel peut aussi arriver sous forme
+     * de numéro de série.
+     */
+    if (
+        typeof value === "number" &&
+        Number.isFinite(value)
+    ) {
+        const date =
+            excelSerialToDate(value);
+
+        return date
+            ? formatDateISO(date)
+            : null;
     }
 
     const texte = String(value).trim();
@@ -722,7 +909,8 @@ function normaliserDateExcel(value) {
     );
 
     if (matchFrancais) {
-        const [, jour, mois, annee] = matchFrancais;
+        const [, jour, mois, annee] =
+            matchFrancais;
 
         return `${annee}-${mois.padStart(
             2,
@@ -731,46 +919,59 @@ function normaliserDateExcel(value) {
     }
 
     /*
-     * Excel peut aussi fournir une date sous forme
-     * de numéro de série.
+     * Dernière tentative :
+     * conversion JavaScript.
      */
-    if (!isNaN(value)) {
-        const numero = Number(value);
-
-        if (numero > 0) {
-            const date = XLSX.SSF.parse_date_code(numero);
-
-            if (
-                date &&
-                date.y &&
-                date.m &&
-                date.d
-            ) {
-                return `${date.y}-${String(
-                    date.m
-                ).padStart(2, "0")}-${String(
-                    date.d
-                ).padStart(2, "0")}`;
-            }
-        }
-    }
-
-    /*
-     * Dernière tentative : date JavaScript.
-     */
-    const date = new Date(value);
+    const date = new Date(texte);
 
     if (!isNaN(date.getTime())) {
-        return `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-            date.getDate()
-        ).padStart(2, "0")}`;
+        return formatDateISO(date);
     }
 
     return null;
 }
 
+
+/**
+ * Convertit un numéro de série Excel en Date.
+ *
+ * Excel utilise le système de dates 1900 et contient
+ * historiquement le faux 29/02/1900.
+ */
+function excelSerialToDate(serial) {
+    if (
+        !Number.isFinite(serial) ||
+        serial <= 0
+    ) {
+        return null;
+    }
+
+    const wholeDays = Math.floor(serial);
+
+    const epoch =
+        wholeDays < 60
+            ? Date.UTC(1899, 11, 31)
+            : Date.UTC(1899, 11, 30);
+
+    const milliseconds =
+        epoch +
+        wholeDays * 24 * 60 * 60 * 1000;
+
+    return new Date(milliseconds);
+}
+
+
+/**
+ * Formate une Date en YYYY-MM-DD sans dépendre
+ * du fuseau horaire local.
+ */
+function formatDateISO(date) {
+    return `${date.getUTCFullYear()}-${String(
+        date.getUTCMonth() + 1
+    ).padStart(2, "0")}-${String(
+        date.getUTCDate()
+    ).padStart(2, "0")}`;
+}
 
 const thStyle = {
     border: "1px solid #ddd",

@@ -1,8 +1,8 @@
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 class ExcelService {
 
-    // Export d'une seule chanson.
+    // Export d'une seule feuille.
     // Compatible avec les appels existants.
     static exportToExcel(data = [], config = {}) {
         return this.exportSheetsToExcel(
@@ -11,9 +11,8 @@ class ExcelService {
         );
     }
 
-    // Export de plusieurs chansons : un onglet par chanson.
-    // Chaque entrée utilise les mêmes data et columns que DataTable.
-    static exportSheetsToExcel(
+    // Export de plusieurs feuilles : un onglet par élément.
+    static async exportSheetsToExcel(
         sheets = [],
         { fileName = "export" } = {}
     ) {
@@ -21,36 +20,58 @@ class ExcelService {
             return;
         }
 
-        const workbook = XLSX.utils.book_new();
+        const workbook = new ExcelJS.Workbook();
+
         const usedNames = new Set();
 
         for (const { data = [], config = {} } of sheets) {
-            const worksheet = this.createWorksheet(data, config);
-
-            if (!worksheet) {
-                return;
-            }
 
             const sheetName = this.getUniqueSheetName(
                 config.sheetName ?? "Export",
                 usedNames
             );
 
-            XLSX.utils.book_append_sheet(
+            this.createWorksheet(
                 workbook,
-                worksheet,
-                sheetName
+                sheetName,
+                data,
+                config
             );
         }
 
-        XLSX.writeFile(
-            workbook,
-            `${this.normalizeFileName(fileName)}.xlsx`
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        const blob = new Blob(
+            [buffer],
+            {
+                type:
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
         );
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download =
+            `${this.normalizeFileName(fileName)}.xlsx`;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
     }
 
-    // Construit une feuille sans déclencher de téléchargement.
-    static createWorksheet(data = [], config = {}) {
+    static createWorksheet(
+        workbook,
+        sheetName,
+        data = [],
+        config = {}
+    ) {
         const {
             columns = [],
             autoWidth = true
@@ -63,9 +84,42 @@ class ExcelService {
         );
 
         if (exportColumns.length === 0) {
-            console.warn("ExcelService : aucune colonne à exporter.");
+            console.warn(
+                "ExcelService : aucune colonne à exporter."
+            );
+
             return null;
         }
+
+        /*
+         * =========================================================
+         * FEUILLE
+         * =========================================================
+         */
+
+        const worksheet = workbook.addWorksheet(
+            sheetName,
+            {
+                views: [
+                    {
+                        state: "frozen",
+
+                        // Fige la première colonne
+                        xSplit: 1,
+
+                        // Fige la première ligne
+                        ySplit: 1
+                    }
+                ]
+            }
+        );
+
+
+        /*
+         * =========================================================
+         * HEADERS
+         * =========================================================
+         */
 
         const headers = exportColumns.map(column =>
             column.exportHeader ??
@@ -73,55 +127,160 @@ class ExcelService {
             column.field
         );
 
+
+        /*
+         * =========================================================
+         * DONNÉES
+         * =========================================================
+         */
+
         const rows = data.map(row =>
             exportColumns.map(column => {
+
                 let value;
 
-                if (typeof column.exportValue === "function") {
-                    value = column.exportValue(row);
-                } else if (typeof column.sortValue === "function") {
-                    value = column.sortValue(row);
+                if (
+                    typeof column.exportValue ===
+                    "function"
+                ) {
+                    value =
+                        column.exportValue(row);
+
+                } else if (
+                    typeof column.sortValue ===
+                    "function"
+                ) {
+                    value =
+                        column.sortValue(row);
+
                 } else {
+
                     value = this.getNestedValue(
                         row,
-                        column.exportField ?? column.field
+                        column.exportField ??
+                        column.field
                     );
                 }
 
-                if (typeof column.exportFormat === "function") {
-                    value = column.exportFormat(value, row);
+                if (
+                    typeof column.exportFormat ===
+                    "function"
+                ) {
+                    value =
+                        column.exportFormat(
+                            value,
+                            row
+                        );
                 }
 
                 return this.normalizeValue(value);
             })
         );
 
-        const worksheet = XLSX.utils.aoa_to_sheet([
-            headers,
-            ...rows
-        ]);
+
+        /*
+         * =========================================================
+         * TABLEAU EXCEL
+         * =========================================================
+         */
+
+        worksheet.addTable({
+
+            /*
+             * Le nom interne du tableau doit être
+             * unique et sans caractères spéciaux.
+             */
+            name:
+                this.normalizeTableName(sheetName),
+
+            /*
+             * Commence en A1
+             */
+            ref: "A1",
+
+            /*
+             * Ligne d'en-tête
+             */
+            headerRow: true,
+
+            /*
+             * Pas de ligne de total
+             */
+            totalsRow: false,
+
+            /*
+             * Style Excel natif
+             */
+            style: {
+
+                /*
+                 * Tu peux changer le thème.
+                 * Medium2 donne un tableau classique.
+                 */
+                theme: "TableStyleMedium2",
+
+                /*
+                 * Alternance de couleur des lignes
+                 */
+                showRowStripes: true,
+
+                showColumnStripes: false
+            },
+
+            /*
+             * Colonnes du tableau
+             */
+            columns: headers.map(header => ({
+                name: header,
+
+                /*
+                 * Active le bouton de filtre Excel
+                 */
+                filterButton: true
+            })),
+
+            rows
+        });
+
+
+        /*
+         * =========================================================
+         * LARGEUR AUTOMATIQUE
+         * =========================================================
+         */
 
         if (autoWidth) {
-            worksheet["!cols"] = exportColumns.map((column, index) => {
-                const maxLength = rows.reduce(
-                    (max, row) =>
-                        Math.max(
-                            max,
-                            String(row[index] ?? "").length
-                        ),
-                    String(headers[index] ?? "").length
-                );
 
-                return {
-                    wch: Math.min(Math.max(maxLength + 2, 10), 50)
-                };
-            });
-        }
+            exportColumns.forEach(
+                (column, index) => {
 
-        if (worksheet["!ref"] && rows.length > 0) {
-            worksheet["!autofilter"] = {
-                ref: worksheet["!ref"]
-            };
+                    const header =
+                        headers[index] ?? "";
+
+                    const maxLength =
+                        rows.reduce(
+                            (max, row) =>
+                                Math.max(
+                                    max,
+                                    String(
+                                        row[index] ?? ""
+                                    ).length
+                                ),
+                            String(header).length
+                        );
+
+                    worksheet.getColumn(
+                        index + 1
+                    ).width =
+                        Math.min(
+                            Math.max(
+                                maxLength + 2,
+                                10
+                            ),
+                            50
+                        );
+                }
+            );
         }
 
         return worksheet;
@@ -134,11 +293,19 @@ class ExcelService {
 
         return path
             .split(".")
-            .reduce((value, key) => value?.[key], object);
+            .reduce(
+                (value, key) =>
+                    value?.[key],
+                object
+            );
     }
 
     static normalizeValue(value) {
-        if (value === null || value === undefined) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
             return "";
         }
 
@@ -157,38 +324,95 @@ class ExcelService {
     }
 
     static normalizeFileName(fileName) {
-        return String(fileName || "export")
-            .replace(/[<>:"/\\|?*]+/g, "_")
+
+        return String(
+            fileName || "export"
+        )
+            .replace(
+                /[<>:"/\\|?*]+/g,
+                "_"
+            )
             .trim() || "export";
     }
 
     static normalizeSheetName(sheetName) {
-        return String(sheetName || "Export")
-            .replace(/[:\\/?*\[\]\x00-\x1f]/g, "_")
+
+        return String(
+            sheetName || "Export"
+        )
+            .replace(
+                /[:\\/?*\[\]\x00-\x1f]/g,
+                "_"
+            )
             .trim()
             .replace(/^'+|'+$/g, "")
             .substring(0, 31)
-            .replace(/'+$/g, "") || "Export";
+            .replace(/'+$/g, "") ||
+            "Export";
     }
 
-    // Évite les doublons, y compris après troncature du titre.
-    static getUniqueSheetName(sheetName, usedNames) {
-        const base = this.normalizeSheetName(sheetName);
+    static getUniqueSheetName(
+        sheetName,
+        usedNames
+    ) {
+        const base =
+            this.normalizeSheetName(
+                sheetName
+            );
 
         let name = base;
         let number = 2;
 
-        while (usedNames.has(name.toLowerCase())) {
-            const suffix = ` (${number++})`;
+        while (
+            usedNames.has(
+                name.toLowerCase()
+            )
+        ) {
+            const suffix =
+                ` (${number++})`;
 
             name =
-                base.substring(0, 31 - suffix.length) +
+                base.substring(
+                    0,
+                    31 - suffix.length
+                ) +
                 suffix;
         }
 
-        usedNames.add(name.toLowerCase());
+        usedNames.add(
+            name.toLowerCase()
+        );
 
         return name;
+    }
+
+    /*
+     * Nom interne utilisé par Excel pour le tableau.
+     *
+     * Contrairement au nom de feuille,
+     * il vaut mieux éviter espaces,
+     * accents et caractères spéciaux.
+     */
+    static normalizeTableName(name) {
+
+        let result = String(
+            name || "Tableau"
+        )
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /[^a-zA-Z0-9_]/g,
+                "_"
+            );
+
+        if (/^[0-9]/.test(result)) {
+            result = `T_${result}`;
+        }
+
+        return `Table_${result}`;
     }
 }
 
