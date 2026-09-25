@@ -144,11 +144,9 @@ export default function CRUDPage({ config, context = {} }) {
                 break;
             }
             case "manageSaisonRepetitionChanteur": {
-                console.error(row)
 
                 const urlConcertChanson =
                     controller.manageSaisonRepetitionChanteur(row, load);
-                console.error(urlConcertChanson)
                 context.selectObjet(row);
                 navigate(urlConcertChanson);
 
@@ -183,6 +181,29 @@ export default function CRUDPage({ config, context = {} }) {
                 }
 
         }
+    };
+
+    const handleParticipationChange = (saisonChanteurId, value) => {
+        setItems(currentItems =>
+            currentItems.map(item => {
+                if (item.id !== saisonChanteurId) {
+                    return item;
+                }
+
+                const participations = item.repetition_chanteurs ?? [];
+
+                return {
+                    ...item,
+                    repetition_chanteurs: participations.length > 0
+                        ? participations.map((participation, index) =>
+                            index === 0
+                                ? { ...participation, participe: value }
+                                : participation
+                        )
+                        : [{ participe: value }]
+                };
+            })
+        );
     };
 
 
@@ -425,7 +446,10 @@ export default function CRUDPage({ config, context = {} }) {
             <DataTable
                 data={items}
                 config={config}
-                context={context}
+                context={{
+                    ...context,
+                    onParticipationChange: handleParticipationChange
+                }}
                 onAction={handleAction}
                 onReorder={handleReorder}
             />

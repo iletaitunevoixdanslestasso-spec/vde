@@ -9,7 +9,6 @@ export class SaisonrepetitionchanteurService extends BaseService {
     }
 
     async findBySaisonAndRepetition() {
-        console.error(this.context);
 
 
 

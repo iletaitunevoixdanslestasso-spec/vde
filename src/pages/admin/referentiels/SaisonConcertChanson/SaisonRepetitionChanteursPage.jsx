@@ -17,17 +17,13 @@ export default function SaisonRepetitionChanteursPage() {
         saisonSelectionneObjet
     } = useSaison();
 
-    console.error("saisonSelectionneObjet",saisonSelectionneObjet)
     useEffect(() => {
-        console.error("saisonSelectionneObjet",saisonSelectionneObjet)
         if (!saisonSelectionne || !saisonSelectionneObjet) {
             navigate(`/admin`);
         }
     }, [saisonSelectionne, navigate, saisonSelectionneObjet]);
 
-    console.error(saisonSelectionneObjet.date)
 let fileName =formatDateFileName(saisonSelectionneObjet?.date)
-console.error(fileName)
     return (
         <CRUDPage
             config={{

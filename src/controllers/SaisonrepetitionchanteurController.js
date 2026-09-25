@@ -7,7 +7,7 @@ export class SaisonrepetitionchanteurController extends BaseController {
         super(service);
     }
     async load(onSuccess, onError) {
-        console.error("SaisonConcertController")
+
         return this.handle(
             () => this.service.findBySaisonAndRepetition(),
             { onSuccess, onError }

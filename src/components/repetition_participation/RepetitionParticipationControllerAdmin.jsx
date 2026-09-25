@@ -16,9 +16,6 @@ export default function RepetitionParticipationControllerAdmin({
 }) {
     const [saving, setSaving] = useState(false);
 
-    if (!repetition || !row) {
-        return null;
-    }
 
     const saisonChanteurId = row.id;
 
@@ -26,6 +23,9 @@ export default function RepetitionParticipationControllerAdmin({
         row.repetition_chanteurs?.[0]?.participe ?? null
     );
 
+    if (!repetition || !row) {
+        return null;
+    }
 
 
     const handleParticipationChange = async (value) => {

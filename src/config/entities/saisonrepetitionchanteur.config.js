@@ -65,6 +65,7 @@ const columns = [
                 RepetitionParticipationControllerAdmin,
                 {
                     repetition: context.saisonSelectionneObjet,
+                    onParticipationChange: context.onParticipationChange,
                     row: row
                 }
             );

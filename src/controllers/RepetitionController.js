@@ -91,11 +91,7 @@ export class RepetitionController extends BaseController {
     }
     manageSaisonRepetitionChanteur(repetition, load) {
 
-        console.error(
-            "repetionCOntroller.manageSaisonRepetitionChanteur",
-            repetition
-        );
-        console.error(this.context)
+        
         return (`/admin/saison/${this.context.saisonNom}/repetition/${repetition.date}/chanteurs`);
 
     }
