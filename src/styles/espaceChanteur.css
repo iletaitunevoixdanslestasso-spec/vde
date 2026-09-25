@@ -2,19 +2,41 @@
    ESPACE CHANTEUR
    ========================================================= */
 
+html,
+body,
+#root {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 /* =========================================================
    LAYOUT
    ========================================================= */
 
 .chanteur-layout {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 100vh;
     display: flex;
+    overflow-x: hidden;
     background: var(--chanteur-background, #f7f7f8);
     color: var(--text-primary, #333);
 }
 
 .chanteur-sidebar {
     width: 250px;
+    max-width: 250px;
+    min-width: 0;
     flex: 0 0 250px;
     min-height: 100vh;
     background: var(--chanteur-sidebar-background, #fff);
@@ -24,14 +46,33 @@
 .chanteur-sidebar-inner {
     position: sticky;
     top: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 100vh;
     display: flex;
     flex-direction: column;
     padding: 22px 14px;
 }
 
+.chanteur-content {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.chanteur-content-inner {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+}
+
 /* =========================================================
-   BRAND
+BRAND
    ========================================================= */
 
 .chanteur-brand {
@@ -167,17 +208,8 @@
    CONTENU
    ========================================================= */
 
-.chanteur-content {
-    flex: 1;
-    min-width: 0;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
-.chanteur-content-inner {
-    width: 100%;
-    min-height: 100vh;
-}
+/* Les dimensions principales de .chanteur-content et
+   .chanteur-content-inner sont définies dans le bloc LAYOUT. */
 
 /* =========================================================
    CHANSONS
@@ -678,11 +710,6 @@
     --rendezvous-regroup-color: #78a982;
     --rendezvous-regroup-bg: #edf7ef;
     --rendezvous-regroup-text: #4f7958;
-
-    min-height: 100vh;
-    display: flex;
-    background: var(--chanteur-background, #f7f7f8);
-    color: var(--text-primary, #333);
 }
 
 /* =========================================================
@@ -693,6 +720,7 @@
 
     .chanteur-sidebar {
         width: 210px;
+        max-width: 210px;
         flex-basis: 210px;
     }
 
@@ -718,7 +746,11 @@
     .chanteur-layout {
         display: flex;
         flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
         min-height: 100vh;
+        overflow-x: hidden;
     }
 
     .chanteur-sidebar {
@@ -727,6 +759,8 @@
         z-index: 100;
 
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         flex: 0 0 auto;
         min-height: auto;
 
@@ -740,6 +774,8 @@
         position: static;
 
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         height: auto;
         min-height: 0;
 
@@ -790,6 +826,8 @@
 
     .chanteur-menu {
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
 
         display: flex;
         flex-direction: row;
@@ -884,14 +922,20 @@
        ===================================================== */
 
     .chanteur-content {
+        flex: 0 0 auto;
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         min-height: 0;
         overflow-x: hidden;
     }
 
     .chanteur-content-inner {
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         min-height: 0;
+        overflow-x: hidden;
     }
 
     /* =====================================================
@@ -900,8 +944,10 @@
 
     .dashboard-chanteur {
         width: 100%;
-        max-width: none;
+        max-width: 100%;
+        min-width: 0;
         box-sizing: border-box;
+        overflow-x: hidden;
         padding: 24px 16px 40px;
     }
 
@@ -988,7 +1034,19 @@
 
     .dashboard-rendezvous-description {
         order: 3;
+        min-width: 0;
+        max-width: 100%;
         font-size: 0.9rem;
+    }
+
+    .dashboard-rendezvous-type-label {
+        max-width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .dashboard-rendezvous-info-button {
+        max-width: 100%;
     }
 
     /* =====================================================
