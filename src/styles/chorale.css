@@ -100,7 +100,8 @@
 
 /* Actions */
 .icon-telechargement::before {
-    content: "⬇️";
+    /* content: "⬇️"; */
+    content: "📥";
 }
 .icon-chanteursaison {
     display: inline-flex;

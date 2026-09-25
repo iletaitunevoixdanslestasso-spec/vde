@@ -5,6 +5,8 @@ import { SaisonChanteurRepository } from "../../repositories/SaisonChanteurRepos
 import { SaisonChanteurPupitreRepository } from "../../repositories/SaisonChanteurPupitreRepository";
 import DataTable from "../table/DataTable";
 import RepresentationChoeur from "../../components/RepresentationChoeur";
+import ExcelService from "../../services/ExcelService";
+import "./../styles/FormRepartition.css";
 
 
 export default function FormRepartition({
@@ -188,7 +190,8 @@ export default function FormRepartition({
         {
             field: "chanteur",
             header: "Chanteur",
-
+            exportValue: row =>
+                `${row.chanteurs?.prenom ?? ""} ${row.chanteurs?.nom ?? ""}`.trim(),
             render: (_, row) => (
                 <>
                     {row.chanteurs?.prenom} {row.chanteurs?.nom}
@@ -202,7 +205,8 @@ export default function FormRepartition({
         ...chansonPupitres.map((chansonPupitre) => ({
             field: `pupitre_${chansonPupitre.pupitre_id}`,
             header: chansonPupitre.pupitres?.nom,
-
+            exportValue: row =>
+                isPupitreValide(row, chansonPupitre) ? "x" : "",
             render: (_, row) => {
 
                 const valide =
@@ -371,10 +375,32 @@ export default function FormRepartition({
     return (
         <div>
 
-            <h2>
-                Répartition
-            </h2>
+            <div className="repartition-header">
+                <h2 className="repartition-header-title">
+                    Répartition
+                </h2>
 
+                <button
+                    type="button"
+                    className="data-table-action repartition-export-button"
+                    onClick={() =>
+                        ExcelService.exportToExcel(saisonChanteurs, {
+                            columns,
+                            fileName: `Repartition_${initialData?.chansons?.titre || "chanson"}`,
+                            sheetName: initialData?.chansons?.titre || "Chanson"
+                        })
+                    }
+                >
+                    <span
+                        className="icon-telechargement"
+                        aria-hidden="true"
+                    />
+
+                    <span className="data-table-action-label">
+                        Exporter en Excel
+                    </span>
+                </button>
+            </div>
             <div style={{ marginBottom: 15 }}>
                 <strong>
                     Chanson : {initialData?.chansons?.titre}
@@ -396,6 +422,6 @@ export default function FormRepartition({
 
 
 
-        </div>
+        </div >
     );
 }

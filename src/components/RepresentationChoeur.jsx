@@ -143,10 +143,10 @@ export default function RepresentationChoeur({
      * Maximum : 390
      */
     const viewBoxHeight = Math.min(
-        390,
+        440,
         Math.max(
-            220,
-            175 + totalChanteurs * 12
+            260,
+            185 + totalChanteurs * 12
         )
     );
 
@@ -207,56 +207,879 @@ export default function RepresentationChoeur({
     /* =========================================================
        POSITION CHANTEUR
     ========================================================= */
+    /*
+     * =========================================================
+     * ORDRE DES PUPITRES DEPUIS LE CENTRE
+     * =========================================================
+     *
+     * 5 pupitres :
+     *
+     * 0  1  2  3  4
+     *       ↑
+     *
+     * ordre : 2, 1, 3, 0, 4
+     *
+     *
+     * 4 pupitres :
+     *
+     * 0  1  2  3
+     *    ↑  ↑
+     *
+     * ordre : 1, 2, 0, 3
+     */
 
-    const getPositionChanteur = (
-        index,
+    const ordrePupitresDepuisCentre = (() => {
+
+        const centre =
+            (pupitres.length - 1) / 2;
+
+        return pupitres
+            .map((_, index) => index)
+            .sort((a, b) => {
+
+                const distanceA =
+                    Math.abs(a - centre);
+
+                const distanceB =
+                    Math.abs(b - centre);
+
+                if (distanceA !== distanceB) {
+                    return distanceA - distanceB;
+                }
+
+                return a - b;
+            });
+
+    })();
+
+
+    /*
+     * =========================================================
+     * CAPACITE DU PREMIER RANG
+     * =========================================================
+     *
+     * On détermine approximativement combien de chanteurs
+     * peuvent tenir sur le premier arc sans se chevaucher.
+     *
+     * 44 correspond environ à :
+     *
+     * diamètre token + espace de sécurité.
+     */
+
+    /*
+     * =========================================================
+     * CAPACITE GLOBALE DU PREMIER RANG
+     * =========================================================
+     */
+
+    const largeurPremierRang =
+        rayonX * 1.73;
+
+    const espaceMinimumToken = 44;
+
+    const capacitePremierRangGlobale =
+        Math.max(
+            pupitres.length,
+            Math.floor(
+                largeurPremierRang /
+                espaceMinimumToken
+            ) + 1
+        );
+
+
+    /*
+     * =========================================================
+     * CAPACITE THEORIQUE PAR PUPITRE
+     * =========================================================
+     *
+     * Cette répartition sert uniquement à déterminer
+     * combien de chanteurs nous voulons AU TOTAL
+     * sur le premier rang.
+     */
+
+    const capacitesPremierRangTheoriques = (() => {
+
+        const nombrePupitres =
+            pupitres.length;
+
+        const capacites =
+            Array(nombrePupitres).fill(
+                Math.floor(
+                    capacitePremierRangGlobale /
+                    nombrePupitres
+                )
+            );
+
+        let surplus =
+            capacitePremierRangGlobale %
+            nombrePupitres;
+
+        let i = 0;
+
+        while (surplus > 0) {
+
+            const pupitreIndex =
+                ordrePupitresDepuisCentre[i];
+
+            capacites[pupitreIndex]++;
+
+            surplus--;
+            i++;
+        }
+
+        return capacites;
+    })();
+
+
+    /*
+     * =========================================================
+     * EFFECTIFS REELS PAR PUPITRE
+     * =========================================================
+     *
+     * Les leads ne font pas partie des rangs normaux.
+     */
+
+    const effectifsPupitres =
+        pupitres.map(
+            pupitre =>
+                (pupitre.chanteurs || [])
+                    .filter(
+                        chanteur =>
+                            !chanteur.lead
+                    )
+                    .length
+        );
+
+
+    /*
+     * =========================================================
+     * REPARTITION PRELIMINAIRE
+     * =========================================================
+     *
+     * Cette fonction reproduit le principe précédent.
+     *
+     * Elle sert uniquement à savoir combien de chanteurs
+     * seraient naturellement placés au premier rang.
+     */
+
+    const getRepartitionPreliminaire = (
         total,
-        angleCentre
+        capacitePremierRang
     ) => {
 
-        if (total === 1) {
+        if (total <= 0) {
+            return [];
+        }
 
-            const angleRad =
-                angleCentre *
-                Math.PI /
-                180;
+        const nombreRangs =
+            Math.min(
+                4,
+                Math.max(
+                    1,
+                    Math.ceil(
+                        total /
+                        Math.max(
+                            1,
+                            capacitePremierRang
+                        )
+                    )
+                )
+            );
 
-            return {
-                x:
-                    centreX +
-                    rayonX *
-                    Math.cos(angleRad),
+        const base =
+            Math.floor(
+                total /
+                nombreRangs
+            );
 
-                y:
-                    centreY +
-                    rayonY *
-                    Math.sin(angleRad)
-            };
+        const surplus =
+            total %
+            nombreRangs;
+
+        return Array.from(
+            {
+                length: nombreRangs
+            },
+            (_, rang) =>
+                base +
+                (
+                    rang >=
+                        nombreRangs - surplus
+                        ? 1
+                        : 0
+                )
+        );
+    };
+
+
+    /*
+     * =========================================================
+     * NOMBRE TOTAL DE CHANTEURS AU PREMIER RANG
+     * =========================================================
+     *
+     * Exemple actuel :
+     *
+     * Alti     = 3
+     * Alto 2   = 3
+     * Ténor    = 4
+     * Soprano  = 2
+     *
+     * Total = 12
+     *
+     * On conserve 12,
+     * mais on va maintenant les redistribuer équitablement.
+     */
+
+    const totalPremierRang = effectifsPupitres.reduce(
+        (total, effectif, index) => {
+
+            const repartition =
+                getRepartitionPreliminaire(
+                    effectif,
+                    capacitesPremierRangTheoriques[
+                    index
+                    ] || 1
+                );
+
+            return (
+                total +
+                (repartition[0] || 0)
+            );
+        },
+        0
+    );
+
+
+    /*
+     * =========================================================
+     * REPARTITION EQUITABLE DU PREMIER RANG
+     * =========================================================
+     *
+     * Priorités :
+     *
+     * 1. même nombre par pupitre autant que possible
+     *
+     * 2. surplus au centre
+     *
+     * 3. puis on s'éloigne du centre
+     *
+     *
+     * Exemple :
+     *
+     * 12 places / 4 pupitres
+     *
+     *      3   3   3   3
+     *
+     *
+     * Exemple :
+     *
+     * 14 places / 4 pupitres
+     *
+     *      3   4   4   3
+     */
+
+    const chanteursPremierRangParPupitre = (() => {
+
+        const nombrePupitres =
+            pupitres.length;
+
+        if (!nombrePupitres) {
+            return [];
+        }
+
+        /*
+         * Base commune.
+         */
+
+        const base =
+            Math.floor(
+                totalPremierRang /
+                nombrePupitres
+            );
+
+        /*
+         * On ne peut évidemment pas mettre
+         * davantage de chanteurs que le pupitre
+         * n'en possède.
+         */
+
+        const resultat =
+            effectifsPupitres.map(
+                effectif =>
+                    Math.min(
+                        base,
+                        effectif
+                    )
+            );
+
+
+        let placesDistribuees =
+            resultat.reduce(
+                (total, valeur) =>
+                    total + valeur,
+                0
+            );
+
+
+        let reste =
+            totalPremierRang -
+            placesDistribuees;
+
+
+        /*
+         * Le surplus part du centre,
+         * puis s'éloigne progressivement.
+         */
+
+        while (reste > 0) {
+
+            let distributionEffectuee =
+                false;
+
+            for (
+                const pupitreIndex
+                of ordrePupitresDepuisCentre
+            ) {
+
+                if (reste <= 0) {
+                    break;
+                }
+
+
+                /*
+                 * Le pupitre doit encore posséder
+                 * un chanteur disponible.
+                 */
+
+                if (
+                    resultat[pupitreIndex] <
+                    effectifsPupitres[pupitreIndex]
+                ) {
+
+                    resultat[pupitreIndex]++;
+
+                    reste--;
+
+                    distributionEffectuee =
+                        true;
+                }
+            }
+
+
+            /*
+             * Sécurité :
+             * impossible de distribuer davantage.
+             */
+
+            if (!distributionEffectuee) {
+                break;
+            }
+        }
+
+
+        return resultat;
+    })();
+
+
+    /*
+     * =========================================================
+     * REPARTITION DEFINITIVE DES RANGS D'UN PUPITRE
+     * =========================================================
+     */
+
+    const getRepartitionRangs = (
+        total,
+        pupitreIndex
+    ) => {
+
+        if (total <= 0) {
+            return [];
         }
 
 
         /*
-         * Chaque pupitre occupe une portion
-         * de l'arc.
+         * Premier rang imposé par la
+         * répartition globale du chœur.
          */
-        const largeurAngle = 20;
 
-        const angleDebut =
-            angleCentre -
-            largeurAngle / 2;
+        let premierRang =
+            Math.min(
+                chanteursPremierRangParPupitre[
+                pupitreIndex
+                ] || 1,
+                total
+            );
 
-        const angleFin =
-            angleCentre +
-            largeurAngle / 2;
 
+        /*
+         * Il reste les chanteurs à mettre derrière.
+         */
+
+        let restant =
+            total -
+            premierRang;
+
+
+        if (restant <= 0) {
+            return [premierRang];
+        }
+
+
+        /*
+         * Règle :
+         *
+         * derrière >= devant
+         *
+         * Si le premier rang est exceptionnellement
+         * trop gros par rapport au petit effectif
+         * du pupitre, on le réduit.
+         *
+         * Cela n'arrive normalement pas avec
+         * tes effectifs actuels.
+         */
+
+        if (restant < premierRang) {
+
+            premierRang =
+                Math.floor(
+                    total / 2
+                );
+
+            restant =
+                total -
+                premierRang;
+        }
+
+
+        /*
+         * Maximum 4 rangs au total,
+         * donc maximum 3 rangs derrière.
+         *
+         * Chaque rang derrière doit contenir
+         * au moins autant de monde
+         * que le premier.
+         */
+
+        const nombreRangsArriere =
+            Math.min(
+                3,
+                Math.max(
+                    1,
+                    Math.floor(
+                        restant /
+                        Math.max(
+                            1,
+                            premierRang
+                        )
+                    )
+                )
+            );
+
+
+        const baseArriere =
+            Math.floor(
+                restant /
+                nombreRangsArriere
+            );
+
+
+        const surplusArriere =
+            restant %
+            nombreRangsArriere;
+
+
+        /*
+         * Le surplus va vers les rangs
+         * les plus éloignés du chef.
+         *
+         * On garantit donc :
+         *
+         * rang 1 <= rang 2 <= rang 3 <= rang 4
+         */
+
+        const rangsArriere =
+            Array.from(
+                {
+                    length:
+                        nombreRangsArriere
+                },
+                (_, rang) =>
+                    baseArriere +
+                    (
+                        rang >=
+                            nombreRangsArriere -
+                            surplusArriere
+                            ? 1
+                            : 0
+                    )
+            );
+
+
+        return [
+            premierRang,
+            ...rangsArriere
+        ];
+    };
+
+
+    /*
+     * =========================================================
+     * GEOMETRIE GENERALE
+     * =========================================================
+     */
+
+    const chefX =
+        centreX;
+
+    const chefY =
+        viewBoxHeight - 25;
+
+
+    /*
+     * Token :
+     *
+     * r = 16
+     * diamètre = 32
+     *
+     * 42 donne une petite marge.
+     */
+
+    const distanceMinTokens = 42;
+
+    const distanceEntreRangs = 44;
+
+    const rayonPremierRangBase = 210;
+
+    const distanceMarqueurPremierRang = 62;
+
+
+    const nombrePupitres =
+        pupitres.length;
+
+
+    const ecartAnglePupitres =
+        nombrePupitres > 1
+            ? 120 /
+            (nombrePupitres - 1)
+            : 100;
+
+
+    const largeurSecteurPupitre =
+        nombrePupitres > 1
+            ? ecartAnglePupitres * 0.70
+            : 70;
+
+
+    /*
+     * =========================================================
+     * RAYON MINIMUM POUR FAIRE TENIR N CHANTEURS
+     * =========================================================
+     */
+
+    const getRayonMinimumPourRang = (
+        nombreSurRang
+    ) => {
+
+        if (nombreSurRang <= 1) {
+            return 0;
+        }
+
+
+        const pasAngleMaximum =
+            largeurSecteurPupitre /
+            (nombreSurRang - 1);
+
+
+        const pasAngleMaximumRad =
+            pasAngleMaximum *
+            Math.PI /
+            180;
+
+
+        return (
+            distanceMinTokens /
+            (
+                2 *
+                Math.sin(
+                    pasAngleMaximumRad / 2
+                )
+            )
+        );
+    };
+
+
+    /*
+     * =========================================================
+     * RAYON COMMUN DU PREMIER RANG
+     * =========================================================
+     *
+     * Tous les pupitres ont leur premier rang
+     * sur EXACTEMENT le même cercle.
+     */
+
+    const maximumPremierRang =
+        Math.max(
+            1,
+            ...chanteursPremierRangParPupitre
+        );
+
+
+    const rayonPremierRangGlobal =
+        Math.max(
+            rayonPremierRangBase,
+            getRayonMinimumPourRang(
+                maximumPremierRang
+            )
+        );
+
+
+    /*
+     * =========================================================
+     * GEOMETRIE D'UN PUPITRE
+     * =========================================================
+     */
+
+    const getGeometriePupitre = (
+        total,
+        pupitreIndex
+    ) => {
+
+        const repartition =
+            getRepartitionRangs(
+                total,
+                pupitreIndex
+            );
+
+
+        const rayons = [];
+
+
+        repartition.forEach(
+            (
+                nombreSurRang,
+                rang
+            ) => {
+
+                /*
+                 * PREMIER RANG :
+                 *
+                 * rayon strictement identique
+                 * pour tous les pupitres.
+                 */
+
+                if (rang === 0) {
+
+                    rayons.push(
+                        rayonPremierRangGlobal
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Rang suivant :
+                 *
+                 * on s'éloigne du chef.
+                 */
+
+                const rayonTheorique =
+                    rayonPremierRangGlobal +
+                    rang *
+                    distanceEntreRangs;
+
+
+                /*
+                 * Si beaucoup de chanteurs,
+                 * le rayon peut être encore augmenté.
+                 */
+
+                const rayonMinimum =
+                    getRayonMinimumPourRang(
+                        nombreSurRang
+                    );
+
+
+                const rayon =
+                    Math.max(
+                        rayonTheorique,
+                        rayonMinimum,
+                        rayons[rang - 1] +
+                        distanceEntreRangs
+                    );
+
+
+                rayons.push(
+                    rayon
+                );
+            }
+        );
+
+
+        /*
+         * Le marqueur du pupitre est également
+         * sur un rayon GLOBAL identique.
+         */
+
+        const rayonMarqueur =
+            rayonPremierRangGlobal -
+            distanceMarqueurPremierRang;
+
+
+        return {
+            repartition,
+            rayons,
+            rayonMarqueur
+        };
+    };
+
+
+    /*
+     * =========================================================
+     * POSITION D'UN CHANTEUR
+     * =========================================================
+     */
+
+    const getPositionChanteur = (
+        index,
+        total,
+        angleCentre,
+        pupitreIndex
+    ) => {
+
+        const {
+            repartition,
+            rayons
+        } = getGeometriePupitre(
+            total,
+            pupitreIndex
+        );
+
+
+        /*
+         * Trouver son rang.
+         */
+
+        let rang = 0;
+
+        let debutRang = 0;
+
+
+        while (
+            rang < repartition.length &&
+            index >=
+            debutRang +
+            repartition[rang]
+        ) {
+
+            debutRang +=
+                repartition[rang];
+
+            rang++;
+        }
+
+
+        const nombreSurRang =
+            repartition[rang] || 1;
+
+
+        const indexDansRang =
+            index -
+            debutRang;
+
+
+        const rayonRang =
+            rayons[rang] ||
+            rayonPremierRangGlobal;
+
+
+        /*
+         * =========================================================
+         * DISTANCE ANGULAIRE ENTRE TOKENS
+         * =========================================================
+         */
+
+        let pasAngle = 0;
+
+
+        if (nombreSurRang > 1) {
+
+            const rapport =
+                Math.min(
+                    1,
+                    distanceMinTokens /
+                    (2 * rayonRang)
+                );
+
+
+            const pasAngleRad =
+                2 *
+                Math.asin(
+                    rapport
+                );
+
+
+            pasAngle =
+                pasAngleRad *
+                180 /
+                Math.PI;
+        }
+
+
+        /*
+         * =========================================================
+         * CENTRAGE
+         * =========================================================
+         */
+
+        let positionDansRang =
+            indexDansRang -
+            (nombreSurRang - 1) / 2;
+
+
+        /*
+         * =========================================================
+         * QUINCONCE
+         * =========================================================
+         *
+         * Premier rang :
+         *
+         *       ●   ●   ●
+         *
+         * Deuxième rang :
+         *
+         *         ●   ●   ●
+         *
+         * etc.
+         */
+
+        if (rang % 2 === 1) {
+
+            if (angleCentre < -90) {
+
+                positionDansRang += 0.5;
+
+            } else if (angleCentre > -90) {
+
+                positionDansRang -= 0.5;
+
+            } else {
+
+                positionDansRang += 0.5;
+            }
+        }
+
+
+        /*
+         * =========================================================
+         * POSITION FINALE
+         * =========================================================
+         */
 
         const angle =
-            angleDebut +
-            (
-                (angleFin - angleDebut) /
-                (total - 1)
-            ) *
-            index;
+            angleCentre +
+            positionDansRang *
+            pasAngle;
 
 
         const angleRad =
@@ -266,17 +1089,19 @@ export default function RepresentationChoeur({
 
 
         return {
+
             x:
-                centreX +
-                rayonX *
+                chefX +
+                rayonRang *
                 Math.cos(angleRad),
 
             y:
-                centreY +
-                rayonY *
+                chefY +
+                rayonRang *
                 Math.sin(angleRad)
         };
     };
+
 
 
     return (
@@ -426,17 +1251,29 @@ export default function RepresentationChoeur({
                              * Label légèrement au-dessus
                              * des chanteurs.
                              */
-                            const labelRayonX = rayonX - 55;
-                            const labelRayonY = rayonY - 65;
+                            /*
+                             * =========================================================
+                             * MARQUEUR DU PREMIER RANG
+                             * =========================================================
+                             */
+
+                            const {
+                                rayonMarqueur
+                            } = getGeometriePupitre(
+                                choristes.length,
+                                pupitreIndex
+                            );
+
 
                             const labelX =
-                                centreX +
-                                labelRayonX *
+                                chefX +
+                                rayonMarqueur *
                                 Math.cos(angleLabelRad);
 
+
                             const labelY =
-                                centreY +
-                                labelRayonY *
+                                chefY +
+                                rayonMarqueur *
                                 Math.sin(angleLabelRad);
 
 
@@ -499,7 +1336,8 @@ export default function RepresentationChoeur({
                                         const position = getPositionChanteur(
                                             chanteurIndex,
                                             choristes.length,
-                                            angleCentre
+                                            angleCentre,
+                                            pupitreIndex
                                         );
 
                                         const nom =
@@ -522,7 +1360,8 @@ export default function RepresentationChoeur({
                                         const positionPupitre = getPositionChanteur(
                                             0,
                                             1,
-                                            angleCentre
+                                            angleCentre,
+                                            pupitreIndex
                                         );
 
                                         const chefX = centreX;

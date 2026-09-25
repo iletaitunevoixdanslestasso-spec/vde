@@ -1,0 +1,66 @@
+.repartition-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.repartition-header-title {
+    margin: 0;
+    color: #334155;
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.repartition-header .repartition-export-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #475569;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.repartition-header .repartition-export-button:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 6%);
+}
+
+.repartition-header .repartition-export-button:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 3px;
+}
+
+.repartition-export-button .data-table-action-label {
+    display: inline;
+}
+
+@media (max-width: 480px) {
+    .repartition-header {
+        gap: 12px;
+    }
+
+    .repartition-header .repartition-export-button {
+        width: 100%;
+        margin-left: 0;
+    }
+}
