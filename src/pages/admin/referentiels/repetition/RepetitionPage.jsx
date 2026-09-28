@@ -5,13 +5,14 @@ import { repetitionConfig } from "../../../../config/entities/repetition.config"
 import { useSaison } from "../../../../components/contexts/SaisonContext";
 import { useNavigate } from "react-router-dom";
 import { useConcert } from "../../../../components/contexts/ConcertContext";
+import RepetitionExportService from "../../../../services/RepetitionExportService";
 
 
 export default function RepetitionPage() {
-    const { saisonSelectionne,  updateSaisonSelectionneObjet } = useSaison();
+    const { saisonActive, saisonSelectionne, updateSaisonSelectionneObjet } = useSaison();
     const navigate = useNavigate();
-    const { selectConcert } = useConcert(); 
-    
+    const { selectConcert } = useConcert();
+
     useEffect(() => {
         if (!saisonSelectionne) {
             navigate("/admin");
@@ -19,18 +20,32 @@ export default function RepetitionPage() {
     }, [saisonSelectionne, navigate]);
 
 
-    if(!saisonSelectionne)
+    if (!saisonSelectionne)
         return
 
-    return (
-        <CRUDPage
-            config={repetitionConfig}
-            context={{
-                saisonId: saisonSelectionne.id,
-                saisonNom: saisonSelectionne.nom,
-                selectObjet :updateSaisonSelectionneObjet,
-            }}
-        />
-    );
+
+
+    const handleExportExcel = async () => {
+
+        await RepetitionExportService.exportParticipations({
+            saisonId: saisonSelectionne.id,
+            saisonNom: saisonSelectionne.nom
+        });
+
+    };
+    const context = {
+        saisonId: saisonSelectionne.id,
+        saisonNom: saisonSelectionne.nom,
+        selectObjet: updateSaisonSelectionneObjet,
+    }
+    if(saisonActive.id == saisonSelectionne.id) {
+        context['exportExcel']= handleExportExcel        
+    }
+return (
+    <CRUDPage
+        config={repetitionConfig}
+        context={context}
+    />
+);
 
 }

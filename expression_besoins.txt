@@ -3,10 +3,13 @@ Jour anniversaire
     LES AUTRES  / PENSEZ 0 SOUHAITER UN JOYEUX ANNIVERSAIRE AU choriste concerné
 
 
-relance
-    - si repetition hedomaodaire n'est pas lieu par defaut => envoye unmail pour dire Attention Lieu de répéptition différnet
-
-
+- relance auto
+    -> repetition -> valider la participation pour les non validés
+    -> envoie ficher présence avec les participation
+- excel 
+    -> concat toutes les partiticpatyion répétitions passée => faire vue participation repetition avec groupe
+    -> 
+( expace chanteur -> chanson -> intégrer la vue  repartiton 
     
 prevoir messagerie programmable
 prévoir tag sur chanteur

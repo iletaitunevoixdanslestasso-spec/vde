@@ -1,4 +1,3 @@
-import { BaseRepository } from "./BaseRepository";
 import { RendezvouRepository } from "./RendezvouRepository";
 
 
@@ -167,4 +166,29 @@ export class RepetitionRepository extends RendezvouRepository {
             .eq("repetitions.saison_id", saisonId)
             .is("deleted_at", null);
     }
+
+    async findParticipationsSaison(saisonId) {
+
+        return this.supabase
+            .from("v_repetition_participations_saison_active")
+            .select(`
+                saison_chanteur_id,
+                chanteur_nom,
+                chanteur_prenom,
+                groupe_nom,
+                repetition_id,
+                repetition_date,
+                participe
+            `)
+            .eq("saison_id", saisonId)
+            .order("chanteur_nom", {
+                ascending: true
+            })
+            .order("chanteur_prenom", {
+                ascending: true
+            })
+            .order("repetition_date", {
+                ascending: true
+            });
+    }    
 }

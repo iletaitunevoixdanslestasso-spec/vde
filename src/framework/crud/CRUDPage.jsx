@@ -322,8 +322,20 @@ export default function CRUDPage({ config, context = {} }) {
     };
 
     // export excel
-    const handleExportExcel = () => {
+    const handleExportExcel = async () => {
+        /*
+         * Export complètement personnalisé
+         */
+        if (typeof context.exportExcel === "function") {
 
+            await context.exportExcel({
+                items,
+                config,
+                context
+            });
+
+            return;
+        }
         const excelContext =
             typeof context.exportExcel === "object"
                 ? context.exportExcel
