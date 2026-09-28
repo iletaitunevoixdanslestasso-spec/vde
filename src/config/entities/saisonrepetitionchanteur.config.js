@@ -42,6 +42,21 @@ const columns = [
 
         }
     },
+    {
+        field: "groupes",
+        header: "Groupe",
+        type: "text",
+
+        render: (v, row) => 
+                row.groupes?.nom || "à définir"
+        ,
+
+        sortValue: (row) => {
+
+            return row.groupes?.nom || "à définir";
+
+        }
+    },
 
 
     {
@@ -58,7 +73,7 @@ const columns = [
             return participation?.participe === true
                 ? "Oui"
                 : "Non";
-        },        
+        },
         render: (v, row, context) => {
 
             return React.createElement(
@@ -77,14 +92,18 @@ const columns = [
 
 const actions = [];
 
-
+const designation = 'chanteur'
 export const saisonrepetitionchanteursConfig =
     createEntityConfig({
 
         entity: "saisonrepetitionchanteurs",
 
         title: "Les choristes",
+        icon: "chanteursaison",
+        countLabel:{
+            singular: designation
 
+        },
         table: "repetition_chanteurs",
 
         Repository:

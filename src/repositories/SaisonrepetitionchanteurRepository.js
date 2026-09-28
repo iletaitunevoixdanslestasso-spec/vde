@@ -24,6 +24,7 @@ export class SaisonRepetitionChanteurRepository
                     prenom,
                     email
                 ),
+                groupes(*),
                 repetition_chanteurs (
                     id,
                     repetition_id,

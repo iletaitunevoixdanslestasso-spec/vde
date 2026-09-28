@@ -154,22 +154,7 @@ const columns = [
         },
 
     },
-    {
-        field: "presence",
-        header: "P / N / A",
-        mapped: false,
-        hideInForm: true,
-        type: "text",
-        render: (v, row) => {
-            return {
-                value: `${row.presents} / ${row.ne_sait_pas} / ${row.absents}`,
-                cssClass: "data-table-nowrap"
-            };
-        },
-        sortValue: (row) => {
-            return row.presents ?? 0;
-        },
-    },
+
 ];
 
 const actions = [
