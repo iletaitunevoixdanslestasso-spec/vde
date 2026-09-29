@@ -11,10 +11,6 @@ export class SaisonchansonController extends BaseController {
     managePupitres(saisonchanson, load) {
         const chanson=saisonchanson.chansons
 
-        console.error(
-            "SaisonchansonController.managePupitres",
-            chanson
-        );
 
         return (`/admin//chanson/${chanson.titre}/pupitres`);
 
@@ -27,10 +23,6 @@ export class SaisonchansonController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.error(
-            "SaisonChanteurController.getBySaison",
-            saisonId
-        );
 
         return this.service.getBySaison(saisonId);
     }

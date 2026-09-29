@@ -22,6 +22,10 @@ export default function CRUDPage({ config, context = {} }) {
     const [controller, setController] = useState(config.controller);
     const [formContext, setFormContext] = useState({});
     const { saisonSelectionne } = useSaison();
+    const [isSmallScreen, setIsSmallScreen] = useState(
+        () => window.matchMedia("(max-width: 1024px)").matches
+    );
+
 
     // INITIALISATION
     useEffect(() => {
@@ -50,6 +54,21 @@ export default function CRUDPage({ config, context = {} }) {
         context.selectConcert
     ]);
 
+    useEffect(() => {
+
+        const mediaQuery = window.matchMedia("(max-width: 1024px)");
+
+        const handleChange = (event) => {
+            setIsSmallScreen(event.matches);
+        };
+
+        mediaQuery.addEventListener("change", handleChange);
+
+        return () => {
+            mediaQuery.removeEventListener("change", handleChange);
+        };
+
+    }, []);
 
     // ACTIONS TABLE
     const handleAction = async (action, row) => {
@@ -84,7 +103,7 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "repartition":
-                console.error("repartition", row)
+
                 setEditItem(row);
                 setOpen(true);
 
@@ -110,10 +129,8 @@ export default function CRUDPage({ config, context = {} }) {
 
 
             case "managePupitres": {
-                console.error(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
-                console.error(urlPutpitre)
                 context.selectChanson(row);
 
                 navigate(urlPutpitre);
@@ -121,10 +138,8 @@ export default function CRUDPage({ config, context = {} }) {
                 break;
             }
             case "manageSaisonChansonPupitres": {
-                console.error(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
-                console.error(urlPutpitre)
                 context.selectChanson(row.chansons);
 
                 navigate(urlPutpitre);
@@ -133,11 +148,9 @@ export default function CRUDPage({ config, context = {} }) {
             }
 
             case "manageSaisonConcertChanson": {
-                console.error(row)
 
                 const urlConcertChanson =
                     controller.manageSaisonConcertChanson(row, load);
-                console.error(urlConcertChanson)
                 context.selectConcert(row);
                 navigate(urlConcertChanson);
 
@@ -378,7 +391,10 @@ export default function CRUDPage({ config, context = {} }) {
                     <span className={`icon-${config?.icon} crud-page-title-icon`} alt="{title}" title="{title}">
                         <span className="crud-page-title-text">
 
-                            {truncateText(title)}
+                            {isSmallScreen
+                                ? truncateText(title)
+                                : title
+                            }
 
                             {context.saisonId && (
                                 <>

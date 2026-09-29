@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./../styles/adminMenu.css";
 import { useSaison } from "./contexts/SaisonContext";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
@@ -22,7 +22,7 @@ export default function AdminMenu() {
        ===================================================== */
 
     const navigate = useNavigate();
-
+    const location = useLocation();
     const saisonRefs = useRef({});
 
     const [openSaisons, setOpenSaisons] = useState(false);
@@ -34,6 +34,7 @@ export default function AdminMenu() {
 
     const {
         saisons,
+        saisonSelectionne,
         updateSaisonSelectionne
     } = useSaison();
 
@@ -148,7 +149,91 @@ export default function AdminMenu() {
         referentielsScroll.updateScrollState
     ]);
 
+    useEffect(() => {
 
+        const pathname = location.pathname;
+
+        /*
+         * ================================================
+         * ROUTE D'UNE SAISON
+         * ================================================
+         */
+
+        const saisonMatch =
+            pathname.match(/^\/admin\/saison\/([^/]+)(?:\/|$)/);
+
+        if (saisonMatch) {
+
+            const saisonNom =
+                decodeURIComponent(saisonMatch[1]);
+
+            const saison =
+                saisons.find(
+                    item => item.nom === saisonNom
+                );
+
+            // Ouvre le menu Saisons
+            setOpenSaisons(true);
+            setOpenReferentiels(false);
+
+            if (saison) {
+
+                // Ouvre automatiquement la bonne saison
+                setOpenSeason(saison.id);
+
+                // Synchronise aussi le SaisonContext
+                if (saisonSelectionne?.id !== saison.id) {
+                    updateSaisonSelectionne(saison);
+                }
+            }
+
+            return;
+        }
+
+
+        /*
+         * ================================================
+         * ROUTES REFERENTIELS
+         * ================================================
+         */
+
+        const isReferentielRoute =
+            pathname === "/admin/saisons" ||
+            pathname === "/admin/chanteurs" ||
+            pathname === "/admin/chansons" ||
+            pathname.startsWith("/admin/chanson/") ||
+            pathname === "/admin/pupitres" ||
+            pathname === "/admin/documents" ||
+            pathname === "/admin/concerts" ||
+            pathname === "/admin/lieux" ||
+            pathname === "/admin/repetitions";
+
+        if (isReferentielRoute) {
+
+            setOpenReferentiels(true);
+            setOpenSaisons(false);
+            setOpenSeason(null);
+
+            return;
+        }
+
+
+        /*
+         * ================================================
+         * AUTRES ROUTES
+         * ================================================
+         */
+
+        setOpenSaisons(false);
+        setOpenReferentiels(false);
+        setOpenSeason(null);
+
+    }, [
+        location.pathname,
+        saisons,
+        saisonSelectionne?.id,
+        updateSaisonSelectionne
+    ]);
     /* =====================================================
        RENDER
        ===================================================== */
@@ -192,9 +277,8 @@ export default function AdminMenu() {
 
                     <button
                         type="button"
-                        className={`admin-menu-section icon-saison ${
-                            openSaisons ? "open" : ""
-                        }`}
+                        className={`admin-menu-section icon-saison ${openSaisons ? "open" : ""
+                            }`}
                         onClick={toggleSaisons}
                     >
                         <span>Saisons</span>
@@ -207,9 +291,8 @@ export default function AdminMenu() {
 
                     <button
                         type="button"
-                        className={`admin-menu-section icon-referentiels ${
-                            openReferentiels ? "open" : ""
-                        }`}
+                        className={`admin-menu-section icon-referentiels ${openReferentiels ? "open" : ""
+                            }`}
                         onClick={toggleReferentiels}
                     >
                         <span>Référentiels</span>
@@ -286,9 +369,8 @@ export default function AdminMenu() {
                                             saisonRefs.current[saison.id] = el;
                                         }}
                                         type="button"
-                                        className={`admin-season ${
-                                            openSeason==saison.id ? "active" : ""
-                                        }`}
+                                        className={`admin-season ${openSeason == saison.id ? "active" : ""
+                                            }`}
                                         onClick={() => {
 
                                             toggleSeason(saison.id);

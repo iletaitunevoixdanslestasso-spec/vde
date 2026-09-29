@@ -1,35 +1,119 @@
 import ExcelJS from "exceljs";
 
+
 class ExcelService {
 
-    // Export d'une seule feuille.
-    // Compatible avec les appels existants.
+    /*
+     * =========================================================
+     * EXPORT SIMPLE
+     * =========================================================
+     *
+     * Export d'une seule feuille.
+     *
+     * Compatible avec les appels existants :
+     *
+     * ExcelService.exportToExcel(data, {
+     *     columns,
+     *     fileName,
+     *     sheetName
+     * });
+     */
+
     static exportToExcel(data = [], config = {}) {
+
         return this.exportSheetsToExcel(
-            [{ data, config }],
-            { fileName: config.fileName ?? "export" }
+            [
+                {
+                    data,
+                    config
+                }
+            ],
+            {
+                fileName:
+                    config.fileName ??
+                    "export"
+            }
         );
     }
 
-    // Export de plusieurs feuilles : un onglet par élément.
+
+    /*
+     * =========================================================
+     * EXPORT MULTI-FEUILLES
+     * =========================================================
+     *
+     * Format interne :
+     *
+     * [
+     *     {
+     *         data: [...],
+     *         config: {
+     *             sheetName: "...",
+     *             columns: [...]
+     *         }
+     *     }
+     * ]
+     */
+
     static async exportSheetsToExcel(
         sheets = [],
-        { fileName = "export" } = {}
+        {
+            fileName = "export"
+        } = {}
     ) {
-        if (sheets.length === 0) {
+
+        if (!sheets || sheets.length === 0) {
             return;
         }
 
-        const workbook = new ExcelJS.Workbook();
 
-        const usedNames = new Set();
+        /*
+         * Création du classeur Excel.
+         */
 
-        for (const { data = [], config = {} } of sheets) {
+        const workbook =
+            new ExcelJS.Workbook();
 
-            const sheetName = this.getUniqueSheetName(
-                config.sheetName ?? "Export",
-                usedNames
-            );
+
+        /*
+         * Informations facultatives du classeur.
+         */
+
+        workbook.creator =
+            "Il était une voix dans l'est";
+
+        workbook.created =
+            new Date();
+
+
+        /*
+         * Permet d'éviter deux feuilles portant
+         * exactement le même nom.
+         */
+
+        const usedNames =
+            new Set();
+
+
+        /*
+         * Création des feuilles.
+         */
+
+        for (
+            const {
+                data = [],
+                config = {}
+            }
+            of sheets
+        ) {
+
+            const sheetName =
+                this.getUniqueSheetName(
+                    config.sheetName ??
+                    "Export",
+                    usedNames
+                );
+
 
             this.createWorksheet(
                 workbook,
@@ -39,32 +123,77 @@ class ExcelService {
             );
         }
 
-        const buffer = await workbook.xlsx.writeBuffer();
 
-        const blob = new Blob(
-            [buffer],
-            {
-                type:
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            }
-        );
+        /*
+         * Génération du fichier XLSX.
+         */
 
-        const url = URL.createObjectURL(blob);
+        const buffer =
+            await workbook.xlsx.writeBuffer();
 
-        const link = document.createElement("a");
 
-        link.href = url;
+        /*
+         * Création du fichier téléchargeable.
+         */
+
+        const blob =
+            new Blob(
+                [buffer],
+                {
+                    type:
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(blob);
+
+
+        const link =
+            document.createElement("a");
+
+
+        link.href =
+            url;
+
+
         link.download =
             `${this.normalizeFileName(fileName)}.xlsx`;
 
-        document.body.appendChild(link);
+
+        document.body.appendChild(
+            link
+        );
+
 
         link.click();
 
-        document.body.removeChild(link);
 
-        URL.revokeObjectURL(url);
+        document.body.removeChild(
+            link
+        );
+
+
+        /*
+         * On libère l'URL après le déclenchement
+         * du téléchargement.
+         */
+
+        setTimeout(
+            () => {
+                URL.revokeObjectURL(url);
+            },
+            0
+        );
     }
+
+
+    /*
+     * =========================================================
+     * CREATION D'UNE FEUILLE
+     * =========================================================
+     */
 
     static createWorksheet(
         workbook,
@@ -72,18 +201,43 @@ class ExcelService {
         data = [],
         config = {}
     ) {
+
         const {
             columns = [],
             autoWidth = true
         } = config;
 
-        const exportColumns = columns.filter(column =>
-            column.export !== false &&
-            column.field &&
-            column.header
-        );
 
-        if (exportColumns.length === 0) {
+        /*
+         * Colonnes exportables.
+         *
+         * Une colonne peut être exportée :
+         * - soit via field
+         * - soit via exportValue()
+         */
+
+        const exportColumns =
+            columns.filter(column =>
+
+                column.export !== false &&
+
+                (
+                    column.header ||
+                    column.exportHeader
+                ) &&
+
+                (
+                    column.field ||
+                    typeof column.exportValue ===
+                        "function"
+                )
+            );
+
+
+        if (
+            exportColumns.length === 0
+        ) {
+
             console.warn(
                 "ExcelService : aucune colonne à exporter."
             );
@@ -91,187 +245,266 @@ class ExcelService {
             return null;
         }
 
+
         /*
-         * =========================================================
+         * =====================================================
          * FEUILLE
-         * =========================================================
+         * =====================================================
          */
 
-        const worksheet = workbook.addWorksheet(
-            sheetName,
-            {
-                views: [
-                    {
-                        state: "frozen",
+        const worksheet =
+            workbook.addWorksheet(
+                sheetName,
+                {
+                    views: [
+                        {
+                            state:
+                                "frozen",
 
-                        // Fige la première colonne
-                        xSplit: 1,
+                            /*
+                             * Fige la première colonne.
+                             */
 
-                        // Fige la première ligne
-                        ySplit: 1
-                    }
-                ]
-            }
-        );
+                            xSplit: 1,
+
+                            /*
+                             * Fige la première ligne.
+                             */
+
+                            ySplit: 1
+                        }
+                    ]
+                }
+            );
 
 
         /*
-         * =========================================================
+         * =====================================================
          * HEADERS
-         * =========================================================
+         * =====================================================
          */
 
-        const headers = exportColumns.map(column =>
-            column.exportHeader ??
-            column.header ??
-            column.field
-        );
+        const headers =
+            exportColumns.map(column =>
+
+                column.exportHeader ??
+
+                column.header ??
+
+                column.field ??
+
+                ""
+            );
 
 
         /*
-         * =========================================================
-         * DONNÉES
-         * =========================================================
+         * =====================================================
+         * DONNEES
+         * =====================================================
          */
 
-        const rows = data.map(row =>
-            exportColumns.map(column => {
+        const rows =
+            data.map(row =>
 
-                let value;
+                exportColumns.map(
+                    column => {
 
-                if (
-                    typeof column.exportValue ===
-                    "function"
-                ) {
-                    value =
-                        column.exportValue(row);
+                        let value;
 
-                } else if (
-                    typeof column.sortValue ===
-                    "function"
-                ) {
-                    value =
-                        column.sortValue(row);
 
-                } else {
+                        /*
+                         * Priorité :
+                         *
+                         * exportValue
+                         * sortValue
+                         * valeur du champ
+                         */
 
-                    value = this.getNestedValue(
-                        row,
-                        column.exportField ??
-                        column.field
-                    );
-                }
+                        if (
+                            typeof column.exportValue ===
+                            "function"
+                        ) {
 
-                if (
-                    typeof column.exportFormat ===
-                    "function"
-                ) {
-                    value =
-                        column.exportFormat(
-                            value,
-                            row
+                            value =
+                                column.exportValue(
+                                    row
+                                );
+
+                        } else if (
+                            typeof column.sortValue ===
+                            "function"
+                        ) {
+
+                            value =
+                                column.sortValue(
+                                    row
+                                );
+
+                        } else {
+
+                            value =
+                                this.getNestedValue(
+                                    row,
+                                    column.exportField ??
+                                    column.field
+                                );
+                        }
+
+
+                        /*
+                         * Format spécifique à l'export.
+                         */
+
+                        if (
+                            typeof column.exportFormat ===
+                            "function"
+                        ) {
+
+                            value =
+                                column.exportFormat(
+                                    value,
+                                    row
+                                );
+                        }
+
+
+                        return this.normalizeValue(
+                            value
                         );
-                }
-
-                return this.normalizeValue(value);
-            })
-        );
+                    }
+                )
+            );
 
 
         /*
-         * =========================================================
+         * =====================================================
          * TABLEAU EXCEL
-         * =========================================================
+         * =====================================================
          */
 
         worksheet.addTable({
 
             /*
-             * Le nom interne du tableau doit être
-             * unique et sans caractères spéciaux.
+             * Le nom interne du tableau Excel
+             * doit être unique.
+             *
+             * worksheet.id permet d'éviter les collisions.
              */
+
             name:
-                this.normalizeTableName(sheetName),
+                this.normalizeTableName(
+                    `${sheetName}_${worksheet.id}`
+                ),
+
 
             /*
-             * Commence en A1
+             * Le tableau commence en A1.
              */
-            ref: "A1",
+
+            ref:
+                "A1",
+
 
             /*
-             * Ligne d'en-tête
+             * Ligne d'en-tête.
              */
-            headerRow: true,
+
+            headerRow:
+                true,
+
 
             /*
-             * Pas de ligne de total
+             * Pas de ligne de total.
              */
-            totalsRow: false,
+
+            totalsRow:
+                false,
+
 
             /*
-             * Style Excel natif
+             * Style Excel natif.
              */
+
             style: {
 
-                /*
-                 * Tu peux changer le thème.
-                 * Medium2 donne un tableau classique.
-                 */
-                theme: "TableStyleMedium2",
+                theme:
+                    "TableStyleMedium2",
 
-                /*
-                 * Alternance de couleur des lignes
-                 */
-                showRowStripes: true,
+                showRowStripes:
+                    true,
 
-                showColumnStripes: false
+                showColumnStripes:
+                    false
             },
 
-            /*
-             * Colonnes du tableau
-             */
-            columns: headers.map(header => ({
-                name: header,
 
-                /*
-                 * Active le bouton de filtre Excel
-                 */
-                filterButton: true
-            })),
+            /*
+             * Colonnes.
+             *
+             * filterButton active les filtres Excel.
+             */
+
+            columns:
+                headers.map(header => ({
+                    name:
+                        String(header),
+
+                    filterButton:
+                        true
+                })),
+
 
             rows
         });
 
 
         /*
-         * =========================================================
+         * =====================================================
          * LARGEUR AUTOMATIQUE
-         * =========================================================
+         * =====================================================
          */
 
         if (autoWidth) {
 
             exportColumns.forEach(
-                (column, index) => {
+                (
+                    column,
+                    index
+                ) => {
 
                     const header =
-                        headers[index] ?? "";
+                        headers[index] ??
+                        "";
+
 
                     const maxLength =
                         rows.reduce(
-                            (max, row) =>
+                            (
+                                max,
+                                row
+                            ) =>
+
                                 Math.max(
                                     max,
+
                                     String(
-                                        row[index] ?? ""
+                                        row[index] ??
+                                        ""
                                     ).length
                                 ),
-                            String(header).length
+
+                            String(
+                                header
+                            ).length
                         );
 
-                    worksheet.getColumn(
-                        index + 1
-                    ).width =
+
+                    worksheet
+                        .getColumn(
+                            index + 1
+                        )
+                        .width =
+
                         Math.min(
                             Math.max(
                                 maxLength + 2,
@@ -283,137 +516,357 @@ class ExcelService {
             );
         }
 
+
         return worksheet;
     }
 
-    static getNestedValue(object, path) {
+
+    /*
+     * =========================================================
+     * LECTURE D'UN CHAMP IMBRIQUE
+     * =========================================================
+     *
+     * Exemple :
+     *
+     * exportField: "chanteurs.nom"
+     */
+
+    static getNestedValue(
+        object,
+        path
+    ) {
+
         if (!path) {
             return "";
         }
 
-        return path
+
+        return String(path)
             .split(".")
             .reduce(
-                (value, key) =>
+                (
+                    value,
+                    key
+                ) =>
                     value?.[key],
+
                 object
             );
     }
 
-    static normalizeValue(value) {
+
+    /*
+     * =========================================================
+     * NORMALISATION DES VALEURS
+     * =========================================================
+     */
+
+    static normalizeValue(
+        value
+    ) {
 
         if (
             value === null ||
             value === undefined
         ) {
+
             return "";
         }
 
-        if (typeof value === "boolean") {
-            return value ? "Oui" : "Non";
-        }
 
         if (
-            typeof value === "object" &&
-            !(value instanceof Date)
+            typeof value ===
+            "boolean"
         ) {
-            return JSON.stringify(value);
+
+            return value
+                ? "Oui"
+                : "Non";
         }
+
+
+        /*
+         * ExcelJS sait gérer directement
+         * les objets Date.
+         */
+
+        if (
+            value instanceof Date
+        ) {
+
+            return value;
+        }
+
+
+        /*
+         * Evite d'envoyer [object Object]
+         * dans Excel.
+         */
+
+        if (
+            typeof value ===
+            "object"
+        ) {
+
+            return JSON.stringify(
+                value
+            );
+        }
+
 
         return value;
     }
 
-    static normalizeFileName(fileName) {
+
+    /*
+     * =========================================================
+     * NOM DU FICHIER
+     * =========================================================
+     */
+
+    static normalizeFileName(
+        fileName
+    ) {
 
         return String(
-            fileName || "export"
+            fileName ||
+            "export"
         )
             .replace(
                 /[<>:"/\\|?*]+/g,
                 "_"
             )
-            .trim() || "export";
+            .trim() ||
+            "export";
     }
 
-    static normalizeSheetName(sheetName) {
+
+    /*
+     * =========================================================
+     * NOM DE FEUILLE
+     * =========================================================
+     *
+     * Contraintes Excel :
+     *
+     * maximum 31 caractères
+     * certains caractères interdits
+     */
+
+    static normalizeSheetName(
+        sheetName
+    ) {
 
         return String(
-            sheetName || "Export"
+            sheetName ||
+            "Export"
         )
             .replace(
                 /[:\\/?*\[\]\x00-\x1f]/g,
                 "_"
             )
             .trim()
-            .replace(/^'+|'+$/g, "")
-            .substring(0, 31)
-            .replace(/'+$/g, "") ||
+            .replace(
+                /^'+|'+$/g,
+                ""
+            )
+            .substring(
+                0,
+                31
+            )
+            .replace(
+                /'+$/g,
+                ""
+            ) ||
             "Export";
     }
+
+
+    /*
+     * =========================================================
+     * NOM DE FEUILLE UNIQUE
+     * =========================================================
+     */
 
     static getUniqueSheetName(
         sheetName,
         usedNames
     ) {
+
         const base =
             this.normalizeSheetName(
                 sheetName
             );
 
-        let name = base;
-        let number = 2;
+
+        let name =
+            base;
+
+
+        let number =
+            2;
+
 
         while (
             usedNames.has(
                 name.toLowerCase()
             )
         ) {
+
             const suffix =
                 ` (${number++})`;
+
 
             name =
                 base.substring(
                     0,
-                    31 - suffix.length
+                    31 -
+                    suffix.length
                 ) +
                 suffix;
         }
+
 
         usedNames.add(
             name.toLowerCase()
         );
 
+
         return name;
     }
 
+
     /*
-     * Nom interne utilisé par Excel pour le tableau.
-     *
-     * Contrairement au nom de feuille,
-     * il vaut mieux éviter espaces,
-     * accents et caractères spéciaux.
+     * =========================================================
+     * NOM INTERNE DU TABLEAU EXCEL
+     * =========================================================
      */
-    static normalizeTableName(name) {
 
-        let result = String(
-            name || "Tableau"
-        )
-            .normalize("NFD")
-            .replace(
-                /[\u0300-\u036f]/g,
-                ""
+    static normalizeTableName(
+        name
+    ) {
+
+        let result =
+            String(
+                name ||
+                "Tableau"
             )
-            .replace(
-                /[^a-zA-Z0-9_]/g,
-                "_"
-            );
+                .normalize(
+                    "NFD"
+                )
+                .replace(
+                    /[\u0300-\u036f]/g,
+                    ""
+                )
+                .replace(
+                    /[^a-zA-Z0-9_]/g,
+                    "_"
+                );
 
-        if (/^[0-9]/.test(result)) {
-            result = `T_${result}`;
+
+        /*
+         * Un nom Excel ne doit pas commencer
+         * par un chiffre.
+         */
+
+        if (
+            /^[0-9]/.test(
+                result
+            )
+        ) {
+
+            result =
+                `T_${result}`;
         }
+
 
         return `Table_${result}`;
     }
+
+
+    /*
+     * =========================================================
+     * EXPORT MULTI-FEUILLES
+     * =========================================================
+     *
+     * Compatibilité avec ton ancien appel.
+     *
+     * Tu peux continuer à utiliser :
+     *
+     * ExcelService.exportToExcelMultiSheets(
+     *     sheets,
+     *     { fileName }
+     * );
+     *
+     * Format accepté :
+     *
+     * [
+     *     {
+     *         sheetName: "Chanson 1",
+     *         columns: [...],
+     *         data: [...]
+     *     },
+     *     {
+     *         sheetName: "Chanson 2",
+     *         columns: [...],
+     *         data: [...]
+     *     }
+     * ]
+     */
+
+    static exportToExcelMultiSheets(
+        sheets = [],
+        {
+            fileName = "Export"
+        } = {}
+    ) {
+
+        /*
+         * Conversion de l'ancien format
+         * vers le format standard du service.
+         */
+
+        const formattedSheets =
+            sheets.map(
+                (
+                    sheet,
+                    index
+                ) => ({
+
+                    data:
+                        sheet.data ??
+                        [],
+
+                    config: {
+
+                        columns:
+                            sheet.columns ??
+                            [],
+
+                        sheetName:
+                            sheet.sheetName ??
+                            `Feuille ${index + 1}`,
+
+                        autoWidth:
+                            sheet.autoWidth ??
+                            true
+                    }
+                })
+            );
+
+
+        /*
+         * Une seule librairie :
+         * ExcelJS.
+         */
+
+        return this.exportSheetsToExcel(
+            formattedSheets,
+            {
+                fileName
+            }
+        );
+    }
 }
+
 
 export default ExcelService;

@@ -17,7 +17,6 @@ export class SaisonConcertChansonService extends BaseService {
         if (error) {
             return BaseResponse.error([], error.message);
         }
-        console.error('findAllNotDelete', data)
         const dataAjuste = []
         data.map((scc) => {
             dataAjuste.push(
@@ -49,7 +48,6 @@ export class SaisonConcertChansonService extends BaseService {
         //     chanson.saison_chansons.every(sc => sc.deleted_at !== null)
         // );
 
-        console.error(chansons)
         return BaseResponse.success(chansons);
     }
 

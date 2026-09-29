@@ -30,7 +30,7 @@ import ChanteurPage from "../pages/admin/referentiels/chanteurs/ChanteurPage";
 import MesChansons from "../pages/chanteur/MesChansons";
 import SaisonChanteursPage from "../pages/admin/referentiels/saisons/SaisonChanteursPage";
 import ChansonpupitrePage from "../pages/admin/referentiels/chansons/ChansonpupitrePage";
-import { SaisonProvider } from "../components/contexts/SaisonContext";
+import { SaisonProvider, useSaison } from "../components/contexts/SaisonContext";
 import ChanteurSaisonPage from "../pages/admin/saisons/ChanteurSaisonPage";
 import ChansonPage from "../pages/admin/referentiels/chansons/ChansonPage";
 import PupitrePage from "../pages/admin/referentiels/pupitre/PupitrePage";
@@ -62,6 +62,22 @@ import Confidentialite from "../pages/public/Confidentialite";
 import CGU from "../pages/public/CGU";
 import RepetitionsChanteur from "../pages/chanteur/RepetitionsChanteur";
 
+
+function AdminDefaultRoute() {
+
+    const { saisonSelectionne } = useSaison();
+
+    if (!saisonSelectionne) {
+        return null;
+    }
+
+    return (
+        <Navigate
+            to={`/admin/saison/${encodeURIComponent(saisonSelectionne.nom)}/chanteurs`}
+            replace
+        />
+    );
+}
 
 export default function Router() {
 
@@ -169,7 +185,7 @@ export default function Router() {
                             }
                         >
 
-                            <Route index element={<Dashboard />} />
+                            <Route index element={<AdminDefaultRoute  />} />
 
                             <Route
                                 path="test"

@@ -43,13 +43,15 @@ const actions = [
 
 ];
 
-
+const designation ="chanson"
 export const SaisonConcertChansonConfig = createEntityConfig({
 
     entity: "SaisonConcertChanson",
-    icon: "chanson",
+    icon: designation,
     title: "Les chansons",
-
+    countLabel : {
+        singular  : designation
+    },
     table: "saison_concert_chansons",
 
 

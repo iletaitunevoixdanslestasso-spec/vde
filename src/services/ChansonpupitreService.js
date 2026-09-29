@@ -10,10 +10,8 @@ export class ChansonpupitreService extends BaseService {
         this.pupitreRepository = new PupitreRepository('pupitres');
     }
     async getAll() {
-        console.error(this.context);
 
         const chansonId = this.context.chansonId;
-        console.error("chansonId", chansonId);
 
         const { data, error } = await this.repository.findBySaison(chansonId);
 
@@ -40,7 +38,6 @@ export class ChansonpupitreService extends BaseService {
      * Liste des chansons pouvant être ajoutés
      */
     async getAvailablePupitres(chansonId) {
-        console.error(this.pupitreRepository)
         const { data: chansons, error } =
             await this.pupitreRepository.findAllAndChanson(chansonId);
 
@@ -92,8 +89,6 @@ export class ChansonpupitreService extends BaseService {
                 ? null
                 : Number(chansonPupitre.ordre);
 
-        console.error("pupitreId", pupitreId);
-        console.error("chansonId", chansonId);
 
         const { data: existing, error: existingError } =
             await this.repository.findByPupitreAndChanson(

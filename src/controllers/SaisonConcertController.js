@@ -8,11 +8,7 @@ export class SaisonConcertController extends ConcertController {
     }
     manageSaisonConcertChanson(concert, load) {
 
-        console.error(
-            "SaisonConcertController.manageChanson",
-            concert
-        );
-        console.error(this.context)
+
         return (`/admin/saison/${this.context.saisonNom}/concert/${concert.titre}/chansons`);
 
         return (`/admin/chanson/${saison.nom}/chanteurs`);
@@ -33,7 +29,6 @@ export class SaisonConcertController extends ConcertController {
         );
     }
     async load(onSuccess, onError) {
-        console.error("SaisonConcertController")
         return this.handle(
             () => this.service.getAllBySaison(),
             { onSuccess, onError }
@@ -46,16 +41,15 @@ export class SaisonConcertController extends ConcertController {
         return cbError(result)
     }
     async save(form, onSuccess, onError) {
-        console.error("SaisonConcertController save", form);
         const { data, error } = await this.service.findTypeConcert()
         if (error) { }
 
-        console.error(data)
+
         const newForm = {
             ...form,
             rendezvous_type_id: data.id
         }
-        console.error(newForm)
+
 
         return this.handle(
             () => this.service.saveSaisonConcert(newForm),

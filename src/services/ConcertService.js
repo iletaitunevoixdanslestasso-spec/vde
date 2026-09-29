@@ -17,14 +17,13 @@ export class ConcertService extends BaseService {
 
     async getAllBySaison() {
         const saisonId = this.context.saisonId;
-        console.error("tconcert service getAllBySaison", saisonId)
         const { data, error } = await this.rendezvouRepository.findBySaisonAndTypeConcert(saisonId);
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-        console.error(data)
+
 
         if (data) {
             data
@@ -38,14 +37,12 @@ export class ConcertService extends BaseService {
     }
 
     async getAll() {
-        console.error("concerceservice getALL")
         const { data, error } = await this.rendezvouRepository.findByTypeConcert();
 
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-        console.error(data)
 
         if (data) {
             data
@@ -60,11 +57,8 @@ export class ConcertService extends BaseService {
 
     async saveSaisonConcert(form) {
         // enregistrement le lieu sinicessaire, le rendezvous
-        console.error("saveSaisonConcert", form);
         const saisonId = this.context.saisonId;
         const { data, success } = await this.save(form);
-        console.error("saveSaisonConcert", data);
-        console.error("saveSaisonConcert", success);
         let saison_rendezvous_id = null;
         if(form.saison_rendezvous && form.saison_rendezvous.length)
             saison_rendezvous_id = form.saison_rendezvous[0].id;
@@ -95,7 +89,6 @@ export class ConcertService extends BaseService {
         return res
     }
     async save(form) {
-        console.error(form)
         let lieuId = form.lieu_id || null;
         let rendezvousId = form.id || null;
 
@@ -111,7 +104,6 @@ export class ConcertService extends BaseService {
 
             lieuId = lieu.id;
         }
-        console.error("lieuid", lieuId)
         // const { data: rendezvous_type, error } =
         //     await this.rendezvouRepository.findTypeConcert();
         const concert = {
