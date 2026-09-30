@@ -233,6 +233,8 @@ BRAND
 
 .chanson-titre {
     font-size: 16px;
+    word-break: keep-all;
+    overflow-wrap: normal;
 }
 
 .chanson-document,

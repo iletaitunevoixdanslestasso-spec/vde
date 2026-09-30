@@ -27,7 +27,9 @@ export default function RepresentationChoeurChanson({
      * de fournir directement les données
      * déjà chargées.
      */
-    representation = null
+    representation = null,
+
+    chanteurId = null
 }) {
 
     const [data, setData] =
@@ -95,7 +97,7 @@ export default function RepresentationChoeurChanson({
 
             setData(
                 response.data[
-                    chansonId
+                chansonId
                 ]
             );
 
@@ -147,6 +149,9 @@ export default function RepresentationChoeurChanson({
             titre={
                 titre ||
                 data.titre
+            }
+            chanteurId={
+                chanteurId
             }
 
         />

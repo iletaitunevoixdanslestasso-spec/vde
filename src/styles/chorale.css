@@ -78,6 +78,7 @@
 .icon-groupe::before,
 .icon-concert::before,
 .icon-chanteurSaison::before,
+.icon-lead_actif::before,
 .icon-saisonactive::before,
 .icon-repetition::before,
 .icon-lieux::before,
@@ -108,7 +109,6 @@
     align-items: center;
     gap: 0.3em;
 }
-
 .icon-chanteursaison::before {
     content: "";
     display: inline-block;
@@ -116,6 +116,23 @@
     height: 1.4em;
     flex: 0 0 1.4em;
     background-image: url("/chanteursaison.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.icon-lead_actif {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+}
+
+.icon-lead_actif::before {
+    content: "";
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    flex: 0 0 1.4em;
+    background-image: url("/lead_actif.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;

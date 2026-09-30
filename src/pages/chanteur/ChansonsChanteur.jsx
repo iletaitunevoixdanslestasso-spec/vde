@@ -4,6 +4,9 @@ import { Volume2, Music2 } from "lucide-react";
 
 import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
 import "../../styles/espaceChanteur_chansons.css";
+import RepresentationChoeurChanson from "../../components/RepresentationChoeurChanson";
+import FormModal from "../../framework/form/FormModal";
+import { saisonchansonConfig } from "../../config/entities/saisonchanson.config";
 
 
 
@@ -83,6 +86,16 @@ export default function ChansonsChanteur() {
 
     const controller =
         saisonchanteurpupitreConfig.controller;
+
+
+    const [
+        chansonRepartition,
+        setChansonRepartition
+    ] = useState(null);
+
+
+    const [openRepartition, setOpenRepartition] =
+        useState(false)
 
 
     function handleLeadChange(chanson) {
@@ -495,7 +508,7 @@ export default function ChansonsChanteur() {
                                             className={`chanson-lead-button ${chanson.lead ? "selected" : ""
                                                 }`}
                                             onClick={() =>
-                                                handleLeadChange( chanson )
+                                                handleLeadChange(chanson)
                                             }
                                             title={
                                                 chanson.lead
@@ -503,12 +516,40 @@ export default function ChansonsChanteur() {
                                                     : "Indiquer que je fais un lead"
                                             }
                                         >
-                                            <span className="chanson-lead-icon">
-                                                {chanson.lead ? "🎤⭐" : "🎤"}
-                                            </span>
-
+                                            <span className={`chanson-lead-icon icon-concert ${chanson.lead ? "icon-lead_actif" : ""} `}></span>
                                             <span className="chanson-lead-label">
                                                 Lead
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="chanson-action chanson-action-repartition"
+                                            onClick={() => {
+                                                setChansonRepartition({
+                                                    saison_id: saisonId,
+
+                                                    chansons: {
+                                                        id: chanson.chanson_id,
+                                                        titre: chanson.titre
+                                                    },
+
+                                                    chanteurId
+                                                });
+                                                setOpenRepartition(true);
+                                            }
+                                            }
+                                            title="Voir la répartition du chœur"
+                                        >
+                                            <span className="chanson-action-icon icon-chanteursaison"></span>
+
+                                            <span className="chanson-action-content">
+                                                <strong>
+                                                    Répartition
+                                                </strong>
+
+                                                <small>
+                                                    Voir le chœur
+                                                </small>
                                             </span>
                                         </button>
 
@@ -679,6 +720,43 @@ export default function ChansonsChanteur() {
                 })}
 
             </section>
+            <FormModal
+
+                open={
+                    openRepartition
+                }
+
+                action="repartition"
+
+                config={
+                    saisonchansonConfig
+                }
+
+                context={{
+                    saisonId,
+                    chanteurId,
+                    token
+                }}
+
+                errors={[]}
+
+                initialData={
+                    chansonRepartition
+                }
+
+                onClose={() => {
+
+                    setOpenRepartition(false);
+                    setChansonRepartition(null);
+
+                }}
+
+                onFieldChange={() => { }}
+
+                onSave={() => { }}
+
+            />
+
 
         </main>
     );

@@ -7,11 +7,15 @@ function IconChanteur({
     y,
     couleur,
     nom,
-    index
+    index,
+    highlighted = false
 }) {
     return (
         <g
-            className="svg-chanteur"
+            className={`svg-chanteur ${highlighted
+                ? "svg-chanteur-current"
+                : ""
+                }`}
             transform={`translate(${x}, ${y})`}
             style={{
                 color: couleur
@@ -42,6 +46,18 @@ function IconChanteur({
                 className="svg-chanteur-corps"
                 d="M-9 10 C-9 3 -5 0 0 0 C5 0 9 3 9 10"
             />
+            {highlighted && (
+
+                <text
+                    className="svg-chanteur-current-label"
+                    x="0"
+                    y="-24"
+                    textAnchor="middle"
+                >
+                    Moi
+                </text>
+
+            )}
 
         </g>
     );
@@ -50,7 +66,8 @@ function IconChanteur({
 
 export default function RepresentationChoeur({
     pupitres = [],
-    titre = "Le chœur"
+    titre = "Le chœur",
+    chanteurId = null
 }) {
     const choeurRef = useRef(null);
     const [pleinEcran, setPleinEcran] = useState(false);
@@ -1351,6 +1368,10 @@ export default function RepresentationChoeur({
                                                 couleur={couleur}
                                                 nom={nom}
                                                 index={chanteurIndex}
+                                                highlighted={
+                                                    chanteur.chanteur_id ===
+                                                    chanteurId
+                                                }
                                             />
                                         );
                                     })}
@@ -1410,6 +1431,10 @@ export default function RepresentationChoeur({
                                                     couleur={couleur}
                                                     nom={`${nom} — Lead`}
                                                     index={leadIndex}
+                                                    highlighted={
+                                                        chanteur.chanteur_id ===
+                                                        chanteurId
+                                                    }
                                                 />
 
                                                 <text

@@ -28,7 +28,8 @@ export default function FormRepartition({
     const [saisonChanteurs, setSaisonChanteurs] = useState([]);
     const [saisonChanteurPupitres, setSaisonChanteurPupitres] = useState([]);
 
-
+    const chanteurId =
+        context?.chanteurId;
 
     useEffect(() => {
 
@@ -410,6 +411,7 @@ export default function FormRepartition({
             <RepresentationChoeur
                 pupitres={getPupitresRepresentation()}
                 titre={initialData?.saison_chansons?.chansons?.titre}
+                chanteurId={chanteurId}
             />
 
             <DataTable
