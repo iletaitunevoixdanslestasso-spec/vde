@@ -216,48 +216,6 @@ export default function SaisonConcertChansonsPage() {
 
         <>
 
-            {/* ================================================
-                BOUTON REPARTITION COMPLETE
-                ================================================ */}
-
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginBottom: "15px"
-                }}
-            >
-
-                <button
-
-                    type="button"
-
-                    className="
-                        data-table-action
-                        repartition-export-button
-                    "
-
-                    onClick={
-                        afficherRepartitions
-                    }
-
-                >
-
-                    <span
-                        className="icon-chanteursaison"
-                        aria-hidden="true"
-                    />
-
-                    <span className="data-table-action-label">
-
-                        Répartition du chœur
-
-                    </span>
-
-                </button>
-
-            </div>
-
 
             {/* ================================================
                 CRUD CHANSONS DU CONCERT
@@ -287,8 +245,26 @@ export default function SaisonConcertChansonsPage() {
 
                 }}
 
-            />
+                headerAction={
+                    <button
+                        type="button"
+                        className="
+                data-table-action
+                repartition-export-button
+            "
+                        onClick={afficherRepartitions}
+                    >
+                        <span
+                            className="icon-chanteursaison"
+                            aria-hidden="true"
+                        />
 
+                        <span className="data-table-action-label">
+                            Répartition du chœur
+                        </span>
+                    </button>
+                }
+            />
 
             {/* ================================================
                 POPUP REPRESENTATIONS CHOEUR

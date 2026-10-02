@@ -8,7 +8,7 @@ import "./../styles/CRUDPage.css";
 import { useSaison } from "../../components/contexts/SaisonContext";
 import ExcelService from "../../services/ExcelService";
 import { truncateText } from "../../helper/helper";
-export default function CRUDPage({ config, context = {} }) {
+export default function CRUDPage({ config, context = {}, headerAction = null }) {
 
     const navigate = useNavigate();
 
@@ -413,22 +413,31 @@ export default function CRUDPage({ config, context = {} }) {
                     </span>
                 </h1>
 
-                {count !== null && (
-                    <div className="crud-page-count">
+                <div className="crud-page-header-right">
 
-                        <strong>
-                            {count}
-                        </strong>
+                    {count !== null && (
+                        <div className="crud-page-count">
 
-                        <span>
-                            {count > 1
-                                ? config.countLabel?.plural ?? "éléments"
-                                : config.countLabel?.singular ?? "élément"}
-                        </span>
+                            <strong>
+                                {count}
+                            </strong>
 
-                    </div>
-                )}
+                            <span>
+                                {count > 1
+                                    ? config.countLabel?.plural ?? "éléments"
+                                    : config.countLabel?.singular ?? "élément"}
+                            </span>
 
+                        </div>
+                    )}
+
+                    {headerAction && (
+                        <div className="crud-page-header-action">
+                            {headerAction}
+                        </div>
+                    )}
+
+                </div>
             </div>
 
 
