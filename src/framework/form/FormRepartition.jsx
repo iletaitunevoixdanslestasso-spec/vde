@@ -7,6 +7,7 @@ import DataTable from "../table/DataTable";
 import RepresentationChoeur from "../../components/RepresentationChoeur";
 import ExcelService from "../../services/ExcelService";
 import "./../styles/FormRepartition.css";
+import { getCouleurGroupe } from "../../helper/helper";
 
 
 export default function FormRepartition({
@@ -296,6 +297,31 @@ export default function FormRepartition({
         return pupitrePrincipal?.pupitre_id ?? null;
     };
 
+
+
+    const getGroupeId = (chanteur) =>
+        chanteur.groupe_id ??
+        chanteur.groupes?.id ??
+        chanteur.groupe?.id ??
+        "sans-groupe";
+
+
+    const getGroupeNom = (chanteur) =>
+        chanteur.groupes?.nom ??
+        chanteur.groupe?.nom ??
+        "Sans groupe";
+
+
+    const groupesIds = [
+        ...new Set(
+            saisonChanteurs.map(
+                chanteur => getGroupeId(chanteur)
+            )
+        )
+    ];
+
+
+ 
     const getPupitresRepresentation = () => {
 
         return chansonPupitres.map((chansonPupitre, index) => {
@@ -317,10 +343,27 @@ export default function FormRepartition({
                     )
                     .map(chanteur => ({
                         id: chanteur.id,
-                        chanteur_id: chanteur.chanteur_id,
-                        prenom: chanteur.chanteurs?.prenom,
-                        nom: chanteur.chanteurs?.nom,
-                        lead: chanteur.lead === true
+
+                        chanteur_id:
+                            chanteur.chanteur_id,
+
+                        prenom:
+                            chanteur.chanteurs?.prenom,
+
+                        nom:
+                            chanteur.chanteurs?.nom,
+
+                        groupe_id:
+                            getGroupeId(chanteur),
+
+                        groupe_nom:
+                            getGroupeNom(chanteur),
+
+                        couleur_groupe:
+                            getCouleurGroupe(chanteur.groupe_id),
+
+                        lead:
+                            chanteur.lead === true
                     }));
 
 

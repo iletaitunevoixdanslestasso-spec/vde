@@ -57,6 +57,10 @@ export class SaisonChanteurRepository extends BaseRepository {
                     prenom,
                     email,
                     telephone
+                ),
+                 groupes(
+                    id,
+                    nom
                 )
                 
             `)
@@ -64,7 +68,7 @@ export class SaisonChanteurRepository extends BaseRepository {
             .is("deleted_at", null)
             .is("chanteurs.deleted_at", null);
     }
-       async findBySaison_convention(saisonId) {
+    async findBySaison_convention(saisonId) {
         const { data, error } = await this.supabase
             .from(this.table)
             .select(`
@@ -81,7 +85,7 @@ export class SaisonChanteurRepository extends BaseRepository {
             `)
             .eq("saison_id", saisonId)
             .is("deleted_at", null);
-    
+
 
         if (error) {
             throw error;
@@ -106,7 +110,7 @@ export class SaisonChanteurRepository extends BaseRepository {
         //     .eq("saison_id", saisonId)
         //     .is("deleted_at", null);
     }
- 
+
 
 
     /**

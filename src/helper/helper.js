@@ -65,6 +65,107 @@ export function truncateText(value, maxLength = 25) {
     return text.slice(0, maxLength - 3).trim() + "...";
 }
 
+export function getCouleurGroupe(
+    groupeId,
+    groupeNom
+) {
+
+    if (!groupeId && !groupeNom) {
+        return "#94a3b8";
+    }
+
+    /*
+     * La couleur dépend maintenant :
+     *
+     * - de l'UUID
+     * - du nom du groupe
+     */
+    const cle =
+        `${groupeId || ""}|${groupeNom || ""}`
+            .trim()
+            .toLowerCase();
+
+
+    /*
+     * Hash FNV-1a.
+     *
+     * Une petite différence dans la clé
+     * produit généralement un nombre
+     * très différent.
+     */
+    let hash = 2166136261;
+
+    for (
+        let i = 0;
+        i < cle.length;
+        i++
+    ) {
+
+        hash ^=
+            cle.charCodeAt(i);
+
+        hash =
+            Math.imul(
+                hash,
+                16777619
+            );
+    }
+
+    hash >>>= 0;
+
+
+    /*
+     * On mélange encore les bits.
+     */
+    hash ^= hash >>> 16;
+
+    hash =
+        Math.imul(
+            hash,
+            2246822507
+        );
+
+    hash ^= hash >>> 13;
+
+    hash =
+        Math.imul(
+            hash,
+            3266489909
+        );
+
+    hash ^= hash >>> 16;
+
+    hash >>>= 0;
+
+
+    /*
+     * COULEUR
+     */
+
+    const hue =
+        hash % 360;
+
+    const saturation =
+        75 +
+        (
+            (hash >>> 8) %
+            11
+        );
+        // 75 → 85 %
+
+    const lightness =
+        40 +
+        (
+            (hash >>> 16) %
+            11
+        );
+        // 40 → 50 %
+
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+
 export function openGoogleMaps(lieu) {
 
     if (!lieu) {

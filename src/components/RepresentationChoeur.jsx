@@ -1,15 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import "./../styles/representationChoeur.css";
 import { useSaison } from "./contexts/SaisonContext";
+import { getCouleurGroupe } from "../helper/helper";
 
 function IconChanteur({
     x,
     y,
     couleur,
+    groupeId,
+    prenom,
     nom,
+    groupeNom,
     index,
-    highlighted = false
+    highlighted = false,
+    onSelect
 }) {
+
+    const couleurGroupe = getCouleurGroupe(groupeId, groupeNom)
+    const nomComplet =
+        `${prenom || ""} ${nom || ""}`.trim();
+
     return (
         <g
             className={`svg-chanteur ${highlighted
@@ -20,11 +30,53 @@ function IconChanteur({
             style={{
                 color: couleur
             }}
+            role="button"
+            tabIndex="0"
+            onClick={(event) => {
+                event.stopPropagation();
+
+                onSelect?.({
+                    prenom,
+                    nom,
+                    groupeNom
+                });
+            }}
+            onKeyDown={(event) => {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+                    event.preventDefault();
+
+                    onSelect?.({
+                        prenom,
+                        nom,
+                        groupeNom
+                    });
+                }
+            }}
         >
+
             <title>
-                {nom || `Chanteur ${index + 1}`}
+                {nomComplet ||
+                    `Chanteur ${index + 1}`}
             </title>
 
+
+            {/* CERCLE = PUPITRE */}
+            <circle
+                className="svg-chanteur-groupe"
+                cx="0"
+                cy="0"
+                r="19"
+                style={{
+                    stroke: couleur
+                }}
+            />
+
+
+            {/* FOND = PUPITRE */}
             <circle
                 className="svg-chanteur-fond"
                 cx="0"
@@ -35,34 +87,43 @@ function IconChanteur({
                 }}
             />
 
+
+            {/* TÊTE = GROUPE */}
             <circle
                 className="svg-chanteur-tete"
                 cx="0"
                 cy="-6"
                 r="5"
+                style={{
+                    fill: couleurGroupe
+                }}
             />
 
+
+            {/* CORPS = GROUPE */}
             <path
                 className="svg-chanteur-corps"
                 d="M-9 10 C-9 3 -5 0 0 0 C5 0 9 3 9 10"
+                style={{
+                    fill: couleurGroupe
+                }}
             />
-            {highlighted && (
 
+
+            {highlighted && (
                 <text
                     className="svg-chanteur-current-label"
                     x="0"
-                    y="-24"
+                    y="-25"
                     textAnchor="middle"
                 >
                     Moi
                 </text>
-
             )}
 
         </g>
     );
 }
-
 
 export default function RepresentationChoeur({
     pupitres = [],
@@ -84,7 +145,10 @@ export default function RepresentationChoeur({
         x: 0,
         y: 0
     });
-
+    const [
+        chanteurSelectionne,
+        setChanteurSelectionne
+    ] = useState(null);
 
     useEffect(() => {
         const synchroniserPleinEcran = () => {
@@ -1827,7 +1891,9 @@ export default function RepresentationChoeur({
                 SVG
             ================================================= */}
 
-            <div className="choeur-svg-container">
+            <div className="choeur-svg-container" onClick={() =>
+                setChanteurSelectionne(null)
+            }>
 
                 <div
                     className="choeur-zoom-controls"
@@ -1880,7 +1946,54 @@ export default function RepresentationChoeur({
                         </button>
 
                     </div>
+
                 </div>
+
+                {chanteurSelectionne && (
+
+                    <div
+                        className="choeur-chanteur-info"
+                        onClick={(event) =>
+                            event.stopPropagation()
+                        }
+                    >
+
+                        <button
+                            type="button"
+                            className="choeur-chanteur-info-close"
+                            onClick={() =>
+                                setChanteurSelectionne(null)
+                            }
+                            aria-label="Fermer"
+                        >
+                            ×
+                        </button>
+
+
+                        <div className="choeur-chanteur-info-nom">
+
+                            {chanteurSelectionne.prenom}
+
+                            {" "}
+
+                            {chanteurSelectionne.nom}
+
+                        </div>
+
+
+                        <div className="choeur-chanteur-info-groupe">
+
+                            Groupe :{" "}
+
+                            <strong>
+                                {chanteurSelectionne.groupeNom}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                )}
 
 
                 <svg
@@ -1911,28 +2024,6 @@ export default function RepresentationChoeur({
                 >
 
 
-                    {/* =========================================
-                        ARC
-                 
-
-                        <path
-                        className="choeur-arc-ligne"
-                        d={`
-                            M ${centreX - rayonX}
-                              ${centreY - rayonY * 0.5}
-
-                            Q ${centreX}
-                              ${centreY + 10}
-
-                              ${centreX + rayonX}
-                              ${centreY - rayonY * 0.5}
-                        `}
-                        fill="none"
-                        stroke="#e2e8f0"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                    />
-                    ========================================= */}
 
                     {/* =========================================
                         PUPITRES
@@ -2066,14 +2157,32 @@ export default function RepresentationChoeur({
                                         return (
                                             <IconChanteur
                                                 key={chanteur.id || chanteurIndex}
+
                                                 x={position.x}
                                                 y={position.y}
+
                                                 couleur={couleur}
-                                                nom={nom}
+
+                                                groupeId={
+                                                    chanteur.groupe_id
+                                                }
+
+                                                prenom={chanteur.prenom}
+                                                nom={chanteur.nom}
+
+                                                groupeNom={
+                                                    chanteur.groupe_nom
+                                                }
+
                                                 index={chanteurIndex}
+
                                                 highlighted={
                                                     chanteur.chanteur_id ===
                                                     chanteurId
+                                                }
+
+                                                onSelect={
+                                                    setChanteurSelectionne
                                                 }
                                             />
                                         );
@@ -2131,12 +2240,29 @@ export default function RepresentationChoeur({
                                                 <IconChanteur
                                                     x={x}
                                                     y={y}
+
                                                     couleur={couleur}
-                                                    nom={`${nom} — Lead`}
+
+                                                    groupeId={
+                                                        chanteur.groupe_id
+                                                    }
+
+                                                    prenom={chanteur.prenom}
+                                                    nom={chanteur.nom}
+
+                                                    groupeNom={
+                                                        chanteur.groupe_nom
+                                                    }
+
                                                     index={leadIndex}
+
                                                     highlighted={
                                                         chanteur.chanteur_id ===
                                                         chanteurId
+                                                    }
+
+                                                    onSelect={
+                                                        setChanteurSelectionne
                                                     }
                                                 />
 

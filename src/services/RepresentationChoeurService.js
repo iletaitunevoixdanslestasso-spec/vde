@@ -1,4 +1,5 @@
 import { BaseResponse } from "../core/framework/BaseResponse";
+import {  getCouleurGroupe } from "../helper/helper";
 import { ChansonpupitreRepository } from "../repositories/ChansonpupitreRepository";
 
 import {
@@ -9,6 +10,10 @@ import {
     SaisonChansonLeadRepository
 } from "../repositories/SaisonChansonLeadRepository";
 import { SaisonConcertChanteurRepository } from "../repositories/SaisonConcertChanteurRepository";
+
+
+
+
 
 
 export default class RepresentationChoeurService {
@@ -541,6 +546,31 @@ export default class RepresentationChoeurService {
 
                                         nom:
                                             row.chanteur_nom,
+                                        /*
+                                         * =============================================
+                                         * GROUPE
+                                         * =============================================
+                                         */
+
+                                        groupe_id:
+                                            row.groupe_id,
+
+                                        groupe_nom:
+                                            row.groupe_nom ||
+                                            "Sans groupe",
+
+                                        couleur_groupe:
+                                            getCouleurGroupe(
+                                                row.groupe_id
+                                            ),
+
+
+                                        /*
+                                         * =============================================
+                                         * LEAD
+                                         * =============================================
+                                         */
+
 
                                         lead:
                                             leadIds.has(
