@@ -15,7 +15,9 @@ export default function FormRepartition({
     context,
     form,
     errors,
-    onChange
+    onChange,
+    datatable = true,
+    excelExport = true
 }) {
 
     const repartitionService = new RepartitionService(
@@ -380,27 +382,29 @@ export default function FormRepartition({
                 <h2 className="repartition-header-title">
                     Répartition
                 </h2>
+                {excelExport &&
 
-                <button
-                    type="button"
-                    className="data-table-action repartition-export-button"
-                    onClick={() =>
-                        ExcelService.exportToExcel(saisonChanteurs, {
-                            columns,
-                            fileName: `Repartition_${initialData?.chansons?.titre || "chanson"}`,
-                            sheetName: initialData?.chansons?.titre || "Chanson"
-                        })
-                    }
-                >
-                    <span
-                        className="icon-telechargement"
-                        aria-hidden="true"
-                    />
+                    <button
+                        type="button"
+                        className="data-table-action repartition-export-button"
+                        onClick={() =>
+                            ExcelService.exportToExcel(saisonChanteurs, {
+                                columns,
+                                fileName: `Repartition_${initialData?.chansons?.titre || "chanson"}`,
+                                sheetName: initialData?.chansons?.titre || "Chanson"
+                            })
+                        }
+                    >
+                        <span
+                            className="icon-telechargement"
+                            aria-hidden="true"
+                        />
 
-                    <span className="data-table-action-label">
-                        Exporter en Excel
-                    </span>
-                </button>
+                        <span className="data-table-action-label">
+                            Exporter en Excel
+                        </span>
+                    </button>
+                }
             </div>
             <div style={{ marginBottom: 15 }}>
                 <strong>
@@ -410,16 +414,17 @@ export default function FormRepartition({
 
             <RepresentationChoeur
                 pupitres={getPupitresRepresentation()}
-                titre={initialData?.saison_chansons?.chansons?.titre}
+                titre={initialData?.chansons?.titre}
                 chanteurId={chanteurId}
             />
 
-            <DataTable
+            {datatable && <DataTable
                 data={saisonChanteurs}
                 config={{
                     columns
                 }}
             />
+            }
 
 
 

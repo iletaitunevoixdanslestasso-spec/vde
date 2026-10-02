@@ -6,6 +6,7 @@ import { saisonconcertConfig } from "../../config/entities/saisonconcert.config"
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 import NotificationService from "../../services/NotificationService";
 import ConcertParticipation from "../../components/ConcertParticipation";
+import RepresentationsChoeur from "../../components/RepresentationsChoeur";
 import { isPast } from "../../helper/helper";
 
 export default function ConcertsChanteur() {
@@ -33,36 +34,98 @@ export default function ConcertsChanteur() {
     const controller =
         saisonconcertConfig.controller;
 
+    const [
+        concertRepartitionOpen,
+        setConcertRepartitionOpen
+    ] = useState(null);
+
+    const handleShowRepartition = async (concert) => {
+
+        const saisonRendezvousId =
+            concert.saison_rendezvous?.[0]?.id;
 
 
-    const handleShowChansons_old = async (concert) => {
-
-        const saisonRendezvousId = concert.saison_rendezvous[0] ? concert.saison_rendezvous[0].id : false;
-        console.error('concert', concert)
         if (!saisonRendezvousId) {
-            console.error("saison_rendezvous_id absent", concert);
+
+            console.error(
+                "saison_rendezvous_id absent",
+                concert
+            );
+
             return;
         }
 
-        setChansonsLoading(concert.id);
 
-        controller.getChansonsConcert(
-            token,
-            saisonRendezvousId,
-            (result) => {
-                setConcertChansons(current => ({
-                    ...current,
-                    [concert.id]: result || []
-                }));
+        /*
+         * Les chansons sont déjà chargées :
+         * on ouvre directement.
+         */
 
-                setChansonsLoading(null);
-            },
-            (err) => {
-                console.error("Erreur chargement chansons", err);
-                setChansonsLoading(null);
-            }
+        if (concertChansons[concert.id]) {
+
+            setConcertRepartitionOpen(
+                concert.id
+            );
+
+            return;
+        }
+
+
+        setChansonsLoading(
+            concert.id
         );
+
+
+        try {
+
+            const result =
+                await controller.getChansonsConcert(
+                    token,
+                    saisonRendezvousId
+                );
+
+
+            const chansons =
+                result?.data || [];
+
+
+            setConcertChansons(
+                current => ({
+                    ...current,
+
+                    [concert.id]:
+                        chansons
+                })
+            );
+
+
+            setConcertRepartitionOpen(
+                concert.id
+            );
+
+        }
+        catch (err) {
+
+            console.error(
+                "Erreur chargement chansons",
+                err
+            );
+
+
+            setError(
+                "Impossible de charger les chansons du concert."
+            );
+
+        }
+        finally {
+
+            setChansonsLoading(
+                null
+            );
+        }
     };
+
+
 
     const handleShowChansons = async (concert) => {
 
@@ -487,10 +550,32 @@ export default function ConcertsChanteur() {
                                                     ↻
                                                 </span>
                                             ) : (
-                                                <span className="concert-music-note" aria-hidden="true">
-                                                    🎵
-                                                </span>
+                                                <span className="concert-music-note icon-chanson" aria-hidden="true"></span>
                                             )}
+                                        </button>
+                                    </div>
+                                    <div className="concert-icon">
+                                        <button
+                                            type="button"
+                                            className="concert-icon-button icon_concert"
+                                            onClick={() =>
+                                                handleShowRepartition(
+                                                    concert
+                                                )
+                                            }
+                                            title="Voir la répartition du chœur"
+                                            aria-label={
+                                                `Voir la répartition de ${concert.titre}`
+                                            }
+                                            disabled={
+                                                chansonsLoading ===
+                                                concert.id
+                                            }
+                                        >
+                                            <span
+                                                className="icon-chanteursaison"
+                                                aria-hidden="true"
+                                            />
                                         </button>
                                     </div>
 
@@ -795,6 +880,251 @@ export default function ConcertsChanteur() {
                                     type="button"
                                     className="concert-chansons-close-button"
                                     onClick={handleCloseChansons}
+                                >
+                                    Fermer
+                                </button>
+
+                            </footer>
+
+                        </div>
+
+                    </div>
+                );
+
+            })()}
+
+            {concertRepartitionOpen && (() => {
+
+                const concert =
+                    concerts.find(
+                        item =>
+                            item.id ===
+                            concertRepartitionOpen
+                    );
+
+
+                if (!concert) {
+                    return null;
+                }
+
+
+                const chansons =
+                    concertChansons[
+                    concertRepartitionOpen
+                    ] || [];
+
+
+                /*
+                 * On conserve l'ordre du concert.
+                 */
+
+                const chansonsTriees =
+                    [...chansons].sort(
+                        (a, b) => {
+
+                            if (a.ordre == null) {
+                                return 1;
+                            }
+
+                            if (b.ordre == null) {
+                                return -1;
+                            }
+
+                            return (
+                                a.ordre -
+                                b.ordre
+                            );
+                        }
+                    );
+
+
+                /*
+                 * RepresentationsChoeur accepte :
+                 *
+                 * {
+                 *     chanson_id,
+                 *     chansons: {
+                 *         id,
+                 *         titre
+                 *     }
+                 * }
+                 *
+                 * donc on extrait saison_chansons.
+                 */
+
+                const chansonsRepresentation =
+                    chansonsTriees
+                        .map(
+                            item =>
+                                item.saison_chansons
+                        )
+                        .filter(Boolean);
+
+
+                const saisonConcertId =
+                    concert
+                        .saison_rendezvous
+                        ?.[0]
+                        ?.id;
+
+
+                return (
+
+                    <div
+                        className="concert-chansons-overlay"
+
+                        onClick={() =>
+                            setConcertRepartitionOpen(
+                                null
+                            )
+                        }
+                    >
+
+                        <div
+                            className="
+                    concert-chansons-modal
+                    concert-repartition-modal
+                "
+
+                            onClick={
+                                event =>
+                                    event.stopPropagation()
+                            }
+
+                            role="dialog"
+
+                            aria-modal="true"
+                        >
+
+                            <header
+                                className="
+                        concert-chansons-modal-header
+                    "
+                            >
+
+                                <div
+                                    className="
+                            concert-chansons-modal-title-wrapper
+                        "
+                                >
+
+                                    <div
+                                        className="concert-chansons-modal-icon icon-chanteursaison"
+                                    />
+                                    
+
+
+                                    <div>
+
+                                        <div
+                                            className="
+                                    concert-chansons-modal-eyebrow
+                                "
+                                        >
+                                            Répartition
+                                        </div>
+
+
+                                        <h2
+                                            className="
+                                    concert-chansons-modal-title
+                                "
+                                        >
+                                            {concert.titre}
+                                        </h2>
+
+                                    </div>
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+
+                                    className="
+                            concert-chansons-close
+                        "
+
+                                    onClick={() =>
+                                        setConcertRepartitionOpen(
+                                            null
+                                        )
+                                    }
+
+                                    aria-label="Fermer"
+
+                                    title="Fermer"
+                                >
+                                    ×
+                                </button>
+
+                            </header>
+
+
+                            <div
+                                className="
+                        concert-chansons-modal-content
+                    "
+                            >
+
+                                <RepresentationsChoeur
+
+                                    exportexcel={
+                                        false
+                                    }
+                                    exportFileName={
+                                        concert.titre
+                                    }
+                                    chansons={
+                                        chansonsRepresentation
+                                    }
+
+                                    saisonConcertId={
+                                        saisonConcertId
+                                    }
+
+                                    chanteurId={
+                                        chanteurId
+                                    }
+
+                                />
+
+                            </div>
+
+
+                            <footer
+                                className="
+                        concert-chansons-modal-footer
+                    "
+                            >
+
+                                <span>
+                                    {
+                                        chansonsRepresentation
+                                            .length
+                                    }{" "}
+
+                                    {
+                                        chansonsRepresentation
+                                            .length > 1
+                                            ? "chansons"
+                                            : "chanson"
+                                    }
+                                </span>
+
+
+                                <button
+                                    type="button"
+
+                                    className="
+                            concert-chansons-close-button
+                        "
+
+                                    onClick={() =>
+                                        setConcertRepartitionOpen(
+                                            null
+                                        )
+                                    }
                                 >
                                     Fermer
                                 </button>

@@ -13,7 +13,9 @@ export default function FormModal({
     errors = [],
     onClose,
     onFieldChange,
-    onSave
+    onSave,
+    datatable=true,
+    excelExport = true
 }) {
 
     const [form, setForm] = useState({});
@@ -124,6 +126,8 @@ export default function FormModal({
                         onFieldChange={onFieldChange}
                         onFileUploadReady={registerFileUpload}
                         onSave={handleSave}
+                        datatable={datatable}
+                        excelExport={excelExport}
                     />
 
                 </div>

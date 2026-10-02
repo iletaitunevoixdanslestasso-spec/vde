@@ -10,11 +10,7 @@ export class ChansonController extends BaseController {
     
     managePupitres(chanson, load) {
 
-        
-        console.error(
-            "ChansonController.managePupitres",
-            chanson
-        );
+
 
         return (`/admin//chanson/${chanson.titre}/pupitres`);
 

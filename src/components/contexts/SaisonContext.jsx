@@ -87,7 +87,6 @@ export function SaisonProvider({ children }) {
                 });
 
             },
-            console.error
         );
 
     };

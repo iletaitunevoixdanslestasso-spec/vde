@@ -15,10 +15,7 @@ export class GroupesController extends BaseController {
      */
     async getBySaison(saisonId) {
 
-        console.error(
-            "groupe.getBySaison",
-            saisonId
-        );
+
 
         return this.service.getBySaison(saisonId);
     }

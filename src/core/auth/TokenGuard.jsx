@@ -52,10 +52,7 @@ export default function TokenGuard() {
           saison: user.saison
         })
       );
-      console.error(
-        "TOKEN GUARD USER STOCKÉ",
-        user
-      );
+
 
       // 4. Comparer les saisons
       const tokenSaisonId = user.saisonId;

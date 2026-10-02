@@ -39,7 +39,6 @@ function ChanteurLayoutContent() {
 
     useEffect(() => {
 
-        console.error("CHANCHEUR :", chanteur);
 
         if (!chanteur?.id) {
             return;
@@ -61,11 +60,7 @@ function ChanteurLayoutContent() {
                     return;
                 }
 
-                console.error(
-                    "Vérification répétition :",
-                    saisonId,
-                    saisonChanteurId
-                );
+
 
                 const { data, error } =
                     await repetitionConfig.service
@@ -74,11 +69,6 @@ function ChanteurLayoutContent() {
                             saisonChanteurId
                         );
 
-                console.error(
-                    "Répétition du jour :",
-                    data,
-                    error
-                );
 
                 if (error) {
 

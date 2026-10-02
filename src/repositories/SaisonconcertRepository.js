@@ -24,6 +24,8 @@ export class SaisonconcertRepository extends BaseRepository {
             `)
             .eq("saison_rendezvous_id", saisonRendezvousId)
             .is("deleted_at", null)
+            .is("saison_chansons.deleted_at", null)
+            .is("saison_chansons.chansons.deleted_at", null)
             .order("ordre", {
                 ascending: true,
                 nullsFirst: false

@@ -721,7 +721,8 @@ export default function ChansonsChanteur() {
 
             </section>
             <FormModal
-
+                datatable ={false}
+                excelExport ={false}
                 open={
                     openRepartition
                 }

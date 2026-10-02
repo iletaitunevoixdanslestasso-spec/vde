@@ -11,9 +11,6 @@ export class SaisonConcertChanteurRepository extends BaseRepository {
         saisonId,
         chanteurId
     ) {
-        console.error(token,
-            saisonId,
-            chanteurId)
         return this.supabase
             .from(this.table)
             .select(`
@@ -89,7 +86,6 @@ export class SaisonConcertChanteurRepository extends BaseRepository {
 
 
     async findBySaisonAndTypeConcert(saisonId) {
-        console.error("findBySaisonAndTypeConcert", saisonId)
         return this.supabase
             .from(this.table)
             .select(`

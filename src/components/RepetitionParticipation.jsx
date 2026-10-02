@@ -9,7 +9,6 @@ export default function RepetitionParticipation({
     onParticipationChange,
     onClose
 }) {
-    console.error("repetition", repetition)
     const {
         chanteur
     } = useChanteur();

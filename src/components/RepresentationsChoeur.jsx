@@ -20,8 +20,9 @@ export default function RepresentationsChoeur({
 
     chansons = [],
     saisonConcertId = null,
-    exportFileName = "Repartition"
-
+    exportFileName = "Repartition",
+    chanteurId = null,
+    exportexcel = true
 }) {
 
     const [representations, setRepresentations] =
@@ -378,23 +379,28 @@ export default function RepresentationsChoeur({
                 gap: "30px"
             }}
         >
-            <button
-                type="button"
-                className="data-table-action repartition-export-button"
-                onClick={
-                    handleExportExcel
-                }
-            >
-                <span
-                    className="icon-telechargement"
-                    aria-hidden="true"
-                />
+            {exportexcel && (
+                   <button
+                    type="button"
+                    className="data-table-action repartition-export-button"
+                    onClick={
+                        handleExportExcel
+                    }
+                >
+                    <span
+                        className="icon-telechargement"
+                        aria-hidden="true"
+                    />
 
-                <span className="data-table-action-label">
-                    Exporter en Excel
-                </span>
-            </button>
+                    <span className="data-table-action-label">
+                        Exporter en Excel
+                    </span>
+                </button>
+                
+            ) }
 
+             
+            
             {chansons.map(
                 chanson => {
 
@@ -431,6 +437,10 @@ export default function RepresentationsChoeur({
                                 representations[
                                 chansonId
                                 ]
+                            }
+
+                            chanteurId={
+                                chanteurId
                             }
 
                         />

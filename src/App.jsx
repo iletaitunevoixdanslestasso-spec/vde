@@ -11,8 +11,6 @@ function App() {
         .from("questions")
         .select("*");
 
-      console.error(data);
-      console.error(error);
 
     }
 
