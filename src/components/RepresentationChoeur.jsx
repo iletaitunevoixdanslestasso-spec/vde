@@ -75,6 +75,17 @@ export default function RepresentationChoeur({
     const { saisonSelectionne } = useSaison();
 
 
+    const svgRef = useRef(null);
+    const dragRef = useRef(null);
+
+    const [zoom, setZoom] = useState(1);
+
+    const [pan, setPan] = useState({
+        x: 0,
+        y: 0
+    });
+
+
     useEffect(() => {
         const synchroniserPleinEcran = () => {
             setPleinEcran(
@@ -198,17 +209,85 @@ export default function RepresentationChoeur({
        POSITION DES PUPITRES
     ========================================================= */
 
-    const getPositionPupitre = (index) => {
 
-        const nombrePupitres =
-            pupitres.length;
+    const getPositionPupitre_OLD = (index) => {
+
+        const nombrePupitres = pupitres.length;
 
         if (nombrePupitres === 1) {
             return -90;
         }
 
-        const angleDebut = -150;
-        const angleFin = -30;
+
+        /*
+         * =========================================================
+         * OUVERTURE DYNAMIQUE DU CHŒUR
+         * =========================================================
+         *
+         * Petit effectif :
+         *
+         *          ● ●       ● ●
+         *              chef
+         *
+         * Les pupitres restent proches du centre.
+         *
+         *
+         * Gros effectif :
+         *
+         * ● ● ● ●               ● ● ● ●
+         *
+         *              chef
+         *
+         * L'arc s'ouvre progressivement.
+         */
+
+        let ouverture;
+
+
+        if (totalChanteurs <= 12) {
+
+            /*
+             * En petit effectif, on tient aussi compte
+             * du nombre de pupitres.
+             *
+             * 2 pupitres => 40°
+             * 3 pupitres => 40°
+             * 4 pupitres => 60°
+             * 5+         => maximum 70°
+             */
+
+            ouverture = Math.min(
+                70,
+                Math.max(
+                    40,
+                    (nombrePupitres - 1) * 20
+                )
+            );
+
+        } else if (totalChanteurs <= 24) {
+
+            ouverture = 80;
+
+        } else if (totalChanteurs <= 50) {
+
+            ouverture = 100;
+
+        } else {
+
+            ouverture = 120;
+        }
+
+
+        /*
+         * L'ensemble reste toujours centré sur -90°.
+         */
+
+        const angleDebut =
+            -90 - ouverture / 2;
+
+        const angleFin =
+            -90 + ouverture / 2;
+
 
         return (
             angleDebut +
@@ -219,7 +298,6 @@ export default function RepresentationChoeur({
             index
         );
     };
-
 
     /* =========================================================
        POSITION CHANTEUR
@@ -612,7 +690,32 @@ export default function RepresentationChoeur({
         if (total <= 0) {
             return [];
         }
+        /*
+         * =========================================================
+         * LE PUPITRE TIENT ENTIÈREMENT SUR UN SEUL RANG
+         * =========================================================
+         *
+         * Dans ce cas, inutile de le découper artificiellement
+         * en plusieurs rangs.
+         *
+         * Cela évite notamment :
+         *
+         * 3 chanteurs -> [1, 1, 1]
+         *
+         * qui produit une ligne radiale.
+         */
 
+        const capaciteUnRang =
+            capacitesPremierRangTheoriques[
+            pupitreIndex
+            ] || 1;
+
+
+        if (total <= capaciteUnRang) {
+
+            return [total];
+
+        }
 
         /*
          * Premier rang imposé par la
@@ -893,38 +996,41 @@ export default function RepresentationChoeur({
                     return;
                 }
 
+                if (false) {
+                    /*
+                     * Rang suivant :
+                     *
+                     * on s'éloigne du chef.
+                     */
 
-                /*
-                 * Rang suivant :
-                 *
-                 * on s'éloigne du chef.
-                 */
-
-                const rayonTheorique =
-                    rayonPremierRangGlobal +
-                    rang *
-                    distanceEntreRangs;
-
-
-                /*
-                 * Si beaucoup de chanteurs,
-                 * le rayon peut être encore augmenté.
-                 */
-
-                const rayonMinimum =
-                    getRayonMinimumPourRang(
-                        nombreSurRang
-                    );
+                    const rayonTheorique =
+                        rayonPremierRangGlobal +
+                        rang *
+                        distanceEntreRangs;
 
 
+                    /*
+                     * Si beaucoup de chanteurs,
+                     * le rayon peut être encore augmenté.
+                     */
+
+                    const rayonMinimum =
+                        getRayonMinimumPourRang(
+                            nombreSurRang
+                        );
+
+
+                    const rayon =
+                        Math.max(
+                            rayonTheorique,
+                            rayonMinimum,
+                            rayons[rang - 1] +
+                            distanceEntreRangs
+                        );
+                }
                 const rayon =
-                    Math.max(
-                        rayonTheorique,
-                        rayonMinimum,
-                        rayons[rang - 1] +
-                        distanceEntreRangs
-                    );
-
+                    rayons[rang - 1] +
+                    distanceEntreRangs;
 
                 rayons.push(
                     rayon
@@ -950,7 +1056,528 @@ export default function RepresentationChoeur({
         };
     };
 
+    /*
+     * =========================================================
+     * LARGEUR ANGULAIRE D'UN RANG
+     * =========================================================
+     */
 
+    const getLargeurAngulaireRang = (
+        nombreSurRang,
+        rayon
+    ) => {
+
+        if (nombreSurRang <= 1) {
+            return 0;
+        }
+
+        const rapport =
+            Math.min(
+                1,
+                distanceMinTokens /
+                (2 * rayon)
+            );
+
+        const pasAngle =
+            2 *
+            Math.asin(rapport) *
+            180 /
+            Math.PI;
+
+        return (
+            (nombreSurRang - 1) *
+            pasAngle
+        );
+    };
+
+
+    /*
+     * =========================================================
+     * EMPREINTE ANGULAIRE DE CHAQUE PUPITRE
+     * =========================================================
+     *
+     * On cherche le rang le plus large de chaque pupitre.
+     */
+
+    const empreintesPupitres =
+        effectifsPupitres.map(
+            (effectif, pupitreIndex) => {
+
+                const {
+                    repartition,
+                    rayons
+                } =
+                    getGeometriePupitre(
+                        effectif,
+                        pupitreIndex
+                    );
+
+                if (!repartition.length) {
+                    return 0;
+                }
+
+                return Math.max(
+                    0,
+                    ...repartition.map(
+                        (
+                            nombreSurRang,
+                            rang
+                        ) =>
+                            getLargeurAngulaireRang(
+                                nombreSurRang,
+                                rayons[rang] ||
+                                rayonPremierRangGlobal
+                            )
+                    )
+                );
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * POSITION DES PUPITRES
+     * =========================================================
+     */
+
+    const getPositionPupitre = (index) => {
+
+        const nombrePupitres =
+            pupitres.length;
+
+        if (nombrePupitres === 1) {
+            return -90;
+        }
+
+
+        /*
+         * Pour les gros chœurs,
+         * on conserve la grande disposition existante.
+         */
+
+        if (totalChanteurs > 24) {
+
+            const ouverture =
+                totalChanteurs <= 50
+                    ? 100
+                    : 120;
+
+            const angleDebut =
+                -90 - ouverture / 2;
+
+            const angleFin =
+                -90 + ouverture / 2;
+
+            return (
+                angleDebut +
+                (
+                    (angleFin - angleDebut) /
+                    (nombrePupitres - 1)
+                ) *
+                index
+            );
+        }
+
+
+        /*
+         * ---------------------------------------------------------
+         * PETIT CHŒUR
+         * ---------------------------------------------------------
+         *
+         * On laisse suffisamment de place entre
+         * deux pupitres pour qu'un chanteur puisse
+         * tenir entre leurs deux extrémités.
+         */
+
+        const rapportSecurite =
+            Math.min(
+                1,
+                distanceMinTokens /
+                (2 * rayonPremierRangGlobal)
+            );
+
+        const espaceEntrePupitres =
+            Math.max(
+                10,
+                2 *
+                Math.asin(rapportSecurite) *
+                180 /
+                Math.PI
+            );
+
+
+        /*
+         * Largeur totale réellement nécessaire.
+         */
+
+        const largeurNaturelle =
+            empreintesPupitres.reduce(
+                (total, largeur) =>
+                    total + largeur,
+                0
+            ) +
+            espaceEntrePupitres *
+            (nombrePupitres - 1);
+
+
+        /*
+         * On évite qu'un très petit ensemble
+         * soit tassé au centre.
+         */
+
+        const largeurTotale =
+            Math.max(
+                40,
+                largeurNaturelle
+            );
+
+
+        /*
+         * Cas où la largeur naturelle est déjà suffisante :
+         * placement basé sur l'encombrement réel.
+         */
+
+        if (largeurNaturelle >= 40) {
+
+            let curseur =
+                -90 -
+                largeurNaturelle / 2;
+
+
+            for (
+                let i = 0;
+                i < nombrePupitres;
+                i++
+            ) {
+
+                const demiLargeur =
+                    empreintesPupitres[i] / 2;
+
+
+                const centre =
+                    curseur +
+                    demiLargeur;
+
+
+                if (i === index) {
+                    return centre;
+                }
+
+
+                curseur +=
+                    empreintesPupitres[i] +
+                    espaceEntrePupitres;
+            }
+        }
+
+
+        /*
+         * Très petit ensemble :
+         * répartition régulière sur 40°.
+         */
+
+        const angleDebut =
+            -90 -
+            largeurTotale / 2;
+
+        const angleFin =
+            -90 +
+            largeurTotale / 2;
+
+
+        return (
+            angleDebut +
+            (
+                (angleFin - angleDebut) /
+                (nombrePupitres - 1)
+            ) *
+            index
+        );
+    };
+
+    /*
+     * =========================================================
+     * VIEWBOX ADAPTATIF
+     * =========================================================
+     *
+     * On recherche le rayon réellement nécessaire pour afficher
+     * tous les chanteurs.
+     *
+     * Le SVG adaptera ensuite automatiquement la taille de tout :
+     *
+     * - chanteurs
+     * - espaces
+     * - pupitres
+     * - textes
+     * - chef
+     *
+     * Tout reste donc parfaitement proportionnel.
+     */
+
+    const rayonsMaxParPupitre =
+        effectifsPupitres.map(
+            (effectif, pupitreIndex) => {
+
+                const geometrie =
+                    getGeometriePupitre(
+                        effectif,
+                        pupitreIndex
+                    );
+
+                if (!geometrie.rayons.length) {
+                    return 0;
+                }
+
+                return Math.max(
+                    ...geometrie.rayons
+                );
+            }
+        );
+
+
+    const rayonMaxChoeur = Math.max(
+        rayonPremierRangGlobal,
+        ...rayonsMaxParPupitre
+    );
+
+
+    /*
+     * Marge autour du dessin :
+     *
+     * - pastilles
+     * - label "Moi"
+     * - nom des pupitres
+     * - chef
+     */
+
+    const margeScene = 70;
+
+
+    /*
+     * Zone nécessaire pour afficher TOUT le chœur.
+     *
+     * Elle peut volontairement commencer avec des coordonnées
+     * négatives : c'est parfaitement valide dans un SVG.
+     */
+
+    const baseViewBox = {
+
+        x:
+            chefX -
+            rayonMaxChoeur -
+            margeScene,
+
+        y:
+            chefY -
+            rayonMaxChoeur -
+            margeScene,
+
+        width:
+            (
+                rayonMaxChoeur +
+                margeScene
+            ) * 2,
+
+        height:
+            rayonMaxChoeur +
+            margeScene +
+            60
+    };
+
+    /*
+     * =========================================================
+     * ZOOM
+     * =========================================================
+     */
+
+    const ZOOM_MIN = 1;
+    const ZOOM_MAX = 6;
+
+
+    const largeurVisible =
+        baseViewBox.width / zoom;
+
+    const hauteurVisible =
+        baseViewBox.height / zoom;
+
+
+    /*
+     * Au zoom 1 :
+     * pan maximum = 0
+     *
+     * Au zoom > 1 :
+     * on peut déplacer la vue.
+     */
+
+    const panMaxX =
+        (
+            baseViewBox.width -
+            largeurVisible
+        ) / 2;
+
+    const panMaxY =
+        (
+            baseViewBox.height -
+            hauteurVisible
+        ) / 2;
+
+
+    const panX = Math.max(
+        -panMaxX,
+        Math.min(
+            panMaxX,
+            pan.x
+        )
+    );
+
+    const panY = Math.max(
+        -panMaxY,
+        Math.min(
+            panMaxY,
+            pan.y
+        )
+    );
+
+
+    const visibleViewBox = {
+
+        x:
+            baseViewBox.x +
+            (
+                baseViewBox.width -
+                largeurVisible
+            ) / 2 +
+            panX,
+
+        y:
+            baseViewBox.y +
+            (
+                baseViewBox.height -
+                hauteurVisible
+            ) / 2 +
+            panY,
+
+        width:
+            largeurVisible,
+
+        height:
+            hauteurVisible
+    };
+
+
+    const modifierZoom = facteur => {
+
+        setZoom(zoomActuel => {
+
+            const nouveauZoom =
+                zoomActuel * facteur;
+
+            return Math.max(
+                ZOOM_MIN,
+                Math.min(
+                    ZOOM_MAX,
+                    nouveauZoom
+                )
+            );
+        });
+    };
+
+
+    const resetZoom = () => {
+
+        setZoom(1);
+
+        setPan({
+            x: 0,
+            y: 0
+        });
+    };
+
+    const commencerDeplacement = event => {
+
+        if (zoom <= 1) {
+            return;
+        }
+
+        event.currentTarget.setPointerCapture?.(
+            event.pointerId
+        );
+
+        dragRef.current = {
+
+            pointerId:
+                event.pointerId,
+
+            clientX:
+                event.clientX,
+
+            clientY:
+                event.clientY,
+
+            panX,
+
+            panY
+        };
+    };
+
+
+    const deplacerVue = event => {
+
+        const drag = dragRef.current;
+
+        if (
+            !drag ||
+            drag.pointerId !== event.pointerId ||
+            !svgRef.current
+        ) {
+            return;
+        }
+
+
+        const rect =
+            svgRef.current.getBoundingClientRect();
+
+
+        const deltaX =
+            (
+                event.clientX -
+                drag.clientX
+            ) *
+            visibleViewBox.width /
+            rect.width;
+
+
+        const deltaY =
+            (
+                event.clientY -
+                drag.clientY
+            ) *
+            visibleViewBox.height /
+            rect.height;
+
+
+        setPan({
+
+            x:
+                drag.panX -
+                deltaX,
+
+            y:
+                drag.panY -
+                deltaY
+        });
+    };
+
+
+    const terminerDeplacement = event => {
+
+        if (
+            dragRef.current?.pointerId ===
+            event.pointerId
+        ) {
+            dragRef.current = null;
+        }
+    };
     /*
      * =========================================================
      * POSITION D'UN CHANTEUR
@@ -1008,6 +1635,7 @@ export default function RepresentationChoeur({
         const rayonRang =
             rayons[rang] ||
             rayonPremierRangGlobal;
+
 
 
         /*
@@ -1147,7 +1775,6 @@ export default function RepresentationChoeur({
                         {totalChanteurs > 1 ? "s" : ""}
                     </div>
                 </div>
-
                 <button
                     type="button"
                     className="choeur-fullscreen-button"
@@ -1184,13 +1811,16 @@ export default function RepresentationChoeur({
                         />
                     </svg>
                 </button>
+
             </div>
 
-            {erreurPleinEcran && (
-                <p role="alert">
-                    {erreurPleinEcran}
-                </p>
-            )}
+            {
+                erreurPleinEcran && (
+                    <p role="alert">
+                        {erreurPleinEcran}
+                    </p>
+                )
+            }
 
 
             {/* =================================================
@@ -1199,12 +1829,85 @@ export default function RepresentationChoeur({
 
             <div className="choeur-svg-container">
 
+                <div
+                    className="choeur-zoom-controls"
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    <button
+                        type="button"
+                        className="choeur-zoom-trigger"
+                        title="Zoom"
+                        aria-label="Afficher les contrôles de zoom"
+                    >
+                        <span
+                            className="icon-loupe"
+                            aria-hidden="true"
+                        />
+                    </button>
+
+                    <div className="choeur-zoom-panel">
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                modifierZoom(1 / 1.25)
+                            }
+                            disabled={zoom <= ZOOM_MIN}
+                            title="Dézoomer"
+                        >
+                            −
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={resetZoom}
+                            title="Afficher tout le chœur"
+                            className="choeur-zoom-value"
+                        >
+                            {Math.round(zoom * 100)} %
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                modifierZoom(1.25)
+                            }
+                            disabled={zoom >= ZOOM_MAX}
+                            title="Zoomer"
+                        >
+                            +
+                        </button>
+
+                    </div>
+                </div>
+
+
                 <svg
-                    className="choeur-svg"
-                    viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+                    ref={svgRef}
+
+                    className={`choeur-svg ${zoom > 1
+                        ? "choeur-svg-zoomed"
+                        : ""
+                        }`}
+
+                    viewBox={`
+                        ${visibleViewBox.x}
+                        ${visibleViewBox.y}
+                        ${visibleViewBox.width}
+                        ${visibleViewBox.height}
+                    `}
+
                     preserveAspectRatio="xMidYMid meet"
+
                     role="img"
+
                     aria-label={`Représentation du chœur ${titre}`}
+
+                    onPointerDown={commencerDeplacement}
+                    onPointerMove={deplacerVue}
+                    onPointerUp={terminerDeplacement}
+                    onPointerCancel={terminerDeplacement}
                 >
 
 
@@ -1385,14 +2088,14 @@ export default function RepresentationChoeur({
                                             pupitreIndex
                                         );
 
-                                        const chefX = centreX;
-                                        const chefY = viewBoxHeight - 25;
+                                        // const chefX = centreX;
+                                        // const chefY = viewBoxHeight - 55;
 
                                         /*
                                          * Position à mi-chemin entre le pupitre et le chef.
                                          */
                                         // 0 = au pupitre ; 1 = au chef.
-                                        const progressionVersChef = 0.6;
+                                        const progressionVersChef = 0.65;
 
                                         const milieuX =
                                             positionPupitre.x +
@@ -1412,7 +2115,7 @@ export default function RepresentationChoeur({
                                         const distance = Math.hypot(dx, dy) || 1;
 
                                         const decalage =
-                                            (leadIndex - (leads.length - 1) / 2) * 40;
+                                            (leadIndex - (leads.length - 1) / 2) * 30;
 
                                         const x =
                                             milieuX + (-dy / distance) * decalage;
@@ -1465,8 +2168,8 @@ export default function RepresentationChoeur({
                         className="svg-chef"
                         transform={`
                             translate(
-                                ${centreX},
-                                ${viewBoxHeight - 25}
+                                ${chefX},
+                                ${chefY}
                             )
                         `}
                     >
@@ -1485,7 +2188,7 @@ export default function RepresentationChoeur({
                     <text
                         className="svg-chef-label"
                         x={centreX}
-                        y={viewBoxHeight - 2}
+                        y={chefY + 23}
                         textAnchor="middle"
                     >
                         {saisonSelectionne?.chef_choeur?.prenom}
@@ -1538,6 +2241,6 @@ export default function RepresentationChoeur({
 
             </div>
 
-        </div>
+        </div >
     );
 }
