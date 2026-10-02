@@ -86,7 +86,7 @@ function ChanteurLayoutContent() {
 
                 if (!data) {
 
-                    console.error(
+                    console.log(
                         "Aucune répétition aujourd'hui"
                     );
 

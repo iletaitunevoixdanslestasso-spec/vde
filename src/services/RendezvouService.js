@@ -15,9 +15,9 @@ export class RendezvouService extends BaseService {
         const { data, error } =
             await this.repository.findForDashboard(chanteur);
 
-        console.error(data)
-        if (error) {
-            return BaseResponse.error([], error.message);
+            if (error) {
+                console.error(error)
+                return BaseResponse.error([], error.message);
         }
 
 

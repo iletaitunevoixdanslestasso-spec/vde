@@ -11,15 +11,118 @@ export class RepetitionService extends BaseService {
         this.repetitionstypeRepository = new RepetitionstypeRepository('repetitions_type');
         this.rendezvousRepository = new RendezvouRepository('rendezvous');
     }
-    async getForDashboard(saisonId) {
+    async getForDashboard(
+        saisonId,
+        saisonChanteurId
+    ) {
 
-        const { data, error } =
-            await this.repository.findBySaison(saisonId, new Date().toISOString().split("T")[0]);
+        /*
+         * RÉPÉTITIONS
+         */
+        const {
+            data: repetitions,
+            error: repetitionsError
+        } =
+            await this.repository.findBySaison(
+                saisonId,
+                new Date()
+                    .toISOString()
+                    .split("T")[0]
+            );
 
-        console.error(data)
-        if (error) {
-            return BaseResponse.error([], error.message);
+
+        if (repetitionsError) {
+
+            console.error(
+                repetitionsError
+            );
+
+            return BaseResponse.error(
+                [],
+                repetitionsError.message
+            );
         }
+
+
+        /*
+         * Aucune répétition
+         */
+        if (!repetitions?.length) {
+
+            return BaseResponse.success([]);
+        }
+
+
+        /*
+         * IDs des répétitions
+         */
+        const repetitionIds =
+            repetitions.map(
+                repetition => repetition.id
+            );
+
+
+        /*
+         * PARTICIPATIONS DU CHANTEUR
+         */
+        const {
+            data: participations,
+            error: participationsError
+        } =
+            await this.repository
+                .findParticipationsByChanteur(
+                    saisonChanteurId,
+                    repetitionIds
+                );
+
+
+        if (participationsError) {
+
+            console.error(
+                participationsError
+            );
+
+            return BaseResponse.error(
+                [],
+                participationsError.message
+            );
+        }
+
+
+        /*
+         * Index :
+         *
+         * repetition_id => participe
+         */
+        const participationsMap =
+            new Map(
+                (participations || []).map(
+                    participation => [
+                        participation.repetition_id,
+                        participation.participe
+                    ]
+                )
+            );
+
+
+        /*
+         * Fusion
+         */
+        const data =
+            repetitions.map(
+                repetition => ({
+                    ...repetition,
+
+                    participation:
+                        participationsMap.has(
+                            repetition.id
+                        )
+                            ? participationsMap.get(
+                                repetition.id
+                            )
+                            : null
+                })
+            );
 
 
         return BaseResponse.success(
@@ -78,36 +181,14 @@ export class RepetitionService extends BaseService {
         //     chanson.saison_chansons.length === 0 ||
         //     chanson.saison_chansons.every(sc => sc.deleted_at !== null)
         // );
-        console.error(data)
         const baserReponse = BaseResponse.success(data);
-        console.error(baserReponse)
         return BaseResponse.success(data);
     }
 
-    async save_old(entity) {
-        console.error(entity)
-        const { data: rendezvous, error } =
-            await this.rendezvousRepository.findTypeRepetition();
 
-        if (error) {
-            return BaseResponse.error([], error.message);
-        }
-
-        const entityToSave = {
-            ...entity,
-            rendezvous_id: rendezvous.id,
-            saison_id: this.context.saisonId
-        };
-
-        return super.save(entityToSave);
-    }
 
     async save(form) {
 
-        console.error(
-            "RepetitionService.save",
-            form
-        );
 
 
         /*
@@ -120,16 +201,16 @@ export class RepetitionService extends BaseService {
             await this.rendezvousRepository.findTypeRepetition();
 
         if (error) {
+            console.error(
+                "rendezvous repetition",
+                rendezvous
+            );
             return BaseResponse.error(
                 [],
                 error.message
             );
-        }
 
-        console.error(
-            "rendezvous repetition",
-            rendezvous
-        );
+        }
 
 
         /*
@@ -166,10 +247,6 @@ export class RepetitionService extends BaseService {
         }
 
 
-        console.error(
-            "rendezvous actuel",
-            rendezvousActuel
-        );
 
 
         /*
@@ -366,10 +443,6 @@ export class RepetitionService extends BaseService {
         }
 
 
-        console.error(
-            "rendezvousId utilisé par la répétition",
-            rendezvousId
-        );
 
         /*
          * =========================================================
@@ -413,10 +486,7 @@ export class RepetitionService extends BaseService {
         };
 
 
-        console.error(
-            "RepetitionService.save entityToSave",
-            entityToSave
-        );
+
 
 
         return super.save(

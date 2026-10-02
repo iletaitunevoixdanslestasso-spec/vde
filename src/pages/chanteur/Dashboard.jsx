@@ -8,7 +8,8 @@ import { useChanteur } from "../../components/contexts/ChanteurContext";
 import ConcertParticipation from "../../components/ConcertParticipation";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
 import { truncateText } from "../../helper/helper";
-
+import RepetitionParticipationControllerChanteur
+  from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
 
 function formatRendezvousDate(date) {
   if (!date) {
@@ -75,6 +76,11 @@ function TodoItem({
 function RendezvousRow({ item, onInfo, onParticipation }) {
 
   const isConcert = item.typeCode === "concert";
+  const isRepetition = item.type === "repetition";
+
+  const hasParticipation =
+    isConcert || isRepetition;
+
   const participationIcon =
     item.participation === true
       ? "icon-accepted"
@@ -82,9 +88,9 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
         ? "icon-cancel"
         : "icon-unknown";
 
-  const libelle = item?.lieu 
-  ?`${item?.lieu?.nom ? item?.lieu?.nom :  '' } ${item?.lieu?.ville ? ` à ${item.lieu.ville.toUpperCase()}` : 'A définir'}`
-  : false
+  const libelle = item?.lieu
+    ? `${item?.lieu?.nom ? item?.lieu?.nom : ''} ${item?.lieu?.ville ? ` à ${item.lieu.ville.toUpperCase()}` : 'A définir'}`
+    : false
 
 
   return (
@@ -152,7 +158,7 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
         )}
 
 
-        {isConcert && (
+        {hasParticipation && (
           <button
             type="button"
             className="dashboard-rendezvous-participation-button"
@@ -176,8 +182,8 @@ export default function DashboardChanteur() {
 
 
   const [loading, setLoading] = useState(true);
-  const [selectedConcert, setSelectedConcert] = useState(null);
-
+  // const [selectedParticipation, setSelectedParticipation] = useState(null);
+  const [selectedParticipation, setSelectedParticipation] = useState(null);
   const {
     chanteur,
     loadingChanteur,
@@ -218,11 +224,10 @@ export default function DashboardChanteur() {
    */
   async function loadRendezvous(chanteur) {
     const saisonId = chanteur?.saison_id
-    if (!saisonId) {
-
+    const saisonChanteurId = chanteur?.saisonChanteur?.id;
+    if (!saisonId || !saisonChanteurId) {
       setRendezvous([]);
       setLoadingRendezvous(false);
-
       return;
     }
 
@@ -246,7 +251,8 @@ export default function DashboardChanteur() {
        */
       const repetitionsResult =
         await repetitionController.getForDashboard(
-          saisonId
+          saisonId,
+          saisonChanteurId
         );
 
 
@@ -323,7 +329,7 @@ export default function DashboardChanteur() {
 
             key: `repetition-${item.id}`,
             id: item.id,
-
+            participation: item.participation,
             type: "repetition",
 
             /*
@@ -958,7 +964,7 @@ export default function DashboardChanteur() {
                       key={item.key}
                       item={item}
                       onInfo={openRendezvousInfo}
-                      onParticipation={setSelectedConcert}
+                      onParticipation={setSelectedParticipation}
                     />
                   ))}
 
@@ -1062,12 +1068,14 @@ export default function DashboardChanteur() {
         </div>
       )}
 
-      {
-        selectedConcert && (
+      
+        { selectedParticipation && (
+
           <div
             className="dashboard-modal-overlay"
-            onClick={() => setSelectedConcert(null)}
+            onClick={() => setSelectedParticipation(null)}
           >
+
             <div
               className="dashboard-modal"
               onClick={event => event.stopPropagation()}
@@ -1076,37 +1084,76 @@ export default function DashboardChanteur() {
               <button
                 type="button"
                 className="dashboard-modal-close"
-                onClick={() => setSelectedConcert(null)}
+                onClick={() => setSelectedParticipation(null)}
               >
                 ×
               </button>
 
               <h3>
-                {selectedConcert.titre}
+                {selectedParticipation.typeLibelle ||
+                  selectedParticipation.titre ||
+                  "Participation"}
               </h3>
 
-              <ConcertParticipation
-                concert={selectedConcert}
-                onParticipationChange={(concertId, participe) => {
-                  setRendezvous(current =>
-                    current.map(item =>
-                      item.id === concertId
-                        ? {
-                          ...item,
-                          participation: participe
-                        }
-                        : item
-                    )
-                  );
 
-                  setSelectedConcert(null);
-                }}
-              />
+              {selectedParticipation.type === "concert" && (
+
+                <ConcertParticipation
+                  concert={selectedParticipation}
+                  onParticipationChange={(concertId, participe) => {
+
+                    setRendezvous(current =>
+                      current.map(item =>
+                        item.id === concertId
+                          ? {
+                            ...item,
+                            participation: participe
+                          }
+                          : item
+                      )
+                    );
+
+                    setSelectedParticipation(null);
+                  }}
+                />
+
+              )}
+
+
+              {selectedParticipation.type === "repetition" && (
+
+                <RepetitionParticipationControllerChanteur
+                  repetition={selectedParticipation}
+                  inline
+                  onParticipationChange={(
+                    repetitionId,
+                    participation
+                  ) => {
+
+                    setRendezvous(current =>
+                      current.map(item =>
+                        item.type === "repetition" &&
+                          item.id === repetitionId
+                          ? {
+                            ...item,
+                            participation
+                          }
+                          : item
+                      )
+                    );
+
+                    setSelectedParticipation(null);
+                  }}
+                />
+
+              )}
 
             </div>
+
           </div>
-        )
-      }
+
+        )}
+      
     </div >
   );
 }

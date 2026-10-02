@@ -40,15 +40,14 @@ export class RepetitionController extends BaseController {
         const saisonId = this.context.saisonId;
 
         const liste = await this.service.findLieux();
-        console.error(liste)
         const lieux = liste.map(item => ({
             ...item,
             value: `${item.nom} ${item.description}`
         }));
 
         const { success, data, error, message } = await this.service.getAvailableType(saisonId);
-        console.error(success, data, error, message)
         if (!success) {
+            console.error(success, data, error, message)
             return {};
         }
         const availableType = data
@@ -64,13 +63,13 @@ export class RepetitionController extends BaseController {
     }
 
 
-    async getForDashboard(saisonId) {
+    async getForDashboard(saisonId, saisonChanteurId) {
 
         try {
 
             const data =
-                await this.service.getForDashboard(saisonId);
-            console.error(data)
+                await this.service.getForDashboard(saisonId, saisonChanteurId);
+
             return {
                 success: true,
                 data: data.data
