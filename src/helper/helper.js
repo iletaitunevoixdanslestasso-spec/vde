@@ -64,3 +64,28 @@ export function truncateText(value, maxLength = 25) {
 
     return text.slice(0, maxLength - 3).trim() + "...";
 }
+
+export function openGoogleMaps(lieu) {
+
+    if (!lieu) {
+        return;
+    }
+
+    const adresse = [
+        lieu.nom,
+        lieu.rue,
+        lieu.code_postale,
+        lieu.ville
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const url =
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adresse)}`;
+
+    window.open(
+        url,
+        "_blank",
+        "noopener,noreferrer"
+    );
+}

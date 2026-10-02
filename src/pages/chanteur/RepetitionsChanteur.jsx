@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import "../../styles/espaceChanteur_concerts.css";
+import "../../styles/espaceChanteur_repetition.css";
 
 import { repetitionConfig }
     from "../../config/entities/repetition.config";
@@ -10,7 +10,7 @@ import { useChanteur }
 
 import RepetitionParticipationControllerChanteur
     from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
-import { isPast } from "../../helper/helper";
+import { isPast, openGoogleMaps } from "../../helper/helper";
 
 
 
@@ -27,7 +27,11 @@ export default function RepetitionsChanteur() {
     const [error, setError] =
         useState(null);
 
+    const [showPast, setShowPast] =
+        useState(false);
 
+    const [showUpcoming, setShowUpcoming] =
+        useState(true);
     const {
         chanteur,
         loadingChanteur
@@ -110,6 +114,197 @@ export default function RepetitionsChanteur() {
     }
 
 
+
+
+    const repetitionsPassees =
+        repetitions.filter(
+            repetition =>
+                isPast(repetition.date)
+        );
+
+
+    const repetitionsAVenir =
+        repetitions.filter(
+            repetition =>
+                !isPast(repetition.date)
+        );
+
+
+    const renderRepetition = repetition => {
+
+        const passed =
+            isPast(repetition.date);
+
+        const lieu =
+            repetition.rendezvous?.lieux;
+
+        const rendezvousType =
+            repetition.rendezvous
+                ?.rendezvous_type
+                ?.code
+            || "repet";
+
+
+        return (
+
+            <article
+                key={repetition.id}
+                className={`concert-card repetition-card rendezvous-type-${rendezvousType}`}
+            >
+
+                <div className="concert-row">
+
+                    <div className="concert-main">
+
+                        <div className="concert-icon icon-repetition">
+                        </div>
+
+                        <div className="concert-title-content">
+
+                            <h2 className="concert-titre">
+
+                                {repetition
+                                    .repetitions_type
+                                    ?.libelle
+                                    || "Répétition"}
+
+                            </h2>
+
+                            {repetition.accompagne && (
+
+                                <small>
+                                    🎹 Répétition accompagnée
+                                </small>
+
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="concert-informations">
+
+                        <div className="concert-information">
+
+                            <span className="concert-information-icon">
+                                📅
+                            </span>
+
+                            <div className="concert-information-content">
+
+                                <strong>
+
+                                    {new Date(
+                                        repetition.date
+                                    ).toLocaleDateString(
+                                        "fr-FR",
+                                        {
+                                            weekday: "long",
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric"
+                                        }
+                                    )}
+
+                                </strong>
+
+                                {passed && (
+
+                                    <small>
+                                        Répétition passée
+                                    </small>
+
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        {lieu && (
+
+                            <div
+                                className="concert-information concert-information-map"
+                                role="button"
+                                tabIndex={0}
+                                title="Ouvrir dans Google Maps"
+                                onClick={() => openGoogleMaps(lieu)}
+                                onKeyDown={event => {
+
+                                    if (
+                                        event.key === "Enter" ||
+                                        event.key === " "
+                                    ) {
+                                        event.preventDefault();
+                                        openGoogleMaps(lieu);
+                                    }
+                                }}
+                            >
+
+                                <span className="concert-information-icon">
+                                    📍
+                                </span>
+
+                                <div className="concert-information-content">
+
+                                    <strong>
+                                        {lieu.nom}
+                                    </strong>
+
+                                    <small>
+
+                                        {[
+                                            lieu.rue,
+                                            lieu.code_postale,
+                                            lieu.ville
+                                        ]
+                                            .filter(Boolean)
+                                            .join(", ")}
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        )}
+
+                    </div>
+
+
+                    <RepetitionParticipationControllerChanteur
+                        repetition={repetition}
+                        inline
+                        disabled={passed}
+                        onParticipationChange={(
+                            repetitionId,
+                            participation
+                        ) => {
+
+                            setRepetitions(
+                                current =>
+                                    current.map(
+                                        item =>
+                                            item.id === repetitionId
+                                                ? {
+                                                    ...item,
+                                                    participation
+                                                }
+                                                : item
+                                    )
+                            );
+
+                        }}
+                    />
+
+                </div>
+
+            </article>
+
+        );
+    };
+
     return (
 
         <main className="concerts-page">
@@ -168,158 +363,135 @@ export default function RepetitionsChanteur() {
 
             ) : (
 
-                <section className="concerts-list">
+                <div className="repetitions-groups">
 
-                    {repetitions.map(repetition => {
 
-                        const passed =
-                            isPast(repetition.date);
+                    {/* ============================= */}
+                    {/* RÉPÉTITIONS PASSÉES           */}
+                    {/* ============================= */}
 
-                        const lieu = repetition.rendezvous?.lieux;
-                        const rendezvousType = repetition.rendezvous?.rendezvous_type?.code || "repet";
+                    <div className="repetitions-group">
 
-                        return (
+                        <button
+                            type="button"
+                            className="repetitions-group-toggle"
+                            onClick={() =>
+                                setShowPast(current => !current)
+                            }
+                            aria-expanded={showPast}
+                        >
 
-                            <article
-                                key={repetition.id}
-                                className={`concert-card repetition-card rendezvous-type-${rendezvousType}`}
-                            >
+                            <span className="repetitions-group-toggle-title">
 
-                                <div className="concert-row">
+                                <span>
+                                    Passées
+                                </span>
 
-                                    <div className="concert-main">
+                                <span className="repetitions-group-count">
+                                    {repetitionsPassees.length}
+                                </span>
 
-                                        <div className="concert-icon  icon-repetition">
-                                        </div>
+                            </span>
 
-                                        <div className="concert-title-content">
 
-                                            <h2 className="concert-titre">
+                            <span className="repetitions-group-chevron">
 
-                                                {repetition
-                                                    .repetitions_type
-                                                    ?.libelle
-                                                    || "Répétition"}
+                                {showPast ? "▲" : "▼"}
 
-                                            </h2>
+                            </span>
 
-                                            {repetition.accompagne && (
-                                                <small>
-                                                    🎹 Répétition accompagnée
-                                                </small>
-                                            )}
+                        </button>
 
-                                        </div>
 
+                        {showPast && (
+
+                            <section className="concerts-list">
+
+                                {repetitionsPassees.length > 0 ? (
+
+                                    repetitionsPassees.map(
+                                        renderRepetition
+                                    )
+
+                                ) : (
+
+                                    <div className="repetitions-group-empty">
+                                        Aucune répétition passée.
                                     </div>
 
+                                )}
 
-                                    <div className="concert-informations">
+                            </section>
 
-                                        <div className="concert-information">
+                        )}
 
-                                            <span className="concert-information-icon">
-                                                📅
-                                            </span>
-
-                                            <div className="concert-information-content">
-
-                                                <strong>
-
-                                                    {new Date(
-                                                        repetition.date
-                                                    ).toLocaleDateString(
-                                                        "fr-FR",
-                                                        {
-                                                            weekday: "long",
-                                                            day: "2-digit",
-                                                            month: "2-digit",
-                                                            year: "numeric"
-                                                        }
-                                                    )}
-
-                                                </strong>
-
-                                                {passed && (
-                                                    <small>
-                                                        Répétition passée
-                                                    </small>
-                                                )}
-
-                                            </div>
-
-                                        </div>
+                    </div>
 
 
-                                        {lieu && (
 
-                                            <div className="concert-information">
+                    {/* ============================= */}
+                    {/* RÉPÉTITIONS À VENIR           */}
+                    {/* ============================= */}
 
-                                                <span className="concert-information-icon">
-                                                    📍
-                                                </span>
+                    <div className="repetitions-group">
 
-                                                <div className="concert-information-content">
+                        <button
+                            type="button"
+                            className="repetitions-group-toggle"
+                            onClick={() =>
+                                setShowUpcoming(current => !current)
+                            }
+                            aria-expanded={showUpcoming}
+                        >
 
-                                                    <strong>
-                                                        {lieu.nom}
-                                                    </strong>
+                            <span className="repetitions-group-toggle-title">
 
-                                                    <small>
+                                <span>
+                                    À venir
+                                </span>
 
-                                                        {[
-                                                            lieu.rue,
-                                                            lieu.code_postale,
-                                                            lieu.ville
-                                                        ]
-                                                            .filter(Boolean)
-                                                            .join(", ")}
+                                <span className="repetitions-group-count">
+                                    {repetitionsAVenir.length}
+                                </span>
 
-                                                    </small>
+                            </span>
 
-                                                </div>
 
-                                            </div>
+                            <span className="repetitions-group-chevron">
 
-                                        )}
+                                {showUpcoming ? "▲" : "▼"}
 
+                            </span>
+
+                        </button>
+
+
+                        {showUpcoming && (
+
+                            <section className="concerts-list">
+
+                                {repetitionsAVenir.length > 0 ? (
+
+                                    repetitionsAVenir.map(
+                                        renderRepetition
+                                    )
+
+                                ) : (
+
+                                    <div className="repetitions-group-empty">
+                                        Aucune répétition à venir.
                                     </div>
 
+                                )}
 
-                                    <RepetitionParticipationControllerChanteur
-                                        repetition={repetition}
-                                        inline
-                                        disabled={passed}
-                                        onParticipationChange={(
-                                            repetitionId,
-                                            participation
-                                        ) => {
+                            </section>
 
-                                            setRepetitions(
-                                                current =>
-                                                    current.map(
-                                                        item =>
-                                                            item.id === repetitionId
-                                                                ? {
-                                                                    ...item,
-                                                                    participation
-                                                                }
-                                                                : item
-                                                    )
-                                            );
+                        )}
 
-                                        }}
-                                    />
+                    </div>
 
-                                </div>
 
-                            </article>
-
-                        );
-
-                    })}
-
-                </section>
+                </div>
 
             )}
 
