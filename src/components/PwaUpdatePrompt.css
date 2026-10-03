@@ -1,0 +1,74 @@
+.pwa-update {
+    position: fixed;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform: translateX(-50%);
+
+    width: calc(100% - 40px);
+    max-width: 500px;
+
+    box-sizing: border-box;
+
+    padding: 16px;
+
+    background: #ffffff;
+
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.18);
+
+    z-index: 99999;
+}
+
+
+.pwa-update-message {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    margin-bottom: 12px;
+}
+
+
+.pwa-update-message strong {
+    font-size: 1rem;
+}
+
+
+.pwa-update-message span {
+    font-size: 0.9rem;
+}
+
+
+.pwa-update-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+}
+
+
+.pwa-update-button {
+    padding: 8px 12px;
+
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    cursor: pointer;
+}
+
+
+.pwa-update-button-primary {
+    background: #333333;
+    border-color: #333333;
+
+    color: #ffffff;
+}
