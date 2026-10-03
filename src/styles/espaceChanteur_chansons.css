@@ -18,8 +18,9 @@
     color: #333;
 }
 
+
 /* =========================================================
-   icone note pour chanson audio
+   ICÔNES AUDIO / ANIMATIONS
    ========================================================= */
 
 .chanson-icon-audio {
@@ -40,7 +41,6 @@
 }
 
 @keyframes chanson-audio-note-pulse {
-
     0%,
     100% {
         transform: scale(1) rotate(0deg);
@@ -56,30 +56,11 @@
 }
 
 .chanson-audio-volume {
-    animation: chanson-audio-volume 1.2s ease-in-out infinite;
+    animation: chanson-audio-volume 1s ease-in-out infinite;
     transform-origin: left center;
 }
 
 @keyframes chanson-audio-volume {
-
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    50% {
-        transform: scale(1.15);
-        opacity: 0.75;
-    }
-}
-
-.chanson-audio-volume {
-    animation: chanson-audio-volume 1s ease-in-out infinite;
-}
-
-@keyframes chanson-audio-volume {
-
     0%,
     100% {
         transform: translateX(0) scale(1);
@@ -124,7 +105,6 @@
     justify-content: center;
 
     border-radius: 14px;
-
     background: #f3f3f3;
 
     font-size: 1.5rem;
@@ -140,7 +120,6 @@
 
     font-size: 0.75rem;
     font-weight: 700;
-
     text-transform: uppercase;
     letter-spacing: 0.12em;
 
@@ -164,7 +143,6 @@
 
 .chansons-page-subtitle {
     margin: 8px 0 0;
-
     max-width: 700px;
 
     font-size: 0.95rem;
@@ -172,6 +150,7 @@
 
     color: #777;
 }
+
 
 /* =========================================================
    COMPTEUR
@@ -195,16 +174,15 @@
 .chansons-page-count strong {
     font-size: 1.25rem;
     line-height: 1.2;
-
     color: #333;
 }
 
 .chansons-page-count span {
     margin-top: 2px;
-
     font-size: 0.7rem;
     color: #888;
 }
+
 
 /* =========================================================
    AIDE
@@ -234,7 +212,6 @@
     justify-content: center;
 
     border-radius: 9px;
-
     background: #f0f0f0;
 
     font-size: 1rem;
@@ -255,6 +232,7 @@
     font-size: 0.8rem;
     color: #888;
 }
+
 
 /* =========================================================
    ERREUR
@@ -281,6 +259,7 @@
     font-size: 1rem;
 }
 
+
 /* =========================================================
    LISTE
    ========================================================= */
@@ -291,20 +270,28 @@
     gap: 10px;
 }
 
+
 /* =========================================================
-   CARTE CHANSON
+   CARTE / STRUCTURE DE LA LIGNE
+
+   Desktop :
+   [ chanson-main ] [ chanson-info ]
+
+   chanson-main :
+   [ icône ] [ titre | lead | répartition ]
+
+   chanson-info :
+   [ paroles | pupitre | audio ]
    ========================================================= */
 
 .chanson-card {
     padding: 0;
-
     margin: 0;
 
     border: 1px solid #e5e5e5;
     border-radius: 12px;
 
     background: #fff;
-
     overflow: hidden;
 
     transition:
@@ -315,50 +302,67 @@
 
 .chanson-card:hover {
     transform: translateY(-1px);
-
     border-color: #dcdcdc;
-
-    box-shadow:
-        0 5px 18px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
 }
 
 .chanson-row {
     display: grid;
-
-    grid-template-columns:
-        minmax(200px, 1.6fr) minmax(150px, 1fr) minmax(190px, 1.2fr) minmax(150px, 1fr);
-
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: center;
+    gap: 24px;
 
-    gap: 18px;
-
-    padding: 16px 18px;
+    width: 100%;
 }
 
-/* =========================================================
-   TITRE
-   ========================================================= */
+.chanson-main,
+.chanson-info,
+.chanson-document,
+.chanson-pupitre,
+.chanson-audio {
+    min-width: 0;
+}
 
 .chanson-main {
-    min-width: 0;
+    width: 100%;
 
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
     align-items: center;
-
     gap: 12px;
 }
+
+.chanson-info {
+    display: grid;
+    grid-template-columns:
+        minmax(180px, 1fr)
+        minmax(180px, 1fr)
+        minmax(120px, 0.6fr);
+
+    align-items: center;
+    gap: 16px;
+}
+
+.chanson-document,
+.chanson-pupitre,
+.chanson-audio {
+    width: 100%;
+}
+
+
+/* =========================================================
+   TITRE / ACTIONS PRINCIPALES
+   ========================================================= */
 
 .chanson-icon {
     width: 40px;
     height: 40px;
-    flex: 0 0 40px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
     border-radius: 10px;
-
     background: #f5f5f5;
 
     font-size: 1.05rem;
@@ -366,279 +370,40 @@
 
 .chanson-title-content {
     min-width: 0;
+    width: 100%;
+
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        120px
+        180px;
+
+    align-items: center;
+    gap: 12px;
 }
 
 .chanson-titre {
+    min-width: 0;
     margin: 0;
 
-
-    font-size: 16px;
-    word-break: keep-all;
-    overflow-wrap: normal !important;
     font-size: 0.98rem;
     font-weight: 600;
     line-height: 1.35;
 
     color: #333;
 
-    overflow-wrap: anywhere;
-}
-
-/* =========================================================
-   ACTIONS
-   ========================================================= */
-
-.chanson-action {
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-    gap: 9px;
-
-    padding: 8px 10px;
-
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-
-    background: #fafafa;
-
-    color: #444;
-
-    text-decoration: none;
-
-    transition:
-        background 0.15s ease,
-        border-color 0.15s ease,
-        transform 0.15s ease;
-}
-
-.chanson-action:hover {
-    background: #f3f3f3;
-    border-color: #d7d7d7;
-    transform: translateY(-1px);
-}
-
-.chanson-action-icon {
-    width: 30px;
-    height: 30px;
-    flex: 0 0 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 7px;
-
-    background: #fff;
-
-    font-size: 0.9rem;
-}
-
-.chanson-action-content {
-    min-width: 0;
-
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.chanson-action-content strong {
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.chanson-action-content small {
-    display: block;
-
-    overflow: hidden;
-
-    font-size: 0.7rem;
-    color: #888;
-
-    text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.chanson-action-document {
-    color: #555;
-}
-
-.chanson-action-audio {
-    color: #555;
-}
-
-/* =========================================================
-   ACTION INDISPONIBLE
-   ========================================================= */
-
-.chanson-action-disabled {
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 8px 10px;
-
-    border: 1px dashed #ddd;
-    border-radius: 8px;
-
-    color: #aaa;
-
-    font-size: 0.75rem;
-}
-
-/* =========================================================
-   PUPITRE
-   ========================================================= */
-
-.chanson-pupitre {
-    min-width: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 5px;
-}
-
-.chanson-pupitre-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-
-    color: #888;
-}
-
-.chanson-pupitre select {
-    width: 100%;
-    min-width: 0;
-
-    padding: 9px 30px 9px 10px;
-
-    border: 1px solid #d8d8d8;
-    border-radius: 8px;
-
-    background: #fff;
-
-    color: #444;
-
-    font: inherit;
-    font-size: 0.8rem;
-
-    cursor: pointer;
-
-    transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-.chanson-pupitre select:hover {
-    border-color: #bbb;
-}
-
-.chanson-pupitre select:focus {
-    outline: none;
-
-    border-color: #999;
-
-    box-shadow:
-        0 0 0 3px rgba(0, 0, 0, 0.05);
-}
-
-.chanson-pupitre select:disabled {
-    opacity: 0.6;
-    cursor: default;
-}
-
-.chanson-saving {
-    font-size: 0.7rem;
-    color: #888;
-}
-
-/* =========================================================
-   CHARGEMENT
-   ========================================================= */
-
-.chansons-loading {
-    min-height: 180px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    border: 1px dashed #ddd;
-    border-radius: 10px;
-
-    color: #777;
-
-    font-size: 0.9rem;
-}
-
-.chansons-loading-icon {
-    font-size: 1.1rem;
-}
-
-/* =========================================================
-   ETAT VIDE
-   ========================================================= */
-
-.chansons-empty {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-
-    padding: 20px;
-
-    border: 1px dashed #ddd;
-    border-radius: 10px;
-
-    background: #fafafa;
-}
-
-.chansons-empty-icon {
-    width: 44px;
-    height: 44px;
-    flex: 0 0 44px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 10px;
-
-    background: #f0f0f0;
-
-    font-size: 1.2rem;
-}
-
-.chansons-empty strong {
-    display: block;
-
-    margin-bottom: 3px;
-
-    font-size: 0.9rem;
-}
-
-.chansons-empty p {
-    margin: 0;
-
-    font-size: 0.82rem;
-    color: #888;
-}
-
-.chanson-title-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .chanson-lead-button {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
 
+    min-width: 0;
     padding: 5px 9px;
 
     border: 1px solid #d6d6d6;
@@ -670,6 +435,237 @@
     font-size: 1.15rem;
 }
 
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.chanson-action {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 8px 10px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+
+    background: #fafafa;
+    color: #444;
+
+    text-decoration: none;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.chanson-action:hover {
+    background: #f3f3f3;
+    border-color: #d7d7d7;
+    transform: translateY(-1px);
+}
+
+.chanson-action-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+    background: #fff;
+
+    font-size: 0.9rem;
+}
+
+.chanson-action-content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chanson-action-content strong {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.chanson-action-content small {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+
+    font-size: 0.7rem;
+    color: #888;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chanson-action-document,
+.chanson-action-audio {
+    color: #555;
+}
+
+
+/* =========================================================
+   ACTION INDISPONIBLE
+   ========================================================= */
+
+.chanson-action-disabled {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 10px;
+
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+
+    color: #aaa;
+    font-size: 0.75rem;
+}
+
+
+/* =========================================================
+   PUPITRE
+   ========================================================= */
+
+.chanson-pupitre {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+}
+
+.chanson-pupitre-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #888;
+}
+
+.chanson-pupitre select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    padding: 9px 30px 9px 10px;
+
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #444;
+
+    font: inherit;
+    font-size: 0.8rem;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.chanson-pupitre select:hover {
+    border-color: #bbb;
+}
+
+.chanson-pupitre select:focus {
+    outline: none;
+    border-color: #999;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.chanson-pupitre select:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.chanson-saving {
+    font-size: 0.7rem;
+    color: #888;
+}
+
+
+/* =========================================================
+   CHARGEMENT
+   ========================================================= */
+
+.chansons-loading {
+    min-height: 180px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: 1px dashed #ddd;
+    border-radius: 10px;
+
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.chansons-loading-icon {
+    font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   ÉTAT VIDE
+   ========================================================= */
+
+.chansons-empty {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 20px;
+
+    border: 1px dashed #ddd;
+    border-radius: 10px;
+
+    background: #fafafa;
+}
+
+.chansons-empty-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+    background: #f0f0f0;
+
+    font-size: 1.2rem;
+}
+
+.chansons-empty strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.9rem;
+}
+
+.chansons-empty p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #888;
+}
+
+
 /* =========================================================
    MOBILE
    ========================================================= */
@@ -694,7 +690,6 @@
         flex-basis: 46px;
 
         border-radius: 11px;
-
         font-size: 1.2rem;
     }
 
@@ -713,7 +708,6 @@
 
     .chansons-page-count {
         min-width: 45px;
-
         padding: 7px 8px;
     }
 
@@ -727,7 +721,6 @@
 
     .chansons-help {
         align-items: flex-start;
-
         margin-bottom: 16px;
         padding: 11px 12px;
     }
@@ -751,27 +744,65 @@
         border-radius: 11px;
     }
 
+    /*
+     * Sur mobile la carte passe sur 2 étages :
+     * 1. chanson-main
+     * 2. chanson-info
+     */
     .chanson-row {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 11px;
-
-        padding: 13px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
     }
 
+    /*
+     * Ligne principale mobile :
+     * [ icône ] [ titre | lead | répartition ]
+     */
     .chanson-main {
-        padding-bottom: 3px;
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 8px;
+        padding-bottom: 2px;
     }
 
     .chanson-icon {
         width: 38px;
         height: 38px;
-        flex-basis: 38px;
+    }
+
+    /*
+     * IMPORTANT : on écrase ici les colonnes desktop
+     * 120px / 180px qui provoquaient le chevauchement.
+     * Les boutons Lead et Répartition sont déjà compacts
+     * sur mobile grâce à espace-chanteur-action-mobile.
+     */
+    .chanson-title-content {
+        grid-template-columns:
+            minmax(0, 1fr)
+            max-content
+            max-content;
+
+        gap: 6px;
     }
 
     .chanson-titre {
         font-size: 0.92rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /*
+     * La partie info reste sur une ligne car ce rendu
+     * fonctionne bien : Paroles | Pupitre | Audio.
+     */
+    .chanson-info {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(0, 1fr)
+            auto;
+
+        gap: 8px;
+        align-items: end;
     }
 
     .chanson-document,
@@ -796,5 +827,42 @@
 
     .chansons-empty {
         padding: 15px;
+    }
+}
+
+
+/* =========================================================
+   TRÈS PETITS ÉCRANS
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .chansons-page {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .chanson-main {
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 6px;
+    }
+
+    .chanson-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .chanson-title-content {
+        gap: 4px;
+    }
+
+    .chanson-info {
+        gap: 5px;
+    }
+
+    .chanson-action,
+    .chanson-action-disabled {
+        padding-left: 6px;
+        padding-right: 6px;
     }
 }

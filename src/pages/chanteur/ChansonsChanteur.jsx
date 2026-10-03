@@ -7,6 +7,8 @@ import "../../styles/espaceChanteur_chansons.css";
 import RepresentationChoeurChanson from "../../components/RepresentationChoeurChanson";
 import FormModal from "../../framework/form/FormModal";
 import { saisonchansonConfig } from "../../config/entities/saisonchanson.config";
+import { truncateText, truncateTextEnd } from "../../helper/helper";
+import NotificationService from "../../services/NotificationService";
 
 
 
@@ -78,9 +80,7 @@ export default function ChansonsChanteur() {
         useState(null);
 
     const saisonId = data?.saisonId;
-    console.error("data", data)
-    console.error("saisonId", saisonId)
-    // const chanteurId = data?.chanteur?.chanteur_id;
+
     const chanteurId = data?.id;
     const token = localStorage.getItem("token");
 
@@ -134,12 +134,19 @@ export default function ChansonsChanteur() {
                         };
                     })
                 );
+                NotificationService.success(
+                    result.message ||
+                    "Enregistrement lead avec succès."
+                );
 
                 setSavingLead(null);
             },
 
             (err) => {
-
+                NotificationService.error(
+                    result.message ||
+                    "Erreur modification lead",
+                );
                 console.error(
                     "Erreur modification lead",
                     err
@@ -505,25 +512,27 @@ export default function ChansonsChanteur() {
 
                                         <button
                                             type="button"
-                                            className={`chanson-lead-button ${chanson.lead ? "selected" : ""
+                                            className={`chanson-lead-button espace-chanteur-action-mobile ${chanson.lead ? "selected" : ""
                                                 }`}
-                                            onClick={() =>
-                                                handleLeadChange(chanson)
-                                            }
+                                            onClick={() => handleLeadChange(chanson)}
                                             title={
                                                 chanson.lead
                                                     ? "Je fais un lead sur cette chanson"
                                                     : "Indiquer que je fais un lead"
                                             }
                                         >
-                                            <span className={`chanson-lead-icon icon-concert ${chanson.lead ? "icon-lead_actif" : ""} `}></span>
-                                            <span className="chanson-lead-label">
+                                            <span
+                                                className={`chanson-lead-icon icon-concert ${chanson.lead ? "icon-lead_actif" : ""
+                                                    }`}
+                                            ></span>
+
+                                            <span className="chanson-lead-label espace-chanteur-action-label">
                                                 Lead
                                             </span>
                                         </button>
                                         <button
                                             type="button"
-                                            className="chanson-action chanson-action-repartition"
+                                            className="chanson-action chanson-action-repartition espace-chanteur-action-mobile"
                                             onClick={() => {
                                                 setChansonRepartition({
                                                     saison_id: saisonId,
@@ -535,14 +544,14 @@ export default function ChansonsChanteur() {
 
                                                     chanteurId
                                                 });
+
                                                 setOpenRepartition(true);
-                                            }
-                                            }
+                                            }}
                                             title="Voir la répartition du chœur"
                                         >
                                             <span className="chanson-action-icon icon-chanteursaison"></span>
 
-                                            <span className="chanson-action-content">
+                                            <span className="chanson-action-content espace-chanteur-action-label">
                                                 <strong>
                                                     Répartition
                                                 </strong>
@@ -556,161 +565,163 @@ export default function ChansonsChanteur() {
                                     </div>
 
                                 </div>
+                                <div className="chanson-info">
 
-                                {/* =================================
+                                    {/* =================================
                                     PAROLES
                                    ================================= */}
 
-                                <div className="chanson-document">
+                                    <div className="chanson-document">
 
-                                    {chanson.documentUrl ? (
+                                        {chanson.documentUrl ? (
 
-                                        <Link
-                                            className="chanson-action chanson-action-document"
-                                            to={chanson.documentUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                            <Link
+                                                className="chanson-action chanson-action-document"
+                                                to={chanson.documentUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
 
-                                            <span className="chanson-action-icon">
-                                                📄
-                                            </span>
+                                                <span className="chanson-action-icon">
+                                                    📄
+                                                </span>
 
-                                            <span className="chanson-action-content">
+                                                <span className="chanson-action-content">
 
-                                                <strong>
-                                                    Paroles
-                                                </strong>
+                                                    <strong>
+                                                        Paroles
+                                                    </strong>
 
-                                                <small>
-                                                    {chanson.path}
-                                                </small>
+                                                    <small>
+                                                        {truncateTextEnd(chanson.path)}
+                                                    </small>
 
-                                            </span>
+                                                </span>
 
-                                        </Link>
+                                            </Link>
 
-                                    ) : (
+                                        ) : (
 
-                                        <div className="chanson-action-disabled">
-                                            <span>
-                                                📄
-                                            </span>
+                                            <div className="chanson-action-disabled">
+                                                <span>
+                                                    📄
+                                                </span>
 
-                                            <span>
-                                                Paroles indisponibles
-                                            </span>
-                                        </div>
+                                                <span>
+                                                    Paroles indisponibles
+                                                </span>
+                                            </div>
 
-                                    )}
+                                        )}
 
-                                </div>
+                                    </div>
 
-                                {/* =================================
+                                    {/* =================================
                                     PUPITRE
                                    ================================= */}
 
-                                <div className="chanson-pupitre">
+                                    <div className="chanson-pupitre">
 
-                                    <label
-                                        htmlFor={`pupitre-${chanson.chanson_id}`}
-                                        className="chanson-pupitre-label"
-                                    >
-                                        Mon pupitre
-                                    </label>
+                                        <label
+                                            htmlFor={`pupitre-${chanson.chanson_id}`}
+                                            className="chanson-pupitre-label"
+                                        >
+                                            Mon pupitre
+                                        </label>
 
-                                    <select
-                                        id={`pupitre-${chanson.chanson_id}`}
-                                        value={pupitreChoisi}
-                                        disabled={isSaving}
-                                        onChange={(event) =>
-                                            handlePupitreChange(
-                                                chanson.chanson_id,
-                                                event.target.value
-                                            )
-                                        }
-                                    >
+                                        <select
+                                            id={`pupitre-${chanson.chanson_id}`}
+                                            value={pupitreChoisi}
+                                            disabled={isSaving}
+                                            onChange={(event) =>
+                                                handlePupitreChange(
+                                                    chanson.chanson_id,
+                                                    event.target.value
+                                                )
+                                            }
+                                        >
 
-                                        <option value="">
-                                            Choisir un pupitre
-                                        </option>
+                                            <option value="">
+                                                Choisir un pupitre
+                                            </option>
 
-                                        {chanson.pupitres?.map(
-                                            pupitre => (
+                                            {chanson.pupitres?.map(
+                                                pupitre => (
 
-                                                <option
-                                                    key={pupitre.id}
-                                                    value={pupitre.id}
-                                                >
-                                                    {pupitre.nom}
-                                                </option>
+                                                    <option
+                                                        key={pupitre.id}
+                                                        value={pupitre.id}
+                                                    >
+                                                        {pupitre.nom}
+                                                    </option>
 
-                                            )
+                                                )
+                                            )}
+
+                                        </select>
+
+                                        {isSaving && (
+
+                                            <span className="chanson-saving">
+                                                Enregistrement...
+                                            </span>
+
                                         )}
 
-                                    </select>
+                                    </div>
 
-                                    {isSaving && (
-
-                                        <span className="chanson-saving">
-                                            Enregistrement...
-                                        </span>
-
-                                    )}
-
-                                </div>
-
-                                {/* =================================
+                                    {/* =================================
                                     AUDIO
                                    ================================= */}
 
-                                <div className="chanson-audio">
+                                    <div className="chanson-audio">
 
-                                    {audioDisponible ? (
+                                        {audioDisponible ? (
 
-                                        <Link
-                                            className="chanson-action chanson-action-audio"
-                                            to={chanson.audio_pupitre.audio_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                            <Link
+                                                className="chanson-action chanson-action-audio"
+                                                to={chanson.audio_pupitre.audio_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
 
-                                            <span className="chanson-action-icon">
-                                                <Volume2
-                                                    size={24}
-                                                    strokeWidth={2.2}
-                                                    className="chanson-audio-volume"
-                                                />
-                                            </span>
+                                                <span className="chanson-action-icon">
+                                                    <Volume2
+                                                        size={24}
+                                                        strokeWidth={2.2}
+                                                        className="chanson-audio-volume"
+                                                    />
+                                                </span>
 
-                                            <span className="chanson-action-content">
+                                                <span className="chanson-action-content">
 
-                                                <strong>
-                                                    Audio
-                                                </strong>
+                                                    <strong>
+                                                        Audio
+                                                    </strong>
 
-                                                <small>
-                                                    {chanson.audio_pupitre.nom}
-                                                </small>
+                                                    <small>
+                                                        {chanson.audio_pupitre.nom}
+                                                    </small>
 
-                                            </span>
+                                                </span>
 
-                                        </Link>
+                                            </Link>
 
-                                    ) : (
+                                        ) : (
 
-                                        <div className="chanson-action-disabled">
-                                            <span>
-                                                🔊
-                                            </span>
+                                            <div className="chanson-action-disabled">
+                                                <span>
+                                                    🔊
+                                                </span>
 
-                                            <span>
-                                                Choisissez un pupitre
-                                            </span>
-                                        </div>
+                                                <span>
+                                                    Choisissez un pupitre
+                                                </span>
+                                            </div>
 
-                                    )}
+                                        )}
 
+                                    </div>
                                 </div>
 
                             </div>
@@ -721,8 +732,8 @@ export default function ChansonsChanteur() {
 
             </section>
             <FormModal
-                datatable ={false}
-                excelExport ={false}
+                datatable={false}
+                excelExport={false}
                 open={
                     openRepartition
                 }

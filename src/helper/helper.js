@@ -64,6 +64,17 @@ export function truncateText(value, maxLength = 25) {
 
     return text.slice(0, maxLength - 3).trim() + "...";
 }
+export function truncateTextEnd(value, maxLength = 25) {
+    if (!value) return "";
+
+    const text = value.trim();
+
+    if (text.length <= maxLength) {
+        return text;
+    }
+
+    return "..." + text.slice(-(maxLength - 3)).trimStart();
+}
 
 export function getCouleurGroupe(
     groupeId,
@@ -151,7 +162,7 @@ export function getCouleurGroupe(
             (hash >>> 8) %
             11
         );
-        // 75 → 85 %
+    // 75 → 85 %
 
     const lightness =
         40 +
@@ -159,7 +170,7 @@ export function getCouleurGroupe(
             (hash >>> 16) %
             11
         );
-        // 40 → 50 %
+    // 40 → 50 %
 
 
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
