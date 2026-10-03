@@ -15,7 +15,7 @@ export default function Concerts() {
 
   return (
     <div>
-      <h2>🎤 Concerts</h2>
+      <h2>🎤 Concerts LALA</h2>
 
       {concerts.map((c) => (
         <div key={c.id}>

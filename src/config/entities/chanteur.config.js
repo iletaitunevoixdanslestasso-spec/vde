@@ -87,7 +87,7 @@ const columns = [
 ];
 const actions = [
     {
-        label: "Valider DAI",
+        label: "Valider D.A.I.",
         action: "validateDroitImage",
         cssClass: "icon-valider",
         condition: (row) =>
