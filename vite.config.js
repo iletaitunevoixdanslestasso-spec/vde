@@ -24,7 +24,8 @@ export default defineConfig({
 
         lang: "fr",
 
-        start_url: "/",
+        id: "/",
+        start_url: "/?pwa=1",
         scope: "/",
 
         display: "standalone",
