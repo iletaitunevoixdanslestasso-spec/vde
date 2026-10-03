@@ -138,7 +138,11 @@ export default function RepresentationChoeur({
 
     const svgRef = useRef(null);
     const dragRef = useRef(null);
+    const pointersRef = useRef(
+        new Map()
+    );
 
+    const pinchRef = useRef(null);
     const [zoom, setZoom] = useState(1);
 
     const [pan, setPan] = useState({
@@ -1557,15 +1561,183 @@ export default function RepresentationChoeur({
         });
     };
 
-    const commencerDeplacement = event => {
+    {
+        const commencerDeplacement_old = event => {
+
+            if (zoom <= 1) {
+                return;
+            }
+
+            event.currentTarget.setPointerCapture?.(
+                event.pointerId
+            );
+
+            dragRef.current = {
+
+                pointerId:
+                    event.pointerId,
+
+                clientX:
+                    event.clientX,
+
+                clientY:
+                    event.clientY,
+
+                panX,
+
+                panY
+            };
+        };
+
+
+        const deplacerVue_old = event => {
+
+            const drag = dragRef.current;
+
+            if (
+                !drag ||
+                drag.pointerId !== event.pointerId ||
+                !svgRef.current
+            ) {
+                return;
+            }
+
+
+            const rect =
+                svgRef.current.getBoundingClientRect();
+
+
+            const deltaX =
+                (
+                    event.clientX -
+                    drag.clientX
+                ) *
+                visibleViewBox.width /
+                rect.width;
+
+
+            const deltaY =
+                (
+                    event.clientY -
+                    drag.clientY
+                ) *
+                visibleViewBox.height /
+                rect.height;
+
+
+            setPan({
+
+                x:
+                    drag.panX -
+                    deltaX,
+
+                y:
+                    drag.panY -
+                    deltaY
+            });
+        };
+
+
+        const terminerDeplacement_old = event => {
+
+            if (
+                dragRef.current?.pointerId ===
+                event.pointerId
+            ) {
+                dragRef.current = null;
+            }
+        };
+    }
+
+    const getDistancePointers = (
+        pointer1,
+        pointer2
+    ) => {
+
+        return Math.hypot(
+            pointer2.x - pointer1.x,
+            pointer2.y - pointer1.y
+        );
+    };
+
+
+    const commencerInteraction = event => {
+
+        event.currentTarget
+            .setPointerCapture?.(
+                event.pointerId
+            );
+
+
+        /*
+         * Mémorise le doigt / pointeur.
+         */
+
+        pointersRef.current.set(
+            event.pointerId,
+            {
+                x: event.clientX,
+                y: event.clientY
+            }
+        );
+
+
+        /*
+         * ===============================================
+         * DEUX DOIGTS
+         * ===============================================
+         *
+         * On commence un pinch.
+         */
+
+        if (
+            pointersRef.current.size === 2
+        ) {
+
+            const pointers =
+                Array.from(
+                    pointersRef.current.values()
+                );
+
+
+            const distance =
+                getDistancePointers(
+                    pointers[0],
+                    pointers[1]
+                );
+
+
+            pinchRef.current = {
+
+                distance,
+
+                zoom
+            };
+
+
+            /*
+             * On annule le drag éventuel
+             * commencé avec le premier doigt.
+             */
+
+            dragRef.current = null;
+
+            return;
+        }
+
+
+        /*
+         * ===============================================
+         * UN DOIGT
+         * ===============================================
+         *
+         * Déplacement uniquement si zoomé.
+         */
 
         if (zoom <= 1) {
             return;
         }
 
-        event.currentTarget.setPointerCapture?.(
-            event.pointerId
-        );
 
         dragRef.current = {
 
@@ -1585,21 +1757,125 @@ export default function RepresentationChoeur({
     };
 
 
-    const deplacerVue = event => {
+    const deplacerInteraction = event => {
 
-        const drag = dragRef.current;
+        /*
+         * Met à jour la position
+         * du pointeur courant.
+         */
+
+        if (
+            pointersRef.current.has(
+                event.pointerId
+            )
+        ) {
+
+            pointersRef.current.set(
+                event.pointerId,
+                {
+                    x: event.clientX,
+                    y: event.clientY
+                }
+            );
+        }
+
+
+        /*
+         * ===============================================
+         * PINCH ZOOM
+         * ===============================================
+         */
+
+        if (
+            pointersRef.current.size >= 2 &&
+            pinchRef.current
+        ) {
+
+            const pointers =
+                Array.from(
+                    pointersRef.current.values()
+                );
+
+
+            const distanceActuelle =
+                getDistancePointers(
+                    pointers[0],
+                    pointers[1]
+                );
+
+
+            if (
+                pinchRef.current.distance <= 0
+            ) {
+                return;
+            }
+
+
+            const facteur =
+                distanceActuelle /
+                pinchRef.current.distance;
+
+
+            const nouveauZoom =
+                Math.max(
+                    ZOOM_MIN,
+                    Math.min(
+                        ZOOM_MAX,
+
+                        pinchRef.current.zoom *
+                        facteur
+                    )
+                );
+
+
+            setZoom(
+                nouveauZoom
+            );
+
+
+            /*
+             * Retour exact à la vue initiale.
+             */
+
+            if (
+                nouveauZoom <= ZOOM_MIN
+            ) {
+
+                setPan({
+                    x: 0,
+                    y: 0
+                });
+            }
+
+
+            return;
+        }
+
+
+        /*
+         * ===============================================
+         * DEPLACEMENT A UN DOIGT
+         * ===============================================
+         */
+
+        const drag =
+            dragRef.current;
+
 
         if (
             !drag ||
-            drag.pointerId !== event.pointerId ||
+            drag.pointerId !==
+            event.pointerId ||
             !svgRef.current
         ) {
+
             return;
         }
 
 
         const rect =
-            svgRef.current.getBoundingClientRect();
+            svgRef.current
+                .getBoundingClientRect();
 
 
         const deltaX =
@@ -1629,17 +1905,58 @@ export default function RepresentationChoeur({
             y:
                 drag.panY -
                 deltaY
+
         });
     };
 
 
-    const terminerDeplacement = event => {
+    const terminerInteraction = event => {
+
+        /*
+         * Supprime le doigt/pointeur.
+         */
+
+        pointersRef.current.delete(
+            event.pointerId
+        );
+
+
+        /*
+         * Fin du pinch.
+         */
+
+        if (
+            pointersRef.current.size < 2
+        ) {
+
+            pinchRef.current = null;
+        }
+
+
+        /*
+         * Fin du drag.
+         */
 
         if (
             dragRef.current?.pointerId ===
             event.pointerId
         ) {
+
             dragRef.current = null;
+        }
+
+
+        if (
+            event.currentTarget
+                .hasPointerCapture?.(
+                    event.pointerId
+                )
+        ) {
+
+            event.currentTarget
+                .releasePointerCapture?.(
+                    event.pointerId
+                );
         }
     };
     /*
@@ -2016,11 +2333,29 @@ export default function RepresentationChoeur({
                     role="img"
 
                     aria-label={`Représentation du chœur ${titre}`}
+                    /*{
 
-                    onPointerDown={commencerDeplacement}
-                    onPointerMove={deplacerVue}
-                    onPointerUp={terminerDeplacement}
-                    onPointerCancel={terminerDeplacement}
+                        onPointerDown={commencerDeplacement}
+                        onPointerMove={deplacerVue}
+                        onPointerUp={terminerDeplacement}
+                        onPointerCancel={terminerDeplacement}
+                    }*/
+                    onPointerDown={
+                        commencerInteraction
+                    }
+
+                    onPointerMove={
+                        deplacerInteraction
+                    }
+
+                    onPointerUp={
+                        terminerInteraction
+                    }
+
+                    onPointerCancel={
+                        terminerInteraction
+                    }
+
                 >
 
 

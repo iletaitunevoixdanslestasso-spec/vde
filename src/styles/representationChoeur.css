@@ -666,7 +666,12 @@
     outline-offset: 1px;
 }
 
-
+.representation-choeur:fullscreen .choeur-svg {
+    touch-action: none;
+}
+.representation-choeur:fullscreen {
+    overscroll-behavior: contain;
+}
 .choeur-svg-zoomed {
     cursor: grab;
 
