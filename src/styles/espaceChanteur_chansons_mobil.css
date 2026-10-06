@@ -1,0 +1,196 @@
+/* =========================================================
+   ESPACECHANTEUR_CHANSONS — TABLETTE & MOBILE
+   Règles responsive extraites de espaceChanteur_chansons.css.
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .chansons-page {
+        padding: 22px 14px 35px;
+    }
+
+    .chansons-page-header {
+        align-items: flex-start;
+        gap: 12px;
+
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+    }
+
+    .chansons-page-header-icon {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+
+        border-radius: 11px;
+        font-size: 1.2rem;
+    }
+
+    .chansons-page-eyebrow {
+        font-size: 0.68rem;
+    }
+
+    .chansons-page-title {
+        font-size: 1.55rem;
+    }
+
+    .chansons-page-subtitle {
+        margin-top: 6px;
+        font-size: 0.82rem;
+    }
+
+    .chansons-page-count {
+        min-width: 45px;
+        padding: 7px 8px;
+    }
+
+    .chansons-page-count strong {
+        font-size: 1rem;
+    }
+
+    .chansons-page-count span {
+        font-size: 0.62rem;
+    }
+
+    .chansons-help {
+        align-items: flex-start;
+        margin-bottom: 16px;
+        padding: 11px 12px;
+    }
+
+    .chansons-help-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .chansons-help strong {
+        font-size: 0.78rem;
+    }
+
+    .chansons-help span {
+        font-size: 0.72rem;
+        line-height: 1.4;
+    }
+
+    .chanson-card {
+        border-radius: 11px;
+    }
+
+    /*
+     * Sur mobile la carte passe sur 2 étages :
+     * 1. chanson-main
+     * 2. chanson-info
+     */
+    .chanson-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    /*
+     * Ligne principale mobile :
+     * [ icône ] [ titre | lead | répartition ]
+     */
+    .chanson-main {
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 8px;
+        padding-bottom: 2px;
+    }
+
+    .chanson-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    /*
+     * IMPORTANT : on écrase ici les colonnes desktop
+     * 120px / 180px qui provoquaient le chevauchement.
+     * Les boutons Lead et Répartition sont déjà compacts
+     * sur mobile grâce à espace-chanteur-action-mobile.
+     */
+    .chanson-title-content {
+        grid-template-columns:
+            minmax(0, 1fr)
+            max-content
+            max-content;
+
+        gap: 6px;
+    }
+
+    .chanson-titre {
+        font-size: 0.92rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /*
+     * La partie info reste sur une ligne car ce rendu
+     * fonctionne bien : Paroles | Pupitre | Audio.
+     */
+    .chanson-info {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(0, 1fr)
+            auto;
+
+        gap: 8px;
+        align-items: end;
+    }
+
+    .chanson-document,
+    .chanson-pupitre,
+    .chanson-audio {
+        width: 100%;
+    }
+
+    .chanson-action,
+    .chanson-action-disabled {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .chanson-pupitre select {
+        min-height: 40px;
+    }
+
+    .chanson-saving {
+        margin-top: 1px;
+    }
+
+    .chansons-empty {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+
+    .chansons-page {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .chanson-main {
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 6px;
+    }
+
+    .chanson-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .chanson-title-content {
+        gap: 4px;
+    }
+
+    .chanson-info {
+        gap: 5px;
+    }
+
+    .chanson-action,
+    .chanson-action-disabled {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+}

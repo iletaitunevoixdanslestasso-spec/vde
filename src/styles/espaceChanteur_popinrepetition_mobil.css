@@ -1,0 +1,25 @@
+/* =========================================================
+   ESPACECHANTEUR_POPINREPETITION — TABLETTE & MOBILE
+   Règles responsive extraites de espaceChanteur_popinrepetition.css.
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .repetition-participation-overlay {
+        padding: 15px;
+    }
+
+
+    .repetition-participation-popin {
+        padding: 25px 20px;
+    }
+
+
+    .repetition-participation-button {
+        width: 64px;
+        height: 64px;
+
+        font-size: 28px;
+    }
+
+}

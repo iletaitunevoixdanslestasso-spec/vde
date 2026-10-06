@@ -1,0 +1,672 @@
+/* =========================================================
+   PAGE CHANSONS CHANTEUR
+   ========================================================= */
+
+.chansons-page {
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    padding: 35px 40px 60px;
+
+    font-family: var(--font-family);
+
+    color: var(--color-text-primary);
+}
+
+
+/* =========================================================
+   ICÔNES AUDIO / ANIMATIONS
+   ========================================================= */
+
+.chanson-icon-audio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.chanson-audio-note {
+    animation: chanson-audio-note-pulse 1.4s ease-in-out infinite;
+    transform-origin: center;
+}
+
+.chanson-icon-audio:hover .chanson-audio-note {
+    animation-duration: 0.7s;
+}
+
+@keyframes chanson-audio-note-pulse {
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    35% {
+        transform: scale(1.16) rotate(-6deg);
+    }
+
+    65% {
+        transform: scale(1.08) rotate(5deg);
+    }
+}
+
+.chanson-audio-volume {
+    animation: chanson-audio-volume 1s ease-in-out infinite;
+    transform-origin: left center;
+}
+
+@keyframes chanson-audio-volume {
+    0%,
+    100% {
+        transform: translateX(0) scale(1);
+    }
+
+    25% {
+        transform: translateX(1px) scale(1.08);
+    }
+
+    50% {
+        transform: translateX(0) scale(1.14);
+    }
+
+    75% {
+        transform: translateX(-1px) scale(1.08);
+    }
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.chansons-page-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    margin-bottom: 28px;
+    padding-bottom: 26px;
+
+    border-bottom: 1px solid var(--color-border);
+}
+
+.chansons-page-header-icon {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    background: var(--color-surface-muted);
+
+    font-size: 1.5rem;
+}
+
+.chansons-page-header-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.chansons-page-eyebrow {
+    margin-bottom: 4px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+
+    color: var(--color-text-muted);
+}
+
+.chansons-page-title {
+    margin: 0;
+
+    font-family: var(--font-family);
+
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+
+    color: var(--color-text-primary);
+}
+
+.chansons-page-subtitle {
+    margin: 8px 0 0;
+    max-width: 700px;
+
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   COMPTEUR
+   ========================================================= */
+
+.chansons-page-count {
+    min-width: 70px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 10px 14px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+
+    background: var(--color-surface-soft);
+}
+
+.chansons-page-count strong {
+    font-size: 1.25rem;
+    line-height: 1.2;
+    color: var(--color-text-primary);
+}
+
+.chansons-page-count span {
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   AIDE
+   ========================================================= */
+
+.chansons-help {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 22px;
+    padding: 13px 16px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+
+    background: var(--color-surface-soft);
+}
+
+.chansons-help-icon {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+    background: var(--color-surface-muted);
+
+    font-size: 1rem;
+}
+
+.chansons-help div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chansons-help strong {
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+}
+
+.chansons-help span {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   ERREUR
+   ========================================================= */
+
+.chansons-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 20px;
+    padding: 12px 15px;
+
+    border: 1px solid var(--color-danger-border);
+    border-radius: 9px;
+
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+
+    font-size: 0.88rem;
+}
+
+.chansons-error-icon {
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   LISTE
+   ========================================================= */
+
+.chansons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* =========================================================
+   CARTE / STRUCTURE DE LA LIGNE
+
+   Desktop :
+   [ chanson-main ] [ chanson-info ]
+
+   chanson-main :
+   [ icône ] [ titre | lead | répartition ]
+
+   chanson-info :
+   [ paroles | pupitre | audio ]
+   ========================================================= */
+
+.chanson-card {
+    padding: 0;
+    margin: 0;
+
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+
+    background: var(--color-surface);
+    overflow: hidden;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.chanson-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-border);
+    box-shadow: 0 5px 18px rgba(48, 52, 59, 0.06);
+}
+
+.chanson-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+
+    width: 100%;
+}
+
+.chanson-main,
+.chanson-info,
+.chanson-document,
+.chanson-pupitre,
+.chanson-audio {
+    min-width: 0;
+}
+
+.chanson-main {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.chanson-info {
+    display: grid;
+    grid-template-columns:
+        minmax(180px, 1fr)
+        minmax(180px, 1fr)
+        minmax(120px, 0.6fr);
+
+    align-items: center;
+    gap: 16px;
+}
+
+.chanson-document,
+.chanson-pupitre,
+.chanson-audio {
+    width: 100%;
+}
+
+
+/* =========================================================
+   TITRE / ACTIONS PRINCIPALES
+   ========================================================= */
+
+.chanson-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+    background: var(--color-surface-muted);
+
+    font-size: 1.05rem;
+}
+
+.chanson-title-content {
+    min-width: 0;
+    width: 100%;
+
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        120px
+        180px;
+
+    align-items: center;
+    gap: 12px;
+}
+
+.chanson-titre {
+    min-width: 0;
+    margin: 0;
+
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.35;
+
+    color: var(--color-text-primary);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chanson-lead-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-width: 0;
+    padding: 5px 9px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+
+    background: transparent;
+    cursor: pointer;
+
+    opacity: 0.65;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.chanson-lead-button:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.chanson-lead-button.selected {
+    opacity: 1;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(48, 52, 59, 0.12);
+}
+
+.chanson-lead-icon {
+    font-size: 1.15rem;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.chanson-action {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 8px 10px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+
+    background: var(--color-surface-soft);
+    color: var(--color-text-primary);
+
+    text-decoration: none;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.chanson-action:hover {
+    background: var(--color-surface-muted);
+    border-color: var(--color-border);
+    transform: translateY(-1px);
+}
+
+.chanson-action-icon {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+    background: var(--color-surface);
+
+    font-size: 0.9rem;
+}
+
+.chanson-action-content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chanson-action-content strong {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.chanson-action-content small {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chanson-action-document,
+.chanson-action-audio {
+    color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   ACTION INDISPONIBLE
+   ========================================================= */
+
+.chanson-action-disabled {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 10px;
+
+    border: 1px dashed var(--color-border);
+    border-radius: 8px;
+
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+}
+
+
+/* =========================================================
+   PUPITRE
+   ========================================================= */
+
+.chanson-pupitre {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+}
+
+.chanson-pupitre-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.chanson-pupitre select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    padding: 9px 30px 9px 10px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+
+    font: inherit;
+    font-size: 0.8rem;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.chanson-pupitre select:hover {
+    border-color: var(--color-border-strong);
+}
+
+.chanson-pupitre select:focus {
+    outline: none;
+    border-color: var(--color-text-muted);
+    box-shadow: 0 0 0 3px rgba(48, 52, 59, 0.05);
+}
+
+.chanson-pupitre select:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.chanson-saving {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   CHARGEMENT
+   ========================================================= */
+
+.chansons-loading {
+    min-height: 180px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    border: 1px dashed var(--color-border);
+    border-radius: 10px;
+
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.chansons-loading-icon {
+    font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   ÉTAT VIDE
+   ========================================================= */
+
+.chansons-empty {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 20px;
+
+    border: 1px dashed var(--color-border);
+    border-radius: 10px;
+
+    background: var(--color-surface-soft);
+}
+
+.chansons-empty-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+    background: var(--color-surface-muted);
+
+    font-size: 1.2rem;
+}
+
+.chansons-empty strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.9rem;
+}
+
+.chansons-empty p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+}
+
+
+.chanson-row {
+    padding-inline: 20px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+
+/* =========================================================
+   TRÈS PETITS ÉCRANS
+   ========================================================= */

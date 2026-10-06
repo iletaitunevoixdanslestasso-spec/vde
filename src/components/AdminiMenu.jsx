@@ -49,24 +49,45 @@ export default function AdminMenu() {
 
         setOpenSaisons(true);
 
-        navigate(`/admin/saison/${saison.nom}/${typeListe}`);
+        navigate(`/admin/saison/${encodeURIComponent(saison.nom)}/${typeListe}`);
     };
 
 
     /*
-     * Ouvre une saison et ferme automatiquement
-     * le sous-menu de toutes les autres saisons.
+     * Ouvre / ferme une saison.
      *
-     * Si on clique sur la saison déjà ouverte,
-     * elle se referme.
+     * - à l'ouverture : la saison devient la saison sélectionnée
+     *   et on ouvre directement sa page Choristes ;
+     * - à la fermeture : on ne navigue pas et surtout on ne
+     *   recalcule pas le scroll, afin que la saison ne "bouge" pas.
      */
-    const toggleSeason = (saisonId) => {
+    const handleToggleSeason = (saison) => {
 
-        setOpenSeason(prev =>
-            prev === saisonId
-                ? null
-                : saisonId
+        const isOpening = openSeason !== saison.id;
+
+        if (!isOpening) {
+            setOpenSeason(null);
+            return;
+        }
+
+        updateSaisonSelectionne(saison);
+        setOpenSeason(saison.id);
+        setOpenSaisons(true);
+        setOpenReferentiels(false);
+
+        navigate(
+            `/admin/saison/${encodeURIComponent(saison.nom)}/chanteurs`
         );
+
+        // Le scroll n'est effectué qu'à l'ouverture.
+        // Ainsi, une fermeture ne recentre plus la saison.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                saisonsScroll.scrollToElement(
+                    saisonRefs.current[saison.id]
+                );
+            });
+        });
     };
 
 
@@ -361,7 +382,9 @@ export default function AdminMenu() {
 
                                 <div
                                     key={saison.id}
-                                    className="admin-season-group"
+                                    className={`admin-season-group ${
+                                        openSeason === saison.id ? "open" : ""
+                                    }`}
                                 >
 
                                     <button
@@ -371,19 +394,9 @@ export default function AdminMenu() {
                                         type="button"
                                         className={`admin-season ${openSeason == saison.id ? "active" : ""
                                             }`}
-                                        onClick={() => {
-
-                                            toggleSeason(saison.id);
-
-                                            requestAnimationFrame(() => {
-
-                                                saisonsScroll.scrollToElement(
-                                                    saisonRefs.current[saison.id]
-                                                );
-
-                                            });
-
-                                        }}
+                                        onClick={() =>
+                                            handleToggleSeason(saison)
+                                        }
                                     >
 
                                         <span

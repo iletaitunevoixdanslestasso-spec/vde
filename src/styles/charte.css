@@ -1,0 +1,11 @@
+/* =========================================================
+   CHARTE GRAPHIQUE — IL ÉTAIT UNE VOIX DANS L’EST
+   Palette principale : anthracite / violet musical / vert d’eau
+   Typographie : Sora
+   Icônes : Google Material Symbols Outlined
+   ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=block");
+@import "./charte_pc.css";
+@import "./charte_mobil.css";

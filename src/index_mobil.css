@@ -1,0 +1,19 @@
+/* =========================================================
+   INDEX — TABLETTE & MOBILE
+   Règles responsive extraites de index.css.
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  :root {
+      font-size: 16px;
+  }
+
+  h1 {
+      font-size: 36px;
+      margin: 20px 0;
+  }
+
+  h2 {
+      font-size: 20px;
+  }
+}

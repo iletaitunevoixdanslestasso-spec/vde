@@ -1,0 +1,15 @@
+/* =========================================================
+   FORMREPARTITION — TABLETTE & MOBILE
+   Règles responsive extraites de FormRepartition.css.
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .repartition-header {
+        gap: 12px;
+    }
+
+    .repartition-header .repartition-export-button {
+        width: 100%;
+        margin-left: 0;
+    }
+}

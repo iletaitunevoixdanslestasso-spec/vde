@@ -1,0 +1,148 @@
+/* =========================================================
+   PARTICIPATION
+   ========================================================= */
+
+.participation-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 34px;
+}
+
+/* =========================================================
+   BOUTONS - BASE
+   ========================================================= */
+
+.participation-buttons > .participation-button {
+    --participation-active-color: #64748b;
+    --participation-selected-bg: #f1f5f9;
+    --participation-selected-border: #94a3b8;
+    --participation-focus: rgba(100, 116, 139, 0.18);
+
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    flex: 0 0 30px !important;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    appearance: none;
+    border: 1px solid transparent !important;
+    border-radius: 50% !important;
+
+    background: transparent !important;
+
+    color: #9ca3af !important;
+
+    cursor: pointer;
+    box-shadow: none !important;
+
+    transition:
+        background-color 0.16s ease,
+        border-color 0.16s ease,
+        color 0.16s ease,
+        transform 0.16s ease;
+}
+
+/* On force aussi la couleur directement sur les icônes Lucide */
+.participation-buttons > .participation-button svg {
+    width: 20px;
+    height: 20px;
+    color: #9ca3af !important;
+    stroke: #9ca3af !important;
+}
+
+.participation-buttons > .participation-button:hover:not(:disabled):not(.selected) {
+    transform: translateY(-1px);
+    background: #f8fafc !important;
+}
+
+.participation-buttons > .participation-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.participation-buttons > .participation-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--participation-focus) !important;
+}
+
+/* =========================================================
+   BOUTON ACTIF
+   ========================================================= */
+
+.participation-buttons > .participation-button.selected {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    flex-basis: 30px !important;
+
+    background: var(--participation-selected-bg) !important;
+    border-color: var(--participation-selected-border) !important;
+
+    color: var(--participation-active-color) !important;
+
+    /* pas de gros halo autour du bouton */
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.participation-buttons > .participation-button.selected svg {
+    color: var(--participation-active-color) !important;
+    stroke: var(--participation-active-color) !important;
+}
+
+/* =========================================================
+   ETATS
+   ========================================================= */
+
+.participation-buttons > .participation-button--yes {
+    --participation-active-color: #16a34a;
+    --participation-selected-bg: #ecfdf3;
+    --participation-selected-border: #86d3a0;
+    --participation-focus: rgba(22, 163, 74, 0.16);
+}
+
+.participation-buttons > .participation-button--no {
+    --participation-active-color: #dc2626;
+    --participation-selected-bg: #fff1f2;
+    --participation-selected-border: #f3a6b7;
+    --participation-focus: rgba(220, 38, 38, 0.16);
+}
+
+.participation-buttons > .participation-button--maybe {
+    --participation-active-color: #d97706;
+    --participation-selected-bg: #fffbeb;
+    --participation-selected-border: #e9c76a;
+    --participation-focus: rgba(217, 119, 6, 0.16);
+}
+
+/* =========================================================
+   DESACTIVE / ENREGISTREMENT
+   ========================================================= */
+
+.participation-buttons > .participation-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+    transform: none;
+}
+
+.participation-buttons > .participation-button.selected:disabled {
+    opacity: 0.62;
+}
+
+.participation-saving,
+.repetition-participation-saving {
+    margin-top: 6px;
+    font-size: 0.72rem;
+    color: #64748b;
+    white-space: nowrap;
+}
+

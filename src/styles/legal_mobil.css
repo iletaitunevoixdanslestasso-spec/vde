@@ -1,0 +1,25 @@
+/* =========================================================
+   LEGAL — TABLETTE & MOBILE
+   Règles responsive extraites de legal.css.
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .legal-page {
+        padding: 20px 12px;
+    }
+
+    .legal-card {
+        padding: 25px 20px;
+    }
+
+    .legal-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .legal-footer {
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+}

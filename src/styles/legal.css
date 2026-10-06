@@ -1,7 +1,10 @@
+@import "./charte.css";
+@import "./legal_mobil.css";
+
 .legal-page {
     min-height: 100vh;
     padding: 40px 20px;
-    background: #f5f5f5;
+    background: var(--color-surface-muted);
 }
 
 .legal-container {
@@ -28,14 +31,14 @@
 
 .legal-header p {
     margin: 0;
-    color: #666;
+    color: var(--color-text-secondary);
 }
 
 .legal-card {
     background: white;
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 10px rgba(48, 52, 59, 0.06);
 }
 
 .legal-card h2 {
@@ -50,21 +53,21 @@
 
 .legal-card p {
     line-height: 1.7;
-    color: #444;
+    color: var(--color-text-primary);
 }
 
 .legal-card ul {
     padding-left: 25px;
     line-height: 1.8;
-    color: #444;
+    color: var(--color-text-primary);
 }
 
 .legal-date {
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--color-border);
     font-size: 0.9rem;
-    color: #777 !important;
+    color: var(--color-text-secondary) !important;
 }
 
 .legal-footer {
@@ -72,27 +75,6 @@
     justify-content: center;
     gap: 10px;
     margin-top: 30px;
-    color: #777;
+    color: var(--color-text-secondary);
     font-size: 0.9rem;
-}
-
-@media (max-width: 600px) {
-
-    .legal-page {
-        padding: 20px 12px;
-    }
-
-    .legal-card {
-        padding: 25px 20px;
-    }
-
-    .legal-header h1 {
-        font-size: 1.6rem;
-    }
-
-    .legal-footer {
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-    }
 }

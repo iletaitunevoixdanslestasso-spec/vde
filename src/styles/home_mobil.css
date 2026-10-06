@@ -1,0 +1,47 @@
+/* =========================================================
+   HOME — TABLETTE & MOBILE
+   Règles responsive extraites de home.css.
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .accueil {
+        padding: 35px 15px;
+    }
+
+
+    .accueil-header {
+        margin-bottom: 28px;
+    }
+
+
+    .accueil-header h1 {
+        font-size: 30px;
+    }
+
+
+    .accueil-subtitle {
+        font-size: 15px;
+    }
+
+
+    .accueil-card {
+        padding: 28px 22px;
+    }
+
+
+    .accueil-features {
+        grid-template-columns: 1fr;
+    }
+
+
+    .accueil-access {
+        padding: 25px 20px;
+    }
+
+
+    .accueil-footer {
+        flex-wrap: wrap;
+        text-align: center;
+    }
+}

@@ -1,0 +1,233 @@
+/* =========================================================
+   FORM EDITION
+   ========================================================= */
+
+.form-edition {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   EN-TÊTE
+   ========================================================= */
+
+.form-edition-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid var(--color-border);
+}
+
+.form-edition-header-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: var(--color-surface-muted);
+    color: var(--color-text-secondary);
+
+    font-size: 1.1rem;
+}
+
+.form-edition-header-content {
+    min-width: 0;
+}
+
+.form-edition-title {
+    margin: 0;
+
+    font-family: var(--font-family);
+
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.2;
+
+    color: var(--color-text-primary);
+}
+
+.form-edition-subtitle {
+    margin: 5px 0 0;
+
+    font-size: 0.85rem;
+    line-height: 1.4;
+
+    color: var(--color-text-muted);
+}
+
+/* =========================================================
+   CHAMPS
+   ========================================================= */
+
+.form-edition-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-edition-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    min-width: 0;
+}
+
+.form-edition-field > label {
+    display: block;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    color: var(--color-text-primary);
+}
+
+/* =========================================================
+   CHAMPS READONLY
+   ========================================================= */
+
+.form-edition-readonly {
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 8px 11px;
+
+    box-sizing: border-box;
+
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.9rem;
+}
+
+/* =========================================================
+   ERREURS
+   ========================================================= */
+
+.form-field-error {
+    margin-top: 1px;
+
+    font-size: 0.8rem;
+    line-height: 1.4;
+
+    color: var(--color-danger);
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.form-edition-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 30px;
+    padding-top: 20px;
+
+    border-top: 1px solid var(--color-border);
+}
+
+.form-edition-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 40px;
+
+    padding: 8px 16px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+
+    background: var(--color-surface-muted);
+    color: var(--color-text-primary);
+
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.form-edition-actions button:hover {
+    background: var(--color-surface-muted);
+    border-color: var(--color-border-strong);
+    transform: translateY(-1px);
+}
+
+.form-edition-actions button:active {
+    transform: translateY(0);
+}
+
+/* =========================================================
+   CHAMPS DE FORMULAIRE GÉNÉRIQUES
+   ========================================================= */
+
+.form-edition-field input,
+.form-edition-field select,
+.form-edition-field textarea {
+    width: 100%;
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 9px 11px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+
+    font: inherit;
+    font-size: 0.9rem;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+.form-edition-field input:focus,
+.form-edition-field select:focus,
+.form-edition-field textarea:focus {
+    border-color: var(--color-text-muted);
+
+    box-shadow:
+        0 0 0 3px rgba(48, 52, 59, 0.04);
+}
+
+.form-edition-field textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */

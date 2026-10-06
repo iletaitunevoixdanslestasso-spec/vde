@@ -1,0 +1,45 @@
+/* =========================================================
+   APP — TABLETTE & MOBILE
+   Règles responsive extraites de App.css.
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  #center {
+      padding: 32px 20px 24px;
+      gap: 18px;
+  }
+
+  #next-steps > div {
+      padding: 24px 20px;
+  }
+
+  #next-steps {
+      flex-direction: column;
+      text-align: center;
+  }
+
+  #docs {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+  }
+
+  #spacer {
+      height: 48px;
+  }
+
+  #next-steps ul {
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+  }
+
+  #next-steps ul li {
+      flex: 1 1 calc(50% - 8px);
+  }
+
+  #next-steps ul a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+  }
+}

@@ -1,0 +1,39 @@
+/* =========================================================
+   REPRESENTATIONCHOEUR — TABLETTE & MOBILE
+   Règles responsive extraites de representationChoeur.css.
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+    .representation-choeur {
+        padding: 12px;
+        border-radius: 15px;
+    }
+
+    .choeur-header-icon {
+        width: 36px;
+        height: 36px;
+
+        font-size: 18px;
+    }
+
+    .choeur-title {
+        font-size: 15px;
+    }
+
+    .choeur-subtitle {
+        font-size: 10px;
+    }
+
+    .svg-pupitre-label text {
+        font-size: 12px;
+    }
+
+    .svg-pupitre-count {
+        font-size: 9px !important;
+    }
+
+    .choeur-legende {
+        gap: 7px 10px;
+    }
+}

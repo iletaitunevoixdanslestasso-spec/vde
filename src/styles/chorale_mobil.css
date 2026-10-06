@@ -1,0 +1,43 @@
+/* =========================================================
+   CHORALE — TABLETTE & MOBILE
+   Règles responsive extraites de chorale.css.
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .crud-page-actions {
+        gap: 8px;
+
+        margin-bottom: 12px;
+    }
+
+
+    .crud-action-button {
+        min-height: 42px;
+
+        padding: 8px 12px;
+
+        font-size: 12px;
+    }
+
+}
+
+@media (max-width: 700px) {
+    .data-table {
+        overflow-x: auto;
+    }
+
+    .data-table-toolbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .data-table-search {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .form-edition-actions {
+        flex-wrap: wrap;
+    }
+}

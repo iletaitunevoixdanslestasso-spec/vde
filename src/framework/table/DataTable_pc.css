@@ -1,0 +1,697 @@
+/* =========================================================
+   DATA TABLE
+   ========================================================= */
+
+.data-table {
+    width: 100%;
+    min-width: 0;
+}
+
+.data-table-cell-nowrap {
+    white-space: nowrap;
+}
+
+.data-table-cell-no-word-break {
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.data-table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.data-table-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 180px;
+}
+
+.data-table-search {
+    width: 100%;
+    height: 42px;
+    padding: 0 42px;
+    border: 1px solid var(--border-color, var(--color-border));
+    border-radius: 12px;
+    background: var(--surface-color, var(--color-surface));
+    color: var(--text-color, var(--color-text-primary));
+    font-size: 14px;
+    outline: none;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+    box-sizing: border-box;
+}
+
+.data-table-search::placeholder {
+    color: var(--color-text-muted);
+}
+
+.data-table-search:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(112, 71, 166, .10);
+}
+
+.data-table-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    pointer-events: none;
+    opacity: .65;
+}
+
+.data-table-search-clear {
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-surface-muted);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 17px;
+    line-height: 1;
+}
+
+.data-table-page-size {
+    height: 42px;
+    padding: 0 34px 0 12px;
+    border: 1px solid var(--border-color, var(--color-border));
+    border-radius: 12px;
+    background: var(--surface-color, var(--color-surface));
+    color: var(--text-color, var(--color-text-primary));
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+}
+
+
+/* =========================================================
+   CONTENEUR DU TABLEAU
+   ========================================================= */
+
+.data-table-container {
+    position: relative;
+
+    width: 100%;
+
+    max-height: 70vh;
+
+    overflow-x: auto;
+    overflow-y: auto;
+
+    border: 1px solid var(--border-color, var(--color-border));
+    border-radius: 16px;
+
+    background: var(--color-surface);
+
+    box-shadow:
+        0 2px 10px rgba(48, 52, 59, .04);
+
+    isolation: isolate;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.data-table-table {
+    width: 100%;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   HEADER FIXE
+   ========================================================= */
+
+.data-table-table thead {
+    position: sticky;
+    top: 0;
+
+    z-index: 20;
+
+    background: var(--color-surface-soft);
+}
+
+.data-table-table thead th {
+    position: sticky;
+    top: 0;
+
+    z-index: 21;
+
+    background: var(--color-surface-soft);
+}
+
+.data-table-table thead th:first-child {
+    top: 0;
+    left: 0;
+    z-index: 30;
+}
+
+.data-table-table th:first-child,
+.data-table-table td:first-child {
+    box-shadow: 2px 0 4px rgba(48, 52, 59, .06);
+}
+
+
+/* =========================================================
+   EN-TÊTES DE COLONNES
+   ========================================================= */
+
+.data-table-header {
+    padding: 13px 16px;
+
+    border-bottom: 1px solid var(--color-border);
+
+    color: var(--color-text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: .04em;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+    user-select: none;
+
+    background: var(--color-surface-soft);
+}
+
+.data-table-header:hover {
+    color: var(--color-brand);
+    background: var(--color-surface-muted);
+}
+
+
+/* =========================================================
+   CONTENU HEADER
+   ========================================================= */
+
+.data-table-header-content {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+/* =========================================================
+   PREMIÈRE COLONNE FIXE
+   ========================================================= */
+
+.data-table-table th:first-child,
+.data-table-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+}
+
+
+/* Première cellule du header :
+   elle doit être au-dessus du reste */
+.data-table-table thead th:first-child {
+    left: 0;
+    z-index: 30;
+    background: var(--color-surface-soft);
+}
+
+
+/* Première cellule des lignes */
+.data-table-table tbody td:first-child {
+    background: var(--color-surface);
+}
+
+
+/* Conservation du hover sur la première colonne */
+.data-table-row:hover td:first-child {
+    background: var(--color-surface-soft);
+}
+
+
+/* =========================================================
+   TRI
+   ========================================================= */
+
+.data-table-sort {
+    position: relative;
+
+    display: inline-block;
+
+    width: 7px;
+    height: 11px;
+}
+
+.data-table-sort::before,
+.data-table-sort::after {
+    position: absolute;
+
+    left: 0;
+
+    content: "";
+
+    width: 0;
+    height: 0;
+
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+}
+
+.data-table-sort::before {
+    top: 0;
+
+    border-bottom: 4px solid var(--color-text-muted);
+}
+
+.data-table-sort::after {
+    bottom: 0;
+
+    border-top: 4px solid var(--color-text-muted);
+}
+
+.data-table-sort-asc::before {
+    border-bottom-color: var(--color-brand);
+}
+
+.data-table-sort-desc::after {
+    border-top-color: var(--color-brand);
+}
+
+
+/* =========================================================
+   LIGNES
+   ========================================================= */
+
+.data-table-row {
+    transition:
+        background .15s ease,
+        transform .15s ease;
+}
+
+.data-table-row:hover {
+    background: var(--color-surface-soft);
+}
+
+.data-table-row:not(:last-child) .data-table-cell {
+    border-bottom: 1px solid var(--color-surface-muted);
+}
+
+
+/* =========================================================
+   CELLULES
+   ========================================================= */
+
+.data-table-cell {
+    padding: 14px 16px;
+
+    color: var(--color-text-primary);
+
+    vertical-align: middle;
+
+    background: var(--color-surface);
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.data-table-row:hover .data-table-cell {
+    background: var(--color-surface-soft);
+}
+
+
+/* =========================================================
+   DRAG & DROP
+   ========================================================= */
+
+.data-table-row-draggable {
+    cursor: grab;
+}
+
+.data-table-row-draggable:active {
+    cursor: grabbing;
+
+    opacity: .65;
+}
+
+
+/* =========================================================
+   VALEUR
+   ========================================================= */
+
+.data-table-value {
+    display: inline-flex;
+
+    align-items: center;
+
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.data-table-actions-header {
+    width: 1%;
+
+    padding: 13px 12px;
+
+    border-bottom: 1px solid var(--color-border);
+
+    color: var(--color-text-secondary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+
+    text-align: right;
+
+    background: var(--color-surface-soft);
+}
+
+.data-table-actions-cell {
+    text-align: right;
+    white-space: nowrap;
+
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.data-table-actions {
+    display: flex;
+
+    justify-content: flex-end;
+    align-items: center;
+
+    gap: 5px;
+}
+
+
+/*
+ * Bouton d'action
+ *
+ * Plus compact que précédemment.
+ */
+.data-table-action {
+    min-width: 0;
+    min-height: 34px;
+
+    padding: 6px 8px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 9px;
+
+    background: var(--color-surface);
+
+    color: var(--color-text-primary);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease,
+        transform .15s ease;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    /*
+     * Espace entre l'icône et le texte.
+     *
+     * Avant : 6px
+     * Maintenant : 3px
+     */
+    gap: 3px;
+}
+
+
+/*
+ * IMPORTANT
+ *
+ * Dans ton HTML tu peux avoir :
+ *
+ * <span class="data-table-action-icon"></span>
+ * <span class="data-table-action-label"></span>
+ *
+ * Si ces éléments sont vides, on les retire complètement
+ * du layout flex.
+ *
+ * Cela évite qu'ils créent des espaces inutiles.
+ */
+.data-table-action-icon:empty,
+.data-table-action-label:empty {
+    display: none;
+}
+
+
+/*
+ * Bouton contenant uniquement une icône.
+ *
+ * Exemple :
+ *
+ * <button class="data-table-action icon-edit">
+ *     ...
+ * </button>
+ *
+ * Le bouton devient carré et l'icône est centrée.
+ */
+.data-table-action:has(.data-table-action-label:empty) {
+    width: 34px;
+    min-width: 34px;
+
+    height: 34px;
+    min-height: 34px;
+
+    padding: 0;
+}
+
+
+/*
+ * Bouton contenant réellement un texte.
+ *
+ * Il prend uniquement la largeur nécessaire.
+ */
+.data-table-action:has(.data-table-action-label:not(:empty)) {
+    width: auto;
+    min-width: 0;
+
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+
+/*
+ * Si l'icône est générée directement par la classe
+ * icon-edit, icon-delete, etc. via ::before,
+ * elle reste centrée dans le bouton.
+ */
+.data-table-action::before {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+
+/*
+ * Hover
+ */
+.data-table-action:hover {
+    background: var(--color-surface-soft);
+
+    border-color: var(--color-border-strong);
+
+    color: var(--color-brand);
+
+    transform: translateY(-1px);
+}
+
+
+/*
+ * Conteneur de l'icône
+ */
+.data-table-action-icon {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+
+    line-height: 1;
+
+    flex: 0 0 auto;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/*
+ * Texte du bouton
+ */
+.data-table-action-label {
+    white-space: nowrap;
+
+    line-height: 1;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.data-table-empty {
+    padding: 50px 20px !important;
+
+    text-align: center;
+}
+
+.data-table-empty-content {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: var(--color-text-secondary);
+}
+
+.data-table-empty-content>span {
+    font-size: 28px;
+
+    opacity: .6;
+}
+
+.data-table-empty-content strong {
+    color: var(--color-text-primary);
+
+    font-size: 15px;
+}
+
+.data-table-empty-content small {
+    color: var(--color-text-muted);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.data-table-pagination {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 18px;
+}
+
+.data-table-page {
+    min-width: 36px;
+    height: 36px;
+
+    padding: 0 10px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 9px;
+
+    background: var(--color-surface);
+
+    color: var(--color-text-secondary);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        color .15s ease,
+        border-color .15s ease;
+}
+
+.data-table-page:hover:not(:disabled) {
+    border-color: var(--color-brand-border);
+
+    background: var(--color-brand-soft);
+
+    color: var(--color-brand);
+}
+
+.data-table-page.active {
+    border-color: var(--color-brand);
+
+    background: var(--color-brand);
+
+    color: var(--color-surface);
+}
+
+.data-table-page:disabled {
+    opacity: .35;
+
+    cursor: not-allowed;
+}
+
+.data-table-page-navigation {
+    font-size: 20px;
+}
+.data-table-nowrap {
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+
+/* =========================================================
+   TRÈS PETITS ÉCRANS
+   ========================================================= */

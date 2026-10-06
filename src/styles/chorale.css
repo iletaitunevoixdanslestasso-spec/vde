@@ -1,14 +1,10 @@
+@import "./charte.css";
+@import "./chorale_pc.css";
+@import "./chorale_mobil.css";
+
 /* =========================================================
    CHORALE — COMMUN
    ========================================================= */
-
-:root {
-    --text-primary: #333;
-    --text-secondary: #777;
-    --border-color: #e5e5e5;
-    --background-secondary: #fff;
-    --surface-muted: #f5f5f5;
-}
 
 * {
     box-sizing: border-box;
@@ -26,8 +22,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 25px;
-    background: #fff;
-    border-bottom: 1px solid #ddd;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .chorale-brand {
@@ -101,8 +97,8 @@
 
 /* Actions */
 .icon-telechargement::before {
-    /* content: "⬇️"; */
-    content: "📥";
+    
+    content: "download";
 }
 .icon-chanteursaison {
     display: inline-flex;
@@ -110,7 +106,7 @@
     gap: 0.3em;
 }
 .icon-chanteursaison::before {
-    content: "";
+    content: "group_add";
     display: inline-block;
     width: 1.4em;
     height: 1.4em;
@@ -127,7 +123,7 @@
 }
 
 .icon-lead_actif::before {
-    content: "";
+    content: "star";
     display: inline-block;
     width: 1.4em;
     height: 1.4em;
@@ -139,146 +135,146 @@
 }
 
 .icon-new::before {
-    content: "➕";
+    content: "add_circle";
 }
 .icon-excel::before {
-    content: "📊";
+    content: "table_view";
 }
 .icon-save::before {
-    content: "💾";
+    content: "save";
 }
 
 .icon-lieux::before {
-    content: "📍";
+    content: "location_on";
 }
 
 .icon-edit::before {
-    content: "✏️";
+    content: "edit";
 }
 
 .icon-delete::before {
-    content: "🗑️";
+    content: "delete";
 }
 
 .icon-cancel::before {
-    content: "❌";
+    content: "close";
 }
 
 
 /* Navigation */
 
 .icon-dashboard::before {
-    content: "🏠";
+    content: "home";
 }
 
 .icon-saison::before {
-    content: "📅";
+    content: "calendar_month";
 }
 
 .icon-gestion::before {
-    content: "⚙️";
+    content: "settings";
 }
 
 .icon-chanteurs::before {
-    content: "👤";
+    content: "person";
 }
 .icon-checked::before {
-    content: "✅";
+    content: "check_circle";
 }
 .icon-accepted::before {
-    content: "👍";
+    content: "thumb_up";
 }
 
 .icon-chanson::before {
-    content: "🎵";
+    content: "music_note";
 }
 
 .icon-groupe::before {
-    content: "👥";
+    content: "groups";
 }
 
 .icon-concert::before {
-    content: "🎤";
+    content: "mic";
 }
 .icon-saisonactive::before {
-    content: "⭐";
+    content: "star";
 }
 
 .icon-repetition::before {
-    content: "🗓";
+    content: "event_repeat";
 }
 
 .icon-pupitre::before {
-    content: "🎼";
+    content: "queue_music";
 }
 
 .icon-document::before {
-    content: "📄";
+    content: "description";
 }
 
 .icon-invitation::before {
-    content: "📨";
+    content: "mail";
 }
 
 .icon-votes::before {
-    content: "🗳️";
+    content: "how_to_vote";
 }
 .icon-etaterreur::before {
-    content: "🔴";
+    content: "error";
 }
 .icon-alerte::before {
-    content: "🚨";
+    content: "notifications_active";
 }
 .icon-avertissement::before {
-    content: "⚠️";
+    content: "warning";
 }
 
 .icon-inscription::before {
-    content: "📝";
+    content: "edit_note";
 }
 
 .icon-profil::before {
-    content: "👤";
+    content: "account_circle";
 }
 
 .icon-referentiels::before {
-    content: "📚";
+    content: "library_books";
 }
 .icon-valider::before {
-    content: "✅";
+    content: "check_circle";
 }
 
 .icon-refuser::before {
-    content: "❌";
+    content: "cancel";
 }
 .icon-pending::before {
-    content: "⏳";
+    content: "hourglass_top";
 }
 .icon-none::before {
-    content: "⚪";
+    content: "radio_button_unchecked";
 }
 
 .icon-unknown::before {
-    content: "❓";
+    content: "help";
 }
 .icon-warning::before {
-    content: "⚠";
+    content: "warning";
 }
 
 .icon-musical-note::before {
-    content: "🎵";
+    content: "music_note";
 }
 
 .icon-todo::before {
-    content: "☑";
+    content: "checklist";
 }
 
 .icon-calendar::before {
-    content: "📅";
+    content: "calendar_month";
 }
 
 .icon-check::before {
-    content: "✓";
+    content: "check";
 }
 
 /* =========================================================
@@ -309,12 +305,12 @@
 
     padding: 8px 14px;
 
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
     border-radius: 10px;
 
-    background: #ffffff;
+    background: var(--color-surface);
 
-    color: #475569;
+    color: var(--color-text-primary);
 
     font-family: inherit;
     font-size: 13px;
@@ -323,7 +319,7 @@
     cursor: pointer;
 
     box-shadow:
-        0 1px 2px rgba(15, 23, 42, .04);
+        0 1px 2px rgba(48, 52, 59, .04);
 
     transition:
         background .15s ease,
@@ -335,14 +331,14 @@
 
 
 .crud-action-button:hover {
-    background: #f5f3ff;
+    background: var(--color-brand-soft);
 
-    border-color: #c4b5fd;
+    border-color: var(--color-brand-border);
 
-    color: #4f46e5;
+    color: var(--color-brand);
 
     box-shadow:
-        0 4px 10px rgba(79, 70, 229, .08);
+        0 4px 10px rgba(112, 71, 166, .08);
 
     transform: translateY(-1px);
 }
@@ -354,7 +350,7 @@
 
 
 .crud-action-button:focus-visible {
-    outline: 2px solid #8b5cf6;
+    outline: 2px solid var(--color-brand);
     outline-offset: 2px;
 }
 
@@ -364,20 +360,20 @@
    ========================================================= */
 
 .crud-export-button {
-    background: #f0fdf4;
+    background: var(--color-success-soft);
 
-    border-color: #bbf7d0;
+    border-color: var(--color-success-border);
 
-    color: #15803d;
+    color: var(--color-success);
 }
 
 
 .crud-export-button:hover {
-    background: #dcfce7;
+    background: var(--color-success-soft);
 
-    border-color: #86efac;
+    border-color: var(--color-success-border);
 
-    color: #166534;
+    color: var(--color-success-strong);
 }
 
 
@@ -398,24 +394,7 @@
 /* =========================================================
    CRUD action mobil
    ========================================================= */
-@media (max-width: 700px) {
 
-    .crud-page-actions {
-        gap: 8px;
-
-        margin-bottom: 12px;
-    }
-
-
-    .crud-action-button {
-        min-height: 42px;
-
-        padding: 8px 12px;
-
-        font-size: 12px;
-    }
-
-}
 
 /* =========================================================
    CRUD ITEM
@@ -457,7 +436,7 @@
 }
 
 .form-field-error {
-    color: #dc3545;
+    color: var(--color-danger);
     font-size: 12px;
     margin-top: 4px;
 }
@@ -508,13 +487,13 @@
 }
 
 .data-table-table thead tr {
-    background: #f5f5f5;
+    background: var(--color-surface-muted);
 }
 
 .data-table-header {
     text-align: left;
     padding: 10px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--color-border);
     cursor: pointer;
     user-select: none;
 }
@@ -524,7 +503,7 @@
 }
 
 .data-table-row {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--color-surface-muted);
 }
 
 .data-table-cell {
@@ -534,7 +513,7 @@
 .data-table-empty {
     padding: 20px;
     text-align: center;
-    color: #777;
+    color: var(--color-text-secondary);
 }
 
 
@@ -554,7 +533,7 @@
     background-color:darkseagreen
 }
 .data-table-action.icon-delete{
-    background-color: #dc3545;
+    background-color: var(--color-danger);
 } */
 /* =========================================================
    PAGINATION
@@ -571,11 +550,11 @@
     padding: 5px 10px;
     border: none;
     cursor: pointer;
-    background: #eee;
+    background: var(--color-surface-muted);
 }
 
 .data-table-page.active {
-    background: #333;
+    background: var(--color-text-primary);
     color: white;
 }
 
@@ -585,12 +564,12 @@
    ========================================================= */
 
 .icon-sort-asc::before {
-    content: "↑";
+    content: "arrow_upward";
     margin-left: 5px;
 }
 
 .icon-sort-desc::before {
-    content: "↓";
+    content: "arrow_downward";
     margin-left: 5px;
 }
 
@@ -599,25 +578,7 @@
    RESPONSIVE GENERIQUE
    ========================================================= */
 
-@media (max-width: 700px) {
-    .data-table {
-        overflow-x: auto;
-    }
 
-    .data-table-toolbar {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .data-table-search {
-        width: 100%;
-        max-width: 250px;
-    }
-
-    .form-edition-actions {
-        flex-wrap: wrap;
-    }
-}
 /* =========================================================
    DROIT À L'IMAGE
    ========================================================= */

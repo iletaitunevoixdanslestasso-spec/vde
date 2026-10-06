@@ -28,6 +28,42 @@ export default function AdminLayout() {
     };
 
 
+    const renderUserHeader = (className) => (
+        <header className={`admin-header ${className}`}>
+
+            <div className="admin-header-user">
+
+                <span className="admin-user-icon">
+                    👤
+                </span>
+
+                <span className="admin-user-email">
+                    {user?.email}
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                className="admin-logout"
+                onClick={logout}
+                title="Déconnexion"
+                aria-label="Déconnexion"
+            >
+                <span className="admin-logout-icon">
+                    ↪
+                </span>
+
+                <span>
+                    Déconnexion
+                </span>
+            </button>
+
+        </header>
+    );
+
+
     return (
         <div className="admin-layout">
 
@@ -36,7 +72,16 @@ export default function AdminLayout() {
             ================================================= */}
 
             <aside className="admin-sidebar">
+
                 <AdminMenu />
+
+                {/*
+                    En mobile, le compte est affiché dans la barre du menu,
+                    à droite de Saisons / Référentiels.
+                    En desktop cette version est masquée par le CSS.
+                */}
+                {renderUserHeader("admin-header-mobile")}
+
             </aside>
 
 
@@ -46,36 +91,11 @@ export default function AdminLayout() {
 
             <main className="admin-content">
 
-                <header className="admin-header">
-
-                    <div className="admin-header-user">
-
-                        <span className="admin-user-icon">
-                            👤
-                        </span>
-
-                        <span className="admin-user-email">
-                            {user?.email}
-                        </span>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        className="admin-logout"
-                        onClick={logout}
-                    >
-                        <span className="admin-logout-icon">
-                            ↪
-                        </span>
-
-                        <span>
-                            Déconnexion
-                        </span>
-                    </button>
-
-                </header>
+                {/*
+                    Header desktop d'origine.
+                    Il est masqué uniquement en mobile.
+                */}
+                {renderUserHeader("admin-header-desktop")}
 
 
                 <div className="admin-page">

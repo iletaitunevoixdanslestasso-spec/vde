@@ -10,6 +10,8 @@ import { saisonconcertConfig } from "../../config/entities/saisonconcert.config"
 import { truncateText } from "../../helper/helper";
 import RepetitionParticipationControllerChanteur
   from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
+import { Check, CircleHelp, X } from "lucide-react";
+import "../../components/repetition_participation/RepetitionParticipationBoutons.css";
 
 function formatRendezvousDate(date) {
   if (!date) {
@@ -80,13 +82,6 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
 
   const hasParticipation =
     isConcert || isRepetition;
-
-  const participationIcon =
-    item.participation === true
-      ? "icon-accepted"
-      : item.participation === false
-        ? "icon-cancel"
-        : "icon-unknown";
 
   const libelle = item?.lieu
     ? `${item?.lieu?.nom ? item?.lieu?.nom : ''} ${item?.lieu?.ville ? ` à ${item.lieu.ville.toUpperCase()}` : 'A définir'}`
@@ -159,16 +154,29 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
 
 
         {hasParticipation && (
-          <button
-            type="button"
-            className="dashboard-rendezvous-participation-button"
-            onClick={() => onParticipation(item)}
-            title="Modifier ma participation"
-          >
-            <span
-              className={`icon ${participationIcon} dashboard-rendezvous-participation`}
-            />
-          </button>
+          <div className="dashboard-rendezvous-participation-actions participation-buttons">
+            <button
+              type="button"
+              className={`participation-button selected ${
+                item.participation === true
+                  ? "participation-button--yes"
+                  : item.participation === false
+                    ? "participation-button--no"
+                    : "participation-button--maybe"
+              }`}
+              onClick={() => onParticipation(item)}
+              title="Modifier ma participation"
+              aria-label="Modifier ma participation"
+            >
+              {item.participation === true ? (
+                <Check size={20} strokeWidth={2.4} aria-hidden="true" />
+              ) : item.participation === false ? (
+                <X size={20} strokeWidth={2.4} aria-hidden="true" />
+              ) : (
+                <CircleHelp size={20} strokeWidth={2.2} aria-hidden="true" />
+              )}
+            </button>
+          </div>
         )}
 
       </div>

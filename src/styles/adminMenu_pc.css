@@ -1,0 +1,332 @@
+/* =========================================================
+   ADMIN MENU
+   Menu de navigation
+
+   PC :
+   sidebar verticale
+
+   MOBILE :
+   barre horizontale en haut
+
+   Un seul DOM React.
+   Le CSS adapte uniquement la présentation.
+   ========================================================= */
+
+
+/* =========================================================
+   SIDEBAR DESKTOP
+   ========================================================= */
+
+.admin-sidebar {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 250px;
+
+    box-sizing: border-box;
+
+    padding: 18px 14px;
+
+    background: var(--color-surface);
+
+    border-right: 1px solid var(--color-border);
+
+    overflow-y: auto;
+
+    z-index: 100;
+}
+
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+.admin-menu {
+    position: relative;
+
+    width: 100%;
+
+    font-family: inherit;
+}
+
+
+.admin-menu button {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   MENU PRINCIPAL
+   ========================================================= */
+
+.admin-menu-main {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+/* =========================================================
+   ITEM GENERIQUE
+   ========================================================= */
+
+.admin-menu-item,
+.admin-menu-section {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 42px;
+
+    box-sizing: border-box;
+
+    padding: 9px 12px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: transparent;
+
+    color: var(--color-text-primary);
+
+    font-size: 14px;
+    font-weight: 500;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        color .15s ease;
+}
+
+
+.admin-menu-item:hover,
+.admin-menu-section:hover {
+    background: var(--color-brand-soft);
+
+    color: var(--color-brand);
+}
+
+
+/* =========================================================
+   SECTIONS PRINCIPALES
+   ========================================================= */
+
+.admin-menu-section {
+    justify-content: space-between;
+
+    color: var(--color-text-primary);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+
+.admin-menu-section.open {
+    background: var(--color-brand-soft);
+
+    color: var(--color-brand);
+}
+
+
+/* =========================================================
+   FLECHE
+   ========================================================= */
+
+.admin-menu-arrow {
+    flex: 0 0 auto;
+
+    margin-left: 8px;
+
+    color: var(--color-text-muted);
+
+    font-size: 16px;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   ACTIVE
+   ========================================================= */
+
+.admin-menu-item.active,
+.admin-season.active {
+    background: var(--color-brand-soft);
+
+    color: var(--color-brand-strong);
+
+    font-weight: 700;
+}
+
+
+.admin-menu-item.active:hover,
+.admin-season.active:hover {
+    background: var(--color-brand-soft);
+}
+
+
+/* =========================================================
+   DROPDOWN
+   ========================================================= */
+
+.admin-dropdown {
+    position: absolute;
+
+    left: 0;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 8px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: 14px;
+
+    background: var(--color-surface);
+
+    box-shadow:
+        0 12px 35px rgba(48, 52, 59, .12);
+
+    z-index: 300;
+}
+
+
+/* =========================================================
+   POSITION DROPDOWNS DESKTOP
+   ========================================================= */
+
+@media (min-width: 701px) {
+
+    .admin-dropdown-seasons,
+    .admin-dropdown-referentiels {
+        top: 100%;
+        margin-top: 8px;
+    }
+
+}
+
+
+/* =========================================================
+   TITRE DROPDOWN
+   ========================================================= */
+
+.admin-dropdown-title {
+    padding: 8px 10px 10px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .05em;
+}
+
+
+/* =========================================================
+   CONTENU DROPDOWN
+   ========================================================= */
+
+.admin-dropdown-content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+/* =========================================================
+   SAISONS
+   ========================================================= */
+
+.admin-season-group {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.admin-season {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+
+    min-height: 40px;
+
+    padding: 8px 10px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: var(--color-text-primary);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        color .15s ease;
+}
+
+
+.admin-season:hover {
+    background: var(--color-surface-soft);
+
+    color: var(--color-brand);
+}
+
+
+/* =========================================================
+   SOUS-MENU SAISON
+   ========================================================= */
+
+.admin-season-items {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    margin: 2px 0 5px 14px;
+
+    padding-left: 8px;
+
+    border-left: 1px solid var(--color-border);
+}
+
+
+.admin-season-items .admin-menu-item {
+    min-height: 36px;
+
+    padding: 7px 10px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */

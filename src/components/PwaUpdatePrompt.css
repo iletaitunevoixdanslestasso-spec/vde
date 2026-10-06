@@ -1,3 +1,6 @@
+@import "../styles/charte.css";
+@import "./PwaUpdatePrompt_mobil.css";
+
 .pwa-update {
     position: fixed;
 
@@ -13,13 +16,13 @@
 
     padding: 16px;
 
-    background: #ffffff;
+    background: var(--color-surface);
 
-    border: 1px solid #dddddd;
+    border: 1px solid var(--color-border);
     border-radius: 10px;
 
     box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.18);
+        0 4px 12px rgba(48, 52, 59, 0.18);
 
     z-index: 99999;
 }
@@ -57,18 +60,18 @@
 .pwa-update-button {
     padding: 8px 12px;
 
-    border: 1px solid #cccccc;
+    border: 1px solid var(--color-border-strong);
     border-radius: 6px;
 
-    background: #ffffff;
+    background: var(--color-surface);
 
     cursor: pointer;
 }
 
 
 .pwa-update-button-primary {
-    background: #333333;
-    border-color: #333333;
+    background: var(--color-text-primary);
+    border-color: var(--color-text-primary);
 
-    color: #ffffff;
+    color: var(--color-surface);
 }

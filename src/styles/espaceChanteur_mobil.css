@@ -1,0 +1,184 @@
+@media (max-width: 768px) {
+
+    /* =========================================================
+       LAYOUT
+       MOBILE UNIQUEMENT
+       ========================================================= */
+
+    .chanteur-layout {
+        display: block;
+
+        width: 100%;
+        min-width: 0;
+        min-height: 100vh;
+    }
+
+
+    /* =========================================================
+       SIDEBAR
+       MOBILE UNIQUEMENT
+       ========================================================= */
+
+    .chanteur-sidebar {
+        position: sticky;
+        top: 0;
+
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+
+        height: auto;
+        min-height: 0;
+
+        padding: 0;
+
+        box-sizing: border-box;
+
+        background: var(--color-surface);
+
+        border-right: 0;
+        border-bottom: 1px solid var(--color-border);
+
+        overflow: visible;
+
+        z-index: 200;
+    }
+
+
+    .chanteur-sidebar-inner {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+
+        height: auto;
+        min-height: 0;
+
+        position: static;
+    }
+
+
+    /* =========================================================
+       MENU HORIZONTAL
+       MOBILE UNIQUEMENT
+       ========================================================= */
+
+    .chanteur-menu {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+
+        width: 100%;
+        min-width: 0;
+
+        padding: 6px 8px;
+
+        box-sizing: border-box;
+
+        gap: 4px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scrollbar-width: none;
+    }
+
+
+    .chanteur-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    /*
+     * Les deux sections :
+     * "Chorale" et "Mon espace"
+     * ne créent plus de blocs verticaux.
+     */
+    .chanteur-menu-section {
+        display: contents;
+    }
+
+
+    /*
+     * On masque les titres
+     * CHORALE / MON ESPACE
+     */
+    .chanteur-menu-section-title {
+        display: none;
+    }
+
+
+    /* =========================================================
+       BOUTONS DU MENU
+       MOBILE UNIQUEMENT
+       ========================================================= */
+
+    .chanteur-menu-item {
+        flex: 0 0 56px;
+
+        width: 56px;
+        min-width: 56px;
+        max-width: 56px;
+
+        height: 52px;
+        min-height: 52px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0;
+
+        box-sizing: border-box;
+
+        border-radius: 10px;
+
+        text-align: center;
+    }
+
+
+    .chanteur-menu-item::before {
+        display: block;
+
+        margin: 0;
+
+        font-size: 22px;
+        line-height: 1;
+    }
+
+
+    /*
+     * Pas de texte sur mobile :
+     * uniquement les icônes.
+     */
+    .chanteur-menu-label {
+        display: none;
+    }
+
+
+    /* =========================================================
+       CONTENU
+       MOBILE UNIQUEMENT
+       ========================================================= */
+
+    .chanteur-content {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+
+        height: auto;
+        min-height: 0;
+
+        margin-left: 0;
+    }
+
+
+    .chanteur-content-inner {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        height: auto;
+
+        box-sizing: border-box;
+    }
+}

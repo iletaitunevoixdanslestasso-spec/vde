@@ -1,0 +1,18 @@
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+    .participation-buttons {
+        gap: 7px;
+    }
+
+    .participation-buttons > .participation-button,
+    .participation-buttons > .participation-button.selected {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
+        flex-basis: 30px !important;
+    }
+}

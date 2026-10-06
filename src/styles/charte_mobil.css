@@ -1,0 +1,34 @@
+/* =========================================================
+   CHARTE — TABLETTE & MOBILE
+   Les pages conservent leurs breakpoints historiques dans leurs
+   fichiers *_mobil.css ; ce fichier ne contient que les règles globales.
+   ========================================================= */
+
+@media (max-width: 768px) {
+    :root {
+        --shadow-md: 0 5px 18px rgba(48, 52, 59, .09);
+        --shadow-lg: 0 12px 32px rgba(48, 52, 59, .13);
+    }
+
+    body {
+        font-size: 15px;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        font-size: 14px;
+    }
+
+    [class^="icon-"]::before,
+    [class*=" icon-"]::before {
+        font-size: 1.3em;
+    }
+}

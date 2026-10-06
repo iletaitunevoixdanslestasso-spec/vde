@@ -1,0 +1,1615 @@
+/* =========================================================
+   STRUCTURE GENERALE
+   ========================================================= */
+
+.chorale-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   HEADER COMMUN
+   ========================================================= */
+
+.chorale-header {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 25px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-sizing: border-box;
+}
+
+.chorale-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chorale-brand img {
+    height: 50px;
+    width: auto;
+}
+
+.chorale-brand span {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.chorale-saison {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+/* =========================================================
+   CORPS
+   ========================================================= */
+
+.chorale-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+button {
+    background-color: azure;
+}
+
+/* =========================================================
+   ADMIN
+   ========================================================= */
+
+.admin-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.admin-sidebar {
+    width: 250px;
+    padding: 20px;
+    background: var(--color-text-primary);
+    color: white;
+    box-sizing: border-box;
+}
+
+.admin-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.admin-user {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    background: var(--color-surface-muted);
+    padding: 0 20px;
+    margin: -20px -20px 20px -20px;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   MENU ADMIN
+   ========================================================= */
+
+.admin-menu {
+    margin-top: 30px;
+}
+
+.admin-menu-item {
+    cursor: pointer;
+    margin: 0 0 12px 0;
+}
+
+.admin-menu-item:hover {
+    opacity: 0.7;
+}
+
+.admin-menu-section {
+    cursor: pointer;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.admin-menu-section:hover {
+    opacity: 0.7;
+}
+
+.admin-season.active {
+    font-weight: bold;
+}
+
+.admin-season-items {
+    padding-left: 30px;
+}
+/* =========================================================
+   CHANTEUR
+   ========================================================= */
+
+.chanteur-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.chanteur-sidebar {
+    width: 220px;
+    padding: 20px;
+    border-right: 1px solid var(--color-border);
+    background: var(--color-surface-soft);
+    box-sizing: border-box;
+}
+
+.chanteur-content {
+    flex: 1;
+    padding: 30px;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+.chanteur-menu-item {
+    cursor: pointer;
+    margin: 0 0 15px 0;
+}
+
+.chanteur-menu-item:hover {
+    opacity: 0.7;
+}
+
+.admin-menu-item::before,
+.admin-menu-section::before,
+.chanteur-menu-item::before {
+    display: inline-block;
+    width: 24px;
+    margin-right: 6px;
+}
+/* =========================================================
+   ICÔNES
+   ========================================================= */
+
+/* Structure commune */
+
+.icon-new::before,
+.icon-save::before,
+.icon-edit::before,
+.icon-delete::before,
+.icon-cancel::before,
+.icon-dashboard::before,
+.icon-saison::before,
+.icon-chanteurs::before,
+.icon-chanson::before,
+.icon-groupe::before,
+.icon-concert::before,
+.icon-repetition::before,
+.icon-pupitre::before,
+.icon-document::before,
+.icon-invitation::before,
+.icon-votes::before,
+.icon-inscription::before,
+.icon-profil::before,
+.icon-referentiels::before {
+    display: inline-block;
+    width: 24px;
+    margin-right: 6px;
+}
+
+
+/* Actions */
+
+.icon-new::before {
+    content: "add_circle";
+}
+
+.icon-save::before {
+    content: "save";
+}
+
+.icon-edit::before {
+    content: "edit";
+}
+
+.icon-delete::before {
+    content: "delete";
+}
+
+.icon-cancel::before {
+    content: "close";
+}
+
+
+/* Navigation */
+
+.icon-dashboard::before {
+    content: "home";
+}
+
+.icon-saison::before {
+    content: "calendar_month";
+}
+.icon-repetition::before {
+    content: "event_repeat";
+}
+.icon-gestion::before {
+    content: "settings";
+}
+
+.icon-chanteurs::before {
+    content: "person";
+}
+.icon-checked::before {
+    content: "check_circle";
+}
+
+.icon-chanson::before {
+    content: "music_note";
+}
+
+.icon-groupe::before {
+    content: "groups";
+}
+
+.icon-concert::before {
+    content: "mic";
+}
+
+.icon-repetition::before {
+    content: "event_repeat";
+}
+
+.icon-pupitre::before {
+    content: "queue_music";
+}
+
+.icon-document::before {
+    content: "description";
+}
+
+.icon-invitation::before {
+    content: "mail";
+}
+
+.icon-votes::before {
+    content: "how_to_vote";
+}
+
+.icon-inscription::before {
+    content: "edit_note";
+}
+
+.icon-profil::before {
+    content: "account_circle";
+}
+
+.icon-referentiels::before {
+    content: "library_books";
+}
+.icon-valider::before {
+    content: "check_circle";
+}
+
+.icon-refuser::before {
+    content: "cancel";
+}
+.icon-pending::before {
+    content: "hourglass_top";
+}
+.icon-none::before {
+    content: "radio_button_unchecked";
+}
+
+.icon-unknown::before {
+    content: "help";
+}
+.icon-warning::before {
+    content: "warning";
+}
+/* =========================================================
+   DROIT À L'IMAGE
+   ========================================================= */
+.dai-status {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+.dai-status::before {
+    margin-right: 5px;
+}    
+
+
+/* =========================================================
+   CRUD page
+   ========================================================= */
+
+.crud-new-button {
+    margin-bottom: 10px;
+}
+
+.crud-errors {
+    color: red;
+    margin-bottom: 10px;
+}
+
+/* =========================================================
+   CRUD ITEM
+   ========================================================= */
+
+.crud-item-page {
+    width: 100%;
+}
+
+.crud-loading {
+    margin-top: 20px;
+}
+
+/* =========================================================
+   FORM EDITION
+   ========================================================= */
+
+.form-edition {
+    width: 100%;
+}
+
+.form-edition-title {
+    margin-bottom: 20px;
+}
+
+.form-edition-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-edition-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-edition-field label {
+    margin-bottom: 4px;
+}
+
+.form-field-error {
+    color: var(--color-danger);
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.form-edition-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+/* =========================================================
+   DATA TABLE
+   ========================================================= */
+
+.data-table {
+    width: 100%;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.data-table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.data-table-search {
+    padding: 6px;
+    width: 250px;
+}
+
+.data-table-page-size {
+    padding: 6px;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.data-table-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.data-table-table thead tr {
+    background: var(--color-surface-muted);
+}
+
+.data-table-header {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    user-select: none;
+}
+
+.data-table-actions-header {
+    padding: 10px;
+}
+
+.data-table-row {
+    border-bottom: 1px solid var(--color-surface-muted);
+}
+
+.data-table-cell {
+    padding: 10px;
+}
+
+.data-table-empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.data-table-actions {
+    padding: 10px;
+}
+
+.data-table-action {
+    margin-right: 5px;
+}
+
+.data-table-action.icon-edit{
+    background-color:darkseagreen
+}
+.data-table-action.icon-delete{
+    background-color: var(--color-danger);
+}
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.data-table-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 5px;
+}
+
+.data-table-page {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    background: var(--color-surface-muted);
+}
+
+.data-table-page.active {
+    background: var(--color-text-primary);
+    color: white;
+}
+
+
+/* =========================================================
+   ICONES TRI
+   ========================================================= */
+
+.icon-sort-asc::before {
+    content: "arrow_upward";
+    margin-left: 5px;
+}
+
+.icon-sort-desc::before {
+    content: "arrow_downward";
+    margin-left: 5px;
+}
+
+/**
+ * chansonChanteur pge
+ */
+ .chanson-card {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+}
+
+.chanson-row {
+    display: grid;
+    grid-template-columns:
+        minmax(200px, 2fr)
+        minmax(150px, 1.5fr)
+        minmax(220px, 1.5fr)
+        minmax(150px, 1fr);
+
+    align-items: center;
+    gap: 20px;
+}
+
+.chanson-titre {
+    font-size: 16px;
+}
+
+.chanson-document,
+.chanson-audio {
+    display: flex;
+    align-items: center;
+}
+
+.chanson-document a,
+.chanson-audio a {
+    color: var(--color-brand);
+    text-decoration: none;
+}
+
+.chanson-document a:hover,
+.chanson-audio a:hover {
+    text-decoration: underline;
+}
+
+.chanson-pupitre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chanson-pupitre select {
+    min-width: 200px;
+    padding: 7px 10px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 5px;
+    background: white;
+}
+
+.chanson-saving {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
+
+/* =========================================================
+   RENDEZ-VOUS
+========================================================= */
+
+.dashboard-rendezvous {
+    margin-top: 30px;
+}
+
+.dashboard-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+
+/* ---------------------------------------------------------
+   Liste
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-list {
+    width: 100%;
+}
+
+
+/* ---------------------------------------------------------
+   Header
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-header {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) minmax(160px, 220px) 1fr;
+    gap: 20px;
+
+    padding: 10px 16px;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    color: var(--text-secondary, var(--color-text-secondary));
+}
+
+
+/* ---------------------------------------------------------
+   Ligne
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 220px) minmax(160px, 220px) 1fr;
+    gap: 20px;
+
+    align-items: center;
+
+    padding: 14px 16px;
+
+    margin-bottom: 6px;
+
+    background: var(--background-secondary, var(--color-surface));
+
+    border: 1px solid var(--border-color, var(--color-border));
+
+    border-radius: 10px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.dashboard-rendezvous-row:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px rgba(48, 52, 59, 0.06);
+}
+
+
+/* ---------------------------------------------------------
+   Type
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-type {
+    min-width: 0;
+}
+
+.dashboard-rendezvous-type-label {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
+/* ---------------------------------------------------------
+   Date
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dashboard-rendezvous-date-day {
+    font-weight: 600;
+}
+
+.dashboard-rendezvous-date-time {
+    font-size: 0.85rem;
+    color: var(--text-secondary, var(--color-text-secondary));
+}
+
+
+/* ---------------------------------------------------------
+   Description
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-description {
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+
+    color: var(--text-primary, var(--color-text-primary));
+}
+
+
+/* ---------------------------------------------------------
+   TYPES
+--------------------------------------------------------- */
+
+/*
+ * Chaque code de rendezvous_type devient automatiquement
+ * une classe CSS.
+ *
+ * Exemple :
+ *
+ * rendezvous-type-concert
+ * rendezvous-type-reunion
+ * rendezvous-type-formation
+ * rendezvous-type-repet
+ */
+
+
+/* Répétition */
+
+.rendezvous-type-repet {
+    border-left: 4px solid var(--rendezvous-repetition-color, var(--color-text-secondary));
+}
+
+.rendezvous-type-repet .dashboard-rendezvous-type-label {
+    background: var(--rendezvous-repetition-bg, var(--color-surface-muted));
+    color: var(--rendezvous-repetition-text, var(--color-text-secondary));
+}
+
+
+/* ---------------------------------------------------------
+   Etats
+--------------------------------------------------------- */
+
+.dashboard-rendezvous-loading,
+.dashboard-rendezvous-empty {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 25px;
+
+    color: var(--text-secondary, var(--color-text-secondary));
+
+    border: 1px dashed var(--border-color, var(--color-border));
+
+    border-radius: 10px;
+}
+
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+
+
+/* =========================================================
+   TODO
+========================================================= */
+
+.dashboard-todo {
+    margin-top: 25px;
+}
+
+.dashboard-todo h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0 0 15px;
+}
+
+
+/* ---------------------------------------------------------
+   Item
+--------------------------------------------------------- */
+
+.todo-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+
+    gap: 15px;
+
+    padding: 16px;
+
+    margin-bottom: 8px;
+
+    background: var(--background-secondary, var(--color-surface));
+
+    border: 1px solid var(--border-color, var(--color-border));
+
+    border-radius: 10px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.todo-item:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px rgba(48, 52, 59, 0.06);
+}
+
+
+/* ---------------------------------------------------------
+   Icône
+--------------------------------------------------------- */
+
+.todo-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: var(--color-surface-muted);
+
+    font-size: 1.2rem;
+}
+
+
+/* ---------------------------------------------------------
+   Contenu
+--------------------------------------------------------- */
+
+.todo-content {
+    min-width: 0;
+}
+
+.todo-title {
+    margin-bottom: 5px;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    color: var(--text-primary, var(--color-text-primary));
+}
+
+.todo-description {
+    color: var(--text-secondary, var(--color-text-secondary));
+
+    line-height: 1.5;
+}
+
+.todo-description .todo-button {
+    margin-left: 5px;
+}
+
+
+/* ---------------------------------------------------------
+   Actions
+--------------------------------------------------------- */
+
+.todo-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   Boutons
+--------------------------------------------------------- */
+
+.todo-button {
+    display: inline-flex;
+
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: inherit;
+
+    font: inherit;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.todo-button-secondary {
+    padding: 7px 11px;
+
+    border: 1px solid var(--border-color, var(--color-border));
+
+    background: var(--background-secondary, var(--color-surface));
+
+    color: var(--text-secondary, var(--color-text-secondary));
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.todo-button-secondary:hover:not(:disabled) {
+    background: var(--color-surface-muted);
+
+    border-color: var(--color-border-strong);
+
+    color: var(--text-primary, var(--color-text-primary));
+}
+
+.todo-button:disabled {
+    opacity: 0.6;
+
+    cursor: default;
+}
+
+
+/* ---------------------------------------------------------
+   TODO DAI
+--------------------------------------------------------- */
+
+.todo-dai {
+    border-left: 4px solid var(--color-danger-border);
+}
+
+.todo-dai .todo-icon {
+    background: var(--color-danger-soft);
+}
+
+
+/* ---------------------------------------------------------
+   TODO Pupitre
+--------------------------------------------------------- */
+
+.todo-pupitre {
+    border-left: 4px solid var(--color-warning-border);
+}
+
+.todo-pupitre .todo-icon {
+    background: var(--color-warning-soft);
+}
+
+
+/* ---------------------------------------------------------
+   Aucun TODO
+--------------------------------------------------------- */
+
+.todo-empty {
+    display: flex;
+
+    align-items: center;
+    gap: 10px;
+
+    padding: 16px;
+
+    border: 1px dashed var(--border-color, var(--color-border));
+
+    border-radius: 10px;
+
+    color: var(--text-secondary, var(--color-text-secondary));
+}
+
+.todo-empty .icon {
+    font-size: 1.1rem;
+}
+
+
+/* ---------------------------------------------------------
+   Responsive
+--------------------------------------------------------- */
+
+
+/* =========================================================
+   DASHBOARD CHANTEUR
+========================================================= */
+
+.dashboard-chanteur {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0;
+
+    padding: 35px 40px 60px;
+
+    box-sizing: border-box;
+
+    font-family: var(--font-family);
+
+    color: var(--color-text-primary);
+}
+
+
+/* =========================================================
+   HEADER DU DASHBOARD
+========================================================= */
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    margin-bottom: 35px;
+
+    padding-bottom: 28px;
+
+    border-bottom: 1px solid var(--color-border);
+}
+
+
+.dashboard-header-icon {
+    width: 58px;
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: var(--color-surface-muted);
+
+    color: var(--color-text-secondary);
+
+    font-size: 1.5rem;
+}
+
+
+.dashboard-header-content {
+    min-width: 0;
+}
+
+
+.dashboard-eyebrow {
+    margin-bottom: 4px;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.12em;
+
+    color: var(--color-text-muted);
+}
+
+
+.dashboard-title {
+    margin: 0;
+
+    font-family: var(--font-family);
+
+    font-size: 2rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    color: var(--color-text-primary);
+}
+
+
+.dashboard-subtitle {
+    margin: 8px 0 0;
+
+    max-width: 680px;
+
+    font-size: 0.95rem;
+
+    line-height: 1.5;
+
+    color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   GRANDES SECTIONS
+========================================================= */
+
+.dashboard-todo,
+.dashboard-rendezvous {
+    margin: 0;
+}
+
+
+/* =========================================================
+   TITRES DE SECTIONS
+========================================================= */
+
+.dashboard-section-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 0 0 16px;
+}
+
+
+.dashboard-section-icon {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: var(--color-surface-muted);
+
+    color: var(--color-text-secondary);
+
+    font-size: 1rem;
+}
+
+
+.dashboard-section-label {
+    display: block;
+
+    font-family: var(--font-family);
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    color: var(--color-text-primary);
+}
+
+
+.dashboard-section-description {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 0.82rem;
+
+    font-weight: 400;
+
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   TODO
+========================================================= */
+
+.dashboard-todo {
+    padding: 0;
+}
+
+
+/*
+ * Quand il n'y a aucune action :
+ * on garde quelque chose de très léger.
+ */
+
+.todo-empty {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 14px 16px;
+
+    background: var(--color-surface-soft);
+
+    border: 1px dashed var(--color-border);
+
+    border-radius: 9px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.9rem;
+}
+
+
+/* =========================================================
+   SEPARATION RENDEZ-VOUS
+========================================================= */
+
+.dashboard-rendezvous {
+    margin-top: 42px;
+
+    padding-top: 30px;
+
+    border-top: 1px solid var(--color-border);
+}
+
+
+/* =========================================================
+   ICÔNES DU DASHBOARD
+========================================================= */
+
+.icon-musical-note::before {
+    content: "music_note";
+}
+
+.icon-todo::before {
+    content: "checklist";
+}
+
+.icon-calendar::before {
+    content: "calendar_month";
+}
+
+.icon-check::before {
+    content: "check";
+}
+
+
+/* =========================================================
+   BOUTONS DU DASHBOARD
+========================================================= */
+
+/*
+ * Important :
+ * on neutralise le "button { background-color: azure; }"
+ * global pour le dashboard.
+ */
+
+.dashboard-chanteur button {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   LOADING / ERROR
+========================================================= */
+
+.dashboard-loading,
+.dashboard-error {
+    min-height: 200px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    font-family: var(--font-family);
+
+    color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+
+.dashboard-section-title-collapse {
+    cursor: pointer;
+    user-select: none;
+}
+
+.dashboard-section-title-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    gap: 20px;
+}
+
+.dashboard-section-chevron {
+    font-size: 24px;
+    line-height: 1;
+    opacity: 0.6;
+    transition: transform 0.2s ease;
+}
+
+.dashboard-section-title-collapse:hover
+.dashboard-section-chevron {
+    opacity: 1;
+}
+
+.dashboard-section-collapse-content {
+    animation: dashboard-collapse-in 0.2s ease;
+}
+
+@keyframes dashboard-collapse-in {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   CHANTEUR LAYOUT
+========================================================= */
+
+.chanteur-layout {
+    min-height: 100vh;
+
+    display: flex;
+
+    background: var(
+        --chanteur-background,
+        var(--color-surface-soft)
+    );
+
+    color: var(
+        --text-primary,
+        var(--color-text-primary)
+    );
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.chanteur-sidebar {
+    width: 250px;
+
+    flex: 0 0 250px;
+
+    min-height: 100vh;
+
+    background: var(
+        --chanteur-sidebar-background,
+        var(--color-surface)
+    );
+
+    border-right: 1px solid
+        var(
+            --border-color,
+            var(--color-border)
+        );
+}
+
+
+.chanteur-sidebar-inner {
+    position: sticky;
+
+    top: 0;
+
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 22px 14px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.chanteur-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 4px 8px 24px;
+
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid
+        var(
+            --border-color,
+            var(--color-surface-muted)
+        );
+}
+
+
+.chanteur-brand-icon {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: var(--color-surface-muted);
+
+    font-size: 1.1rem;
+}
+
+
+.chanteur-brand-text {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.chanteur-brand-text strong {
+    font-size: 0.95rem;
+
+    line-height: 1.2;
+}
+
+
+.chanteur-brand-text span {
+    font-size: 0.75rem;
+
+    color: var(
+        --text-secondary,
+        var(--color-text-muted)
+    );
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.chanteur-menu {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 24px;
+
+    overflow-y: auto;
+
+    padding: 5px 0;
+}
+
+
+.chanteur-menu-section {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.chanteur-menu-section-title {
+    padding: 0 11px 7px;
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   ITEM
+========================================================= */
+
+.chanteur-menu-item {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 10px 11px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: var(--color-text-secondary);
+
+    font: inherit;
+
+    font-size: 0.9rem;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.chanteur-menu-item:hover {
+    background: var(--color-surface-muted);
+
+    color: var(--color-text-primary);
+}
+
+
+.chanteur-menu-item.active {
+    background: var(--color-surface-muted);
+
+    color: var(--color-text-primary);
+
+    font-weight: 600;
+}
+
+
+.chanteur-menu-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: 8px;
+    bottom: 8px;
+
+    width: 3px;
+
+    border-radius: 3px;
+
+    background: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   ICÔNES
+========================================================= */
+
+.chanteur-menu-item::before {
+    font-size: 1rem;
+}
+
+
+/* =========================================================
+   CONTENU
+========================================================= */
+
+.chanteur-content {
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+}
+
+
+.chanteur-content-inner {
+    width: 100%;
+
+    min-height: 100vh;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TABLETTE
+========================================================= */
+
+
+/* =========================================================
+   SMARTPHONE
+========================================================= */

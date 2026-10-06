@@ -1,0 +1,221 @@
+/* =========================================================
+   CHARTE GRAPHIQUE — IL ÉTAIT UNE VOIX DANS L’EST
+   Palette principale : anthracite / violet musical / vert d’eau
+   Typographie : Sora
+   Icônes : Google Material Symbols Outlined
+   ========================================================= */
+
+
+:root {
+    --font-family: "Sora", "Segoe UI", Arial, sans-serif;
+
+    --color-text-primary: #30343B;
+    --color-text-secondary: #5F6670;
+    --color-text-muted: #6F7680;
+
+    --color-brand: #7047A6;
+    --color-brand-strong: #5C348E;
+    --color-brand-soft: #F2EDF7;
+    --color-brand-border: #D8CAE8;
+
+    --color-accent: #2D7A74;
+    --color-accent-strong: #225F5B;
+    --color-accent-soft: #E9F3F2;
+    --color-accent-border: #BFD8D5;
+
+    /* Couleur sémantique conservée pour distinguer les regroupements. */
+    --color-regroup: #5F8F68;
+    --color-regroup-strong: #466C4E;
+    --color-regroup-soft: #EDF7EF;
+
+    --color-background: #F7F8FA;
+    --color-surface: #FFFFFF;
+    --color-surface-soft: #FAFAFB;
+    --color-surface-muted: #F1F3F5;
+    --color-border: #DDE1E6;
+    --color-border-strong: #C9CED6;
+
+    --color-surface-dark: #30343B;
+    --color-surface-dark-soft: #3B4048;
+    --color-border-dark: #59616B;
+    --color-text-on-dark: #F7F8FA;
+
+    --color-success: #2D7A74;
+    --color-success-strong: #225F5B;
+    --color-success-soft: #E9F3F2;
+    --color-success-border: #BFD8D5;
+
+    --color-warning: #9A651F;
+    --color-warning-strong: #7A4E16;
+    --color-warning-soft: #FFF6E8;
+    --color-warning-border: #E9C88F;
+
+    --color-danger: #A94444;
+    --color-danger-soft: #FBECEC;
+    --color-danger-border: #E5B9B9;
+
+    --color-icon-inactive: #30343B;
+    --color-icon-active: #7047A6;
+
+    --shadow-sm: 0 2px 8px rgba(48, 52, 59, .07);
+    --shadow-md: 0 8px 24px rgba(48, 52, 59, .10);
+    --shadow-lg: 0 20px 50px rgba(48, 52, 59, .16);
+
+    /* Compatibilité avec les variables déjà utilisées dans l’application. */
+    --text-primary: var(--color-text-primary);
+    --text-secondary: var(--color-text-secondary);
+    --text-color: var(--color-text-primary);
+    --border-color: var(--color-border);
+    --background-secondary: var(--color-surface);
+    --surface-color: var(--color-surface);
+    --surface-muted: var(--color-surface-muted);
+    --chanteur-background: var(--color-background);
+    --chanteur-sidebar-background: var(--color-surface);
+}
+
+html {
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    font-family: var(--font-family);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: var(--font-family);
+}
+
+body {
+    color: var(--color-text-primary);
+    background: var(--color-background);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-weight: 600;
+}
+
+a {
+    color: var(--color-brand);
+}
+
+a:hover {
+    color: var(--color-accent-strong);
+}
+
+::selection {
+    color: var(--color-text-primary);
+    background: var(--color-accent-soft);
+}
+
+:focus-visible {
+    outline-color: var(--color-brand);
+}
+
+/* ---------------------------------------------------------
+   Icônes : même langage visuel partout dans l’application
+   --------------------------------------------------------- */
+[class^="icon-"]::before,
+[class*=" icon-"]::before {
+    font-family: "Material Symbols Outlined" !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 1.35em;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "liga";
+    color: var(--color-icon-inactive) !important;
+    background-image: none !important;
+    vertical-align: -0.16em;
+}
+
+.icon-new::before { content: "add_circle" !important; }
+.icon-excel::before { content: "table_view" !important; }
+.icon-save::before { content: "save" !important; }
+.icon-edit::before { content: "edit" !important; }
+.icon-delete::before { content: "delete" !important; }
+.icon-cancel::before { content: "close" !important; }
+.icon-dashboard::before { content: "home" !important; }
+.icon-saison::before { content: "calendar_month" !important; }
+.icon-chanteurs::before { content: "person" !important; }
+.icon-chanson::before { content: "music_note" !important; }
+.icon-groupe::before { content: "groups" !important; }
+.icon-concert::before { content: "mic" !important; }
+.icon-chanteursaison::before { content: "group_add" !important; }
+.icon-chanteurSaison::before { content: "group_add" !important; }
+.icon-lead_actif::before { content: "star" !important; }
+.icon-saisonactive::before { content: "star" !important; }
+.icon-repetition::before { content: "event_repeat" !important; }
+.icon-lieux::before { content: "location_on" !important; }
+.icon-pupitre::before { content: "queue_music" !important; }
+.icon-document::before { content: "description" !important; }
+.icon-invitation::before { content: "mail" !important; }
+.icon-votes::before { content: "how_to_vote" !important; }
+.icon-inscription::before { content: "edit_note" !important; }
+.icon-etaterreur::before { content: "error" !important; }
+.icon-alerte::before { content: "notifications_active" !important; }
+.icon-avertissement::before { content: "warning" !important; }
+.icon-profil::before { content: "account_circle" !important; }
+.icon-telechargement::before { content: "download" !important; }
+.icon-referentiels::before { content: "library_books" !important; }
+.icon-valider::before { content: "check_circle" !important; }
+.icon-refuser::before { content: "cancel" !important; }
+.icon-pending::before { content: "hourglass_top" !important; }
+.icon-none::before { content: "radio_button_unchecked" !important; }
+.icon-unknown::before { content: "help" !important; }
+.icon-warning::before { content: "warning" !important; }
+.icon-musical-note::before { content: "music_note" !important; }
+.icon-todo::before { content: "checklist" !important; }
+.icon-calendar::before { content: "calendar_month" !important; }
+.icon-check::before { content: "check" !important; }
+.icon-gestion::before { content: "settings" !important; }
+.icon-checked::before { content: "check_circle" !important; }
+.icon-accepted::before { content: "thumb_up" !important; }
+.icon-loupe::before { content: "search" !important; }
+.icon-sort-asc::before { content: "arrow_upward" !important; }
+.icon-sort-desc::before { content: "arrow_downward" !important; }
+
+/* Un état actif est violet et légèrement plus affirmé. */
+.active[class^="icon-"]::before,
+.active[class*=" icon-"]::before,
+.selected[class^="icon-"]::before,
+.selected[class*=" icon-"]::before,
+[aria-current="page"][class^="icon-"]::before,
+[aria-current="page"][class*=" icon-"]::before,
+.active [class^="icon-"]::before,
+.active [class*=" icon-"]::before,
+.selected [class^="icon-"]::before,
+.selected [class*=" icon-"]::before,
+[aria-current="page"] [class^="icon-"]::before,
+[aria-current="page"] [class*=" icon-"]::before {
+    color: var(--color-icon-active) !important;
+    font-weight: 500 !important;
+}
+
+/* Icônes sémantiques : elles indiquent un statut, pas une sélection. */
+.icon-etaterreur::before,
+.icon-refuser::before { color: var(--color-danger) !important; }
+.icon-alerte::before,
+.icon-avertissement::before,
+.icon-warning::before { color: var(--color-warning) !important; }
+.icon-valider::before,
+.icon-checked::before,
+.icon-accepted::before { color: var(--color-success) !important; }

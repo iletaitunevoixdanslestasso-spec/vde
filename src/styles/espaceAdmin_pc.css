@@ -1,0 +1,204 @@
+/* =========================================================
+   ESPACE ADMIN
+   Layout général uniquement
+
+   RESPONSABILITÉS :
+   - layout global
+   - zone de contenu
+   - header utilisateur
+   - déconnexion
+   - page
+   - adaptation générale PC / mobile
+
+   Le menu est géré dans :
+   adminMenu.css
+   ========================================================= */
+
+
+/* =========================================================
+   LAYOUT GLOBAL
+   ========================================================= */
+
+.admin-layout {
+    min-height: 100vh;
+    width: 100%;
+
+    display: flex;
+
+    background: var(--color-surface-soft);
+}
+
+
+/* =========================================================
+   CONTENU ADMIN
+   ========================================================= */
+
+.admin-content {
+    width: calc(100% - 250px);
+
+    min-width: 0;
+
+    margin-left: 250px;
+}
+
+
+/* =========================================================
+   HEADER ADMIN
+   ========================================================= */
+
+.admin-header {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 50;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    min-height: 62px;
+
+    padding: 10px 24px;
+
+    box-sizing: border-box;
+
+    background: rgba(255, 255, 255, .94);
+
+    border-bottom: 1px solid var(--color-border);
+
+    backdrop-filter: blur(12px);
+}
+
+
+/* =========================================================
+   UTILISATEUR
+   ========================================================= */
+
+.admin-header-user {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-right: 14px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 13px;
+}
+
+
+.admin-user-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+
+    flex: 0 0 30px;
+
+    border-radius: 50%;
+
+    background: var(--color-surface-muted);
+}
+
+
+.admin-user-email {
+    max-width: 280px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   BOUTON DECONNEXION
+   ========================================================= */
+
+.admin-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 36px;
+
+    padding: 7px 12px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+
+    background: var(--color-surface);
+
+    color: var(--color-text-secondary);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease;
+}
+
+
+.admin-logout:hover {
+    background: var(--color-danger-soft);
+
+    border-color: var(--color-danger-border);
+
+    color: var(--color-danger);
+}
+
+
+.admin-logout-icon {
+    font-size: 16px;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.admin-page {
+    width: 100%;
+    max-width: 1500px;
+
+    box-sizing: border-box;
+
+    margin: 0 auto;
+
+    padding: 24px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+
+/* =========================================================
+   PETITS MOBILES
+   ========================================================= */
+
+
+/* =========================================================
+   HEADER MOBILE
+   =========================================================
+   La version intégrée à la barre du menu n'existe visuellement
+   qu'en mobile. Le header desktop reste inchangé.
+   ========================================================= */
+
+.admin-header-mobile {
+    display: none;
+}

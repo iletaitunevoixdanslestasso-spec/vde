@@ -520,6 +520,11 @@ export default function ChansonsChanteur() {
                                                     ? "Je fais un lead sur cette chanson"
                                                     : "Indiquer que je fais un lead"
                                             }
+                                            aria-label={
+                                                chanson.lead
+                                                    ? "Je fais un lead sur cette chanson"
+                                                    : "Indiquer que je fais un lead"
+                                            }
                                         >
                                             <span
                                                 className={`chanson-lead-icon icon-concert ${chanson.lead ? "icon-lead_actif" : ""
@@ -548,6 +553,7 @@ export default function ChansonsChanteur() {
                                                 setOpenRepartition(true);
                                             }}
                                             title="Voir la répartition du chœur"
+                                            aria-label="Voir la répartition du chœur"
                                         >
                                             <span className="chanson-action-icon icon-chanteursaison"></span>
 
@@ -683,6 +689,8 @@ export default function ChansonsChanteur() {
                                                 to={chanson.audio_pupitre.audio_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                title={`Écouter l'audio ${chanson.audio_pupitre.nom || "du pupitre"}`}
+                                                aria-label={`Écouter l'audio ${chanson.audio_pupitre.nom || "du pupitre"}`}
                                             >
 
                                                 <span className="chanson-action-icon">
