@@ -157,13 +157,12 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
           <div className="dashboard-rendezvous-participation-actions participation-buttons">
             <button
               type="button"
-              className={`participation-button selected ${
-                item.participation === true
+              className={`participation-button selected ${item.participation === true
                   ? "participation-button--yes"
                   : item.participation === false
                     ? "participation-button--no"
                     : "participation-button--maybe"
-              }`}
+                }`}
               onClick={() => onParticipation(item)}
               title="Modifier ma participation"
               aria-label="Modifier ma participation"
@@ -299,7 +298,7 @@ export default function DashboardChanteur() {
               key: `${typeCode}-${item.id}`,
               id: rendezvous.id,
               type: typeCode,
-
+              filterType: typeCode,
               typeCode,
               typeNom:
                 rendezvous.rendezvous_type?.libelle ||
@@ -332,13 +331,16 @@ export default function DashboardChanteur() {
 
       const repetitionsNormalisees =
         repetitionsData.map((item) => {
+          const codeRepetition = "repetition"
           const debut = item.repetitions_type.duree == 90 ? chanteur.gdescription : '20h'
           return {
 
             key: `repetition-${item.id}`,
             id: item.id,
             participation: item.participation,
-            type: "repetition",
+            filterType: codeRepetition,
+
+            type: codeRepetition,
 
             /*
             * Classe CSS :
@@ -614,7 +616,7 @@ export default function DashboardChanteur() {
     rendezvousTypeFilter === "all"
       ? rendezvous
       : rendezvous.filter(
-        item => item.typeCode === rendezvousTypeFilter
+        item => item.filterType === rendezvousTypeFilter
       );
 
   const rendezvousTries = [...rendezvousFiltres].sort((a, b) => {
@@ -665,10 +667,13 @@ export default function DashboardChanteur() {
   const rendezvousTypes = [
     ...new Map(
       rendezvous.map(item => [
-        item.typeCode,
+        item.filterType,
         {
-          code: item.typeCode,
-          libelle: item.typeNom
+          code: item.filterType,
+          libelle:
+            item.filterType === "repetition"
+              ? "Répétition"
+              : item.typeNom
         }
       ])
     ).values()
@@ -1076,92 +1081,92 @@ export default function DashboardChanteur() {
         </div>
       )}
 
-      
-        { selectedParticipation && (
+
+      {selectedParticipation && (
+
+        <div
+          className="dashboard-modal-overlay"
+          onClick={() => setSelectedParticipation(null)}
+        >
 
           <div
-            className="dashboard-modal-overlay"
-            onClick={() => setSelectedParticipation(null)}
+            className="dashboard-modal"
+            onClick={event => event.stopPropagation()}
           >
 
-            <div
-              className="dashboard-modal"
-              onClick={event => event.stopPropagation()}
+            <button
+              type="button"
+              className="dashboard-modal-close"
+              onClick={() => setSelectedParticipation(null)}
             >
+              ×
+            </button>
 
-              <button
-                type="button"
-                className="dashboard-modal-close"
-                onClick={() => setSelectedParticipation(null)}
-              >
-                ×
-              </button>
-
-              <h3>
-                {selectedParticipation.typeLibelle ||
-                  selectedParticipation.titre ||
-                  "Participation"}
-              </h3>
+            <h3>
+              {selectedParticipation.typeLibelle ||
+                selectedParticipation.titre ||
+                "Participation"}
+            </h3>
 
 
-              {selectedParticipation.type === "concert" && (
+            {selectedParticipation.type === "concert" && (
 
-                <ConcertParticipation
-                  concert={selectedParticipation}
-                  onParticipationChange={(concertId, participe) => {
+              <ConcertParticipation
+                concert={selectedParticipation}
+                onParticipationChange={(concertId, participe) => {
 
-                    setRendezvous(current =>
-                      current.map(item =>
-                        item.id === concertId
-                          ? {
-                            ...item,
-                            participation: participe
-                          }
-                          : item
-                      )
-                    );
+                  setRendezvous(current =>
+                    current.map(item =>
+                      item.id === concertId
+                        ? {
+                          ...item,
+                          participation: participe
+                        }
+                        : item
+                    )
+                  );
 
-                    setSelectedParticipation(null);
-                  }}
-                />
+                  setSelectedParticipation(null);
+                }}
+              />
 
-              )}
+            )}
 
 
-              {selectedParticipation.type === "repetition" && (
+            {selectedParticipation.type === "repetition" && (
 
-                <RepetitionParticipationControllerChanteur
-                  repetition={selectedParticipation}
-                  inline
-                  onParticipationChange={(
-                    repetitionId,
-                    participation
-                  ) => {
+              <RepetitionParticipationControllerChanteur
+                repetition={selectedParticipation}
+                inline
+                onParticipationChange={(
+                  repetitionId,
+                  participation
+                ) => {
 
-                    setRendezvous(current =>
-                      current.map(item =>
-                        item.type === "repetition" &&
-                          item.id === repetitionId
-                          ? {
-                            ...item,
-                            participation
-                          }
-                          : item
-                      )
-                    );
+                  setRendezvous(current =>
+                    current.map(item =>
+                      item.type === "repetition" &&
+                        item.id === repetitionId
+                        ? {
+                          ...item,
+                          participation
+                        }
+                        : item
+                    )
+                  );
 
-                    setSelectedParticipation(null);
-                  }}
-                />
+                  setSelectedParticipation(null);
+                }}
+              />
 
-              )}
-
-            </div>
+            )}
 
           </div>
 
-        )}
-      
+        </div>
+
+      )}
+
     </div >
   );
 }

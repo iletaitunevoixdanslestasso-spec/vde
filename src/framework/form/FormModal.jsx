@@ -14,7 +14,7 @@ export default function FormModal({
     onClose,
     onFieldChange,
     onSave,
-    datatable=true,
+    datatable = true,
     excelExport = true
 }) {
 
@@ -109,9 +109,15 @@ export default function FormModal({
     };
 
     return (
-        <div className="form-modal-overlay">
+        <div
+            className="form-modal-overlay"
+            onClick={onClose}
+        >
 
-            <div className="form-modal">
+            <div
+                className="form-modal"
+                onClick={(e) => e.stopPropagation()}
+            >
 
                 <div className="form-modal-content">
 

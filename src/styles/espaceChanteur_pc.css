@@ -708,6 +708,26 @@ BRAND
     display: block;
     margin-bottom: 8px;
 }
+.chanson-lead-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+
+    line-height: 1;
+}
+
+.chanson-lead-icon::before {
+    margin: 0 !important;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+}
 /* =========================================================
    RESPONSIVE TABLETTE
    ========================================================= */

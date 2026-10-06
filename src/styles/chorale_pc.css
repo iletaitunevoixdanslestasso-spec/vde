@@ -120,15 +120,15 @@
 }
 
 .icon-lead_actif::before {
-    content: "star";
+    content: "" !important;
+
     display: inline-block;
+
     width: 1.4em;
     height: 1.4em;
     flex: 0 0 1.4em;
-    background-image: url("/lead_actif.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+
+    margin-right: 0;
 }
 
 .icon-new::before {
@@ -589,3 +589,4 @@
 .dai-status::before {
     margin-right: 5px;
 }
+
