@@ -763,3 +763,323 @@
 }
 
 /* Mobile */
+
+/* =========================================================
+   CHARTE COULEURS — DASHBOARD CHANTEUR
+   ---------------------------------------------------------
+   Violet       : identité / concerts / navigation
+   Vert         : répétitions / actions à faire / positif
+   Anthracite   : contenu neutre / regroupements
+   Blanc        : respiration / cartes
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   HEADER — identité violette, fond très léger
+   --------------------------------------------------------- */
+
+.dashboard-header-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.dashboard-header-icon [class^="icon-"]::before,
+.dashboard-header-icon [class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.dashboard-eyebrow {
+    color: var(--color-brand-strong);
+}
+
+
+/* ---------------------------------------------------------
+   TITRES DE SECTIONS
+   --------------------------------------------------------- */
+
+.dashboard-section-label {
+    color: var(--color-brand);
+}
+
+.dashboard-todo .dashboard-section-icon {
+    background: var(--color-complement-soft);
+    border: 1px solid var(--color-complement-border);
+}
+
+.dashboard-todo .dashboard-section-icon [class^="icon-"]::before,
+.dashboard-todo .dashboard-section-icon [class*=" icon-"]::before {
+    color: var(--color-complement-strong) !important;
+}
+
+.dashboard-rendezvous .dashboard-section-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+}
+
+.dashboard-rendezvous .dashboard-section-icon [class^="icon-"]::before,
+.dashboard-rendezvous .dashboard-section-icon [class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+
+/* ---------------------------------------------------------
+   À FAIRE — univers vert complémentaire
+   --------------------------------------------------------- */
+
+.todo-item {
+    background: var(--color-complement-soft);
+    border-color: var(--color-complement-border);
+    border-left: 4px solid var(--color-complement);
+    box-shadow: var(--shadow-sm);
+}
+
+.todo-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.todo-icon {
+    background: var(--color-surface);
+    border: 1px solid var(--color-complement-border);
+}
+
+.todo-icon [class^="icon-"]::before,
+.todo-icon [class*=" icon-"]::before {
+    color: var(--color-complement-strong) !important;
+}
+
+.todo-title {
+    color: var(--color-complement-strong);
+}
+
+.todo-description .todo-button {
+    color: var(--color-brand-strong);
+    background: var(--color-brand-soft);
+}
+
+.todo-description .todo-button:hover {
+    background: var(--color-brand-border);
+}
+
+.todo-description .todo-button [class^="icon-"]::before,
+.todo-description .todo-button [class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.todo-button-secondary {
+    background: var(--color-surface);
+    border-color: var(--color-complement-border);
+    color: var(--color-complement-strong);
+}
+
+.todo-button-secondary:hover:not(:disabled) {
+    background: var(--color-complement-soft);
+    border-color: var(--color-complement);
+    color: var(--color-complement-strong);
+}
+
+.todo-button-secondary [class^="icon-"]::before,
+.todo-button-secondary [class*=" icon-"]::before {
+    color: var(--color-complement-strong) !important;
+}
+
+.todo-empty {
+    background: var(--color-complement-soft);
+    border-color: var(--color-complement-border);
+    color: var(--color-complement-strong);
+}
+
+.todo-empty [class^="icon-"]::before,
+.todo-empty [class*=" icon-"]::before {
+    color: var(--color-complement-strong) !important;
+}
+
+
+/* ---------------------------------------------------------
+   FILTRE DES RENDEZ-VOUS
+   --------------------------------------------------------- */
+
+.dashboard-rendezvous-filters select {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+}
+
+.dashboard-rendezvous-filters select:focus {
+    border-color: var(--color-brand);
+    outline: 2px solid var(--color-brand-soft);
+    outline-offset: 1px;
+}
+
+
+/* ---------------------------------------------------------
+   CARTES RENDEZ-VOUS — base commune
+   --------------------------------------------------------- */
+
+.dashboard-rendezvous-row {
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.dashboard-rendezvous-row:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.dashboard-rendezvous-type-label {
+    border: 1px solid transparent;
+}
+
+.dashboard-rendezvous-info-button {
+    color: var(--color-text-primary);
+    background: var(--color-surface);
+}
+
+.dashboard-rendezvous-info-button:hover {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+}
+
+
+/* ---------------------------------------------------------
+   CONCERT = VIOLET
+   --------------------------------------------------------- */
+
+.rendezvous-type-concert {
+    background: var(--color-surface);
+    border-left: 4px solid var(--color-brand);
+    border-right: 4px solid var(--color-brand);
+}
+
+.rendezvous-type-concert .dashboard-rendezvous-type-label {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+    color: var(--color-brand-strong);
+}
+
+.rendezvous-type-concert .dashboard-rendezvous-date-day {
+    color: var(--color-brand-strong);
+}
+
+
+/* ---------------------------------------------------------
+   RÉPÉTITION NORMALE = VERT COMPLÉMENTAIRE
+   --------------------------------------------------------- */
+
+.rendezvous-type-repet {
+    background: var(--color-surface);
+    border-left: 4px solid var(--color-complement);
+    border-right: 4px solid var(--color-complement);
+}
+
+.rendezvous-type-repet .dashboard-rendezvous-type-label {
+    background: var(--color-complement-soft);
+    border-color: var(--color-complement-border);
+    color: var(--color-complement-strong);
+}
+
+.rendezvous-type-repet .dashboard-rendezvous-date-day {
+    color: var(--color-complement-strong);
+}
+
+
+/* ---------------------------------------------------------
+   RÉPÉTITION SPÉCIALE = VIOLET + VERT
+   --------------------------------------------------------- */
+
+.rendezvous-type-repetition_spe {
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-brand-soft) 0%,
+            var(--color-surface) 45%,
+            var(--color-surface) 55%,
+            var(--color-complement-soft) 100%
+        );
+    border-left: 4px solid var(--color-brand);
+    border-right: 4px solid var(--color-complement);
+    box-shadow: var(--shadow-sm);
+}
+
+.rendezvous-type-repetition_spe .dashboard-rendezvous-type-label {
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-brand-soft),
+            var(--color-complement-soft)
+        );
+    border-color: var(--color-brand-border);
+    color: var(--color-brand-strong);
+    font-weight: 700;
+}
+
+.rendezvous-type-repetition_spe .dashboard-rendezvous-date-day {
+    color: var(--color-brand-strong);
+}
+
+
+/* ---------------------------------------------------------
+   REGROUPEMENT = ANTHRACITE / NEUTRE
+   --------------------------------------------------------- */
+
+.rendezvous-type-regroup {
+    background: var(--color-surface);
+    border-left: 4px solid var(--color-surface-dark);
+    border-right: 4px solid var(--color-surface-dark);
+}
+
+.rendezvous-type-regroup .dashboard-rendezvous-type-label {
+    background: var(--color-surface-muted);
+    border-color: var(--color-border-strong);
+    color: var(--color-surface-dark);
+}
+
+.rendezvous-type-regroup .dashboard-rendezvous-date-day {
+    color: var(--color-surface-dark);
+}
+
+
+/* ---------------------------------------------------------
+   PARTICIPATION — vert / anthracite / violet
+   --------------------------------------------------------- */
+
+.dashboard-rendezvous-participation-actions .participation-button--yes {
+    background: var(--color-complement-soft) !important;
+    border-color: var(--color-complement-border) !important;
+    color: var(--color-complement-strong) !important;
+}
+
+.dashboard-rendezvous-participation-actions .participation-button--no {
+    background: var(--color-surface-muted) !important;
+    border-color: var(--color-border-strong) !important;
+    color: var(--color-surface-dark) !important;
+}
+
+.dashboard-rendezvous-participation-actions .participation-button--maybe {
+    background: var(--color-brand-soft) !important;
+    border-color: var(--color-brand-border) !important;
+    color: var(--color-brand-strong) !important;
+}
+
+
+/* ---------------------------------------------------------
+   MODALES
+   --------------------------------------------------------- */
+
+.dashboard-modal {
+    border: 1px solid var(--color-brand-border);
+}
+
+.dashboard-modal h3 {
+    color: var(--color-brand-strong);
+}
+
+.dashboard-modal-close {
+    color: var(--color-surface-dark);
+}
+
+.dashboard-modal-map-button {
+    color: var(--color-brand-strong);
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+}
+
+

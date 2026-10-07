@@ -6,16 +6,7 @@
    PAGE
    ========================================================= */
 
-.concerts-page {
-    width: 100%;
-    max-width: 1200px;
-    box-sizing: border-box;
-    padding: 35px 40px 60px;
 
-    font-family: var(--font-family);
-
-    color: var(--color-text-primary);
-}
 
 /* =========================================================
    EN-TÊTE
@@ -1091,3 +1082,122 @@
 /* =========================================================
    MOBILE
    ========================================================= */
+
+/* =========================================================
+   CHARTE COULEURS — MES CONCERTS
+   Univers : violet
+   ========================================================= */
+
+.concerts-page-header-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.concerts-page-header-icon [class^="icon-"]::before,
+.concerts-page-header-icon [class*=" icon-"]::before,
+.concerts-page-header-icon[class^="icon-"]::before,
+.concerts-page-header-icon[class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.concerts-page-title {
+    color: var(--color-brand-strong);
+}
+
+.concerts-page-count {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+}
+
+.concerts-page-count strong {
+    color: var(--color-brand-strong);
+}
+
+.concerts-help {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+}
+
+.concerts-help-icon {
+    background: var(--color-surface);
+    border: 1px solid var(--color-brand-border);
+}
+
+.concerts-help strong {
+    color: var(--color-brand-strong);
+}
+
+.concert-card.rendezvous-type-concert {
+    border-left: 3px solid var(--color-brand);
+    border-right: 3px solid var(--color-brand);
+    background: var(--color-surface);
+}
+
+.concert-card.rendezvous-type-concert:hover {
+    border-left-color: var(--color-brand-strong);
+    border-right-color: var(--color-brand-strong);
+    box-shadow: var(--shadow-sm);
+}
+
+.concert-card.rendezvous-type-concert .concert-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+}
+
+.concert-card.rendezvous-type-concert .concert-icon [class^="icon-"]::before,
+.concert-card.rendezvous-type-concert .concert-icon [class*=" icon-"]::before,
+.concert-card.rendezvous-type-concert .concert-icon[class^="icon-"]::before,
+.concert-card.rendezvous-type-concert .concert-icon[class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.concert-card.rendezvous-type-concert .concert-titre {
+    color: var(--color-brand-strong);
+}
+
+.concert-information-icon {
+    background: var(--color-brand-soft);
+}
+
+.concert-chansons-modal {
+    border-color: var(--color-brand-border);
+}
+
+.concert-chansons-modal-header {
+    background: var(--color-brand-soft);
+    border-bottom-color: var(--color-brand-border);
+}
+
+.concert-chansons-modal-icon {
+    background: var(--color-surface);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.concert-chansons-modal-icon[class^="icon-"]::before,
+.concert-chansons-modal-icon[class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.concert-chansons-modal-eyebrow,
+.concert-chansons-modal-title {
+    color: var(--color-brand-strong);
+}
+
+.concert-chanson-number {
+    background: var(--color-brand-soft);
+    color: var(--color-brand-strong);
+}
+
+.concert-chansons-close,
+.concert-chansons-close-button {
+    border-color: var(--color-brand-border);
+}
+
+.concert-chansons-close:hover,
+.concert-chansons-close-button:hover {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand);
+    color: var(--color-brand-strong);
+}

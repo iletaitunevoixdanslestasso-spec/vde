@@ -54,8 +54,8 @@ import SaisonConcertChansonsPage from "../pages/admin/referentiels/SaisonConcert
 import ConcertsChanteur from "../pages/chanteur/ConcertsChanteur";
 import { ChanteurProvider } from "../components/contexts/ChanteurContext";
 import LieuxPage from "../pages/admin/referentiels/Lieux/LieuxPage";
-import DocumentsChanteur from "../pages/chanteur/DocumentsChanteur";
-import DocumentsChanteurPage from "../pages/admin/referentiels/DocumentsChanteur/DocumentsChanteurPage";
+
+import DocumentsChanteurPage from "../pages/chanteur/DocumentsChanteurPage";
 import InvitationSaisonPage from "../pages/admin/referentiels/invitationSaison/InvitationSaisonPage";
 import SaisonRepetitionChanteursPage from "../pages/admin/referentiels/SaisonConcertChanson/SaisonRepetitionChanteursPage";
 import Confidentialite from "../pages/public/Confidentialite";

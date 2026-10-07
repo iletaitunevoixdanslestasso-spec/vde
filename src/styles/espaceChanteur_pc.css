@@ -736,3 +736,74 @@ BRAND
 /* =========================================================
    RESPONSIVE MOBILE
    ========================================================= */
+
+/* =========================================================
+   CHARTE COULEURS — ESPACE CHANTEUR
+   Violet       : identité / navigation / concerts
+   Vert         : répétitions / positif / actions attendues
+   Anthracite   : contenu neutre / regroupements
+   Blanc        : respiration
+   ========================================================= */
+
+.chanteur-brand-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.chanteur-menu-item:hover {
+    background: var(--color-brand-soft);
+    color: var(--color-brand-strong);
+}
+
+.chanteur-menu-item.active {
+    background: var(--color-brand-soft);
+    color: var(--color-brand-strong);
+    font-weight: 600;
+}
+
+.chanteur-menu-item.active::after {
+    background: var(--color-brand);
+}
+
+.chanteur-menu-item.active::before,
+.chanteur-menu-item:hover::before {
+    color: var(--color-brand) !important;
+}
+
+
+/* Code couleur métier commun à toutes les pages chanteur. */
+.chanteur-layout {
+    /* Répétition classique = vert complémentaire */
+    --rendezvous-repetition-color: var(--color-complement);
+    --rendezvous-repetition-bg: var(--color-complement-soft);
+    --rendezvous-repetition-text: var(--color-complement-strong);
+
+    /* Répétition spéciale = rencontre violet + vert */
+    --rendezvous-repetition-spe-color: var(--color-brand);
+    --rendezvous-repetition-spe-bg:
+        linear-gradient(
+            90deg,
+            var(--color-brand-soft) 0%,
+            var(--color-surface) 48%,
+            var(--color-surface) 52%,
+            var(--color-complement-soft) 100%
+        );
+    --rendezvous-repetition-spe-label-bg:
+        linear-gradient(
+            90deg,
+            var(--color-brand-soft),
+            var(--color-complement-soft)
+        );
+    --rendezvous-repetition-spe-text: var(--color-brand-strong);
+
+    /* Concert = violet de marque */
+    --rendezvous-concert-color: var(--color-brand);
+    --rendezvous-concert-bg: var(--color-brand-soft);
+    --rendezvous-concert-text: var(--color-brand-strong);
+
+    /* Regroupement = anthracite / neutre */
+    --rendezvous-regroup-color: var(--color-surface-dark);
+    --rendezvous-regroup-bg: var(--color-surface-muted);
+    --rendezvous-regroup-text: var(--color-surface-dark);
+}

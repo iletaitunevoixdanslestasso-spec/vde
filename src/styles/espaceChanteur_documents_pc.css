@@ -387,3 +387,41 @@
     }
 
 }
+
+/* =========================================================
+   CHARTE COULEURS — DOCUMENTS CHANTEUR
+   Univers : neutre + violet
+   ========================================================= */
+
+.documents-header__icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.documents-header h1 {
+    color: var(--color-brand-strong);
+}
+
+.documents-section__icon {
+    background: var(--color-brand-soft);
+    color: var(--color-brand);
+}
+
+.document-item {
+    border-left: 3px solid var(--color-brand-border);
+}
+
+.document-item:hover {
+    border-left-color: var(--color-brand);
+    box-shadow: var(--shadow-sm);
+}
+
+.document-item__icon {
+    background: var(--color-brand-soft);
+}
+
+.document-item__action {
+    background: var(--color-brand-soft);
+    color: var(--color-brand-strong);
+}

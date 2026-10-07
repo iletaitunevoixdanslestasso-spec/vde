@@ -152,23 +152,6 @@ export default function ChanteurMenu({chanteur}) {
                     Mon espace
                 </div>
 
-{/* 
-                <button
-                    type="button"
-                    className={
-                        `chanteur-menu-item icon-inscription ` +
-                        (isActive("/inscription")
-                            ? "active"
-                            : "")
-                    }
-                    onClick={() => go("/inscription")}
-                >
-                    <span className="chanteur-menu-label">
-                        Mon inscription
-                    </span>
-                </button>
- */}
-
                 <button
                     type="button"
                     className={

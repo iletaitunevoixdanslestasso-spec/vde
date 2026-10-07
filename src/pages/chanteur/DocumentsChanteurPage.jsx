@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { useChanteur } from "../../../../components/contexts/ChanteurContext";
-import { ReferentielDocumentConfig } from "../../../../config/entities/ReferentielDocument.config";
-import NotificationService from "../../../../services/NotificationService";
+import { useChanteur } from "../../components/contexts/ChanteurContext";
+import { ReferentielDocumentConfig } from "../../config/entities/ReferentielDocument.config";
+import NotificationService from "../../services/NotificationService";
+import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
 
-import "../../../../styles/espaceChanteur_documents.css";
+import "../../styles/espaceChanteur_documents.css";
+import "../../styles/espaceChanteur_chansons.css";
 
 
 export default function DocumentsChanteurPage(context = {}) {
@@ -92,7 +94,16 @@ export default function DocumentsChanteurPage(context = {}) {
 
     if (loadingChanteur || loading) {
         return (
-            <div className="documents-chanteur documents-chanteur--state">
+            <main className="chansons-page documents-chanteur documents-chanteur--state  concerts-page">
+
+                <EspaceChanteurPageHeader
+                    title="Mes documents"
+                    subtitle="Chargement de vos documents..."
+                    iconContent="📄"
+                    singular="document"
+                    plural="documents"
+                />
+
                 <div className="documents-loading">
                     <span className="documents-loading__icon">
                         📄
@@ -102,14 +113,24 @@ export default function DocumentsChanteurPage(context = {}) {
                         Chargement des documents...
                     </span>
                 </div>
-            </div>
+
+            </main>
         );
     }
 
 
     if (error) {
         return (
-            <div className="documents-chanteur documents-chanteur--state">
+            <main className="chansons-page documents-chanteur documents-chanteur--state  concerts-page">
+
+                <EspaceChanteurPageHeader
+                    title="Mes documents"
+                    subtitle="Retrouvez ici les documents utiles à votre activité."
+                    iconContent="📄"
+                    singular="document"
+                    plural="documents"
+                />
+
                 <div className="documents-error">
                     <span className="documents-error__icon">
                         ⚠️
@@ -123,7 +144,8 @@ export default function DocumentsChanteurPage(context = {}) {
                         {error}
                     </span>
                 </div>
-            </div>
+
+            </main>
         );
     }
 
@@ -232,25 +254,16 @@ export default function DocumentsChanteurPage(context = {}) {
 
 
     return (
-        <div className="documents-chanteur">
+        <main className="chansons-page documents-chanteur  concerts-page">
 
-            <header className="documents-header">
-
-                <div className="documents-header__icon">
-                    📄
-                </div>
-
-                <div>
-                    <h1>
-                        Documents
-                    </h1>
-
-                    <p>
-                        Retrouvez ici les documents utiles à votre activité.
-                    </p>
-                </div>
-
-            </header>
+            <EspaceChanteurPageHeader
+                title="Mes documents"
+                subtitle="Retrouvez ici les documents utiles à votre activité."
+                count={documents.length > 0 ? documents.length : null}
+                iconContent="📄"
+                singular="document"
+                plural="documents"
+            />
 
 
             {renderDocumentSection({
@@ -285,6 +298,6 @@ export default function DocumentsChanteurPage(context = {}) {
                 </div>
             )}
 
-        </div>
+        </main>
     );
 }

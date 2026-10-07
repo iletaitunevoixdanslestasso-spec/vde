@@ -8,48 +8,11 @@
         padding: 22px 14px 35px;
     }
 
-    .chansons-page-header {
-        align-items: flex-start;
-        gap: 12px;
-
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-    }
-
-    .chansons-page-header-icon {
-        width: 46px;
-        height: 46px;
-        flex-basis: 46px;
-
-        border-radius: 11px;
-        font-size: 1.2rem;
-    }
 
     .chansons-page-eyebrow {
         font-size: 0.68rem;
     }
 
-    .chansons-page-title {
-        font-size: 1.55rem;
-    }
-
-    .chansons-page-subtitle {
-        margin-top: 6px;
-        font-size: 0.82rem;
-    }
-
-    .chansons-page-count {
-        min-width: 45px;
-        padding: 7px 8px;
-    }
-
-    .chansons-page-count strong {
-        font-size: 1rem;
-    }
-
-    .chansons-page-count span {
-        font-size: 0.62rem;
-    }
 
     .chansons-help {
         align-items: flex-start;

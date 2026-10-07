@@ -249,8 +249,7 @@ export default function CRUDItemPage({
     const headerHml = () => {
         // return false
         const html = <div className="crud-item-header">
-            <div className="crud-item-header-icon">
-                👤
+            <div className={`crud-item-header-icon icon-${config.icon ?? ''}`}>
             </div>
             <div className="crud-item-header-content">
                 <h1 className="crud-item-title">

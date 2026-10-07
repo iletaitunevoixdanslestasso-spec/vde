@@ -6,51 +6,14 @@
 @media (max-width: 700px) {
 
     .chansons-page {
-        padding: 22px 14px 35px;
-    }
-
-    .chansons-page-header {
-        align-items: flex-start;
-        gap: 12px;
-
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-    }
-
-    .chansons-page-header-icon {
-        width: 46px;
-        height: 46px;
-        flex-basis: 46px;
-
-        border-radius: 11px;
-        font-size: 1.2rem;
+        padding: 20px 14px 35px;
     }
 
     .chansons-page-eyebrow {
         font-size: 0.68rem;
     }
 
-    .chansons-page-title {
-        font-size: 1.55rem;
-    }
 
-    .chansons-page-subtitle {
-        margin-top: 6px;
-        font-size: 0.82rem;
-    }
-
-    .chansons-page-count {
-        min-width: 45px;
-        padding: 7px 8px;
-    }
-
-    .chansons-page-count strong {
-        font-size: 1rem;
-    }
-
-    .chansons-page-count span {
-        font-size: 0.62rem;
-    }
 
     .chansons-help {
         align-items: flex-start;
@@ -110,15 +73,15 @@
      */
     .chanson-title-content {
         grid-template-columns:
-            minmax(0, 1fr)
-            max-content
-            max-content;
+            minmax(0, 1fr) max-content max-content;
 
         gap: 6px;
     }
 
     .chanson-titre {
-        font-size: 0.92rem;
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: var(--color-brand-strong);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -130,9 +93,7 @@
      */
     .chanson-info {
         grid-template-columns:
-            minmax(0, 1fr)
-            minmax(0, 1fr)
-            auto;
+            minmax(0, 1fr) minmax(0, 1fr) auto;
 
         gap: 8px;
         align-items: end;
@@ -161,6 +122,116 @@
     .chansons-empty {
         padding: 15px;
     }
+
+    .chanson-pupitre-select-wrapper {
+        display: flex;
+        align-items: center;
+
+        width: 100%;
+
+        gap: 12px;
+    }
+
+
+    /*
+     * Zone cliquable de l'icône
+     */
+
+    .chanson-pupitre-trigger {
+        position: relative;
+
+        width: 58px;
+        height: 58px;
+
+        flex: 0 0 58px;
+    }
+
+
+    /*
+     * Icône visible
+     */
+
+    .chanson-pupitre-label {
+        width: 58px;
+        height: 58px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        cursor: pointer;
+
+        animation: chanson-pupitre-mobile 1.4s ease-in-out infinite;
+    }
+
+
+    /*
+     * Si icon-pupitre utilise un ::before,
+     * c'est ceci qui agrandit réellement l'icône
+     */
+
+    .chanson-pupitre-label::before {
+        font-size: 32px;
+    }
+
+
+    .chanson-pupitre-label-text {
+        display: none;
+    }
+
+
+    /*
+     * Le select invisible recouvre UNIQUEMENT l'icône
+     */
+
+    .chanson-pupitre-trigger select {
+        position: absolute;
+
+        inset: 0;
+
+        width: 58px;
+        height: 58px;
+
+        opacity: 0;
+
+        z-index: 2;
+
+        cursor: pointer;
+    }
+
+
+    /*
+     * Pupitre actuellement sélectionné
+     */
+
+    .chanson-pupitre-current {
+        display: block;
+
+        font-size: 15px;
+        font-weight: 600;
+
+        color: var(--color-text-primary);
+
+        text-align: left;
+    }
+
+
+    @keyframes chanson-pupitre-mobile {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-4px);
+        }
+    }
+    .chanson-pupitre-label.icon-pupitre::before {
+        font-size: 36px !important;
+        width: 36px;
+        height: 36px;
+    }    
 }
 
 @media (max-width: 400px) {
@@ -192,5 +263,11 @@
     .chanson-action-disabled {
         padding-left: 6px;
         padding-right: 6px;
+    }
+
+    .chanson-pupitre-label.icon-pupitre::before {
+        font-size: 36px !important;
+        width: 36px;
+        height: 36px;
     }
 }

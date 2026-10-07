@@ -201,9 +201,7 @@
     content: "event_repeat";
 }
 
-.icon-pupitre::before {
-    content: "queue_music";
-}
+
 
 .icon-document::before {
     content: "description";

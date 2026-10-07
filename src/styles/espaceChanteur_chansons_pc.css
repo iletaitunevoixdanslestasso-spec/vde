@@ -36,6 +36,7 @@
 }
 
 @keyframes chanson-audio-note-pulse {
+
     0%,
     100% {
         transform: scale(1) rotate(0deg);
@@ -56,6 +57,7 @@
 }
 
 @keyframes chanson-audio-volume {
+
     0%,
     100% {
         transform: translateX(0) scale(1);
@@ -79,37 +81,6 @@
    HEADER
    ========================================================= */
 
-.chansons-page-header {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-
-    margin-bottom: 28px;
-    padding-bottom: 26px;
-
-    border-bottom: 1px solid var(--color-border);
-}
-
-.chansons-page-header-icon {
-    width: 58px;
-    height: 58px;
-    flex: 0 0 58px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 14px;
-    background: var(--color-surface-muted);
-
-    font-size: 1.5rem;
-}
-
-.chansons-page-header-content {
-    min-width: 0;
-    flex: 1;
-}
-
 .chansons-page-eyebrow {
     margin-bottom: 4px;
 
@@ -121,59 +92,11 @@
     color: var(--color-text-muted);
 }
 
-.chansons-page-title {
-    margin: 0;
-
-    font-family: var(--font-family);
-
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.2;
-
-    color: var(--color-text-primary);
-}
-
-.chansons-page-subtitle {
-    margin: 8px 0 0;
-    max-width: 700px;
-
-    font-size: 0.95rem;
-    line-height: 1.5;
-
-    color: var(--color-text-secondary);
-}
 
 
 /* =========================================================
    COMPTEUR
    ========================================================= */
-
-.chansons-page-count {
-    min-width: 70px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    padding: 10px 14px;
-
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-
-    background: var(--color-surface-soft);
-}
-
-.chansons-page-count strong {
-    font-size: 1.25rem;
-    line-height: 1.2;
-    color: var(--color-text-primary);
-}
-
-.chansons-page-count span {
-    margin-top: 2px;
-    font-size: 0.7rem;
-    color: var(--color-text-muted);
-}
 
 
 /* =========================================================
@@ -327,9 +250,7 @@
 .chanson-info {
     display: grid;
     grid-template-columns:
-        minmax(180px, 1fr)
-        minmax(180px, 1fr)
-        minmax(120px, 0.6fr);
+        minmax(180px, 1fr) minmax(180px, 1fr) minmax(120px, 0.6fr);
 
     align-items: center;
     gap: 16px;
@@ -366,9 +287,7 @@
 
     display: grid;
     grid-template-columns:
-        minmax(0, 1fr)
-        120px
-        180px;
+        minmax(0, 1fr) 120px 180px;
 
     align-items: center;
     gap: 12px;
@@ -378,11 +297,11 @@
     min-width: 0;
     margin: 0;
 
-    font-size: 0.98rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     line-height: 1.35;
 
-    color: var(--color-text-primary);
+    color: var(--color-brand-strong);
 
     white-space: nowrap;
     overflow: hidden;
@@ -663,6 +582,29 @@
 }
 
 /* =========================================================
+   PUPITRE
+   ========================================================= */
+
+
+.chanson-pupitre-select-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chanson-pupitre-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Le nom séparé n'est utile qu'en mobile */
+.chanson-pupitre-current {
+    display: none;
+}
+
+
+/* =========================================================
    MOBILE
    ========================================================= */
 
@@ -670,3 +612,98 @@
 /* =========================================================
    TRÈS PETITS ÉCRANS
    ========================================================= */
+
+/* =========================================================
+   CHARTE COULEURS — MES CHANSONS
+   Univers : anthracite + violet
+   ========================================================= */
+
+.chansons-help {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+}
+
+.chansons-help-icon {
+    background: var(--color-surface);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.chansons-help-icon[class^="icon-"]::before,
+.chansons-help-icon[class*=" icon-"]::before,
+.chansons-help-icon [class^="icon-"]::before,
+.chansons-help-icon [class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.chansons-help strong {
+    color: var(--color-brand-strong);
+}
+
+.chanson-card {
+    border-left: 3px solid var(--color-brand-border);
+    background: var(--color-surface);
+}
+
+.chanson-card:hover {
+    border-left-color: var(--color-brand);
+    box-shadow: var(--shadow-sm);
+}
+
+.chanson-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.chanson-icon svg {
+    color: var(--color-brand);
+}
+
+.chanson-icon [class^="icon-"]::before,
+.chanson-icon [class*=" icon-"]::before,
+.chanson-icon[class^="icon-"]::before,
+.chanson-icon[class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.chanson-lead-button.selected {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+    color: var(--color-brand-strong);
+}
+
+.chanson-lead-button.selected .chanson-lead-icon::before {
+    color: var(--color-brand) !important;
+}
+
+.chanson-action:hover {
+    background: var(--color-brand-soft);
+    border-color: var(--color-brand-border);
+}
+
+.chanson-action-icon {
+    background: var(--color-brand-soft);
+    color: var(--color-brand-strong);
+}
+
+.chanson-action-icon [class^="icon-"]::before,
+.chanson-action-icon [class*=" icon-"]::before,
+.chanson-action-icon[class^="icon-"]::before,
+.chanson-action-icon[class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.chanson-action-document,
+.chanson-action-audio {
+    color: var(--color-brand-strong);
+}
+
+.chanson-pupitre select:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+}
+
+.chanson-pupitre-label.icon-pupitre::before {
+    color: var(--color-brand) !important;
+}

@@ -18,6 +18,13 @@
     --color-brand-soft: #F2EDF7;
     --color-brand-border: #D8CAE8;
 
+    /* Complémentaire du violet #7047A6 */
+    --color-complement: #7DA647;
+    --color-complement-strong: #668E34;
+    --color-complement-soft: #F1F6EA;
+    --color-complement-border: #C9DDB0;
+
+
     --color-accent: #2D7A74;
     --color-accent-strong: #225F5B;
     --color-accent-soft: #E9F3F2;
@@ -219,3 +226,73 @@ a:hover {
 .icon-valider::before,
 .icon-checked::before,
 .icon-accepted::before { color: var(--color-success) !important; }
+
+
+/* =========================================================
+   COULEUR COMPLÉMENTAIRE
+   ========================================================= */
+
+/* Texte */
+.text-brand {
+    color: var(--color-brand) !important;
+}
+.text-brand-strong {
+    color: var(--color-brand-strong) !important;
+}
+.text-complement {
+    color: var(--color-complement) !important;
+}
+
+.text-complement-strong {
+    color: var(--color-complement-strong) !important;
+}
+
+
+/* Fonds */
+.bg-brand {
+    background-color: var(--color-brand) !important;
+    color: var(--color-text-primary);
+}
+.bg-brand-strong {
+    background-color: var(--color-brand-strong) !important;
+    color: #FFFFFF;
+}
+
+.bg-brand-soft {
+    background-color: var(--color-brand-soft) !important;
+}
+.bg-complement {
+    background-color: var(--color-complement) !important;
+    color: var(--color-text-primary);
+}
+
+.bg-complement-strong {
+    background-color: var(--color-complement-strong) !important;
+    color: #FFFFFF;
+}
+
+.bg-complement-soft {
+    background-color: var(--color-complement-soft) !important;
+}
+
+
+/* Bordures */
+.border-complement {
+    border-color: var(--color-complement) !important;
+}
+
+.border-complement-soft {
+    border-color: var(--color-complement-border) !important;
+}
+
+
+/* Icônes Material Symbols */
+.icon-complement::before {
+    color: var(--color-complement) !important;
+}
+
+.icon-complement-strong::before {
+    color: var(--color-complement-strong) !important;
+}
+
+/* ========================================================= */

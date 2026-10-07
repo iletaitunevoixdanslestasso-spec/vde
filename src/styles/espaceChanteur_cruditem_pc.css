@@ -131,3 +131,24 @@
 
     background: var(--color-surface-soft);
 }
+
+/* =========================================================
+   CHARTE COULEURS — PROFIL CHANTEUR
+   Univers : blanc / anthracite / violet
+   ========================================================= */
+
+.crud-item-header-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.crud-item-title {
+    color: var(--color-brand-strong);
+}
+
+.crud-item-form {
+    background: var(--color-surface);
+    border-color: var(--color-brand-border);
+    box-shadow: var(--shadow-sm);
+}

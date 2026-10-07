@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import "../../styles/espaceChanteur_repetition.css";
+import "../../styles/espaceChanteur_chansons.css";
 
 import { repetitionConfig }
     from "../../config/entities/repetition.config";
@@ -11,6 +12,7 @@ import { useChanteur }
 import RepetitionParticipationControllerChanteur
     from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
 import { isPast, openGoogleMaps } from "../../helper/helper";
+import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
 
 
 
@@ -107,8 +109,20 @@ export default function RepetitionsChanteur() {
     if (loading) {
 
         return (
-            <main className="concerts-page">
-                Chargement des répétitions...
+            <main className="chansons-page concerts-page">
+
+                <EspaceChanteurPageHeader
+                    title="Mes répétitions"
+                    subtitle="Chargement de vos répétitions..."
+                    iconClass="icon-repetition"
+                    singular="répétition"
+                    plural="répétitions"
+                />
+
+                <div className="concerts-loading">
+                    Chargement des répétitions...
+                </div>
+
             </main>
         );
     }
@@ -307,45 +321,16 @@ export default function RepetitionsChanteur() {
 
     return (
 
-        <main className="concerts-page">
+        <main className="chansons-page concerts-page">
 
-            <header className="concerts-page-header">
-
-                <div className="concerts-page-header-icon icon-repetition">
-                </div>
-
-                <div className="concerts-page-header-content">
-
-                    <div className="concerts-page-eyebrow">
-                        Mon espace
-                    </div>
-
-                    <h1 className="concerts-page-title">
-                        Mes répétitions
-                    </h1>
-
-                    <p className="concerts-page-subtitle">
-                        Retrouvez les répétitions de la saison
-                        et indiquez votre participation.
-                    </p>
-
-                </div>
-
-                <div className="concerts-page-count">
-
-                    <strong>
-                        {repetitions.length}
-                    </strong>
-
-                    <span>
-                        {repetitions.length > 1
-                            ? "répétitions"
-                            : "répétition"}
-                    </span>
-
-                </div>
-
-            </header>
+            <EspaceChanteurPageHeader
+                title="Mes répétitions"
+                subtitle="Retrouvez les répétitions de la saison et indiquez votre participation."
+                count={repetitions.length > 0 ? repetitions.length : null}
+                iconClass="icon-repetition"
+                singular="répétition"
+                plural="répétitions"
+            />
 
 
             {error && (

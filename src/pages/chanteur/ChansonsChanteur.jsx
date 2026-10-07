@@ -9,53 +9,7 @@ import FormModal from "../../framework/form/FormModal";
 import { saisonchansonConfig } from "../../config/entities/saisonchanson.config";
 import { truncateText, truncateTextEnd } from "../../helper/helper";
 import NotificationService from "../../services/NotificationService";
-
-
-
-
-function ChansonsPageHeader({ subtitle, count = null }) {
-    return (
-        <header className="chansons-page-header">
-
-            <div className="chansons-page-header-icon">
-                🎵
-            </div>
-
-            <div className="chansons-page-header-content">
-
-                <div className="chansons-page-eyebrow">
-                    Mon espace
-                </div>
-
-                <h1 className="chansons-page-title">
-                    Mes chansons
-                </h1>
-
-                {subtitle && (
-                    <p className="chansons-page-subtitle">
-                        {subtitle}
-                    </p>
-                )}
-
-            </div>
-
-            {count !== null && (
-                <div className="chansons-page-count">
-                    <strong>
-                        {count}
-                    </strong>
-
-                    <span>
-                        {count > 1
-                            ? "chansons"
-                            : "chanson"}
-                    </span>
-                </div>
-            )}
-
-        </header>
-    );
-}
+import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
 
 
 
@@ -309,10 +263,14 @@ export default function ChansonsChanteur() {
     if (loading) {
 
         return (
-            <main className="chansons-page">
+            <main className="chansons-page  concerts-page">
 
-                <ChansonsPageHeader
+                <EspaceChanteurPageHeader
+                    title="Mes chansons"
                     subtitle="Chargement de vos chansons..."
+                    iconClass="icon-chanson"
+                    singular="chanson"
+                    plural="chansons"
                 />
 
                 <div className="chansons-loading">
@@ -338,9 +296,14 @@ export default function ChansonsChanteur() {
     if (!saisonId) {
 
         return (
-            <main className="chansons-page">
+            <main className="chansons-page  concerts-page">
 
-                <ChansonsPageHeader />
+                <EspaceChanteurPageHeader
+                    title="Mes chansons"
+                    iconClass="icon-chanson"
+                    singular="chanson"
+                    plural="chansons"
+                />
 
                 <div className="chansons-empty">
                     GROS PROBLEME DE CONF
@@ -359,11 +322,15 @@ export default function ChansonsChanteur() {
     if (!chansons.length) {
 
         return (
-            <main className="chansons-page">
+            <main className="chansons-page  concerts-page">
 
 
-                <ChansonsPageHeader
+                <EspaceChanteurPageHeader
+                    title="Mes chansons"
                     subtitle="Les chansons disponibles pour cette saison apparaîtront ici."
+                    iconClass="icon-chanson"
+                    singular="chanson"
+                    plural="chansons"
                 />
 
                 <div className="chansons-empty">
@@ -394,15 +361,19 @@ export default function ChansonsChanteur() {
      */
 
     return (
-        <main className="chansons-page">
+        <main className="chansons-page  concerts-page">
 
             {/* =================================================
                 EN-TÊTE
                ================================================= */}
 
-            <ChansonsPageHeader
-                subtitle="Retrouvez vos chansons, choisissez votre pupitre et accédez aux paroles et aux fichiers audio."
+            <EspaceChanteurPageHeader
+                title="Mes chansons"
+                subtitle="liste des chansons, le son, les paroles , le lead et les fichiers audio de mon pupitre."
                 count={chansons.length}
+                iconClass="icon-chanson"
+                singular="chanson"
+                plural="chansons"
             />
 
             {/* =================================================
@@ -429,8 +400,7 @@ export default function ChansonsChanteur() {
 
             <div className="chansons-help">
 
-                <span className="chansons-help-icon">
-                    🎤
+                <span className="chansons-help-icon icon-pupitre">
                 </span>
 
                 <div>
@@ -628,50 +598,60 @@ export default function ChansonsChanteur() {
 
                                     <div className="chanson-pupitre">
 
-                                        <label
-                                            htmlFor={`pupitre-${chanson.chanson_id}`}
-                                            className="chanson-pupitre-label"
-                                        >
-                                            Mon pupitre
-                                        </label>
+                                        <div className="chanson-pupitre-select-wrapper">
 
-                                        <select
-                                            id={`pupitre-${chanson.chanson_id}`}
-                                            value={pupitreChoisi}
-                                            disabled={isSaving}
-                                            onChange={(event) =>
-                                                handlePupitreChange(
-                                                    chanson.chanson_id,
-                                                    event.target.value
-                                                )
-                                            }
-                                        >
+                                            <div className="chanson-pupitre-trigger">
 
-                                            <option value="">
-                                                Choisir un pupitre
-                                            </option>
+                                                <label
+                                                    htmlFor={`pupitre-${chanson.chanson_id}`}
+                                                    className="chanson-pupitre-label icon-pupitre"
+                                                >
+                                                    <span className="chanson-pupitre-label-text">
+                                                        Mon pupitre
+                                                    </span>
+                                                </label>
 
-                                            {chanson.pupitres?.map(
-                                                pupitre => (
-
-                                                    <option
-                                                        key={pupitre.id}
-                                                        value={pupitre.id}
-                                                    >
-                                                        {pupitre.nom}
+                                                <select
+                                                    id={`pupitre-${chanson.chanson_id}`}
+                                                    value={pupitreChoisi}
+                                                    disabled={isSaving}
+                                                    onChange={(event) =>
+                                                        handlePupitreChange(
+                                                            chanson.chanson_id,
+                                                            event.target.value
+                                                        )
+                                                    }
+                                                >
+                                                    <option value="">
+                                                        Choisir un pupitre
                                                     </option>
 
-                                                )
-                                            )}
+                                                    {chanson.pupitres?.map(pupitre => (
+                                                        <option
+                                                            key={pupitre.id}
+                                                            value={pupitre.id}
+                                                        >
+                                                            {pupitre.nom}
+                                                        </option>
+                                                    ))}
+                                                </select>
 
-                                        </select>
+                                            </div>
+
+                                            <span className="chanson-pupitre-current">
+                                                {
+                                                    chanson.pupitres?.find(
+                                                        pupitre => pupitre.id === pupitreChoisi
+                                                    )?.nom || "Choisir mon pupitre"
+                                                }
+                                            </span>
+
+                                        </div>
 
                                         {isSaving && (
-
                                             <span className="chanson-saving">
                                                 Enregistrement...
                                             </span>
-
                                         )}
 
                                     </div>

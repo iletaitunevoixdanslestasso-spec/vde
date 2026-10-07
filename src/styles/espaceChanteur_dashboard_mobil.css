@@ -116,3 +116,35 @@
         margin-left: auto;
     }
 }
+
+/* =========================================================
+   CHARTE COULEURS — AJUSTEMENTS MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .dashboard-rendezvous-row {
+        box-sizing: border-box;
+    }
+
+    .rendezvous-type-concert,
+    .rendezvous-type-repet,
+    .rendezvous-type-regroup {
+        border-left-width: 3px;
+        border-right-width: 3px;
+    }
+
+    .rendezvous-type-repetition_spe {
+        border-left-width: 3px;
+        border-right-width: 3px;
+    }
+
+    .dashboard-rendezvous-type-label {
+        align-self: flex-start;
+    }
+
+    .todo-item {
+        border-left-width: 3px;
+    }
+}
+

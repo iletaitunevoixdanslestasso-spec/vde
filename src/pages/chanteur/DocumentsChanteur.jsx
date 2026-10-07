@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import "../../styles/espaceChanteur_chansons.css";
 import { ReferentielDocumentConfig } from "../../config/entities/ReferentielDocument.config";
-export default function DocumentsChanteur() {
+export default function DocumentsChanteur_TODEL() {
 
     const [chansons, setChansons] = useState([]);
     const [loading, setLoading] = useState(true);

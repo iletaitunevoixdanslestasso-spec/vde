@@ -222,3 +222,26 @@
 /* =========================================================
    MOBILE
    ========================================================= */
+
+/* =========================================================
+   CHARTE COULEURS — POPIN PARTICIPATION RÉPÉTITION
+   ========================================================= */
+
+.repetition-participation-popin {
+    border: 1px solid var(--color-complement-border);
+}
+
+.repetition-participation-icon {
+    background: var(--color-complement-soft);
+    border: 1px solid var(--color-complement-border);
+    color: var(--color-complement-strong);
+}
+
+.repetition-participation-title {
+    color: var(--color-complement-strong);
+}
+
+.repetition-participation-button:hover:not(:disabled) {
+    border-color: var(--color-complement);
+    background: var(--color-complement-soft);
+}

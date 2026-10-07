@@ -6,6 +6,7 @@ import { useChanteur } from "../../components/contexts/ChanteurContext";
 const profilConfig = {
     ...chanteurConfig,
     title: "Profil",
+    icon:"profil",
     columns: [
         { field: "nom", header: "Nom", type: "text", required: true },
         { field: "prenom", header: "Prénom", type: "text", required: true },

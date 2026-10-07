@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import "../../styles/espaceChanteur_concerts.css";
+import "../../styles/espaceChanteur_chansons.css";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 import NotificationService from "../../services/NotificationService";
 import ConcertParticipation from "../../components/ConcertParticipation";
 import RepresentationsChoeur from "../../components/RepresentationsChoeur";
 import { isPast } from "../../helper/helper";
+import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
+
+
 
 export default function ConcertsChanteur() {
 
@@ -249,31 +253,17 @@ export default function ConcertsChanteur() {
     if (loading) {
 
         return (
-            <main className="concerts-page">
+            <main className="chansons-page concerts-page">
 
-                <header className="concerts-page-header">
 
-                    <div className="concerts-page-header-icon">
-                        🎵
-                    </div>
+                <EspaceChanteurPageHeader
+                    title="Mes Concerts"
+                    subtitle="Chargement des concerts..."
+                    iconClass="icon-concert"
+                    singular="concert"
+                    plural="concerts"
+                />
 
-                    <div>
-
-                        <div className="concerts-page-eyebrow">
-                            Mon espace
-                        </div>
-
-                        <h1 className="concerts-page-title">
-                            Mes concerts
-                        </h1>
-
-                        <p className="concerts-page-subtitle">
-                            Chargement de vos concerts...
-                        </p>
-
-                    </div>
-
-                </header>
 
                 <div className="concerts-loading">
 
@@ -300,48 +290,15 @@ export default function ConcertsChanteur() {
     if (!saisonId) {
 
         return (
-            <main className="concerts-page">
+            <main className="chansons-page concerts-page">
 
-                <header className="concerts-page-header">
-
-                    <div className="concerts-page-header-icon icon-concert">
-                        🎵
-                    </div>
-
-                    <div>
-
-                        <div className="concerts-page-eyebrow">
-                            Mon espace
-                        </div>
-
-                        <h1 className="concerts-page-title">
-                            Mes concerts
-                        </h1>
-
-                    </div>
-
-                </header>
-
-                <div className="concerts-empty">
-
-                    <div className="concerts-empty-icon">
-                        📅
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            Aucune saison active
-                        </strong>
-
-                        <p>
-                            Aucune saison n'est actuellement
-                            disponible.
-                        </p>
-
-                    </div>
-
-                </div>
+                <EspaceChanteurPageHeader
+                    title="Mes Concerts"
+                    subtitle="GROS problème de conf..."
+                    iconClass="icon-concert"
+                    singular="concert"
+                    plural="concerts"
+                />
 
             </main>
         );
@@ -356,32 +313,15 @@ export default function ConcertsChanteur() {
     if (!concerts.length) {
 
         return (
-            <main className="concerts-page">
+            <main className="chansons-page concerts-page">
 
-                <header className="concerts-page-header">
-
-                    <div className="concerts-page-header-icon icon-concert">
-                        🎵
-                    </div>
-
-                    <div>
-
-                        <div className="concerts-page-eyebrow">
-                            Mon espace
-                        </div>
-
-                        <h1 className="concerts-page-title">
-                            Mes concerts
-                        </h1>
-
-                        <p className="concerts-page-subtitle">
-                            Les concerts disponibles pour
-                            cette saison apparaîtront ici.
-                        </p>
-
-                    </div>
-
-                </header>
+                <EspaceChanteurPageHeader
+                    title="Mes Concerts"
+                    subtitle="Les concerts programmées pour cette saison apparaîtront ici."
+                    iconClass="icon-concert"
+                    singular="concert"
+                    plural="concerts"
+                />
 
                 <div className="concerts-empty">
 
@@ -415,49 +355,21 @@ export default function ConcertsChanteur() {
      */
 
     return (
-        <main className="concerts-page">
+        <main className="chansons-page concerts-page">
 
             {/* =================================================
                 EN-TÊTE
                ================================================= */}
 
-            <header className="concerts-page-header">
+            <EspaceChanteurPageHeader
+                title="Mes Concerts"
+                subtitle="liste des concerts et suivi de mes participations."
+                count={concerts.length}
+                iconClass="icon-concert"
+                singular="concert"
+                plural="concerts"
+            />
 
-                <div className="concerts-page-header-icon  icon-concert">
-                </div>
-
-                <div className="concerts-page-header-content">
-
-                    <div className="concerts-page-eyebrow">
-                        Mon espace
-                    </div>
-
-                    <h1 className="concerts-page-title">
-                        Mes concerts
-                    </h1>
-
-                    <p className="concerts-page-subtitle">
-                        Retrouvez vos concerts et indiquez
-                        votre participation.
-                    </p>
-
-                </div>
-
-                <div className="concerts-page-count">
-
-                    <strong>
-                        {concerts.length}
-                    </strong>
-
-                    <span>
-                        {concerts.length > 1
-                            ? "concerts"
-                            : "concert"}
-                    </span>
-
-                </div>
-
-            </header>
 
             {/* =================================================
                 MESSAGE D'ERREUR
@@ -1011,7 +923,7 @@ export default function ConcertsChanteur() {
                                     <div
                                         className="concert-chansons-modal-icon icon-chanteursaison"
                                     />
-                                    
+
 
 
                                     <div>

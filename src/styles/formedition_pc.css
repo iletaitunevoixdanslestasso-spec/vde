@@ -231,3 +231,47 @@
 /* =========================================================
    MOBILE
    ========================================================= */
+
+/* =========================================================
+   CHARTE COULEURS — FORMULAIRE
+   ========================================================= */
+
+.form-edition-header-icon {
+    background: var(--color-brand-soft);
+    border: 1px solid var(--color-brand-border);
+    color: var(--color-brand);
+}
+
+.form-edition-header-icon [class^="icon-"]::before,
+.form-edition-header-icon [class*=" icon-"]::before,
+.form-edition-header-icon[class^="icon-"]::before,
+.form-edition-header-icon[class*=" icon-"]::before {
+    color: var(--color-brand) !important;
+}
+
+.form-edition-title {
+    color: var(--color-brand-strong);
+}
+
+.form-edition-field input:focus,
+.form-edition-field select:focus,
+.form-edition-field textarea:focus {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-soft);
+}
+
+.form-edition-readonly {
+    border-color: var(--color-brand-border);
+}
+
+/* Dans les formulaires d'édition, l'action principale reste violette. */
+.form-edition-actions button:last-child {
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+    color: #FFFFFF;
+}
+
+.form-edition-actions button:last-child:hover {
+    background: var(--color-brand-strong);
+    border-color: var(--color-brand-strong);
+}

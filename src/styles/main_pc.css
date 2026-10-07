@@ -199,7 +199,7 @@ button {
 .icon-profil::before,
 .icon-referentiels::before {
     display: inline-block;
-    width: 24px;
+    /* width: 24px; */
     margin-right: 6px;
 }
 
@@ -266,9 +266,6 @@ button {
     content: "event_repeat";
 }
 
-.icon-pupitre::before {
-    content: "queue_music";
-}
 
 .icon-document::before {
     content: "description";
