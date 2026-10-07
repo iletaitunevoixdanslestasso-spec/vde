@@ -1,3 +1,10 @@
 @import "./charte.css";
 @import "./espaceChanteur_chansons_pc.css";
 @import "./espaceChanteur_chansons_mobil.css";
+
+.chanson-selectionnee {
+    background: #fff3cd;
+    border: 2px solid #f0ad4e;
+    border-radius: 8px;
+    box-shadow: 0 0 0 3px rgba(240, 173, 78, 0.15);
+}

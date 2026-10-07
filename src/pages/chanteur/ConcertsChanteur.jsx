@@ -469,23 +469,18 @@ export default function ConcertsChanteur() {
                                     <div className="concert-icon">
                                         <button
                                             type="button"
-                                            className="concert-icon-button icon_concert"
+                                            className="concert-icon-button"
                                             onClick={() =>
-                                                handleShowRepartition(
-                                                    concert
-                                                )
+                                                handleShowRepartition(concert)
                                             }
                                             title="Voir la répartition du chœur"
-                                            aria-label={
-                                                `Voir la répartition de ${concert.titre}`
-                                            }
+                                            aria-label={`Voir la répartition de ${concert.titre}`}
                                             disabled={
-                                                chansonsLoading ===
-                                                concert.id
+                                                chansonsLoading === concert.id
                                             }
                                         >
                                             <span
-                                                className="icon-chanteursaison"
+                                                className="chanson-action-icon icon-chanteursaison"
                                                 aria-hidden="true"
                                             />
                                         </button>
@@ -740,15 +735,21 @@ export default function ConcertsChanteur() {
                                                         ?.titre ||
                                                     "Titre inconnu";
 
+                                                const chansonId =
+                                                    chanson
+                                                        .saison_chansons
+                                                        ?.chansons
+                                                        ?.id;
+
                                                 return (
-                                                    <div
+                                                    <Link
                                                         key={chanson.id}
+                                                        to={`/chanteur/${token}/chansons?chanson=${chansonId}`}
                                                         className="concert-chanson-item"
                                                     >
 
                                                         <div className="concert-chanson-number">
-                                                            {chanson.ordre ??
-                                                                index + 1}
+                                                            {chanson.ordre ?? index + 1}
                                                         </div>
 
                                                         <div className="concert-chanson-content">
@@ -763,9 +764,8 @@ export default function ConcertsChanteur() {
                                                             ›
                                                         </span>
 
-                                                    </div>
+                                                    </Link>
                                                 );
-
                                             }
                                         )}
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Volume2, Music2 } from "lucide-react";
 
 import { saisonchanteurpupitreConfig } from "../../config/entities/saisonchanteurpupitre.config";
@@ -20,6 +20,10 @@ import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader"
 
 
 export default function ChansonsChanteur() {
+    const [searchParams] = useSearchParams();
+
+    const chansonSelectionneeId =
+        searchParams.get("chanson");
 
     const [chansons, setChansons] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -158,6 +162,31 @@ export default function ChansonsChanteur() {
         );
 
     }, [saisonId, chanteurId, token]);
+
+    /**
+     * =========================================
+     * defilement vers la chanson choisie
+     * =========================================
+     */
+    useEffect(() => {
+
+        if (!chansonSelectionneeId) {
+            return;
+        }
+
+        const element =
+            document.getElementById(
+                `chanson-${chansonSelectionneeId}`
+            );
+
+        if (element) {
+            element.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+
+    }, [chansonSelectionneeId, chansons]);
 
     /*
      * =====================================================
@@ -423,7 +452,8 @@ export default function ChansonsChanteur() {
             <section className="chansons-list">
 
                 {chansons.map(chanson => {
-
+                    const isSelected =
+                        chanson.chanson_id === chansonSelectionneeId;
                     const pupitreChoisi =
                         chanson.pupitreChoisi?.pupitre_id || "";
 
@@ -438,7 +468,8 @@ export default function ChansonsChanteur() {
                     return (
                         <article
                             key={chanson.chanson_id}
-                            className="chanson-card"
+                            className={`chanson-card  ${isSelected ? "chanson-selectionnee" : ""
+                                }`}
                         >
 
                             <div className="chanson-row">
@@ -451,7 +482,7 @@ export default function ChansonsChanteur() {
 
                                     {chanson.audio ? (
                                         <a
-                                            className="chanson-icon chanson-icon-audio"
+                                            className="chanson-icon chanson-icon-audio animation-icon"
                                             href={chanson.audio}
                                             target="_blank"
                                             rel="noopener noreferrer"
@@ -482,7 +513,7 @@ export default function ChansonsChanteur() {
 
                                         <button
                                             type="button"
-                                            className={`chanson-lead-button espace-chanteur-action-mobile ${chanson.lead ? "selected" : ""
+                                            className={`chanson-lead-button espace-chanteur-action-mobile ${chanson.lead ? "selected" : "animation-icon"
                                                 }`}
                                             onClick={() => handleLeadChange(chanson)}
                                             title={
@@ -600,7 +631,7 @@ export default function ChansonsChanteur() {
 
                                         <div className="chanson-pupitre-select-wrapper">
 
-                                            <div className="chanson-pupitre-trigger">
+                                            <div className="chanson-pupitre-trigger animation-icon ">
 
                                                 <label
                                                     htmlFor={`pupitre-${chanson.chanson_id}`}
@@ -638,13 +669,16 @@ export default function ChansonsChanteur() {
 
                                             </div>
 
-                                            <span className="chanson-pupitre-current">
+                                            <label
+                                                htmlFor={`pupitre-${chanson.chanson_id}`}
+                                                className="chanson-pupitre-current"
+                                            >
                                                 {
                                                     chanson.pupitres?.find(
                                                         pupitre => pupitre.id === pupitreChoisi
                                                     )?.nom || "Choisir mon pupitre"
                                                 }
-                                            </span>
+                                            </label>
 
                                         </div>
 

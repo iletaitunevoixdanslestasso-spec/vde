@@ -271,3 +271,164 @@
         height: 36px;
     }
 }
+
+/* =========================================================
+   PUPITRE / AUDIO — ALIGNEMENT ET ZONE CLIQUABLE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    /*
+     * Ligne 1 : paroles sur toute la largeur.
+     * Ligne 2 : pupitre + nom à gauche, audio à droite.
+     */
+    .chanson-info {
+        grid-template-columns: minmax(0, 1fr) 48px;
+        gap: 10px 12px;
+        align-items: center;
+    }
+
+    .chanson-document {
+        grid-column: 1 / -1;
+    }
+
+    .chanson-pupitre {
+        grid-column: 1;
+        align-self: center;
+        min-width: 0;
+    }
+
+    .chanson-audio {
+        grid-column: 2;
+        align-self: center;
+        justify-self: end;
+
+        width: 48px;
+        height: 48px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    /*
+     * Pupitre : icône et nom sur le même axe vertical.
+     */
+    .chanson-pupitre-select-wrapper {
+        position: relative;
+
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr);
+        align-items: center;
+
+        width: 100%;
+        min-height: 48px;
+
+        gap: 10px;
+    }
+
+    .chanson-pupitre-trigger {
+        position: static;
+
+        width: 48px;
+        height: 48px;
+
+        flex: none;
+    }
+
+    .chanson-pupitre-label {
+        width: 48px;
+        height: 48px;
+
+        /*
+         * L'animation verticale donnait visuellement
+         * l'impression que l'icône n'était pas alignée.
+         */
+        animation: none;
+    }
+
+    .chanson-pupitre-label.icon-pupitre::before {
+        font-size: 34px !important;
+        width: 34px;
+        height: 34px;
+    }
+
+
+    /*
+     * IMPORTANT :
+     * le select invisible couvre maintenant TOUTE la zone
+     * "icône + nom du pupitre".
+     *
+     * Un clic/tap sur "Alti", "Soprano", etc. ouvre donc
+     * directement le select natif.
+     */
+    .chanson-pupitre-trigger select {
+        position: absolute;
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+        min-height: 48px;
+
+        opacity: 0;
+        z-index: 5;
+
+        cursor: pointer;
+    }
+
+    .chanson-pupitre-current {
+        min-width: 0;
+        min-height: 48px;
+
+        display: flex;
+        align-items: center;
+
+        margin: 0;
+
+        cursor: pointer;
+        line-height: 1.25;
+    }
+
+
+    /*
+     * Bouton audio compact et parfaitement centré
+     * sur la même ligne que le pupitre.
+     */
+    .chanson-audio .chanson-action,
+    .chanson-audio .chanson-action-disabled {
+        width: 48px;
+        min-width: 48px;
+        height: 48px;
+        min-height: 48px;
+
+        padding: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 0;
+    }
+
+    .chanson-audio .chanson-action-content {
+        display: none;
+    }
+
+    .chanson-audio .chanson-action-disabled > span:last-child {
+        display: none;
+    }
+
+    .chanson-audio .chanson-action-icon {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0;
+    }
+}
+

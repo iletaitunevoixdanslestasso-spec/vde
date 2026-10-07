@@ -20,7 +20,50 @@
     textarea {
         font-size: 1rem;
     }
+
+    /* =========================================================
+   ICÔNE ANIMÉE
+   ========================================================= */
+
+    .animation-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        transform-origin: center;
+
+        animation: animation-icon-pulse 1.4s ease-in-out infinite;
+    }
+
+    .animation-icon:hover {
+        animation-duration: 0.7s;
+    }
+
+    @keyframes animation-icon-pulse {
+
+        0%,
+        100% {
+            transform: scale(1) rotate(0deg);
+        }
+
+        35% {
+            transform: scale(1.16) rotate(-6deg);
+        }
+
+        65% {
+            transform: scale(1.08) rotate(5deg);
+        }
+    }
+
+
 }
+    /* Accessibilité */
+    @media (prefers-reduced-motion: reduce) {
+
+        .animation-icon {
+            animation: none;
+        }
+    }
 
 @media (max-width: 640px) {
     body {
