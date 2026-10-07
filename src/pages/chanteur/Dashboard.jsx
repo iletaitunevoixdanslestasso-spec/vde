@@ -763,8 +763,8 @@ export default function DashboardChanteur() {
                   to={`/chanteur/${token}/profil`}
                   className="todo-button"
                 >
-                  <span className="icon icon-chanteur" />
-                  « Mon profil »
+                  <span className="icon icon-profil" />
+                  Mon profil
                 </Link>.
               </TodoItem>
             )}

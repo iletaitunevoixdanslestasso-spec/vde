@@ -828,8 +828,8 @@
    --------------------------------------------------------- */
 
 .todo-item {
-    background: var(--color-complement-soft);
-    border-color: var(--color-complement-border);
+    background: var(--color-surface);
+    border-color: var(--color-border);
     border-left: 4px solid var(--color-complement);
     box-shadow: var(--shadow-sm);
 }
@@ -839,7 +839,7 @@
 }
 
 .todo-icon {
-    background: var(--color-surface);
+    background: var(--color-complement-soft);
     border: 1px solid var(--color-complement-border);
 }
 
@@ -849,7 +849,8 @@
 }
 
 .todo-title {
-    color: var(--color-complement-strong);
+    color: var(--color-text-primary);
+    font-weight: 700;
 }
 
 .todo-description .todo-button {
@@ -868,19 +869,19 @@
 
 .todo-button-secondary {
     background: var(--color-surface);
-    border-color: var(--color-complement-border);
-    color: var(--color-complement-strong);
+    border-color: var(--color-border-strong);
+    color: var(--color-text-secondary);
 }
 
 .todo-button-secondary:hover:not(:disabled) {
     background: var(--color-complement-soft);
-    border-color: var(--color-complement);
-    color: var(--color-complement-strong);
+    border-color: var(--color-complement-border);
+    color: var(--color-text-primary);
 }
 
 .todo-button-secondary [class^="icon-"]::before,
 .todo-button-secondary [class*=" icon-"]::before {
-    color: var(--color-complement-strong) !important;
+    color: var(--color-text-secondary) !important;
 }
 
 .todo-empty {
@@ -1083,3 +1084,31 @@
 }
 
 
+
+
+/* =========================================================
+   À FAIRE — VERSION SOBRE
+   Les cartes restent blanches.
+   Le vert sert uniquement d'accent visuel.
+   ========================================================= */
+
+.dashboard-todo .todo-item {
+    background: var(--color-surface);
+}
+
+.dashboard-todo .todo-item:hover {
+    border-color: var(--color-complement-border);
+}
+
+.dashboard-todo .todo-description {
+    color: var(--color-text-secondary);
+}
+
+.dashboard-todo .todo-description .todo-button {
+    color: var(--color-brand-strong);
+    background: var(--color-brand-soft);
+}
+
+.dashboard-todo .todo-description .todo-button:hover {
+    background: var(--color-brand-border);
+}
