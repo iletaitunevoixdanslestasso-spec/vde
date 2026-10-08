@@ -383,6 +383,28 @@ export default function ChansonsChanteur() {
         );
     }
 
+    function openPupitreSelect(chansonId) {
+        const select =
+            document.getElementById(
+                `pupitre-${chansonId}`
+            );
+
+        if (!select || select.disabled) {
+            return;
+        }
+
+        // Méthode native prévue pour ouvrir un select
+        if (typeof select.showPicker === "function") {
+            select.showPicker();
+            return;
+        }
+
+        // Fallback navigateurs plus anciens
+        select.focus();
+        select.click();
+    }
+
+
     /*
      * =====================================================
      * PAGE
@@ -631,17 +653,19 @@ export default function ChansonsChanteur() {
 
                                         <div className="chanson-pupitre-select-wrapper">
 
-                                            <div className="chanson-pupitre-trigger animation-icon ">
-
+                                            <div className="chanson-pupitre-trigger animation-icon  ">
                                                 <label
                                                     htmlFor={`pupitre-${chanson.chanson_id}`}
                                                     className="chanson-pupitre-label icon-pupitre"
+                                                    onClick={(event) => {
+                                                        event.preventDefault();
+                                                        openPupitreSelect(chanson.chanson_id);
+                                                    }}
                                                 >
                                                     <span className="chanson-pupitre-label-text">
                                                         Mon pupitre
                                                     </span>
                                                 </label>
-
                                                 <select
                                                     id={`pupitre-${chanson.chanson_id}`}
                                                     value={pupitreChoisi}
@@ -672,6 +696,10 @@ export default function ChansonsChanteur() {
                                             <label
                                                 htmlFor={`pupitre-${chanson.chanson_id}`}
                                                 className="chanson-pupitre-current"
+                                                onClick={(event) => {
+                                                    event.preventDefault();
+                                                    openPupitreSelect(chanson.chanson_id);
+                                                }}
                                             >
                                                 {
                                                     chanson.pupitres?.find(

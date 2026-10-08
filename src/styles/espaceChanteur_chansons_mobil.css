@@ -227,11 +227,12 @@
             transform: translateY(-4px);
         }
     }
+
     .chanson-pupitre-label.icon-pupitre::before {
         font-size: 36px !important;
         width: 36px;
         height: 36px;
-    }    
+    }
 }
 
 @media (max-width: 400px) {
@@ -415,7 +416,7 @@
         display: none;
     }
 
-    .chanson-audio .chanson-action-disabled > span:last-child {
+    .chanson-audio .chanson-action-disabled>span:last-child {
         display: none;
     }
 
@@ -430,5 +431,5 @@
 
         margin: 0;
     }
-}
 
+}
