@@ -775,29 +775,12 @@ BRAND
     --rendezvous-repetition-bg: var(--color-complement-soft);
     --rendezvous-repetition-text: var(--color-complement-strong);
 
-    /* Répétition spéciale = rencontre violet + vert */
-    /* --rendezvous-repetition-spe-color: var(--color-brand);
-    --rendezvous-repetition-spe-bg:
-        linear-gradient(
-            90deg,
-            var(--color-brand-soft) 0%,
-            var(--color-surface) 48%,
-            var(--color-surface) 52%,
-            var(--color-complement-soft) 100%
-        );
-    --rendezvous-repetition-spe-label-bg:
-        linear-gradient(
-            90deg,
-            var(--color-brand-soft),
-            var(--color-complement-soft)
-        );
-    --rendezvous-repetition-spe-text: var(--color-brand-strong); */
-
-    /* Répétition spéciale */
+    /* Répétition spéciale : palette warning uniquement */
     --rendezvous-repetition-spe-color: var(--color-warning);
     --rendezvous-repetition-spe-bg: var(--color-warning-soft);
-    --rendezvous-repetition-spe-label-bg: var(--color-warning-border);
-    --rendezvous-repetition-spe-text: var(--color-warning-strong);    
+    --rendezvous-repetition-spe-label-bg: var(--color-warning-soft);
+    --rendezvous-repetition-spe-border: var(--color-warning-border);
+    --rendezvous-repetition-spe-text: var(--color-warning-strong);
 
     /* Concert = violet de marque */
     --rendezvous-concert-color: var(--color-brand);
@@ -956,4 +939,137 @@ BRAND
 .liste_rendezvous_group:first-child .liste_rendezvous_group_toggle {
     background: var(--color-surface-muted);
     color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   RÉPÉTITION SPÉCIALE — STYLE COMMUN
+   Dashboard et cartes de répétitions (PC / tablette)
+   Toutes les couleurs reposent sur la palette warning.
+   ========================================================= */
+
+/* Deux cartes distinctes : priorité sur leurs fonds et bordures génériques. */
+.dashboard-rendezvous-row.rendezvous-type-repetition_spe,
+.repetition-card.rendezvous-type-repetition_spe {
+    background: var(--rendezvous-repetition-spe-bg);
+    border-left: 4px solid var(--rendezvous-repetition-spe-color);
+    border-right: 4px solid var(--rendezvous-repetition-spe-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.rendezvous-type-repetition_spe .dashboard-rendezvous-type-label {
+    background: var(--rendezvous-repetition-spe-label-bg);
+    border: 1px solid var(--rendezvous-repetition-spe-border);
+    color: var(--rendezvous-repetition-spe-text);
+    font-weight: 700;
+}
+
+.rendezvous-type-repetition_spe .dashboard-rendezvous-date-day {
+    color: var(--rendezvous-repetition-spe-text);
+}
+
+/* Cartes de la page Répétitions */
+.repetition-card.rendezvous-type-repetition_spe {
+    border-left-width: 3px;
+    border-right-width: 3px;
+}
+
+.repetition-card.rendezvous-type-repetition_spe:hover {
+    border-left-color: var(--rendezvous-repetition-spe-color);
+    border-right-color: var(--rendezvous-repetition-spe-color);
+}
+
+.repetition-card.rendezvous-type-repetition_spe .concert-icon {
+    background: var(--rendezvous-repetition-spe-label-bg);
+    border: 1px solid var(--rendezvous-repetition-spe-border);
+}
+
+.repetition-card.rendezvous-type-repetition_spe .concert-icon::before {
+    color: var(--rendezvous-repetition-spe-color) !important;
+}
+
+.repetition-card.rendezvous-type-repetition_spe .concert-titre {
+    color: var(--rendezvous-repetition-spe-text);
+}
+
+.repetition-card.rendezvous-type-repetition_spe .concert-information-icon {
+    background: var(--rendezvous-repetition-spe-label-bg);
+}
+
+
+/* =========================================================
+   RÉPÉTITION SPÉCIALE — ICÔNE ET LIEU À REMARQUER
+   Style commun au Dashboard et à la page Répétitions.
+   ========================================================= */
+
+/* L'icône d'avertissement utilise la palette warning. */
+.rendezvous-type-repetition_spe .dashboard-rendezvous-type-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.rendezvous-type-repetition_spe .dashboard-rendezvous-type-label .icon-warning {
+    color: var(--rendezvous-repetition-spe-color);
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* La localisation est le point important de cette répétition. */
+.rendezvous-type-repetition_spe .rendezvous-lieu-special {
+    min-width: 0;
+    max-width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--rendezvous-repetition-spe-border);
+    border-left: 4px solid var(--rendezvous-repetition-spe-color);
+    border-radius: 10px;
+    background: var(--rendezvous-repetition-spe-label-bg);
+    color: var(--rendezvous-repetition-spe-text);
+}
+
+.rendezvous-type-repetition_spe .dashboard-rendezvous-info-button.rendezvous-lieu-special {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    text-align: left;
+}
+
+.rendezvous-type-repetition_spe .rendezvous-lieu-special-label {
+    display: block;
+    color: var(--rendezvous-repetition-spe-text);
+    font-size: 0.67rem;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+.rendezvous-type-repetition_spe .rendezvous-lieu-special .dashboard-rendezvous-lieu-ville,
+.rendezvous-type-repetition_spe .rendezvous-lieu-special .concert-information-content strong {
+    color: var(--rendezvous-repetition-spe-text);
+    font-weight: 750;
+    opacity: 1;
+}
+
+.rendezvous-type-repetition_spe .concert-information-map.rendezvous-lieu-special {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.rendezvous-type-repetition_spe .concert-information-map.rendezvous-lieu-special .concert-information-icon {
+    background: var(--color-surface);
+    border: 1px solid var(--rendezvous-repetition-spe-border);
+}
+
+.rendezvous-type-repetition_spe .rendezvous-lieu-special:hover {
+    border-color: var(--rendezvous-repetition-spe-color);
+    background: var(--rendezvous-repetition-spe-bg);
+}
+
+.rendezvous-type-repetition_spe .rendezvous-lieu-special:focus-visible {
+    outline: 2px solid var(--rendezvous-repetition-spe-color);
+    outline-offset: 2px;
 }

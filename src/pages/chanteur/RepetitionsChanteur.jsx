@@ -193,6 +193,7 @@ export default function RepetitionsChanteur() {
                 ?.code
             || "repet";
 
+        const isRepetitionSpeciale = rendezvousType === "repetition_spe";
 
         return (
 
@@ -205,8 +206,13 @@ export default function RepetitionsChanteur() {
 
                     <div className="concert-main">
 
-                        <div className="concert-icon icon-repetition">
-                        </div>
+                        <div
+                            className={isRepetitionSpeciale
+                                ? "concert-icon icon icon-warning"
+                                : "concert-icon icon-repetition"
+                            }
+                            aria-hidden="true"
+                        />
 
                         <div className="concert-title-content">
 
@@ -274,7 +280,7 @@ export default function RepetitionsChanteur() {
                         {lieu && (
 
                             <div
-                                className="concert-information concert-information-map"
+                                className={`concert-information concert-information-map${isRepetitionSpeciale ? " rendezvous-lieu-special" : ""}`}
                                 role="button"
                                 tabIndex={0}
                                 title="Ouvrir dans Google Maps"
@@ -296,6 +302,12 @@ export default function RepetitionsChanteur() {
                                 </span>
 
                                 <div className="concert-information-content">
+
+                                    {isRepetitionSpeciale && (
+                                        <small className="rendezvous-lieu-special-label">
+                                            Lieu de la répétition spéciale
+                                        </small>
+                                    )}
 
                                     <strong>
                                         {lieu.nom}

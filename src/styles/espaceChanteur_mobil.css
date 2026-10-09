@@ -182,3 +182,13 @@
         box-sizing: border-box;
     }
 }
+
+/* =========================================================
+   RÉPÉTITION SPÉCIALE — ADAPTATION MOBILE COMMUNE
+   ========================================================= */
+@media (max-width: 700px) {
+    .dashboard-rendezvous-row.rendezvous-type-repetition_spe {
+        border-left-width: 3px;
+        border-right-width: 3px;
+    }
+}

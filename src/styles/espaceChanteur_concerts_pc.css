@@ -992,7 +992,6 @@
    ========================================================= */
 
 
-.rendezvous-type-repetition_spe,
 .rendezvous-type-concert,
 .rendezvous-type-regroup,
 .rendezvous-type-repet {
@@ -1007,26 +1006,6 @@
     border-left-color: var(--rendezvous-concert-color);
     border-right-color: var(--rendezvous-concert-color);
 }
-
-/* =========================================================
-   RÉPÉTITION SPÉCIALE
-   ========================================================= */
-
-.repetition-card.rendezvous-type-repetition_spe {
-    border-left-color: var(--rendezvous-repetition-spe-color);
-    border-right: var(--rendezvous-repetition-spe-color);
-
-    background: var(--rendezvous-repetition-spe-bg);
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-icon {
-    background: var(--rendezvous-repetition-spe-label-bg);
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-titre {
-    color: var(--rendezvous-repetition-spe-text);
-}
-
 
 /* =========================================================
    FOOTER

@@ -79,6 +79,7 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
 
   const isConcert = item.typeCode === "concert";
   const isRepetition = item.type === "repetition";
+  const isRepetitionSpeciale = item.typeCode === "repetition_spe";
 
   const hasParticipation =
     isConcert || isRepetition;
@@ -98,6 +99,9 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
       {/* TYPE */}
       <div className="dashboard-rendezvous-type">
         <span className="dashboard-rendezvous-type-label">
+          {isRepetitionSpeciale && (
+            <span className="icon icon-warning" aria-hidden="true" />
+          )}
           {item.typeLibelle}
         </span>
       </div>
@@ -130,9 +134,14 @@ function RendezvousRow({ item, onInfo, onParticipation }) {
               type="button"
               alt={libelle}
               title={libelle}
-              className="dashboard-rendezvous-info-button"
+              className={`dashboard-rendezvous-info-button${isRepetitionSpeciale ? " rendezvous-lieu-special" : ""}`}
               onClick={() => onInfo(item, "lieu")}
             >
+              {isRepetitionSpeciale && (
+                <span className="rendezvous-lieu-special-label">
+                  Lieu de la répétition spéciale
+                </span>
+              )}
               <span className="dashboard-rendezvous-lieu-ville">
                 {truncateText(libelle)}
               </span>

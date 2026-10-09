@@ -986,7 +986,6 @@
    ========================================================= */
 
 
-.rendezvous-type-repetition_spe,
 .rendezvous-type-concert,
 .rendezvous-type-regroup,
 .rendezvous-type-repet {
@@ -1003,26 +1002,6 @@
     border-left-color: var(--rendezvous-concert-color);
     border-right-color: var(--rendezvous-concert-color);
 }
-
-/* =========================================================
-   RÉPÉTITION SPÉCIALE
-   ========================================================= */
-
-.repetition-card.rendezvous-type-repetition_spe {
-    border-left-color: var(--rendezvous-repetition-spe-color);
-    border-right: var(--rendezvous-repetition-spe-color);
-
-    background: var(--rendezvous-repetition-spe-bg);
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-icon {
-    background: var(--rendezvous-repetition-spe-label-bg);
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-titre {
-    color: var(--rendezvous-repetition-spe-text);
-}
-
 
 /* =========================================================
    FOOTER
@@ -1150,39 +1129,6 @@
     color: var(--color-complement-strong);
 }
 
-
-/* Répétition spéciale : les deux couleurs se rencontrent. */
-.repetition-card.rendezvous-type-repetition_spe {
-    border-left: 3px solid var(--color-brand);
-    border-right: 3px solid var(--color-complement);
-
-    background:
-        linear-gradient(
-            90deg,
-            var(--color-brand-soft) 0%,
-            var(--color-surface) 46%,
-            var(--color-surface) 54%,
-            var(--color-complement-soft) 100%
-        );
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-icon {
-    background:
-        linear-gradient(
-            135deg,
-            var(--color-brand-soft),
-            var(--color-complement-soft)
-        );
-    border: 1px solid var(--color-brand-border);
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-icon::before {
-    color: var(--color-brand) !important;
-}
-
-.repetition-card.rendezvous-type-repetition_spe .concert-titre {
-    color: var(--color-brand-strong);
-}
 
 
 /* Les informations d'une répétition reprennent son univers vert. */
