@@ -61,6 +61,7 @@ const columns = [
             field: "lieu_mode",
             value: "nouveau"
         },
+        hideInTable: true,
         render: (v, row) => row.lieux?.nom || '',
 
         sortValue: (row) => {
@@ -79,6 +80,7 @@ const columns = [
             field: "lieu_mode",
             value: "nouveau"
         },
+        hideInTable: true,
         render: (v, row) => {
             if (!row.lieux)
                 return ''
@@ -121,6 +123,7 @@ const columns = [
             field: "lieu_mode",
             value: "nouveau"
         },
+        hideInTable: true,
         render: (v, row) => {
             if (!row.lieux)
                 return ''

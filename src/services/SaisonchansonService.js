@@ -68,6 +68,31 @@ export class SaisonchansonService extends BaseService {
     }
 
     /**
+     * Mise à jour du checkbox LEAD.
+     */
+    async setLeadActif(leadId, saisonChansonId, actif) {
+        const { data, error } = await this.repository.setLeadActif(
+            leadId,
+            saisonChansonId,
+            actif
+        );
+
+        if (error) {
+            return BaseResponse.error([], error.message);
+        }
+
+        if (!data) {
+            return BaseResponse.error(
+                [],
+                "Lead introuvable ou modification non autorisée."
+            );
+        }
+
+        return BaseResponse.success(data);
+    }
+
+
+    /**
      * Liste des chansons pouvant être ajoutés
      */
     async getAvailableChansons(saisonId) {

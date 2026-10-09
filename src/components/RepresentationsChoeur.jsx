@@ -150,7 +150,7 @@ export default function RepresentationsChoeur({
     }
 
 
-    const handleExportExcel = async () => {
+    const handleExportExcel = async (mode = "multi") => {
 
         const sheets =
             chansons
@@ -219,6 +219,10 @@ export default function RepresentationsChoeur({
                                                 {
                                                     ...chanteur,
 
+                                                    // Un chanteur peut figurer dans plusieurs pupitres.
+                                                    // On conserve le statut de lead pour la chanson.
+                                                    lead: chanteur.lead === true,
+
                                                     pupitreIds:
                                                         []
                                                 }
@@ -230,6 +234,10 @@ export default function RepresentationsChoeur({
                                             chanteursMap.get(
                                                 id
                                             );
+
+                                        // Il suffit d'être lead dans un pupitre.
+                                        item.lead =
+                                            item.lead || chanteur.lead === true;
 
 
                                         if (
@@ -301,6 +309,12 @@ export default function RepresentationsChoeur({
                                             .trim()
                             },
 
+                            {
+                                field: "lead",
+                                header: "Lead",
+                                exportValue: row => row.lead ? "X" : ""
+                            },
+
 
                             ...pupitres.map(
                                 pupitre => ({
@@ -347,7 +361,20 @@ export default function RepresentationsChoeur({
 
                             data,
 
-                            columns
+                            columns,
+
+                            // Mise en évidence uniquement sur cet export.
+                            rowStyle: row => row.lead ? {
+                                fill: {
+                                    type: "pattern",
+                                    pattern: "solid",
+                                    fgColor: { argb: "FFFFF2CC" }
+                                },
+                                font: {
+                                    bold: true,
+                                    color: { argb: "FF744A00" }
+                                }
+                            } : null
                         };
                     }
                 )
@@ -358,14 +385,32 @@ export default function RepresentationsChoeur({
             return;
         }
 
+        if (mode === "global") {
 
-        await ExcelService.exportToExcelMultiSheets(
-            sheets,
-            {
-                fileName:
-                    exportFileName
-            }
-        );
+            // Nouvel export : toutes les chansons
+            // dans un seul onglet.
+
+            await ExcelService.exportToExcelGroupedSheet(
+                sheets,
+                {
+                    fileName: `${exportFileName}_global`,
+                    sheetName: "Repartition"
+                }
+            );
+
+        } else {
+
+            // Ancien export : un onglet par chanson.
+
+            await ExcelService.exportToExcelMultiSheets(
+                sheets,
+                {
+                    fileName: exportFileName
+                }
+            );
+        }
+
+
     };
 
 
@@ -379,28 +424,58 @@ export default function RepresentationsChoeur({
                 gap: "30px"
             }}
         >
-            {exportexcel && (
-                   <button
-                    type="button"
-                    className="data-table-action repartition-export-button"
-                    onClick={
-                        handleExportExcel
-                    }
-                >
-                    <span
-                        className="icon-telechargement"
-                        aria-hidden="true"
-                    />
 
-                    <span className="data-table-action-label">
-                        Exporter en Excel
-                    </span>
-                </button>
-                
-            ) }
+{exportexcel && (
 
-             
-            
+    <div
+        style={{
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap"
+        }}
+    >
+
+        {/* Export actuel : un onglet par chanson */}
+
+        <button
+            type="button"
+            className="data-table-action repartition-export-button"
+            onClick={() => handleExportExcel("multi")}
+        >
+            <span
+                className="icon-telechargement"
+                aria-hidden="true"
+            />
+
+            <span className="data-table-action-label">
+                Exporter par chanson
+            </span>
+        </button>
+
+
+        {/* Nouvel export : onglet unique */}
+
+        <button
+            type="button"
+            className="data-table-action repartition-export-button"
+            onClick={() => handleExportExcel("global")}
+        >
+            <span
+                className="icon-telechargement"
+                aria-hidden="true"
+            />
+
+            <span className="data-table-action-label">
+                Exporter toutes les chansons
+            </span>
+        </button>
+
+    </div>
+)}
+
+
+
+
             {chansons.map(
                 chanson => {
 

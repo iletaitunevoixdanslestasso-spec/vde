@@ -19,6 +19,14 @@ export class SaisonchansonController extends BaseController {
     }
 
     /**
+     * Active ou désactive un lead.
+     */
+    async setLeadActif(leadId, saisonChansonId, actif) {
+        return this.service.setLeadActif(leadId, saisonChansonId, actif);
+    }
+
+
+    /**
      * Liste les chansons d'une saison
      */
     async getBySaison(saisonId) {

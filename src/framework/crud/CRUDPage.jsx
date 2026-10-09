@@ -6,14 +6,11 @@ import { useNavigate } from "react-router-dom";
 import NotificationService from "../../services/NotificationService";
 import "./../styles/CRUDPage.css";
 import { useSaison } from "../../components/contexts/SaisonContext";
-import ExcelService from "../../services/ExcelService";
-import { truncateText } from "../../helper/helper";
-export default function CRUDPage({ config, context = {}, headerAction = null }) {
+export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
 
     const [items, setItems] = useState([]);
-    const [count, setCount] = useState(null);
     const [title, setTitle] = useState(config.title || "CRUD Page");
     const [open, setOpen] = useState(false);
     const [action, setAction] = useState("edit");
@@ -22,10 +19,6 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
     const [controller, setController] = useState(config.controller);
     const [formContext, setFormContext] = useState({});
     const { saisonSelectionne } = useSaison();
-    const [isSmallScreen, setIsSmallScreen] = useState(
-        () => window.matchMedia("(max-width: 1024px)").matches
-    );
-
 
     // INITIALISATION
     useEffect(() => {
@@ -37,11 +30,7 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
 
 
     // LOAD
-    const load = () =>
-        controller.load((data) => {
-            setItems(data);
-            setCount(data?.length ?? 0);
-        });
+    const load = () => controller.load(setItems);
 
     useEffect(() => {
 
@@ -54,21 +43,6 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
         context.selectConcert
     ]);
 
-    useEffect(() => {
-
-        const mediaQuery = window.matchMedia("(max-width: 1024px)");
-
-        const handleChange = (event) => {
-            setIsSmallScreen(event.matches);
-        };
-
-        mediaQuery.addEventListener("change", handleChange);
-
-        return () => {
-            mediaQuery.removeEventListener("change", handleChange);
-        };
-
-    }, []);
 
     // ACTIONS TABLE
     const handleAction = async (action, row) => {
@@ -82,7 +56,7 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
                 if (controller.prepareForm) {
 
                     const extraContext =
-                        await controller.prepareForm(row);
+                        await controller.prepareForm();
 
                     setFormContext({
                         ...context,
@@ -91,11 +65,10 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
                 }
                 // setEditItem(row);
                 //ajout d'un attribut par defaut 
-                const formItem =
-                    typeof controller.prepareEditItem === "function"
-                        ? await controller.prepareEditItem(row)
-                        : { ...row };
-
+                const formItem = {
+                    ...row,
+                    lieu_mode: row.lieu_id ? "existant" : "nouveau"
+                };
                 setEditItem(formItem);
                 setOpen(true);
 
@@ -103,7 +76,7 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
 
 
             case "repartition":
-
+                console.log("repartition", row)
                 setEditItem(row);
                 setOpen(true);
 
@@ -129,8 +102,10 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
 
 
             case "managePupitres": {
+                console.log(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
+                console.log(urlPutpitre)
                 context.selectChanson(row);
 
                 navigate(urlPutpitre);
@@ -138,8 +113,10 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
                 break;
             }
             case "manageSaisonChansonPupitres": {
+                console.log(row)
                 const urlPutpitre =
                     controller.managePupitres(row, load);
+                console.log(urlPutpitre)
                 context.selectChanson(row.chansons);
 
                 navigate(urlPutpitre);
@@ -148,18 +125,22 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
             }
 
             case "manageSaisonConcertChanson": {
+                console.log(row)
 
                 const urlConcertChanson =
                     controller.manageSaisonConcertChanson(row, load);
+                console.log(urlConcertChanson)
                 context.selectConcert(row);
                 navigate(urlConcertChanson);
 
                 break;
             }
             case "manageSaisonRepetitionChanteur": {
+                console.log(row)
 
                 const urlConcertChanson =
                     controller.manageSaisonRepetitionChanteur(row, load);
+                console.log(urlConcertChanson)
                 context.selectObjet(row);
                 navigate(urlConcertChanson);
 
@@ -196,27 +177,31 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
         }
     };
 
-    const handleParticipationChange = (saisonChanteurId, value) => {
-        setItems(currentItems =>
-            currentItems.map(item => {
-                if (item.id !== saisonChanteurId) {
-                    return item;
-                }
 
-                const participations = item.repetition_chanteurs ?? [];
+    // Changement d'état d'un LEAD depuis une cellule de DataTable.
+    const handleToggleLead = async (leadId, saisonChansonId, actif) => {
+        try {
+            const result = await controller.setLeadActif(
+                leadId,
+                saisonChansonId,
+                actif
+            );
 
-                return {
-                    ...item,
-                    repetition_chanteurs: participations.length > 0
-                        ? participations.map((participation, index) =>
-                            index === 0
-                                ? { ...participation, participe: value }
-                                : participation
-                        )
-                        : [{ participe: value }]
-                };
-            })
-        );
+            if (!result?.success) {
+                NotificationService.error(
+                    result?.message || "La modification du lead a échoué."
+                );
+                return false;
+            }
+
+            await load();
+            return true;
+        } catch (error) {
+            NotificationService.error(
+                error?.message || "La modification du lead a échoué."
+            );
+            return false;
+        }
     };
 
 
@@ -238,7 +223,7 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
         if (controller.prepareForm) {
 
             const extraContext =
-                await controller.prepareForm(null);
+                await controller.prepareForm();
 
             setFormContext({
                 ...context,
@@ -316,7 +301,7 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
 
         } catch (e) {
 
-            console.error(
+            console.log(
                 "handleSave error",
                 e
             );
@@ -334,111 +319,17 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
         await load();
     };
 
-    // export excel
-    const handleExportExcel = async () => {
-        /*
-         * Export complètement personnalisé
-         */
-        if (typeof context.exportExcel === "function") {
-
-            await context.exportExcel({
-                items,
-                config,
-                context
-            });
-
-            return;
-        }
-        const excelContext =
-            typeof context.exportExcel === "object"
-                ? context.exportExcel
-                : {};
-
-
-        const excelConfig = {
-            columns:
-                excelContext.columns ??
-                config.excel?.columns ??
-                config.columns,
-
-            fileName:
-                excelContext.fileName ??
-                config.excel?.fileName ??
-                config.entity ??
-                "export",
-
-            sheetName:
-                excelContext.sheetName ??
-                config.excel?.sheetName ??
-                "Export"
-        };
-
-
-        ExcelService.exportToExcel(
-            items,
-            excelConfig
-        );
-    };
-
     return (
         <div>
 
 
 
-            <div className="crud-page-header">
-
-                <h1>
-                    <span className={`icon-${config?.icon} crud-page-title-icon`} alt="{title}" title="{title}">
-                        <span className="crud-page-title-text">
-
-                            {isSmallScreen
-                                ? truncateText(title)
-                                : title
-                            }
-
-                            {context.saisonId && (
-                                <>
-                                    {` ${saisonSelectionne.nom}`}
-
-                                    <label
-                                        className={
-                                            saisonSelectionne.active
-                                                ? "icon-saisonactive"
-                                                : "icon-saison"
-                                        }
-                                    />
-                                </>
-                            )}
-                        </span>
-                    </span>
-                </h1>
-
-                <div className="crud-page-header-right">
-
-                    {count !== null && (
-                        <div className="crud-page-count">
-
-                            <strong>
-                                {count}
-                            </strong>
-
-                            <span>
-                                {count > 1
-                                    ? config.countLabel?.plural ?? "éléments"
-                                    : config.countLabel?.singular ?? "élément"}
-                            </span>
-
-                        </div>
-                    )}
-
-                    {headerAction && (
-                        <div className="crud-page-header-action">
-                            {headerAction}
-                        </div>
-                    )}
-
-                </div>
-            </div>
+            <h1>
+                {title} {context.saisonId  && (<>
+                    {saisonSelectionne.nom}
+                    <label className={saisonSelectionne.active ? `icon-saisonactive` : 'icon-saisons'}></label>
+                    </>)}
+            </h1>
 
 
             {/* ERRORS */}
@@ -456,37 +347,23 @@ export default function CRUDPage({ config, context = {}, headerAction = null }) 
                 </div>
             )}
 
-            <div className="crud-page-actions">
 
-                {context.nouveau !== false && (
-                    <button
-                        className="icon-new crud-action-button"
-                        onClick={handleAdd}
-                    >
-                        <span>Nouveau</span>
-                    </button>
-                )}
+            {/* CREATE BUTTON */}
 
-                {context.exportExcel && (
-                    <button
-                        className="icon-excel crud-action-button crud-export-button"
-                        onClick={handleExportExcel}
-                        disabled={items.length === 0}
-                    >
-                        <span>Export Excel</span>
-                    </button>
-                )}
+            <button
+                className="icon-new crud-new-button"
+                onClick={handleAdd}
+            >
+                Nouveau
+            </button>
 
-            </div>
+
             {/* TABLE */}
 
             <DataTable
                 data={items}
                 config={config}
-                context={{
-                    ...context,
-                    onParticipationChange: handleParticipationChange
-                }}
+                context={{ ...context, onToggleLead: handleToggleLead }}
                 onAction={handleAction}
                 onReorder={handleReorder}
             />
