@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import "../../styles/espaceChanteur_repetition.css";
 import "../../styles/espaceChanteur_chansons.css";
+import "../../components/repetition_participation/RepetitionParticipationBoutons.css";
 
 import { repetitionConfig }
     from "../../config/entities/repetition.config";
@@ -9,13 +10,47 @@ import { repetitionConfig }
 import { useChanteur }
     from "../../components/contexts/ChanteurContext";
 
-import RepetitionParticipationControllerChanteur
-    from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
 import { isPast, openGoogleMaps } from "../../helper/helper";
 import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
+import RepetitionParticipationControllerChanteur from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
+import { Check, CircleHelp, X } from "lucide-react";
 
 
+function ParticipationEtat({ participation }) {
 
+    const label =
+        participation === true
+            ? "Je participe"
+            : participation === false
+                ? "Je ne participe pas"
+                : "Je ne sais pas";
+
+    return (
+        <div className="participation-buttons">
+            <button
+                type="button"
+                className={`participation-button selected ${
+                    participation === true
+                        ? "participation-button--yes"
+                        : participation === false
+                            ? "participation-button--no"
+                            : "participation-button--maybe"
+                }`}
+                disabled
+                title={label}
+                aria-label={label}
+            >
+                {participation === true ? (
+                    <Check size={20} strokeWidth={2.4} aria-hidden="true" />
+                ) : participation === false ? (
+                    <X size={20} strokeWidth={2.4} aria-hidden="true" />
+                ) : (
+                    <CircleHelp size={20} strokeWidth={2.2} aria-hidden="true" />
+                )}
+            </button>
+        </div>
+    );
+}
 
 
 export default function RepetitionsChanteur() {
@@ -287,30 +322,23 @@ export default function RepetitionsChanteur() {
                     </div>
 
 
-                    <RepetitionParticipationControllerChanteur
-                        repetition={repetition}
-                        inline
-                        disabled={passed}
-                        onParticipationChange={(
-                            repetitionId,
-                            participation
-                        ) => {
-
-                            setRepetitions(
-                                current =>
-                                    current.map(
-                                        item =>
-                                            item.id === repetitionId
-                                                ? {
-                                                    ...item,
-                                                    participation
-                                                }
-                                                : item
+                    {passed ? (
+                        <ParticipationEtat participation={repetition.participation} />
+                    ) : (
+                        <RepetitionParticipationControllerChanteur
+                            repetition={repetition}
+                            inline
+                            onParticipationChange={(repetitionId, participation) => {
+                                setRepetitions(current =>
+                                    current.map(item =>
+                                        item.id === repetitionId
+                                            ? { ...item, participation }
+                                            : item
                                     )
-                            );
-
-                        }}
-                    />
+                                );
+                            }}
+                        />
+                    )}
 
                 </div>
 
@@ -325,7 +353,7 @@ export default function RepetitionsChanteur() {
 
             <EspaceChanteurPageHeader
                 title="Mes répétitions"
-                subtitle="Retrouvez les répétitions de la saison et indiquez votre participation."
+                subtitle="Retrouvez les répétitions de la saison et consultez votre participation."
                 count={repetitions.length > 0 ? repetitions.length : null}
                 iconClass="icon-repetition"
                 singular="répétition"
@@ -348,38 +376,38 @@ export default function RepetitionsChanteur() {
 
             ) : (
 
-                <div className="repetitions-groups">
+                <div className="liste_rendezvous_groups">
 
 
                     {/* ============================= */}
                     {/* RÉPÉTITIONS PASSÉES           */}
                     {/* ============================= */}
 
-                    <div className="repetitions-group">
+                    <div className="liste_rendezvous_group">
 
                         <button
                             type="button"
-                            className="repetitions-group-toggle"
+                            className="liste_rendezvous_group_toggle"
                             onClick={() =>
                                 setShowPast(current => !current)
                             }
                             aria-expanded={showPast}
                         >
 
-                            <span className="repetitions-group-toggle-title">
+                            <span className="liste_rendezvous_group_toggle_title">
 
                                 <span>
                                     Passées
                                 </span>
 
-                                <span className="repetitions-group-count">
+                                <span className="liste_rendezvous_group_count">
                                     {repetitionsPassees.length}
                                 </span>
 
                             </span>
 
 
-                            <span className="repetitions-group-chevron">
+                            <span className="liste_rendezvous_group_chevron">
 
                                 {showPast ? "▲" : "▼"}
 
@@ -390,7 +418,7 @@ export default function RepetitionsChanteur() {
 
                         {showPast && (
 
-                            <section className="concerts-list">
+                            <section className="liste_rendezvous_group_list">
 
                                 {repetitionsPassees.length > 0 ? (
 
@@ -400,7 +428,7 @@ export default function RepetitionsChanteur() {
 
                                 ) : (
 
-                                    <div className="repetitions-group-empty">
+                                    <div className="liste_rendezvous_group_empty">
                                         Aucune répétition passée.
                                     </div>
 
@@ -418,31 +446,31 @@ export default function RepetitionsChanteur() {
                     {/* RÉPÉTITIONS À VENIR           */}
                     {/* ============================= */}
 
-                    <div className="repetitions-group">
+                    <div className="liste_rendezvous_group">
 
                         <button
                             type="button"
-                            className="repetitions-group-toggle"
+                            className="liste_rendezvous_group_toggle"
                             onClick={() =>
                                 setShowUpcoming(current => !current)
                             }
                             aria-expanded={showUpcoming}
                         >
 
-                            <span className="repetitions-group-toggle-title">
+                            <span className="liste_rendezvous_group_toggle_title">
 
                                 <span>
                                     À venir
                                 </span>
 
-                                <span className="repetitions-group-count">
+                                <span className="liste_rendezvous_group_count">
                                     {repetitionsAVenir.length}
                                 </span>
 
                             </span>
 
 
-                            <span className="repetitions-group-chevron">
+                            <span className="liste_rendezvous_group_chevron">
 
                                 {showUpcoming ? "▲" : "▼"}
 
@@ -453,7 +481,7 @@ export default function RepetitionsChanteur() {
 
                         {showUpcoming && (
 
-                            <section className="concerts-list">
+                            <section className="liste_rendezvous_group_list">
 
                                 {repetitionsAVenir.length > 0 ? (
 
@@ -463,7 +491,7 @@ export default function RepetitionsChanteur() {
 
                                 ) : (
 
-                                    <div className="repetitions-group-empty">
+                                    <div className="liste_rendezvous_group_empty">
                                         Aucune répétition à venir.
                                     </div>
 

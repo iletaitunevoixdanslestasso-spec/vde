@@ -3,26 +3,64 @@ import { Link } from "react-router-dom";
 
 import "../../styles/espaceChanteur_concerts.css";
 import "../../styles/espaceChanteur_chansons.css";
+import "../../components/repetition_participation/RepetitionParticipationBoutons.css";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
-import NotificationService from "../../services/NotificationService";
-import ConcertParticipation from "../../components/ConcertParticipation";
 import RepresentationsChoeur from "../../components/RepresentationsChoeur";
+import ConcertParticipation from "../../components/ConcertParticipation";
 import { isPast } from "../../helper/helper";
 import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
+import { Check, CircleHelp, X } from "lucide-react";
 
+
+function ParticipationEtat({ participation }) {
+
+    const label =
+        participation === true
+            ? "Je participe"
+            : participation === false
+                ? "Je ne participe pas"
+                : "Je ne sais pas";
+
+    return (
+        <div className="participation-buttons">
+            <button
+                type="button"
+                className={`participation-button selected ${
+                    participation === true
+                        ? "participation-button--yes"
+                        : participation === false
+                            ? "participation-button--no"
+                            : "participation-button--maybe"
+                }`}
+                disabled
+                title={label}
+                aria-label={label}
+            >
+                {participation === true ? (
+                    <Check size={20} strokeWidth={2.4} aria-hidden="true" />
+                ) : participation === false ? (
+                    <X size={20} strokeWidth={2.4} aria-hidden="true" />
+                ) : (
+                    <CircleHelp size={20} strokeWidth={2.2} aria-hidden="true" />
+                )}
+            </button>
+        </div>
+    );
+}
 
 
 export default function ConcertsChanteur() {
 
     const [concerts, setConcerts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(null);
     const [concertChansons, setConcertChansons] = useState({});
     const [chansonsLoading, setChansonsLoading] = useState(null);
     const [concertChansonsOpen, setConcertChansonsOpen] = useState(null);
 
     const [error, setError] = useState(null);
+    const [showPast, setShowPast] = useState(false);
+    const [showUpcoming, setShowUpcoming] = useState(true);
     const {
         token,
         chanteur,
@@ -348,6 +386,206 @@ export default function ConcertsChanteur() {
         );
     }
 
+    const concertsPasses =
+        concerts.filter(
+            concert =>
+                isPast(concert.date)
+        );
+
+
+    const concertsAVenir =
+        concerts.filter(
+            concert =>
+                !isPast(concert.date)
+        );
+
+
+    const renderConcert = concert => {
+
+        const passed = isPast(concert.date);
+
+        return (
+            <article
+                key={concert.id}
+                className="concert-card rendezvous-type-concert"
+            >
+
+                <div className="concert-row">
+
+                    {/* =================================
+                        TITRE
+                       ================================= */}
+
+                    <div className="concert-main">
+
+                        <div className="concert-icon">
+                            <button
+                                type="button"
+                                className="concert-icon-button"
+                                onClick={() => handleShowChansons(concert)}
+                                title="Voir les chansons du concert"
+                                aria-label={`Voir les chansons de ${concert.titre}`}
+                                disabled={chansonsLoading === concert.id}
+                            >
+                                {chansonsLoading === concert.id ? (
+                                    <span className="concert-icon-spinner">
+                                        ↻
+                                    </span>
+                                ) : (
+                                    <span className="concert-music-note icon-chanson" aria-hidden="true"></span>
+                                )}
+                            </button>
+                        </div>
+                        <div className="concert-icon">
+                            <button
+                                type="button"
+                                className="concert-icon-button"
+                                onClick={() =>
+                                    handleShowRepartition(concert)
+                                }
+                                title="Voir la répartition du chœur"
+                                aria-label={`Voir la répartition de ${concert.titre}`}
+                                disabled={
+                                    chansonsLoading === concert.id
+                                }
+                            >
+                                <span
+                                    className="chanson-action-icon icon-chanteursaison"
+                                    aria-hidden="true"
+                                />
+                            </button>
+                        </div>
+
+                        <div className="concert-title-content">
+
+                            <h2 className="concert-titre">
+                                {concert.titre}
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                    {/* =================================
+    INFORMATIONS CONCERT
+   ================================= */}
+
+                    <div className="concert-informations">
+
+                        <div className="concert-information">
+
+                            <span className="concert-information-icon">
+                                📅
+                            </span>
+
+                            <div className="concert-information-content">
+
+                                <strong>
+                                    {concert.date
+                                        ? new Date(
+                                            concert.date
+                                        ).toLocaleDateString(
+                                            "fr-FR",
+                                            {
+                                                weekday: "long",
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric"
+                                            }
+                                        )
+                                        : "Date non définie"
+                                    }
+                                </strong>
+
+                                {concert.heure_debut && (
+                                    <small>
+                                        🕐 {concert.heure_debut}
+                                    </small>
+                                )}
+
+                            </div>
+
+                        </div>
+
+                        <div className="concert-information">
+
+                            <span className="concert-information-icon">
+                                📍
+                            </span>
+
+                            <a
+                                className="concert-information-link"
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                    [
+                                        concert.lieux?.rue,
+                                        concert.lieux?.code_postale,
+                                        concert.lieux?.ville
+                                    ]
+                                        .filter(Boolean)
+                                        .join(", ")
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+
+                                <div className="concert-information-content">
+
+                                    <strong>
+                                        {concert.lieux?.nom || "Lieu non défini"}
+                                    </strong>
+
+                                    {(concert.lieux?.rue ||
+                                        concert.lieux?.code_postale ||
+                                        concert.lieux?.ville) && (
+
+                                            <small>
+                                                {[
+                                                    concert.lieux?.rue,
+                                                    concert.lieux?.code_postale,
+                                                    concert.lieux?.ville
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(", ")}
+                                            </small>
+
+                                        )}
+
+                                </div>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    {/* =================================
+                        PARTICIPATION
+                       ================================= */}
+
+                    {passed ? (
+                        <ParticipationEtat participation={concert.participation} />
+                    ) : (
+                        <ConcertParticipation
+                            concert={concert}
+                            onParticipationChange={(concertId, participation) => {
+                                setConcerts(current =>
+                                    current.map(item =>
+                                        item.id === concertId
+                                            ? { ...item, participation }
+                                            : item
+                                    )
+                                );
+                            }}
+                        />
+                    )}
+
+                </div>
+
+            </article>
+        );
+    };
+
+
     /*
      * =====================================================
      * PAGE
@@ -404,11 +642,11 @@ export default function ConcertsChanteur() {
                 <div>
 
                     <strong>
-                        Confirmez votre participation
+                        Votre participation
                     </strong>
 
                     <span>
-                        Indiquez si vous participez ou non
+                        Consultez l'état de votre participation
                         à chaque concert.
                     </span>
 
@@ -420,203 +658,105 @@ export default function ConcertsChanteur() {
                 LISTE DES CONCERTS
                ================================================= */}
 
-            <section className="concerts-list">
+            <div className="liste_rendezvous_groups">
 
-                {concerts.map(concert => {
-                    const passed =
-                        isPast(concert.date);
-                    const isSaving =
-                        saving === concert.id;
+                {/* ============================= */}
+                {/* CONCERTS PASSÉS              */}
+                {/* ============================= */}
 
-                    const participationValue =
-                        concert.participation === null ||
-                            concert.participation === undefined
-                            ? ""
-                            : String(concert.participation);
+                <div className="liste_rendezvous_group">
 
-                    return (
-                        <article
-                            key={concert.id}
-                            className="concert-card rendezvous-type-concert"
-                        >
+                    <button
+                        type="button"
+                        className="liste_rendezvous_group_toggle"
+                        onClick={() =>
+                            setShowPast(current => !current)
+                        }
+                        aria-expanded={showPast}
+                    >
+                        <span className="liste_rendezvous_group_toggle_title">
+                            <span>
+                                Passés
+                            </span>
 
-                            <div className="concert-row">
+                            <span className="liste_rendezvous_group_count">
+                                {concertsPasses.length}
+                            </span>
+                        </span>
 
-                                {/* =================================
-                                    TITRE
-                                   ================================= */}
+                        <span className="liste_rendezvous_group_chevron">
+                            {showPast ? "▲" : "▼"}
+                        </span>
+                    </button>
 
-                                <div className="concert-main">
+                    {showPast && (
+                        <section className="liste_rendezvous_group_list">
 
-                                    <div className="concert-icon">
-                                        <button
-                                            type="button"
-                                            className="concert-icon-button"
-                                            onClick={() => handleShowChansons(concert)}
-                                            title="Voir les chansons du concert"
-                                            aria-label={`Voir les chansons de ${concert.titre}`}
-                                            disabled={chansonsLoading === concert.id}
-                                        >
-                                            {chansonsLoading === concert.id ? (
-                                                <span className="concert-icon-spinner">
-                                                    ↻
-                                                </span>
-                                            ) : (
-                                                <span className="concert-music-note icon-chanson" aria-hidden="true"></span>
-                                            )}
-                                        </button>
-                                    </div>
-                                    <div className="concert-icon">
-                                        <button
-                                            type="button"
-                                            className="concert-icon-button"
-                                            onClick={() =>
-                                                handleShowRepartition(concert)
-                                            }
-                                            title="Voir la répartition du chœur"
-                                            aria-label={`Voir la répartition de ${concert.titre}`}
-                                            disabled={
-                                                chansonsLoading === concert.id
-                                            }
-                                        >
-                                            <span
-                                                className="chanson-action-icon icon-chanteursaison"
-                                                aria-hidden="true"
-                                            />
-                                        </button>
-                                    </div>
-
-                                    <div className="concert-title-content">
-
-                                        <h2 className="concert-titre">
-                                            {concert.titre}
-                                        </h2>
-
-                                    </div>
-
+                            {concertsPasses.length > 0 ? (
+                                concertsPasses.map(
+                                    renderConcert
+                                )
+                            ) : (
+                                <div className="liste_rendezvous_group_empty">
+                                    Aucun concert passé.
                                 </div>
+                            )}
 
-                                {/* =================================
-    INFORMATIONS CONCERT
-   ================================= */}
+                        </section>
+                    )}
 
-                                <div className="concert-informations">
+                </div>
 
-                                    <div className="concert-information">
 
-                                        <span className="concert-information-icon">
-                                            📅
-                                        </span>
+                {/* ============================= */}
+                {/* CONCERTS À VENIR             */}
+                {/* ============================= */}
 
-                                        <div className="concert-information-content">
+                <div className="liste_rendezvous_group">
 
-                                            <strong>
-                                                {concert.date
-                                                    ? new Date(
-                                                        concert.date
-                                                    ).toLocaleDateString(
-                                                        "fr-FR",
-                                                        {
-                                                            weekday: "long",
-                                                            day: "2-digit",
-                                                            month: "2-digit",
-                                                            year: "numeric"
-                                                        }
-                                                    )
-                                                    : "Date non définie"
-                                                }
-                                            </strong>
+                    <button
+                        type="button"
+                        className="liste_rendezvous_group_toggle"
+                        onClick={() =>
+                            setShowUpcoming(current => !current)
+                        }
+                        aria-expanded={showUpcoming}
+                    >
+                        <span className="liste_rendezvous_group_toggle_title">
+                            <span>
+                                À venir
+                            </span>
 
-                                            {concert.heure_debut && (
-                                                <small>
-                                                    🕐 {concert.heure_debut}
-                                                </small>
-                                            )}
+                            <span className="liste_rendezvous_group_count">
+                                {concertsAVenir.length}
+                            </span>
+                        </span>
 
-                                        </div>
+                        <span className="liste_rendezvous_group_chevron">
+                            {showUpcoming ? "▲" : "▼"}
+                        </span>
+                    </button>
 
-                                    </div>
+                    {showUpcoming && (
+                        <section className="liste_rendezvous_group_list">
 
-                                    <div className="concert-information">
-
-                                        <span className="concert-information-icon">
-                                            📍
-                                        </span>
-
-                                        <a
-                                            className="concert-information-link"
-                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                [
-                                                    concert.lieux?.rue,
-                                                    concert.lieux?.code_postale,
-                                                    concert.lieux?.ville
-                                                ]
-                                                    .filter(Boolean)
-                                                    .join(", ")
-                                            )}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-
-                                            <div className="concert-information-content">
-
-                                                <strong>
-                                                    {concert.lieux?.nom || "Lieu non défini"}
-                                                </strong>
-
-                                                {(concert.lieux?.rue ||
-                                                    concert.lieux?.code_postale ||
-                                                    concert.lieux?.ville) && (
-
-                                                        <small>
-                                                            {[
-                                                                concert.lieux?.rue,
-                                                                concert.lieux?.code_postale,
-                                                                concert.lieux?.ville
-                                                            ]
-                                                                .filter(Boolean)
-                                                                .join(", ")}
-                                                        </small>
-
-                                                    )}
-
-                                            </div>
-
-                                        </a>
-
-                                    </div>
-
+                            {concertsAVenir.length > 0 ? (
+                                concertsAVenir.map(
+                                    renderConcert
+                                )
+                            ) : (
+                                <div className="liste_rendezvous_group_empty">
+                                    Aucun concert à venir.
                                 </div>
+                            )}
 
-                                {/* =================================
-                                    PARTICIPATION
-                                   ================================= */}
+                        </section>
+                    )}
 
-                                <ConcertParticipation
-                                    concert={concert}
-                                    disabled={passed}
-                                    // token={token}
-                                    // chanteur={chanteur}
-                                    // controller={controller}
-                                    onParticipationChange={(concertId, participation) => {
-                                        console.error("participation", participation)
-                                        setConcerts(current =>
-                                            current.map(item =>
-                                                item.id === concertId
-                                                    ? { ...item, participation }
-                                                    : item
-                                            )
-                                        );
-                                    }}
-                                />
+                </div>
 
-                            </div>
+            </div>
 
-                        </article>
-                    );
-                })}
-
-            </section>
             {/* =================================================
     POPIN CHANSONS DU CONCERT
    ================================================= */}

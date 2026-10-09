@@ -687,11 +687,7 @@ BRAND
     --rendezvous-repetition-bg: var(--color-brand-soft);
     --rendezvous-repetition-text: var(--color-brand-strong);
 
-    /* Répétition spéciale */
-    --rendezvous-repetition-spe-color: var(--color-warning);
-    --rendezvous-repetition-spe-bg: var(--color-warning-soft);
-    --rendezvous-repetition-spe-label-bg: var(--color-warning-border);
-    --rendezvous-repetition-spe-text: var(--color-warning-strong);
+
 
     /* Concert */
     --rendezvous-concert-color: var(--color-accent);
@@ -780,7 +776,7 @@ BRAND
     --rendezvous-repetition-text: var(--color-complement-strong);
 
     /* Répétition spéciale = rencontre violet + vert */
-    --rendezvous-repetition-spe-color: var(--color-brand);
+    /* --rendezvous-repetition-spe-color: var(--color-brand);
     --rendezvous-repetition-spe-bg:
         linear-gradient(
             90deg,
@@ -795,7 +791,13 @@ BRAND
             var(--color-brand-soft),
             var(--color-complement-soft)
         );
-    --rendezvous-repetition-spe-text: var(--color-brand-strong);
+    --rendezvous-repetition-spe-text: var(--color-brand-strong); */
+
+    /* Répétition spéciale */
+    --rendezvous-repetition-spe-color: var(--color-warning);
+    --rendezvous-repetition-spe-bg: var(--color-warning-soft);
+    --rendezvous-repetition-spe-label-bg: var(--color-warning-border);
+    --rendezvous-repetition-spe-text: var(--color-warning-strong);    
 
     /* Concert = violet de marque */
     --rendezvous-concert-color: var(--color-brand);
@@ -806,4 +808,152 @@ BRAND
     --rendezvous-regroup-color: var(--color-surface-dark);
     --rendezvous-regroup-bg: var(--color-surface-muted);
     --rendezvous-regroup-text: var(--color-surface-dark);
+}
+
+
+/* =========================================================
+   GROUPES DE RENDEZ-VOUS (CONCERTS ET RÉPÉTITIONS)
+   ========================================================= */
+
+.liste_rendezvous_groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+
+.liste_rendezvous_group {
+    width: 100%;
+}
+
+
+/* =========================================================
+   BOUTON OUVERTURE / FERMETURE
+   ========================================================= */
+
+.liste_rendezvous_group_toggle {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0.9rem 1.1rem;
+
+    border: 1px solid rgba(48, 52, 59, 0.12);
+    border-radius: 10px;
+
+    background: rgba(48, 52, 59, 0.04);
+
+    font: inherit;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.liste_rendezvous_group_toggle:hover {
+    background: rgba(48, 52, 59, 0.07);
+}
+
+
+.liste_rendezvous_group_toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   TITRE + COMPTEUR
+   ========================================================= */
+
+.liste_rendezvous_group_toggle_title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+
+.liste_rendezvous_group_count {
+    min-width: 1.6rem;
+    height: 1.6rem;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 0.4rem;
+
+    border-radius: 999px;
+
+    background: rgba(48, 52, 59, 0.1);
+
+    font-size: 0.8rem;
+}
+
+
+/* =========================================================
+   CHEVRON
+   ========================================================= */
+
+.liste_rendezvous_group_chevron {
+    font-size: 0.75rem;
+}
+
+
+/* =========================================================
+   LISTE SOUS LE BOUTON
+   ========================================================= */
+
+.liste_rendezvous_group .liste_rendezvous_group_list {
+    margin-top: 0.75rem;
+}
+
+
+/* =========================================================
+   GROUPE VIDE
+   ========================================================= */
+
+.liste_rendezvous_group_empty {
+    padding: 1rem;
+
+    text-align: center;
+    opacity: 0.65;
+}
+
+/* Liste commune des cartes dans chaque groupe */
+.liste_rendezvous_group_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+/* Groupe des rendez-vous à venir : mise en valeur. */
+.liste_rendezvous_group:last-child .liste_rendezvous_group_toggle {
+    background: var(--color-complement-soft);
+    border-color: var(--color-complement-border);
+    color: var(--color-complement-strong);
+}
+
+.liste_rendezvous_group:last-child .liste_rendezvous_group_toggle:hover {
+    background: var(--color-complement-soft);
+    box-shadow: var(--shadow-sm);
+}
+
+.liste_rendezvous_group:last-child .liste_rendezvous_group_count {
+    background: var(--color-surface);
+    border: 1px solid var(--color-complement-border);
+    color: var(--color-complement-strong);
+}
+
+
+/* Groupe des rendez-vous passés : présentation neutre. */
+.liste_rendezvous_group:first-child .liste_rendezvous_group_toggle {
+    background: var(--color-surface-muted);
+    color: var(--color-text-secondary);
 }
