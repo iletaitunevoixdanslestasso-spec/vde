@@ -192,3 +192,22 @@
         border-right-width: 3px;
     }
 }
+
+
+/* =========================================================
+   RÉPÉTITION SPÉCIALE — LIEU SUR MOBILE
+   ========================================================= */
+@media (max-width: 700px) {
+    .rendezvous-type-repetition_spe .rendezvous-lieu-special {
+        padding: 0.5rem 0.65rem;
+        overflow-wrap: anywhere;
+    }
+
+    .rendezvous-type-repetition_spe .concert-information-map.rendezvous-lieu-special {
+        align-items: flex-start;
+    }
+
+    .rendezvous-type-repetition_spe .dashboard-rendezvous-info-button.rendezvous-lieu-special {
+        min-width: 0;
+    }
+}
