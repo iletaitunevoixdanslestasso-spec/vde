@@ -3,6 +3,8 @@ import { ChanteursSaisonController } from "../../controllers/ChanteursSaisonCont
 import { ChanteurSaisonMapper } from "../../mappers/ChanteurSaisonMapper";
 import { ChanteurSaisonRepository } from "../../repositories/ChanteurSaisonRepository";
 import { ChanteurSaisonService } from "../../services/ChanteurSaisonService";
+import React from "react";
+import ChanteurPhoto from "../../components/ChanteurPhoto";
 
 
 
@@ -131,7 +133,23 @@ const columns = [
             };
         }
     },
-
+    {
+        field: "photo",
+        header: "Photo",
+        type: "text",
+        hideInForm: true,
+        mapped: false,
+        render: (v, row) => React.createElement(
+            ChanteurPhoto,
+            {
+                mode: "admin",
+                path: row.chanteurs?.photo ?? null,
+                alt: `${row.chanteurs?.prenom ?? ""} ${row.chanteurs?.nom ?? ""}`.trim(),
+                width: 56,
+                height: 56
+            }
+        )
+    },
 
 ];
 const actions = [

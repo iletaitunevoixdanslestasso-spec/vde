@@ -7,6 +7,7 @@ import { ChanteurValidator } from "../../validators/ChanteurValidator";
 import { ChanteurMapper } from "../../mappers/ChanteurMapper";
 import { ChanteurController } from "../../controllers/ChanteurController";
 import React from "react";
+import ChanteurPhoto from "../../components/ChanteurPhoto";
 
 
 const entity = "chanteur";
@@ -84,6 +85,29 @@ const columns = [
             );
         }
     },
+    {
+        field: "photo",
+        header: "Photo",
+        type: "text",
+        hideInForm: true,
+        mapped: false,
+        render: (v, row) => React.createElement(
+            ChanteurPhoto,
+            {
+                mode: "admin",
+                path: row.photo,
+                alt: `${row.prenom ?? ""} ${row.nom ?? ""}`.trim(),
+                width: 56,
+                height: 56
+            }
+        )
+    },
+    {
+        field: "photo_drive_url",
+        header: "Photo Google Drive",
+        type: "text",
+        hideInTable: true,
+    },
 ];
 const actions = [
     {
@@ -108,7 +132,7 @@ export const chanteurConfig = createEntityConfig({
     entity,
     title,
     table,
-    icon:'groupe',
+    icon: 'groupe',
     Repository: ChanteurRepository,
     Service: ChanteurService,
     Validator: ChanteurValidator,

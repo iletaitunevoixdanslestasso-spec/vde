@@ -1,4 +1,7 @@
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+    obtenirAccessToken as obtenirAccessTokenGoogle
+} from "../_shared/google-auth.ts";
 
 function encodeMimeHeader(value: string): string {
   const bytes = new TextEncoder().encode(value);
@@ -211,7 +214,7 @@ function base64UrlEncode(value: string): string {
 }
 
 
-async function obtenirAccessToken(): Promise<string> {
+async function obtenirAccessToken_OLD(): Promise<string> {
 
   const clientId =
     Deno.env.get("GMAIL_IEUVDE_CLIENT_ID");
@@ -270,7 +273,9 @@ async function obtenirAccessToken(): Promise<string> {
 
   return data.access_token;
 }
-
+async function obtenirAccessToken(): Promise<string> {
+    return obtenirAccessTokenGoogle();
+}
 
 export async function envoyerMailRelance_OLD({
   to,

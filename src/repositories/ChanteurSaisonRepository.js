@@ -39,6 +39,7 @@ export class ChanteurSaisonRepository extends BaseRepository {
                     email,
                     telephone,
                     droit_image,
+                    photo,
                     droit_image_workflow,
                     relances_envois (
                         id,

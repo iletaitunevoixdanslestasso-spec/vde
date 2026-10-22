@@ -249,6 +249,23 @@ class StorageService {
 
         return result?.data || null;
     }
+    // Espace chanteur (sans session Supabase Auth) :
+    // le token est validé par l'Edge Function, qui renvoie les URL signées.
+    async getTrombinoscope(token) {
+        const result = await this.callChanteurFunction(
+            "get-trombinoscope",
+            token
+        );
+
+        const chanteurs = result?.chanteurs ?? result?.data ?? [];
+
+        if (!Array.isArray(chanteurs)) {
+            throw new Error("Réponse incorrecte de get-trombinoscope.");
+        }
+
+        return chanteurs;
+    }
+
 }
 
 export default new StorageService();

@@ -76,8 +76,7 @@ export default function FormModal({
     const handleSave = async (form) => {
 
 
-        console.error("FORM AVANT UPLOAD", form);
-        console.error("FILE UPLOAD CALLBACK", fileUpload);
+
         let finalForm = { ...form };
 
         if (fileUpload) {
