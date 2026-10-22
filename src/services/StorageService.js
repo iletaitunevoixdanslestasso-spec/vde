@@ -266,6 +266,37 @@ class StorageService {
         return chanteurs;
     }
 
+    // Photo du profil de l'utilisateur connecté, via son token d'accès.
+    // get-trombinoscope fournit déjà les URL signées : aucun accès Storage
+    // direct depuis le navigateur (qui n'a pas de session Supabase Auth).
+    async getPhotoProfil(token, chanteurId) {
+        if (!token || !chanteurId) return null;
+
+        const chanteurs = await this.getTrombinoscope(token);
+
+        const fiche = chanteurs.find((item) =>
+            (item.chanteur_id ?? item.chanteur?.id ?? item.id) === chanteurId
+        );
+
+        if (!fiche) return null;
+
+        // Adapter ici au nom exact renvoyé par l'Edge Function, si besoin.
+        const candidats = [
+            fiche.photo_url,
+            fiche.photoUrl,
+            fiche.signed_photo_url,
+            fiche.photo_signed_url,
+            fiche.photo?.signedUrl,
+            fiche.photo?.url,
+            fiche.photo
+        ];
+
+        // Ne jamais utiliser un chemin brut du bucket comme URL publique.
+        return candidats.find((url) =>
+            typeof url === "string" && /^https:\/\//i.test(url.trim())
+        ) ?? null;
+    }
+
 }
 
 export default new StorageService();

@@ -152,3 +152,20 @@
     border-color: var(--color-brand-border);
     box-shadow: var(--shadow-sm);
 }
+
+/* À ajouter à la fin de src/styles/espaceChanteur_cruditem.css */
+.crud-item-header-icon--photo {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.crud-item-header-icon--photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

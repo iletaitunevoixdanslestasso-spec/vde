@@ -4,9 +4,31 @@ import NotificationService from "../../services/NotificationService";
 import "../../styles/espaceChanteur_cruditem.css";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 
+// L'icône reste visible quand aucune photo n'est disponible ou si l'URL a expiré.
+function HeaderAvatar({ url }) {
+    const [imageEnErreur, setImageEnErreur] = useState(false);
+
+    const afficherPhoto = Boolean(url) && !imageEnErreur;
+
+    return (
+        <div className={`crud-item-header-icon ${afficherPhoto ? "crud-item-header-icon--photo" : ""}`}>
+            {afficherPhoto ? (
+                <img
+                    src={url}
+                    alt="Photo de profil"
+                    onError={() => setImageEnErreur(true)}
+                />
+            ) : (
+                "👤"
+            )}
+        </div>
+    );
+}
+
 export default function CRUDItemPage({
     config,
-    context = {}
+    context = {},
+    headerPhotoUrl = null
 }) {
 
     const {
@@ -87,7 +109,7 @@ export default function CRUDItemPage({
             }
 
             const item = result.data[0];
-            console.error("item", item)
+            console.log("item", item)
             setChanteur(prev => ({
                 ...item,
                 saisonChanteur: prev?.saisonChanteur
@@ -117,7 +139,7 @@ export default function CRUDItemPage({
 
 
     useEffect(() => {
-        console.error("chanteur",chanteur)
+        console.log("chanteur",chanteur)
         setItem(chanteur);
         setForm(chanteur);
         setLoading(false);
@@ -249,8 +271,10 @@ export default function CRUDItemPage({
     const headerHml = () => {
         // return false
         const html = <div className="crud-item-header">
-            <div className={`crud-item-header-icon icon-${config.icon ?? ''}`}>
-            </div>
+            <HeaderAvatar
+                key={headerPhotoUrl ?? "sans-photo"}
+                url={headerPhotoUrl}
+            />
             <div className="crud-item-header-content">
                 <h1 className="crud-item-title">
                     {config.title}

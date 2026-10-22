@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import CRUDItemPage from "../../framework/crud/CRUDItemPage";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
+import StorageService from "../../services/StorageService";
 
 const profilConfig = {
     ...chanteurConfig,
@@ -125,25 +126,58 @@ const profilConfig = {
 };
 
 export default function ChanteurPage() {
-
-    const storeCHanteur = JSON.parse(localStorage.getItem("chanteur"));
-    const saison_id = JSON.parse(localStorage.getItem("chanteur")).saisonId;
-
-    const {
-        chanteur,
-        loadingChanteur,
-        setChanteur
-    } = useChanteur();
-
+    const { chanteur } = useChanteur();
     const token = localStorage.getItem("token");
+    const storedChanteur = JSON.parse(localStorage.getItem("chanteur") || "null");
+    const saisonId = storedChanteur?.saisonId;
 
-    if (!chanteur)
-        return (<div className="crud-loading">Chargement...</div >)
+    // Évite de réinitialiser le controller à chaque changement de photo.
+    const context = useMemo(
+        () => ({ token, saisonId }),
+        [token, saisonId]
+    );
+
+    const [photoProfil, setPhotoProfil] = useState(null);
+
+    useEffect(() => {
+        if (!token || !chanteur?.id) return;
+
+        let actif = true;
+
+        StorageService.getPhotoProfil(token, chanteur.id)
+            .then((url) => {
+                if (actif) {
+                    setPhotoProfil({ token, chanteurId: chanteur.id, url });
+                }
+            })
+            .catch((error) => {
+                console.warn("Photo du profil indisponible :", error);
+                if (actif) {
+                    setPhotoProfil({ token, chanteurId: chanteur.id, url: null });
+                }
+            });
+
+        return () => {
+            actif = false;
+        };
+    }, [token, chanteur?.id]);
+
+    // Empêche qu'une ancienne photo s'affiche après un changement de profil.
+    const headerPhotoUrl =
+        photoProfil?.token === token &&
+        photoProfil?.chanteurId === chanteur?.id
+            ? photoProfil.url
+            : null;
+
+    if (!chanteur) {
+        return <div className="crud-loading">Chargement...</div>;
+    }
 
     return (
         <CRUDItemPage
             config={profilConfig}
-            context={{ token, saisonId: saison_id }}
+            context={context}
+            headerPhotoUrl={headerPhotoUrl}
         />
     );
 }

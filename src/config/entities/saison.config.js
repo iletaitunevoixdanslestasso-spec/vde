@@ -19,7 +19,6 @@ const columns = [
         source: "availableAdherents",
         required: true,
         render: (v, row) => {
-            console.log (v, row)
             if(row?.chef_choeur)
                 return `${row.chef_choeur.nom} ${row.chef_choeur.prenom}`;
             return ''
