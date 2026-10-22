@@ -29,7 +29,9 @@ export default function RepresentationChoeurChanson({
      */
     representation = null,
 
-    chanteurId = null
+    chanteurId = null,
+
+    token = undefined
 }) {
 
     const [data, setData] =
@@ -153,6 +155,7 @@ export default function RepresentationChoeurChanson({
             chanteurId={
                 chanteurId
             }
+            token={token}
 
         />
     );

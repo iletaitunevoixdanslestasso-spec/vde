@@ -5,6 +5,7 @@ import { chanteurConfig } from "../../config/entities/chanteur.config";
 import { rendezvouConfig } from "../../config/entities/rendezvou.config";
 import { repetitionConfig } from "../../config/entities/repetition.config";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
+import AvatarChanteur from "../../components/AvatarChanteur";
 import ConcertParticipation from "../../components/ConcertParticipation";
 import { saisonconcertConfig } from "../../config/entities/saisonconcert.config";
 import { truncateText } from "../../helper/helper";
@@ -694,9 +695,14 @@ export default function DashboardChanteur() {
 
       <header className="dashboard-header">
 
-        <div className="dashboard-header-icon">
-          <span className="icon icon-musical-note"></span>
-        </div>
+        <AvatarChanteur
+          token={token}
+          chanteurId={chanteur.id}
+          className="dashboard-header-icon"
+          size={64}
+          fallback={<span className="icon icon-musical-note" />}
+          alt={`Photo de ${chanteur.prenom}`}
+        />
 
         <div className="dashboard-header-content">
 

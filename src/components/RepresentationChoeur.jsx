@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import "./../styles/representationChoeur.css";
 import { useSaison } from "./contexts/SaisonContext";
 import { getCouleurGroupe } from "../helper/helper";
+import StorageService from "../services/StorageService";
+import AvatarChanteurSvg from "./AvatarChanteurSvg";
 
 function IconChanteur({
     x,
@@ -12,6 +14,7 @@ function IconChanteur({
     nom,
     groupeNom,
     index,
+    photoUrl = null,
     highlighted = false,
     onSelect
 }) {
@@ -64,49 +67,10 @@ function IconChanteur({
             </title>
 
 
-            {/* CERCLE = PUPITRE */}
-            <circle
-                className="svg-chanteur-groupe"
-                cx="0"
-                cy="0"
-                r="19"
-                style={{
-                    stroke: couleur
-                }}
-            />
-
-
-            {/* FOND = PUPITRE */}
-            <circle
-                className="svg-chanteur-fond"
-                cx="0"
-                cy="0"
-                r="16"
-                style={{
-                    fill: couleur
-                }}
-            />
-
-
-            {/* TÊTE = GROUPE */}
-            <circle
-                className="svg-chanteur-tete"
-                cx="0"
-                cy="-6"
-                r="5"
-                style={{
-                    fill: couleurGroupe
-                }}
-            />
-
-
-            {/* CORPS = GROUPE */}
-            <path
-                className="svg-chanteur-corps"
-                d="M-9 10 C-9 3 -5 0 0 0 C5 0 9 3 9 10"
-                style={{
-                    fill: couleurGroupe
-                }}
+            <AvatarChanteurSvg
+                photoUrl={photoUrl}
+                couleurPupitre={couleur}
+                couleurGroupe={couleurGroupe}
             />
 
 
@@ -128,12 +92,69 @@ function IconChanteur({
 export default function RepresentationChoeur({
     pupitres = [],
     titre = "Le chœur",
-    chanteurId = null
+    chanteurId = null,
+    // Token d'accès anonyme : facultatif si déjà dans localStorage.
+    token = undefined
 }) {
     const choeurRef = useRef(null);
     const [pleinEcran, setPleinEcran] = useState(false);
     const [erreurPleinEcran, setErreurPleinEcran] = useState("");
     const { saisonSelectionne } = useSaison();
+
+    // Un seul appel get-trombinoscope pour récupérer les URL signées
+    // de l'ensemble des chanteurs, jamais un appel par pastille SVG.
+    const tokenAcces = token === undefined
+        ? localStorage.getItem("token")
+        : token;
+
+    const [photosChargees, setPhotosChargees] = useState({
+        token: null,
+        parChanteur: {}
+    });
+
+    useEffect(() => {
+        if (!tokenAcces) return;
+
+        let annule = false;
+
+        StorageService.getTrombinoscope(tokenAcces)
+            .then((chanteurs) => {
+                if (annule) return;
+
+                const parChanteur = {};
+                for (const chanteur of chanteurs) {
+                    if (
+                        chanteur.id &&
+                        typeof chanteur.photo_url === "string" &&
+                        /^https:\/\//i.test(chanteur.photo_url)
+                    ) {
+                        parChanteur[chanteur.id] = chanteur.photo_url;
+                    }
+                }
+                setPhotosChargees({ token: tokenAcces, parChanteur });
+            })
+            .catch((error) => {
+                console.warn("Photos du chœur indisponibles :", error);
+                if (!annule) {
+                    setPhotosChargees({ token: tokenAcces, parChanteur: {} });
+                }
+            });
+
+        return () => { annule = true; };
+    }, [tokenAcces]);
+
+    const photosParChanteur = photosChargees.token === tokenAcces
+        ? photosChargees.parChanteur
+        : {};
+
+    // Un service peut déjà fournir une photo_url signée dans la représentation.
+    const getPhotoChanteur = (chanteur) => {
+        const id = chanteur.chanteur_id ?? chanteur.id;
+        const url = photosParChanteur[id] ?? chanteur.photo_url;
+        return typeof url === "string" && /^https:\/\//i.test(url)
+            ? url
+            : null;
+    };
 
 
     const svgRef = useRef(null);
@@ -2509,6 +2530,8 @@ export default function RepresentationChoeur({
                                                     chanteur.groupe_nom
                                                 }
 
+                                                photoUrl={getPhotoChanteur(chanteur)}
+
                                                 index={chanteurIndex}
 
                                                 highlighted={
@@ -2588,6 +2611,8 @@ export default function RepresentationChoeur({
                                                     groupeNom={
                                                         chanteur.groupe_nom
                                                     }
+
+                                                    photoUrl={getPhotoChanteur(chanteur)}
 
                                                     index={leadIndex}
 

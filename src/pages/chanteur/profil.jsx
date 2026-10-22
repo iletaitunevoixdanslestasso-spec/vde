@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import CRUDItemPage from "../../framework/crud/CRUDItemPage";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
-import StorageService from "../../services/StorageService";
+import AvatarChanteur from "../../components/AvatarChanteur";
 
 const profilConfig = {
     ...chanteurConfig,
@@ -137,38 +137,6 @@ export default function ChanteurPage() {
         [token, saisonId]
     );
 
-    const [photoProfil, setPhotoProfil] = useState(null);
-
-    useEffect(() => {
-        if (!token || !chanteur?.id) return;
-
-        let actif = true;
-
-        StorageService.getPhotoProfil(token, chanteur.id)
-            .then((url) => {
-                if (actif) {
-                    setPhotoProfil({ token, chanteurId: chanteur.id, url });
-                }
-            })
-            .catch((error) => {
-                console.warn("Photo du profil indisponible :", error);
-                if (actif) {
-                    setPhotoProfil({ token, chanteurId: chanteur.id, url: null });
-                }
-            });
-
-        return () => {
-            actif = false;
-        };
-    }, [token, chanteur?.id]);
-
-    // Empêche qu'une ancienne photo s'affiche après un changement de profil.
-    const headerPhotoUrl =
-        photoProfil?.token === token &&
-        photoProfil?.chanteurId === chanteur?.id
-            ? photoProfil.url
-            : null;
-
     if (!chanteur) {
         return <div className="crud-loading">Chargement...</div>;
     }
@@ -177,7 +145,16 @@ export default function ChanteurPage() {
         <CRUDItemPage
             config={profilConfig}
             context={context}
-            headerPhotoUrl={headerPhotoUrl}
+            headerAvatar={
+                <AvatarChanteur
+                    token={token}
+                    chanteurId={chanteur.id}
+                    className="crud-item-header-icon"
+                    size={64}
+                    fallback="👤"
+                    alt="Ma photo de profil"
+                />
+            }
         />
     );
 }
