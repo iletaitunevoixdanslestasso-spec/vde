@@ -77,6 +77,7 @@
 .icon-lieux::before,
 .icon-pupitre::before,
 .icon-document::before,
+.icon-trombi::before,
 .icon-invitation::before,
 .icon-votes::before,
 .icon-inscription::before,
@@ -203,6 +204,9 @@
 
 
 
+.icon-trombi::before {
+    content: "description";
+}
 .icon-document::before {
     content: "description";
 }

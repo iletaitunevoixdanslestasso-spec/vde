@@ -111,6 +111,20 @@ export default function ChanteurMenu({chanteur}) {
                 <button
                     type="button"
                     className={
+                        `chanteur-menu-item icon-trombi ` +
+                        (isActive("/trombinoscope")
+                            ? "active"
+                            : "")
+                    }
+                    onClick={() => go("/trombinoscope")}
+                >
+                    <span className="chanteur-menu-label">
+                        Trombinoscope
+                    </span>
+                </button>
+                <button
+                    type="button"
+                    className={
                         `chanteur-menu-item icon-document ` +
                         (isActive("/documents")
                             ? "active"

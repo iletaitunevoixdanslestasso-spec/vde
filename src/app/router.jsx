@@ -61,6 +61,7 @@ import SaisonRepetitionChanteursPage from "../pages/admin/referentiels/SaisonCon
 import Confidentialite from "../pages/public/Confidentialite";
 import CGU from "../pages/public/CGU";
 import RepetitionsChanteur from "../pages/chanteur/RepetitionsChanteur";
+import Trombinoscope from "../pages/chanteur/Trombinoscope";
 
 
 function AdminDefaultRoute() {
@@ -153,7 +154,10 @@ export default function Router() {
                                     path="documents"
                                     element={<DocumentsChanteurPage />}
                                 />
-
+                                <Route
+                                    path="trombinoscope"
+                                    element={<Trombinoscope />}
+                                />
                                 <Route
                                     path="votes"
                                     element={<Votes />}
@@ -185,7 +189,7 @@ export default function Router() {
                             }
                         >
 
-                            <Route index element={<AdminDefaultRoute  />} />
+                            <Route index element={<AdminDefaultRoute />} />
 
                             <Route
                                 path="test"

@@ -10,6 +10,8 @@ import "./AvatarChanteur.css";
 export default function AvatarChanteur({
     token,
     chanteurId,
+    // Si fourni (même null), ne refait PAS de requête : utile pour une liste.
+    photoUrl: photoUrlExterne,
     className = "",
     size = 64,
     fallback = "👤",
@@ -23,7 +25,7 @@ export default function AvatarChanteur({
     const key = `${token ?? ""}:${chanteurId ?? ""}`;
 
     useEffect(() => {
-        if (!token || !chanteurId) return;
+        if (photoUrlExterne !== undefined || !token || !chanteurId) return;
 
         let cancelled = false;
 
@@ -39,9 +41,11 @@ export default function AvatarChanteur({
         return () => {
             cancelled = true;
         };
-    }, [token, chanteurId, key]);
+    }, [token, chanteurId, key, photoUrlExterne]);
 
-    const photoUrl = photo.key === key ? photo.url : null;
+    const photoUrl = photoUrlExterne !== undefined
+        ? photoUrlExterne
+        : (photo.key === key ? photo.url : null);
     const showPhoto = Boolean(photoUrl) && failedUrl !== photoUrl;
 
     return (

@@ -266,6 +266,23 @@ class StorageService {
         return chanteurs;
     }
 
+    // Détail du trombinoscope depuis la même Edge Function que les avatars.
+    // Récupère en un appel les URL signées, les groupes et la saison.
+    async getTrombinoscopeDetails(token) {
+        const result = await this.callChanteurFunction(
+            "get-trombinoscope", token
+        );
+        if (!Array.isArray(result?.chanteurs)) {
+            throw new Error("Réponse incorrecte du trombinoscope.");
+        }
+        return {
+            chanteurs: result.chanteurs,
+            groupes: result.groupes ?? [],
+            saison: result.saison ?? null,
+            chef: result.chef ?? null
+        };
+    }
+
     // Récupère une URL signée pour la photo du chanteur connecté.
     // L'accès anonyme est autorisé par la validation du token dans l'Edge Function.
     async getPhotoProfil(token, chanteurId) {
