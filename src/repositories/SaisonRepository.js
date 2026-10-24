@@ -17,7 +17,14 @@ export class SaisonRepository extends BaseRepository {
                     id,
                     nom,
                     prenom
+                ),
+                accompagnant,
+                accompagnant!left (
+                    id,
+                    nom,
+                    prenom
                 )
+
             `)
             // .not("deleted_at", "is", null)
             .is("deleted_at", null)

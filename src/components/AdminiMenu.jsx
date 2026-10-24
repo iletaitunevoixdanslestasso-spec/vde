@@ -498,6 +498,19 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
+                                                className="admin-menu-item icon-trombi"
+                                                onClick={() =>
+                                                    handleClickSaison(
+                                                        saison,
+                                                        "trombinoscope"
+                                                    )
+                                                }
+                                            >
+                                                Trombinoscope
+                                            </button>
+
+                                            <button
+                                                type="button"
                                                 className="admin-menu-item icon-invitation"
                                                 onClick={() =>
                                                     handleClickSaison(

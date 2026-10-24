@@ -20,12 +20,30 @@ const columns = [
         required: true,
         render: (v, row) => {
             if(row?.chef_choeur)
-                return `${row.chef_choeur.nom} ${row.chef_choeur.prenom}`;
+                return `${row.chef_choeur.nom.toUpperCase()} ${row.chef_choeur.prenom}`;
             return ''
         },
         sortValue: (row) => {
             if(row?.chef_choeur)
                 return `${row.chef_choeur?.nom ?? ""} ${row.chef_choeur?.prenom ?? ""}`;
+            return ''
+        },
+        // editType: "readonly",
+
+    },
+    {
+        field: "accompagnant", header: "accompagnant",
+        type: "select",
+        source: "availableAdherents",
+        required: true,
+        render: (v, row) => {
+            if(row?.accompagnant)
+                return `${row.accompagnant.nom.toUpperCase()} ${row.accompagnant.prenom}`;
+            return ''
+        },
+        sortValue: (row) => {
+            if(row?.accompagnant)
+                return `${row.accompagnant?.nom ?? ""} ${row.accompagnant?.prenom ?? ""}`;
             return ''
         },
         // editType: "readonly",

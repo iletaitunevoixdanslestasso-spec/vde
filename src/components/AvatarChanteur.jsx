@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import StorageService from "../services/StorageService";
+import AffichePhotoProfil from "./photos/AffichePhotoProfil";
 import "./AvatarChanteur.css";
 
 /**
- * Avatar réutilisable dans l'espace chanteur.
- * La photo provient d'une URL signée renvoyée par get-trombinoscope
- * via StorageService, avec authentification par token d'accès.
+ * Adaptateur de compatibilité pour les pages EXISTANTES.
+ * - photoUrl fourni : URL signée déjà prête, aucune requête.
+ * - token + chanteurId : ancien mécanisme getPhotoProfil, inchangé.
+ * Les nouveaux écrans utilisent AffichePhotoProfil(url) directement.
  */
 export default function AvatarChanteur({
     token,
     chanteurId,
-    // Si fourni (même null), ne refait PAS de requête : utile pour une liste.
     photoUrl: photoUrlExterne,
     className = "",
     size = 64,
@@ -18,55 +19,35 @@ export default function AvatarChanteur({
     alt = "Photo de profil"
 }) {
     const [photo, setPhoto] = useState({ key: null, url: null });
-    const [failedUrl, setFailedUrl] = useState(null);
-
-    // La clé empêche d'afficher la photo d'un autre chanteur
-    // pendant le chargement après un changement d'identité.
     const key = `${token ?? ""}:${chanteurId ?? ""}`;
 
     useEffect(() => {
         if (photoUrlExterne !== undefined || !token || !chanteurId) return;
 
-        let cancelled = false;
-
+        let active = true;
         StorageService.getPhotoProfil(token, chanteurId)
             .then((url) => {
-                if (!cancelled) setPhoto({ key, url });
+                if (active) setPhoto({ key, url });
             })
             .catch((error) => {
                 console.warn("Photo du chanteur indisponible :", error);
-                if (!cancelled) setPhoto({ key, url: null });
+                if (active) setPhoto({ key, url: null });
             });
 
-        return () => {
-            cancelled = true;
-        };
+        return () => { active = false; };
     }, [token, chanteurId, key, photoUrlExterne]);
 
-    const photoUrl = photoUrlExterne !== undefined
+    const url = photoUrlExterne !== undefined
         ? photoUrlExterne
-        : (photo.key === key ? photo.url : null);
-    const showPhoto = Boolean(photoUrl) && failedUrl !== photoUrl;
+        : photo.key === key ? photo.url : null;
 
     return (
-        <div
-            className={`chanteur-avatar ${className}`.trim()}
-            style={{ "--chanteur-avatar-size": `${size}px` }}
-            role="img"
-            aria-label={showPhoto ? alt : "Avatar par défaut"}
-        >
-            {showPhoto ? (
-                <img
-                    className="chanteur-avatar__image"
-                    src={photoUrl}
-                    alt=""
-                    onError={() => setFailedUrl(photoUrl)}
-                />
-            ) : (
-                <span className="chanteur-avatar__fallback" aria-hidden="true">
-                    {fallback}
-                </span>
-            )}
-        </div>
+        <AffichePhotoProfil
+            url={url}
+            size={size}
+            fallback={fallback}
+            alt={alt}
+            className={className}
+        />
     );
 }
