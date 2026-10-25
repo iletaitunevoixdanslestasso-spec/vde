@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import NotificationService from "../../services/NotificationService";
 import "./../styles/CRUDPage.css";
 import { useSaison } from "../../components/contexts/SaisonContext";
+import ExcelService from "../../services/ExcelService";
 export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
@@ -177,6 +178,28 @@ export default function CRUDPage({ config, context = {} }) {
         }
     };
 
+    const handleParticipationChange = (saisonChanteurId, value) => {
+        setItems(currentItems =>
+            currentItems.map(item => {
+                if (item.id !== saisonChanteurId) {
+                    return item;
+                }
+
+                const participations = item.repetition_chanteurs ?? [];
+
+                return {
+                    ...item,
+                    repetition_chanteurs: participations.length > 0
+                        ? participations.map((participation, index) =>
+                            index === 0
+                                ? { ...participation, participe: value }
+                                : participation
+                        )
+                        : [{ participe: value }]
+                };
+            })
+        );
+    };
 
     // Changement d'état d'un LEAD depuis une cellule de DataTable.
     const handleToggleLead = async (leadId, saisonChansonId, actif) => {
@@ -319,6 +342,23 @@ export default function CRUDPage({ config, context = {} }) {
         await load();
     };
 
+    // Export standard ou personnalisé, via le service existant.
+    const handleExportExcel = async () => {
+        if (typeof context.exportExcel === "function") {
+            return context.exportExcel({ items, config, context });
+        }
+
+        const options = typeof context.exportExcel === "object"
+            ? context.exportExcel
+            : {};
+
+        return ExcelService.exportToExcel(items, {
+            columns: options.columns ?? config.excel?.columns ?? config.columns,
+            fileName: options.fileName ?? config.excel?.fileName ?? config.entity ?? "export",
+            sheetName: options.sheetName ?? config.excel?.sheetName ?? "Export"
+        });
+    };
+
     return (
         <div>
 
@@ -357,13 +397,23 @@ export default function CRUDPage({ config, context = {} }) {
                 Nouveau
             </button>
 
+            {context.exportExcel && (
+                <button
+                    type="button"
+                    className="icon-excel crud-action-button crud-export-button"
+                    onClick={handleExportExcel}
+                    disabled={items.length === 0}
+                >
+                    <span>Export Excel</span>
+                </button>
+            )}
 
             {/* TABLE */}
 
             <DataTable
                 data={items}
                 config={config}
-                context={{ ...context, onToggleLead: handleToggleLead }}
+                context={{ ...context, onToggleLead: handleToggleLead, onParticipationChange: handleParticipationChange }}
                 onAction={handleAction}
                 onReorder={handleReorder}
             />
