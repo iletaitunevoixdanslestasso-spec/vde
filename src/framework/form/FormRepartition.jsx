@@ -8,6 +8,7 @@ import RepresentationChoeur from "../../components/RepresentationChoeur";
 import ExcelService from "../../services/ExcelService";
 import "./../styles/FormRepartition.css";
 import { getCouleurGroupe } from "../../helper/helper";
+import CountBadge from "../../components/common/CountBadge";
 
 
 export default function FormRepartition({
@@ -321,7 +322,7 @@ export default function FormRepartition({
     ];
 
 
- 
+
     const getPupitresRepresentation = () => {
 
         return chansonPupitres.map((chansonPupitre, index) => {
@@ -462,12 +463,11 @@ export default function FormRepartition({
                     </button>
                 }
             </div>
-            <div style={{ marginBottom: 15 }}>
+            <div style={{ marginBottom: 15, display:"none" }}>
                 <strong>
                     Chanson : {initialData?.chansons?.titre}
                 </strong>
             </div>
-
             <RepresentationChoeur
                 pupitres={getPupitresRepresentation()}
                 titre={initialData?.chansons?.titre}
