@@ -161,7 +161,7 @@ export default function TrombiSaison({ saisonId }) {
         <main className="trombinoscope-page">
             <div className="trombinoscope-feuille">
                 <header className="trombi-entete">
-                    <BlocInvite titre="Chef de chœur" personne={chef} />
+                    <BlocInvite titre="Chef-fe de chœur" personne={chef} />
                     <div className="trombi-identite-chorale">
                         <img
                             className="trombi-logo"

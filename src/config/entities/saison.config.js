@@ -14,7 +14,7 @@ const actions = [
 const columns = [
     { field: "nom", header: "Nom", type: "text", required: true },
     {
-        field: "chef_choeur", header: "Chef de choeur",
+        field: "chef_choeur", header: "Chef-fe de choeur",
         type: "select",
         source: "availableAdherents",
         required: true,

@@ -44,7 +44,7 @@ const columns = [
     {
         mapped: false,
         field: "document_url",
-        header: "Document 2",
+        header: "Document",
         type: "text",
         hideInForm: true,
 
@@ -93,6 +93,17 @@ export const ReferentielDocumentConfig = createEntityConfig({
     Validator: ReferentielDocumentValidator,
     Mapper: ReferentielDocumentMapper,
     Controller: ReferentielDocumentController,
+
+    /*
+     * Impossible de supprimer
+     * le lieu des répétitions.
+     */
+    canDelete: (row) => {
+        return row.titre !== "template import répétition";
+    },
+    canEdit: (row) => {
+        return row.titre !== "template import répétition";
+    },
 
 
     columns,

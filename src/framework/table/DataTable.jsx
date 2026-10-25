@@ -483,6 +483,13 @@ export default function DataTable({
             ) {
                 return false;
             }
+            if (
+                action.action === "edit" &&
+                typeof config.canEdit === "function" &&
+                !config.canEdit(row, data, context)
+            ) {
+                return false;
+            }
 
             if (typeof action.condition === "function") {
                 return action.condition(row,data, context);
