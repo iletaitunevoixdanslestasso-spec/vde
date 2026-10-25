@@ -112,7 +112,8 @@ class ExcelService {
         const {
             columns = [],
             autoWidth = true,
-            rowStyle = null
+            rowStyle = null,
+            cellStyle = null
         } = config;
 
 
@@ -347,6 +348,56 @@ class ExcelService {
                         })
                     };
                 }
+            });
+        }
+
+
+        /*
+         * =====================================================
+         * STYLE PERSONNALISE PAR CELLULE
+         * =====================================================
+         *
+         * cellStyle(row, column, columnIndex, rowIndex)
+         * permet de colorer uniquement les colonnes concernées,
+         * sans modifier la cellule du nom du choriste.
+         *
+         * Le style de cellule est appliqué après rowStyle pour
+         * pouvoir, si besoin, prendre la priorité sur celui-ci.
+         */
+
+        if (typeof cellStyle === "function") {
+            data.forEach((item, rowIndex) => {
+                const excelRow = worksheet.getRow(rowIndex + 2);
+
+                exportColumns.forEach((column, columnIndex) => {
+                    const style = cellStyle(
+                        item,
+                        column,
+                        columnIndex,
+                        rowIndex
+                    );
+
+                    if (!style) return;
+
+                    const cell = excelRow.getCell(columnIndex + 1);
+
+                    cell.style = {
+                        ...cell.style,
+                        ...style,
+                        ...(style.font && {
+                            font: {
+                                ...cell.font,
+                                ...style.font
+                            }
+                        }),
+                        ...(style.alignment && {
+                            alignment: {
+                                ...cell.alignment,
+                                ...style.alignment
+                            }
+                        })
+                    };
+                });
             });
         }
 
@@ -633,7 +684,10 @@ class ExcelService {
                      * personnalisé des lignes.
                      */
                     rowStyle:
-                        sheet.rowStyle ?? null
+                        sheet.rowStyle ?? null,
+
+                    cellStyle:
+                        sheet.cellStyle ?? null
                 }
             })
         );
@@ -644,6 +698,22 @@ class ExcelService {
                 fileName
             }
         );
+    }
+
+
+    /*
+     * Reconnaît les valeurs usuelles d'un indicateur de lead,
+     * sans confondre une valeur vide ou "false" avec un vrai lead.
+     */
+    static isLead(row) {
+        const value = row?.lead;
+
+        return value === true ||
+            value === 1 ||
+            (typeof value === "string" &&
+                ["true", "1", "x", "oui"].includes(
+                    value.trim().toLowerCase()
+                ));
     }
 
 
@@ -1086,22 +1156,6 @@ class ExcelService {
 
 
             /*
-             * =====================================
-             * SURBRILLANCE DES LEADS
-             * =====================================
-             *
-             * Un chanteur lead dans au moins
-             * une chanson : toute sa ligne
-             * est mise en évidence.
-             *
-             * On réutilise le rowStyle défini
-             * dans RepresentationsChoeur.
-             */
-
-            let styleLead = null;
-
-
-            /*
              * =============================================
              * STYLE COLONNE CHORISTES
              * =============================================
@@ -1179,8 +1233,21 @@ class ExcelService {
                  * lead pour CETTE chanson.
                  */
 
+                // L'indicateur peut être porté directement par la
+                // ligne ou calculé par la colonne "Lead" de la chanson.
+                const colonneLead = groupe.columns.find(
+                    column =>
+                        column.field === "lead" ||
+                        column.exportField === "lead"
+                );
+
+                const valeurLead = colonneLead
+                    ? getExportValue(colonneLead, infoChanson)
+                    : null;
+
                 const estLead =
-                    infoChanson?.lead === true;
+                    this.isLead(infoChanson) ||
+                    this.isLead({ lead: valeurLead });
 
 
                 /*

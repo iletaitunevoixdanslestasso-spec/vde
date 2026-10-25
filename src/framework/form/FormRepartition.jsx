@@ -434,7 +434,20 @@ export default function FormRepartition({
                             ExcelService.exportToExcel(saisonChanteurs, {
                                 columns,
                                 fileName: `Repartition_${initialData?.chansons?.titre || "chanson"}`,
-                                sheetName: initialData?.chansons?.titre || "Chanson"
+                                sheetName: initialData?.chansons?.titre || "Chanson",
+                                // Ne colorer que les colonnes de la chanson,
+                                // et jamais la colonne du nom du choriste.
+                                cellStyle: (row, _column, columnIndex) =>
+                                    row.lead === true && columnIndex > 0
+                                        ? {
+                                            fill: {
+                                                type: "pattern",
+                                                pattern: "solid",
+                                                fgColor: { argb: "FFFFE699" }
+                                            },
+                                            font: { bold: true }
+                                        }
+                                        : null
                             })
                         }
                     >
