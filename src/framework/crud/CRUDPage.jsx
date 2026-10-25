@@ -7,6 +7,8 @@ import NotificationService from "../../services/NotificationService";
 import "./../styles/CRUDPage.css";
 import { useSaison } from "../../components/contexts/SaisonContext";
 import ExcelService from "../../services/ExcelService";
+import CountBadge from "../../components/common/CountBadge";
+import "./CRUDPageToolbar.css";
 export default function CRUDPage({ config, context = {} }) {
 
     const navigate = useNavigate();
@@ -360,7 +362,7 @@ export default function CRUDPage({ config, context = {} }) {
     };
 
     return (
-        <div>
+        <div className="crud-page">
 
 
 
@@ -388,34 +390,48 @@ export default function CRUDPage({ config, context = {} }) {
             )}
 
 
-            {/* CREATE BUTTON */}
-
-            <button
-                className="icon-new crud-new-button"
-                onClick={handleAdd}
-            >
-                Nouveau
-            </button>
-
-            {context.exportExcel && (
-                <button
-                    type="button"
-                    className="icon-excel crud-action-button crud-export-button"
-                    onClick={handleExportExcel}
-                    disabled={items.length === 0}
-                >
-                    <span>Export Excel</span>
-                </button>
-            )}
-
-            {/* TABLE */}
+            {/* TABLE : actions intégrées à la barre d'outils */}
 
             <DataTable
                 data={items}
                 config={config}
-                context={{ ...context, onToggleLead: handleToggleLead, onParticipationChange: handleParticipationChange }}
+                context={{
+                    ...context,
+                    onToggleLead: handleToggleLead,
+                    onParticipationChange: handleParticipationChange
+                }}
                 onAction={handleAction}
                 onReorder={handleReorder}
+                toolbarActions={
+                    <>
+                        {context.exportExcel && (
+                            <button
+                                type="button"
+                                className="icon-excel crud-action-button crud-export-button"
+                                onClick={handleExportExcel}
+                                disabled={items.length === 0}
+                            >
+                                <span>Export Excel</span>
+                            </button>
+                        )}
+
+                        <div className="crud-create-and-count">
+                            <button
+                                type="button"
+                                className="icon-new crud-new-button"
+                                onClick={handleAdd}
+                            >
+                                Nouveau
+                            </button>
+
+                            <CountBadge
+                                count={items.length}
+                                singular={context.countSingular ?? config.countSingular ?? "élément"}
+                                plural={context.countPlural ?? config.countPlural}
+                            />
+                        </div>
+                    </>
+                }
             />
 
 

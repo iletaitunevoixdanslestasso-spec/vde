@@ -1,4 +1,5 @@
 import "./EspaceChanteurPageHeader.css";
+import CountBadge from "/src/components/common/CountBadge.jsx";
 
 export default function EspaceChanteurPageHeader({
     title,
@@ -44,19 +45,11 @@ export default function EspaceChanteurPageHeader({
             </div>
 
             {hasCount && (
-                <div className="chansons-page-count">
-
-                    <strong>
-                        {count}
-                    </strong>
-
-                    <span>
-                        {count > 1
-                            ? plural
-                            : singular}
-                    </span>
-
-                </div>
+                <CountBadge
+                    count={count}
+                    singular={singular}
+                    plural={plural}
+                />
             )}
 
         </header>

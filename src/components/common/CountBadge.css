@@ -1,0 +1,51 @@
+/* =========================================================
+   COMPTEUR PARTAGÉ - CHARTE GLOBALE
+   ========================================================= */
+.count-badge {
+    box-sizing: border-box;
+    min-width: 70px;
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 14px;
+
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface-soft);
+}
+
+.count-badge strong {
+    font-size: 1.25rem;
+    line-height: 1.2;
+    color: var(--color-text-primary);
+}
+
+.count-badge span {
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+/* =========================================================
+   MOBILE - COMMUN AUX DEUX ESPACES
+   ========================================================= */
+@media (max-width: 700px) {
+    .count-badge {
+        min-width: 45px;
+        padding: 7px 8px;
+        border-radius: 9px;
+    }
+
+    .count-badge strong {
+        font-size: 1rem;
+    }
+
+    .count-badge span {
+        font-size: 0.62rem;
+    }
+}

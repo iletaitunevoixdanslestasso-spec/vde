@@ -6,7 +6,8 @@ export default function DataTable({
     config = {},
     context = {},
     onAction,
-    onReorder
+    onReorder,
+    toolbarActions = null
 }) {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -549,7 +550,7 @@ export default function DataTable({
     return (
         <div className="data-table">
 
-            <div className="data-table-toolbar">
+            <div className={`data-table-toolbar ${toolbarActions ? "data-table-toolbar--with-actions" : ""}`}>
 
                 <div className="data-table-search-wrapper">
 
@@ -596,6 +597,12 @@ export default function DataTable({
                     <option value={50}>50 par page</option>
                     <option value={100}>100 par page</option>
                 </select>
+
+                {toolbarActions && (
+                    <div className="data-table-toolbar-actions">
+                        {toolbarActions}
+                    </div>
+                )}
 
             </div>
 

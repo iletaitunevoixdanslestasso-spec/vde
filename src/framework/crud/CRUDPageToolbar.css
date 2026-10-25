@@ -1,0 +1,122 @@
+/* =========================================================
+   BARRE D'OUTILS CRUD ADMIN - PC
+   Le composant CountBadge garde ses styles dans CountBadge.css.
+   On cible seulement les tables qui reçoivent toolbarActions.
+   ========================================================= */
+.crud-page .data-table-toolbar--with-actions {
+    display: grid;
+    grid-template-columns: minmax(170px, 1fr) auto auto;
+    align-items: center;
+    column-gap: 18px;
+    row-gap: 12px;
+    margin-bottom: 18px;
+}
+
+.crud-page .data-table-toolbar--with-actions .data-table-search-wrapper {
+    grid-column: 1;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.crud-page .data-table-toolbar--with-actions .data-table-search {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.crud-page .data-table-toolbar--with-actions .data-table-page-size {
+    grid-column: 2;
+    min-width: 0;
+}
+
+.crud-page .data-table-toolbar-actions {
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-width: 0;
+}
+
+.crud-page .data-table-toolbar-actions .crud-new-button {
+    margin: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+
+/* « Nouveau » et son compteur restent côte à côte, même sur mobile. */
+.crud-page .crud-create-and-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Bouton d'export : aucun espacement parasite issu des styles génériques */
+.crud-page .data-table-toolbar-actions .crud-action-button {
+    margin: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   TABLETTE / MOBILE
+   ========================================================= */
+@media (max-width: 900px) {
+    .crud-page .data-table-toolbar--with-actions {
+        grid-template-columns: minmax(0, 1fr) auto;
+        column-gap: 12px;
+    }
+
+    .crud-page .data-table-toolbar--with-actions .data-table-search-wrapper {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .crud-page .data-table-toolbar--with-actions .data-table-page-size {
+        grid-column: 1;
+        grid-row: 2;
+        justify-self: start;
+    }
+
+    .crud-page .data-table-toolbar-actions {
+        grid-column: 2;
+        grid-row: 2;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 420px) {
+    .crud-page .data-table-toolbar--with-actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .crud-page .data-table-toolbar--with-actions .data-table-page-size {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .crud-page .data-table-toolbar-actions {
+        grid-column: 1;
+        grid-row: 3;
+        justify-self: end;
+    }
+}
+
+/* Téléphones étroits : l'export passe au-dessus du bloc Nouveau + compteur. */
+@media (max-width: 420px) {
+    .crud-page .data-table-toolbar-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    .crud-page .crud-create-and-count {
+        gap: 8px;
+    }
+}
