@@ -64,23 +64,14 @@ export class BaseRepository {
     }
 
     async delete(id, extraFields = {}) {
-        console.error("par ici")
         return await this.softDelete(id, extraFields )
         // return this.supabase.from(this.table).delete().eq("id", id);
     }
 
-    async softDelete_old(id) {
-        return this.supabase
-            .from(this.table)
-            .update({
-                deleted_at: new Date().toISOString()
-            })
-            .eq("id", id)
-            .select("*")
-            .single();
-    }
+
 
     async softDelete(id, extraFields = {}) {
+        console.log("sogdelet", id)
         return this.supabase
             .from(this.table)
             .update({
@@ -88,8 +79,9 @@ export class BaseRepository {
                 deleted_at: new Date().toISOString()
             })
             .eq("id", id)
-            .select("*")
-            .single();
+            // .select("*")
+            // .single()
+            ;
     }
 
     async updateByCriteria(criteria, data) {

@@ -16,6 +16,33 @@ export default function AdminMenu() {
     const saisonsScroll = useHorizontalScroll();
     const referentielsScroll = useHorizontalScroll();
 
+    // Les flèches du menu principal ne servent que lorsque
+    // les boutons sont disposés horizontalement (ex. : mobile).
+    // En mode latéral vertical, elles ne doivent pas apparaître.
+    const [mainMenuHorizontal, setMainMenuHorizontal] = useState(false);
+
+    useEffect(() => {
+        const updateMainMenuOrientation = () => {
+            const container = mainScroll.scrollRef.current;
+            if (!container) return;
+
+            const buttons = container.querySelectorAll(":scope > button");
+            if (buttons.length < 2) return;
+
+            const firstTop = buttons[0].getBoundingClientRect().top;
+            const secondTop = buttons[1].getBoundingClientRect().top;
+
+            setMainMenuHorizontal(Math.abs(firstTop - secondTop) < 2);
+        };
+
+        updateMainMenuOrientation();
+        window.addEventListener("resize", updateMainMenuOrientation);
+
+        return () => {
+            window.removeEventListener("resize", updateMainMenuOrientation);
+        };
+    }, [mainScroll.scrollRef]);
+
 
     /* =====================================================
        GESTION DU CONTENU DU MENU
@@ -24,6 +51,39 @@ export default function AdminMenu() {
     const navigate = useNavigate();
     const location = useLocation();
     const saisonRefs = useRef({});
+
+    /* =====================================================
+       PAGE ACTIVE DANS LE MENU (selon l'URL courante)
+       ===================================================== */
+
+    const pathname = location.pathname.replace(/\/+$/, "") || "/";
+
+    // Correspond à la route exacte ou à ses sous-pages.
+    const isActiveRoute = (path) =>
+        pathname === path || pathname.startsWith(`${path}/`);
+
+    const isSaisonPageActive = (saison, rubrique) =>
+        isActiveRoute(
+            `/admin/saison/${encodeURIComponent(saison.nom)}/${rubrique}`
+        );
+
+    // L'ancienne route au singulier /admin/chanson/... appartient à Chansons.
+    const isReferentielPageActive = (path) =>
+        isActiveRoute(path) ||
+        (path === "/admin/chansons" && isActiveRoute("/admin/chanson"));
+
+    const isSaisonsSectionActive = pathname.startsWith("/admin/saison/");
+
+    const isReferentielsSectionActive = [
+        "/admin/saisons",
+        "/admin/chanteurs",
+        "/admin/chansons",
+        "/admin/pupitres",
+        "/admin/documents",
+        "/admin/concerts",
+        "/admin/lieux",
+        "/admin/repetitions"
+    ].some(isReferentielPageActive);
 
     const [openSaisons, setOpenSaisons] = useState(false);
     const [openReferentiels, setOpenReferentiels] = useState(false);
@@ -218,18 +278,7 @@ export default function AdminMenu() {
          * ================================================
          */
 
-        const isReferentielRoute =
-            pathname === "/admin/saisons" ||
-            pathname === "/admin/chanteurs" ||
-            pathname === "/admin/chansons" ||
-            pathname.startsWith("/admin/chanson/") ||
-            pathname === "/admin/pupitres" ||
-            pathname === "/admin/documents" ||
-            pathname === "/admin/concerts" ||
-            pathname === "/admin/lieux" ||
-            pathname === "/admin/repetitions";
-
-        if (isReferentielRoute) {
+        if (isReferentielsSectionActive) {
 
             setOpenReferentiels(true);
             setOpenSaisons(false);
@@ -251,6 +300,7 @@ export default function AdminMenu() {
 
     }, [
         location.pathname,
+        isReferentielsSectionActive,
         saisons,
         saisonSelectionne?.id,
         updateSaisonSelectionne
@@ -269,7 +319,7 @@ export default function AdminMenu() {
 
             <div className="admin-horizontal-scroll-wrapper">
 
-                {mainScroll.canScrollLeft && (
+                {mainMenuHorizontal && mainScroll.canScrollLeft && (
                     <button
                         type="button"
                         className="admin-scroll-arrow admin-scroll-arrow-left"
@@ -286,7 +336,7 @@ export default function AdminMenu() {
 
                     <button
                         type="button"
-                        className="admin-menu-item admin-menu-dashboard icon-dashboard"
+                        className={`admin-menu-item admin-menu-dashboard icon-dashboard ${pathname === "/admin" ? "active" : ""}`}
                         onClick={() => {
                             navigate("/admin");
                             closeMenus();
@@ -298,8 +348,7 @@ export default function AdminMenu() {
 
                     <button
                         type="button"
-                        className={`admin-menu-section icon-saison ${openSaisons ? "open" : ""
-                            }`}
+                        className={`admin-menu-section icon-saison ${openSaisons ? "open" : ""} ${isSaisonsSectionActive ? "active" : ""}`}
                         onClick={toggleSaisons}
                     >
                         <span>Saisons</span>
@@ -312,8 +361,7 @@ export default function AdminMenu() {
 
                     <button
                         type="button"
-                        className={`admin-menu-section icon-referentiels ${openReferentiels ? "open" : ""
-                            }`}
+                        className={`admin-menu-section icon-referentiels ${openReferentiels ? "open" : ""} ${isReferentielsSectionActive ? "active" : ""}`}
                         onClick={toggleReferentiels}
                     >
                         <span>Référentiels</span>
@@ -326,7 +374,7 @@ export default function AdminMenu() {
                 </div>
 
 
-                {mainScroll.canScrollRight && (
+                {mainMenuHorizontal && mainScroll.canScrollRight && (
                     <button
                         type="button"
                         className="admin-scroll-arrow admin-scroll-arrow-right"
@@ -429,7 +477,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-chanteursaison"
+                                                className={`admin-menu-item icon-chanteursaison ${isSaisonPageActive(saison, "chanteurs") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -443,7 +491,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-chanson"
+                                                className={`admin-menu-item icon-chanson ${isSaisonPageActive(saison, "chansons") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -457,7 +505,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-repetition"
+                                                className={`admin-menu-item icon-repetition ${isSaisonPageActive(saison, "repetition") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -471,7 +519,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-groupe"
+                                                className={`admin-menu-item icon-groupe ${isSaisonPageActive(saison, "groupes") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -485,7 +533,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-concert"
+                                                className={`admin-menu-item icon-concert ${isSaisonPageActive(saison, "concerts") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -498,7 +546,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-trombi"
+                                                className={`admin-menu-item icon-trombi ${isSaisonPageActive(saison, "trombinoscope") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -511,7 +559,7 @@ export default function AdminMenu() {
 
                                             <button
                                                 type="button"
-                                                className="admin-menu-item icon-invitation"
+                                                className={`admin-menu-item icon-invitation ${isSaisonPageActive(saison, "invitations") ? "active" : ""}`}
                                                 onClick={() =>
                                                     handleClickSaison(
                                                         saison,
@@ -594,7 +642,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-saison"
+                                className={`admin-menu-item icon-saison ${isReferentielPageActive("/admin/saisons") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/saisons"
@@ -607,7 +655,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-groupe"
+                                className={`admin-menu-item icon-groupe ${isReferentielPageActive("/admin/chanteurs") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/chanteurs"
@@ -620,7 +668,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-chanson"
+                                className={`admin-menu-item icon-chanson ${isReferentielPageActive("/admin/chansons") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/chansons"
@@ -633,7 +681,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-pupitre"
+                                className={`admin-menu-item icon-pupitre ${isReferentielPageActive("/admin/pupitres") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/pupitres"
@@ -646,7 +694,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-document"
+                                className={`admin-menu-item icon-document ${isReferentielPageActive("/admin/documents") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/documents"
@@ -659,7 +707,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-concert"
+                                className={`admin-menu-item icon-concert ${isReferentielPageActive("/admin/concerts") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/concerts"
@@ -672,7 +720,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-lieux"
+                                className={`admin-menu-item icon-lieux ${isReferentielPageActive("/admin/lieux") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/lieux"
@@ -685,7 +733,7 @@ export default function AdminMenu() {
 
                             <button
                                 type="button"
-                                className="admin-menu-item icon-repetition"
+                                className={`admin-menu-item icon-repetition ${isReferentielPageActive("/admin/repetitions") ? "active" : ""}`}
                                 onClick={() =>
                                     handleClickReferentiel(
                                         "/admin/repetitions"
