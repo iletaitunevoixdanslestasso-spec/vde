@@ -23,7 +23,7 @@ export default function SaisonRepetitionChanteursPage() {
         }
     }, [saisonSelectionne, navigate, saisonSelectionneObjet]);
 
-let fileName =formatDateFileName(saisonSelectionneObjet?.date)
+    let fileName = formatDateFileName(saisonSelectionneObjet?.date)
     return (
         <CRUDPage
             config={{
@@ -36,8 +36,18 @@ let fileName =formatDateFileName(saisonSelectionneObjet?.date)
             }}
 
             context={{
-                exportExcel:{fileName},
-                nouveau:true,
+                exportExcel: {
+                    fileName,
+                    columns: saisonrepetitionchanteursConfig.columns.map(column =>
+                        column.field === "participe"
+                            ? {
+                                ...column,
+                                exportHeader: formatDate(saisonSelectionneObjet?.date)
+                            }
+                            : column
+                    )
+                },
+                nouveau: true,
                 saisonId: saisonSelectionne?.id,
                 repetitionId: saisonSelectionneObjet?.id,
                 saisonSelectionneObjet
