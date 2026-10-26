@@ -45,8 +45,14 @@ Deno.serve(async (req) => {
 
 
     // --------------------------------------------------
-    // 1. Saison active
+    // 1. Saison active et dates de validité
     // --------------------------------------------------
+
+    // Date du jour au format YYYY-MM-DD
+    // Fuseau horaire français
+    const aujourdHui = new Date().toLocaleDateString("sv-SE", {
+      timeZone: "Europe/Paris",
+    });
 
     const { data: saison, error: saisonError } =
       await supabase
@@ -54,12 +60,13 @@ Deno.serve(async (req) => {
         .select("id, nom")
         .eq("active", true)
         .is("deleted_at", null)
+        .lte("date_debut", aujourdHui)
+        .gte("date_fin", aujourdHui)
         .maybeSingle();
 
     if (saisonError) {
       throw saisonError;
     }
-
 
     if (!saison) {
 
