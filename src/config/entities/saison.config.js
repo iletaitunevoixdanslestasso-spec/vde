@@ -16,8 +16,8 @@ const columns = [
     {
         field: "chef_choeur", header: "Chef-fe de choeur",
         type: "select",
+        dbType: "uuid",
         source: "availableAdherents",
-        required: true,
         render: (v, row) => {
             if(row?.chef_choeur)
                 return `${row.chef_choeur.nom.toUpperCase()} ${row.chef_choeur.prenom}`;
@@ -34,8 +34,8 @@ const columns = [
     {
         field: "accompagnant", header: "accompagnant",
         type: "select",
+        dbType: "uuid",
         source: "availableAdherents",
-        required: true,
         render: (v, row) => {
             if(row?.accompagnant)
                 return `${row.accompagnant.nom.toUpperCase()} ${row.accompagnant.prenom}`;

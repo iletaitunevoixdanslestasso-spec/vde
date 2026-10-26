@@ -6,6 +6,7 @@ import StorageService from "../../services/StorageService";
 
 
 export default function Testdivers() {
+  const functionsBaseUrl = `${import.meta.env.VITE_SUPABASE_URL.replace(/\/$/, "")}/functions/v1`;
   const testStorage = async () => {
     try {
       const file = new File(
@@ -39,7 +40,7 @@ export default function Testdivers() {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      "https://lqgkxpvkauoaeqtbndoy.supabase.co/functions/v1/create-chanteur-droit-image-upload",
+      `${functionsBaseUrl}/create-chanteur-droit-image-upload`,
       {
         method: "POST",
         headers: {
@@ -60,7 +61,7 @@ export default function Testdivers() {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      "https://lqgkxpvkauoaeqtbndoy.supabase.co/functions/v1/get-chanteur-droit-image-template",
+      `${functionsBaseUrl}/get-chanteur-droit-image-template`,
       {
         method: "POST",
         headers: {
@@ -125,7 +126,7 @@ export default function Testdivers() {
   const testRelances = async () => {
     try {
       const response = await fetch(
-        "https://lqgkxpvkauoaeqtbndoy.supabase.co/functions/v1/relances",
+        `${functionsBaseUrl}/relances`,
         {
           method: "POST",
           headers: {

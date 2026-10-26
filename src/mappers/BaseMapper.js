@@ -27,7 +27,13 @@ export class BaseMapper {
                             ? null
                             : Number(entity[column.field]);
                 }
-
+                if (column.dbType === "uuid") {
+                    entity[column.field] =
+                        entity[column.field] === "" ||
+                            entity[column.field] == null
+                            ? null
+                            : entity[column.field];
+                }
                 if (column.type === "date") {
                     let value = entity[column.field];
 

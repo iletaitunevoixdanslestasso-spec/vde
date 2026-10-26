@@ -20,10 +20,10 @@ export default function ChanteurPage() {
     fetchSession();
   }, []);
 
-    if(!saisonSelectionne ){
-        navigate(`/admin`)
-        return
-    }
+    // if(!saisonSelectionne ){
+    //     navigate(`/admin`)
+    //     return
+    // }
 
 
 
@@ -34,8 +34,11 @@ export default function ChanteurPage() {
       <CRUDPage
         config={chanteurConfig} />;
     </div>
-    <div><ImportChanteursExcel
+    {(saisonSelectionne )
+     ?<div><ImportChanteursExcel
       saisonId={saisonSelectionne.id}
     />  </div>
+    :''
+    }
   </div>)
 }
