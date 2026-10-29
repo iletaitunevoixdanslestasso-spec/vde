@@ -521,17 +521,21 @@ export default function RepresentationChoeur({
      * =========================================================
      *
      * Les leads ne font pas partie des rangs normaux.
-     */
-
+    
+    const effectifsPupitres =
+    pupitres.map(
+        pupitre =>
+            (pupitre.chanteurs || [])
+        .filter(
+            chanteur =>
+                !chanteur.lead
+        )
+        .length
+    );
+    */
     const effectifsPupitres =
         pupitres.map(
-            pupitre =>
-                (pupitre.chanteurs || [])
-                    .filter(
-                        chanteur =>
-                            !chanteur.lead
-                    )
-                    .length
+            pupitre => (pupitre.chanteurs || []).length
         );
 
 
@@ -2395,10 +2399,14 @@ export default function RepresentationChoeur({
                             const chanteurs =
                                 pupitre.chanteurs || [];
 
-                            const choristes = chanteurs.filter(
-                                chanteur => !chanteur.lead
-                            );
+                            // const choristes = chanteurs.filter(
+                            //     chanteur => !chanteur.lead
+                            // );
+                            const choristes = chanteurs;
 
+                            // const leads = chanteurs.filter(
+                            //     chanteur => chanteur.lead
+                            // );
                             const leads = chanteurs.filter(
                                 chanteur => chanteur.lead
                             );

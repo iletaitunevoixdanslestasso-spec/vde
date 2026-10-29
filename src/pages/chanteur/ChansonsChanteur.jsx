@@ -500,7 +500,8 @@ export default function ChansonsChanteur() {
                                     TITRE
                                    ================================= */}
 
-                                <div className="chanson-main">
+                                {/* Ligne unique : audio général | répartition | titre | lead | audio lead */}
+                                <div className={`chanson-main ${chanson.lead ? "avec-audio-lead" : ""}`}>
 
                                     {chanson.audio ? (
                                         <a
@@ -527,37 +528,6 @@ export default function ChansonsChanteur() {
                                         </div>
                                     )}
 
-                                    <div className="chanson-title-content">
-
-                                        <h2 className="chanson-titre">
-                                            {chanson.titre}
-                                        </h2>
-
-                                        <button
-                                            type="button"
-                                            className={`chanson-lead-button espace-chanteur-action-mobile ${chanson.lead ? "selected" : "animation-icon"
-                                                }`}
-                                            onClick={() => handleLeadChange(chanson)}
-                                            title={
-                                                chanson.lead
-                                                    ? "Je fais un lead sur cette chanson"
-                                                    : "Indiquer que je fais un lead"
-                                            }
-                                            aria-label={
-                                                chanson.lead
-                                                    ? "Je fais un lead sur cette chanson"
-                                                    : "Indiquer que je fais un lead"
-                                            }
-                                        >
-                                            <span
-                                                className={`chanson-lead-icon icon-concert ${chanson.lead ? "icon-lead_actif" : ""
-                                                    }`}
-                                            ></span>
-
-                                            <span className="chanson-lead-label espace-chanteur-action-label">
-                                                Lead
-                                            </span>
-                                        </button>
                                         <button
                                             type="button"
                                             className="chanson-action chanson-action-repartition espace-chanteur-action-mobile"
@@ -591,7 +561,58 @@ export default function ChansonsChanteur() {
                                             </span>
                                         </button>
 
-                                    </div>
+                                        <h2 className="chanson-titre" title={chanson.titre}>
+                                            {chanson.titre}
+                                        </h2>
+
+                                        <button
+                                            type="button"
+                                            className={`chanson-lead-button espace-chanteur-action-mobile ${chanson.lead ? "selected" : "animation-icon"
+                                                }`}
+                                            onClick={() => handleLeadChange(chanson)}
+                                            title={
+                                                chanson.lead
+                                                    ? "Je fais un lead sur cette chanson"
+                                                    : "Indiquer que je fais un lead"
+                                            }
+                                            aria-label={
+                                                chanson.lead
+                                                    ? "Je fais un lead sur cette chanson"
+                                                    : "Indiquer que je fais un lead"
+                                            }
+                                        >
+                                            <span
+                                                className={`chanson-lead-icon icon-concert ${chanson.lead ? "icon-lead_actif" : ""
+                                                    }`}
+                                            ></span>
+
+                                            <span className="chanson-lead-label espace-chanteur-action-label">
+                                                Lead
+                                            </span>
+                                        </button>
+
+                                        {chanson.lead ?
+                                            chanson.audio_lead ? (
+                                                <a
+                                                    className="chanson-icon chanson-icon-audio_lead animation-icon"
+                                                    href={chanson.audio_lead}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    title="Écouter l’audio du lead"
+                                                    aria-label="Écouter l’audio du lead"
+                                                >
+                                                    <Volume2
+                                                        size={24}
+                                                        strokeWidth={2.2}
+                                                        className="chanson-audio-volume"
+                                                    />
+                                                </a>
+                                            ) : (
+                                                <div className="chanson-icon chanson-icon-audio_lead">
+                                                    <Music2 size={24} />
+                                                </div>
+                                            )
+                                            : null}
 
                                 </div>
                                 <div className="chanson-info">

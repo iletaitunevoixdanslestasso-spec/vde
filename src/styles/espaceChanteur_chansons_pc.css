@@ -189,14 +189,9 @@
 /* =========================================================
    CARTE / STRUCTURE DE LA LIGNE
 
-   Desktop :
-   [ chanson-main ] [ chanson-info ]
-
-   chanson-main :
-   [ icône ] [ titre | lead | répartition ]
-
-   chanson-info :
-   [ paroles | pupitre | audio ]
+   Toute largeur :
+   chanson-main : [ audio total | répartition | titre | lead | audio lead ]
+   chanson-info : [ paroles | pupitre | audio ]
    ========================================================= */
 
 .chanson-card {
@@ -223,9 +218,9 @@
 
 .chanson-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 24px;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 12px;
 
     width: 100%;
 }
@@ -234,6 +229,7 @@
 .chanson-info,
 .chanson-document,
 .chanson-pupitre,
+.chanson-audio_lead,
 .chanson-audio {
     min-width: 0;
 }
@@ -242,9 +238,14 @@
     width: 100%;
 
     display: grid;
-    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-columns: 40px 40px minmax(0, 1fr) 40px;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+}
+
+/* La cinquième colonne n'existe que lorsqu'un lead est déclaré. */
+.chansons-page .chanson-main.avec-audio-lead {
+    grid-template-columns: 40px 40px minmax(0, 1fr) 40px 40px;
 }
 
 .chanson-info {
@@ -281,16 +282,44 @@
     font-size: 1.05rem;
 }
 
-.chanson-title-content {
-    min-width: 0;
-    width: 100%;
-
-    display: grid;
-    grid-template-columns:
-        minmax(0, 1fr) 120px 180px;
-
+/* Actions de la ligne : taille identique sur PC et mobile. */
+.chansons-page .chanson-main > .chanson-icon,
+.chansons-page .chanson-main > .chanson-action-repartition,
+.chansons-page .chanson-main > .chanson-lead-button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    justify-self: center;
+    gap: 0;
+}
+
+/* Le lien audio lead doit rester dans sa colonne, sans hériter de la grille des infos. */
+.chansons-page .chanson-main > .chanson-icon-audio_lead {
+    grid-column: auto;
+    grid-row: auto;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    min-height: 40px;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chansons-page .chanson-main > .chanson-action-repartition .chanson-action-content,
+.chansons-page .chanson-main > .chanson-lead-button .chanson-lead-label {
+    display: none;
+}
+
+.chansons-page .chanson-main > .chanson-action-repartition .chanson-action-icon {
+    margin: 0;
 }
 
 .chanson-titre {
@@ -745,3 +774,13 @@
     min-height: 42px;
 }
 
+
+/* Priorité aux règles de cette page face aux styles communs de l'espace chanteur. */
+.chansons-page .chanson-row {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 0;
+}
+
+.chansons-page .chanson-card {
+    padding: 15px;
+}

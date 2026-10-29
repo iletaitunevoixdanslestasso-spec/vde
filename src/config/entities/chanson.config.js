@@ -72,13 +72,35 @@ const columns = [
     },
     {
         field: "audio",
-        header: "lien audio",
+        header: "lien audio TOTAL",
         type: "text",
         required: false,
 
         render: (v, row) => {
             if (!v) {
                 return "Aucun audio";
+            }
+            let path = row?.audio || ''
+            return React.createElement(
+                "a",
+                {
+                    href: v,
+                    target: "_blank",
+                    rel: "noopener noreferrer"
+                },
+                `📄 ${path}`
+            );
+        }
+    },
+    {
+        field: "audio_lead",
+        header: "lien audio LEAD",
+        type: "text",
+        required: false,
+
+        render: (v, row) => {
+            if (!v) {
+                return "Aucun audio LEAD";
             }
             let path = row?.audio || ''
             return React.createElement(

@@ -14,6 +14,7 @@ export class ChansonRepository extends BaseRepository {
             id,
             titre,
             audio,
+            audio_lead,
             saison_chansons!left (
                 saisons(nom),
                 id,
@@ -43,6 +44,7 @@ export class ChansonRepository extends BaseRepository {
                 deleted_at,
                 paroles,
                 audio,
+                audio_lead,
                 referentiel_documents(
                 id,
                 titre,

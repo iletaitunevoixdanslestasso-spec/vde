@@ -295,6 +295,8 @@ export class SaisonChanteurPupitreService extends BaseService {
                         chanson.titre,
                     audio:
                         chanson.audio,
+                    audio_lead:
+                        chanson.audio_lead,
                     /*
                      * LEAD
                      */

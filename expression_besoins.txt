@@ -7,6 +7,6 @@ Jour anniversaire
     -> repetition -> valider la participation pour les non validés
     -> envoie ficher présence avec les participation
 
-    
-prevoir messagerie programmable
-prévoir tag sur chanteur
+robot 
+=> verifier date de dabut et fin de saison active pour restreindre l'execution des fonctions
+=> faire un robot pour supprimer les DAI a la fin de la saison 

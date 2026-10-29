@@ -545,18 +545,21 @@ button {
 }
 
 .chanson-document,
+ .chanson-audio_lead,
 .chanson-audio {
     display: flex;
     align-items: center;
 }
 
 .chanson-document a,
+.chanson-audio_lead a,
 .chanson-audio a {
     color: var(--color-brand);
     text-decoration: none;
 }
 
 .chanson-document a:hover,
+.chanson-audio_lead a:hover,
 .chanson-audio a:hover {
     text-decoration: underline;
 }
