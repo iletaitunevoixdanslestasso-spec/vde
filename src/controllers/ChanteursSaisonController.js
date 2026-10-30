@@ -114,11 +114,18 @@ export class ChanteursSaisonController extends BaseController {
     generateAccessLink(saisonchanteur) {
         return this.accesController.generateLink(saisonchanteur);
     }
-    copyAccessLink(saisonChanteurs) {
-        const token = saisonChanteurs.acces.length ? saisonChanteurs.acces[0].token : 'aucun accès généré'
-        navigator.clipboard.writeText(token);
-        const url = `${window.location.origin}/chanteur/${token}`;
-        navigator.clipboard.writeText(url);
+    async copyAccessLink(saisonChanteurs) {
+        const result = await this.accesController.generateLink(saisonChanteurs);
+
+        // const token = saisonChanteurs.acces.length ? saisonChanteurs.acces[0].token : 'aucun accès généré'
+        // navigator.clipboard.writeText(token);
+        // const url = `${window.location.origin}/chanteur/${token}`;
+        // navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(result.url);
+
+        console.log(result)
+        return result;
+
     }
     async sendAccessLink(saisonChanteurs) {
         const result = await this.accesController.generateLink(saisonChanteurs);

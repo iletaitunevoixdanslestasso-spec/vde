@@ -15,7 +15,6 @@ export class AccesService {
 
     async generateLink(saisonchanteur) {
 
-        console.error("AccesService.generateLink", saisonchanteur);
 
         // 1. chercher accès actif lié à cette inscription saison
         const { data: existing } =
