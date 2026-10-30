@@ -292,7 +292,7 @@ export class ChanteurService extends BaseService {
     async getAvailablePupitres() {
 
         const { data, error } =
-            await this.pupitreRepository.findAll();
+            await this.pupitreRepository.findAllNotDelete();
 
         if (error) {
             return BaseResponse.error([], error.message);

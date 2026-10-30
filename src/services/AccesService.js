@@ -30,7 +30,7 @@ export class AccesService {
 
         // 2. si existe ET pas expiré => on retourne le lien existant
         if (existing && new Date(existing.date_expiration) > now) {
-            const url = `${window.location.origin}/chanteur/${existing.token}`;
+            const url = `${import.meta.env.VITE_APP_BASE_URL}/chanteur/${existing.token}`;
             return {
                 token: existing.token,
                 url: `${url}`,

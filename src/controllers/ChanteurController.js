@@ -52,7 +52,7 @@ export class ChanteurController extends BaseController {
         return this.accesController.generateLink(chanteur);
     }
     copyAccessLink(link) {
-        const url = `${window.location.origin}/chanteur/${link}`;
+        const url = `${import.meta.env.VITE_APP_BASE_URL}/chanteur/${link}`;
         navigator.clipboard.writeText(url);
     }
     async sendAccessLink(chanteur) {
