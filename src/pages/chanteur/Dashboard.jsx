@@ -13,6 +13,7 @@ import RepetitionParticipationControllerChanteur
   from "../../components/repetition_participation/RepetitionParticipationControllerChanteur";
 import { Check, CircleHelp, X } from "lucide-react";
 import "../../components/repetition_participation/RepetitionParticipationBoutons.css";
+import NotificationPermission from "../../components/notifications/NotificationPermission";
 
 function formatRendezvousDate(date) {
   if (!date) {
@@ -723,6 +724,12 @@ export default function DashboardChanteur() {
 
       </header>
 
+
+
+      {/* =====================================================
+          notification
+      ===================================================== */}
+      <NotificationPermission />
 
       {/* =====================================================
           TODO
