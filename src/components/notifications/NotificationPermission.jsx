@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
+import { pushSubscriptionService } from "../../services/PushSubscriptionService";
 import "./NotificationPermission.css";
 
 function lirePermission() {
@@ -11,6 +12,7 @@ function lirePermission() {
 export default function NotificationPermission() {
   const [permission, setPermission] = useState(lirePermission);
   const [demandeEnCours, setDemandeEnCours] = useState(false);
+  const [etatAbonnement, setEtatAbonnement] = useState("non_verifie");
   const [erreur, setErreur] = useState("");
 
   // Actualise l'affichage si l'autorisation change dans les réglages.
@@ -35,6 +37,39 @@ export default function NotificationPermission() {
     "serviceWorker" in navigator &&
     "PushManager" in window;
 
+  // Si les notifications sont déjà autorisées, vérifie si cet appareil
+  // possède un abonnement Push ; le cas échéant, le synchronise avec Supabase.
+  useEffect(() => {
+    if (permission !== "granted" || !estCompatible || doitEtreInstallee) {
+      return;
+    }
+
+    let actif = true;
+
+    async function verifierAbonnement() {
+      setEtatAbonnement("verification");
+      setErreur("");
+
+      try {
+        const dejaAbonne =
+          await pushSubscriptionService.synchroniserAbonnementExistant();
+
+        if (actif) {
+          setEtatAbonnement(dejaAbonne ? "actif" : "a_activer");
+        }
+      } catch (e) {
+        console.error("Vérification de l'abonnement Push :", e);
+        if (actif) {
+          setEtatAbonnement("a_activer");
+          setErreur(e.message || "Impossible de vérifier les notifications.");
+        }
+      }
+    }
+
+    verifierAbonnement();
+    return () => { actif = false; };
+  }, [permission, estCompatible, doitEtreInstallee]);
+
   async function demanderAutorisation() {
     if (demandeEnCours || !estCompatible || doitEtreInstallee) return;
 
@@ -48,6 +83,22 @@ export default function NotificationPermission() {
     } catch (e) {
       console.error("Autorisation notifications :", e);
       setErreur("Impossible de demander l'autorisation sur cet appareil.");
+    } finally {
+      setDemandeEnCours(false);
+    }
+  }
+
+  async function activerAbonnement() {
+    if (demandeEnCours || permission !== "granted") return;
+
+    setDemandeEnCours(true);
+    setErreur("");
+    try {
+      await pushSubscriptionService.creerEtEnregistrerAbonnement();
+      setEtatAbonnement("actif");
+    } catch (e) {
+      console.error("Enregistrement de l'abonnement Push :", e);
+      setErreur(e.message || "Impossible d'activer les notifications Push.");
     } finally {
       setDemandeEnCours(false);
     }
@@ -74,9 +125,29 @@ export default function NotificationPermission() {
             navigateur compatible.
           </p>
         ) : permission === "granted" ? (
-          <p className="notification-permission-status notification-permission-status--granted">
-            Autorisation accordée sur cet appareil.
-          </p>
+          etatAbonnement === "actif" ? (
+            <p className="notification-permission-status notification-permission-status--granted">
+              Notifications activées sur cet appareil.
+            </p>
+          ) : etatAbonnement === "verification" || etatAbonnement === "non_verifie" ? (
+            <p className="notification-permission-text">
+              Vérification de l'abonnement Push…
+            </p>
+          ) : (
+            <>
+              <p className="notification-permission-text">
+                Autorisation accordée. Il reste à enregistrer cet appareil.
+              </p>
+              <button
+                type="button"
+                className="notification-permission-button"
+                onClick={activerAbonnement}
+                disabled={demandeEnCours}
+              >
+                {demandeEnCours ? "Enregistrement…" : "Finaliser l'activation"}
+              </button>
+            </>
+          )
         ) : permission === "denied" ? (
           <p className="notification-permission-text">
             Notifications bloquées. Pour les autoriser, modifiez les réglages
