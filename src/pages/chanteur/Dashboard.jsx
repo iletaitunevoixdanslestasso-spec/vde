@@ -729,7 +729,10 @@ export default function DashboardChanteur() {
       {/* =====================================================
           notification
       ===================================================== */}
-      <NotificationPermission />
+      {import.meta.env.MODE == "development"
+       ? <NotificationPermission />
+       :null
+       }
 
       {/* =====================================================
           TODO
