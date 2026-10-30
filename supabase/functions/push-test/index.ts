@@ -1,3 +1,4 @@
+import { autoriserEnvoiPush } from "./PushAuthorizationService.ts";
 import * as webpush from "jsr:@negrel/webpush@0.5.0";
 import {
   PushSubscriptionRepository,
@@ -52,8 +53,15 @@ async function createApplicationServer() {
   });
 }
 
+// Autorise les appels depuis React (Supabase Functions SDK).
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-retry-count, x-push-test-secret, traceparent, tracestate, baggage",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 function respond(status: number, payload: Record<string, unknown>) {
-  return Response.json(payload, { status });
+  return Response.json(payload, { status, headers: corsHeaders });
 }
 
 function pushTo(appServer: Awaited<ReturnType<typeof createApplicationServer>>, subscription: PushSubscriptionRow) {
@@ -75,15 +83,25 @@ function logPushError(error: unknown) {
 }
 
 Deno.serve(async (request: Request) => {
+  // Le navigateur interroge d'abord les règles CORS via OPTIONS.
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
   if (request.method !== "POST") {
     return respond(405, { error: "Méthode non autorisée." });
   }
 
-  // Secret serveur uniquement : ne pas exposer dans React ni dans VITE_*.
-  const expectedSecret = Deno.env.get("PUSH_TEST_SECRET");
-  if (!expectedSecret) return respond(503, { error: "PUSH_TEST_SECRET non configuré." });
-  if (request.headers.get("x-push-test-secret") !== expectedSecret) {
-    return respond(401, { error: "Non autorisé." });
+  // Deux méthodes : secret pour les tests manuels existants, ou
+  // JWT Supabase d'un compte administrateur autorisé pour React.
+  try {
+    const autorisation = await autoriserEnvoiPush(request);
+    if (!autorisation.autorise) {
+      return respond(autorisation.status, { error: autorisation.message });
+    }
+  } catch (error) {
+    console.error("push-test: erreur de vérification d'autorisation", error);
+    return respond(503, { error: "Vérification d'autorisation indisponible." });
   }
 
   let body: {
