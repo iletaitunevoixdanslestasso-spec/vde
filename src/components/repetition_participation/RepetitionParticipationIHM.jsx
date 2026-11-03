@@ -1,3 +1,4 @@
+import { useChanteur } from "../contexts/ChanteurContext";
 import RepetitionParticipationBoutons
     from "./RepetitionParticipationBoutons";
 
@@ -7,6 +8,11 @@ export default function RepetitionParticipationIHM({
     saving,
     onParticipationChange
 }) {
+
+    const {
+        chanteur,
+    } = useChanteur();    
+    const heureRdv = repetition?.repetitions_type.code == "complet" ? "20h00" : chanteur?.gdescription;
     if (!repetition) {
         return null;
     }
@@ -66,10 +72,10 @@ export default function RepetitionParticipationIHM({
                         </strong>
                     )}
 
-                    {repetition.rendezvous?.heure_rdv && (
+                    {heureRdv && (
                         <span className="repetition-participation-time">
                             🕐 Rendez-vous à{" "}
-                            {repetition.rendezvous.heure_rdv}
+                            {heureRdv}
                         </span>
                     )}
 

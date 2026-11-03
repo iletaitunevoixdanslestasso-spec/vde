@@ -234,7 +234,7 @@ Deno.serve(async (req) => {
           chanteur,
           saisonChanteur.id,
           saison.id,
-          lieuRepetitionParDefaut
+          lieuRepetitionParDefaut.id
         );
 
       // ------------------------------------------------

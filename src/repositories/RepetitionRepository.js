@@ -100,7 +100,12 @@ export class RepetitionRepository extends RendezvouRepository {
             description,
             accompagne,
             rendezvous_id,
-
+            repetitions_type(
+                id,
+                libelle,
+                code,
+                duree
+            ),
             rendezvous(
                 id,
                 titre,

@@ -21,7 +21,7 @@ function ChanteurLayoutContent() {
         setChanteur,
         setLoadingChanteur
     } = useChanteur();
-
+    
     // --------------------------------------------------
     // POPIN REPETITION
     // --------------------------------------------------

@@ -99,10 +99,10 @@ export const ReferentielDocumentConfig = createEntityConfig({
      * le lieu des répétitions.
      */
     canDelete: (row) => {
-        return row.titre !== "template import répétition";
+        return !["template import répétition","template import choristes"].includes(row.titre);
     },
     canEdit: (row) => {
-        return row.titre !== "template import répétition";
+        return !["template import répétition","template import choristes"].includes(row.titre);
     },
 
 
