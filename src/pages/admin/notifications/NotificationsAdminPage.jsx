@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { pushAdminService } from "../../../services/PushAdminService";
 import "./NotificationsAdminPage.css";
 
@@ -10,13 +10,35 @@ export default function NotificationsAdminPage() {
   const [resultat, setResultat] = useState(null);
   const [erreur, setErreur] = useState("");
   const [action, setAction] = useState(null);
+  const [destinataires, setDestinataires] = useState(null);
+  const [chargementDestinataires, setChargementDestinataires] = useState(true);
+  const [erreurDestinataires, setErreurDestinataires] = useState("");
+  const [tentativeChargement, setTentativeChargement] = useState(0);
+  const [selection, setSelection] = useState([]);
+
+  useEffect(() => {
+    let actif = true;
+    pushAdminService.getDestinataires().then(data => {
+      if (actif) setDestinataires(data);
+    }).catch(e => {
+      if (actif) setErreurDestinataires(e instanceof Error ? e.message : "Impossible de charger les destinataires.");
+    }).finally(() => {
+      if (actif) setChargementDestinataires(false);
+    });
+    return () => { actif = false; };
+  }, [tentativeChargement]);
 
   const enCours = action !== null;
   const valide = titre.trim().length > 0 && titre.trim().length <= 80 &&
     message.trim().length > 0 && message.trim().length <= 500;
+  const chanteurs = destinataires?.chanteurs ?? [];
+  const saison = destinataires?.saison;
+  const destinatairesValides = !chargementDestinataires && !erreurDestinataires &&
+    Boolean(saison?.id) && selection.length > 0;
   const nombreAppareils = simulation?.nombre_appareils ?? 0;
+  const nombreSansAbonnement = simulation?.nombre_sans_abonnement ?? 0;
   const peutEnvoyer = Boolean(simulation) && nombreAppareils > 0 &&
-    nombreAppareils <= 200 && confirmation && valide && !enCours && !resultat;
+    nombreAppareils <= 200 && confirmation && valide && destinatairesValides && !enCours && !resultat;
 
   function invaliderSimulation() {
     setSimulation(null);
@@ -25,9 +47,22 @@ export default function NotificationsAdminPage() {
     setErreur("");
   }
 
+  function selectionner(ids) {
+    setSelection(ids);
+    invaliderSimulation();
+  }
+
+  function rechargerDestinataires() {
+    setChargementDestinataires(true);
+    setErreurDestinataires("");
+    setDestinataires(null);
+    selectionner([]);
+    setTentativeChargement(value => value + 1);
+  }
+
   async function simuler(event) {
     event.preventDefault();
-    if (!valide || enCours) return;
+    if (!valide || !destinatairesValides || enCours) return;
 
     setAction("simulation");
     setErreur("");
@@ -36,7 +71,7 @@ export default function NotificationsAdminPage() {
     setConfirmation(false);
 
     try {
-      setSimulation(await pushAdminService.simuler(titre, message));
+      setSimulation(await pushAdminService.simuler(titre, message, selection, saison.id));
     } catch (e) {
       setErreur(e instanceof Error ? e.message : "Erreur pendant la simulation.");
     } finally {
@@ -51,7 +86,7 @@ export default function NotificationsAdminPage() {
     setErreur("");
     setConfirmation(false);
     try {
-      setResultat(await pushAdminService.envoyer(titre, message));
+      setResultat(await pushAdminService.envoyer(titre, message, selection, saison.id));
       setSimulation(null); // empêche un second envoi accidentel
     } catch (e) {
       setSimulation(null);
@@ -66,12 +101,88 @@ export default function NotificationsAdminPage() {
       <header className="notifications-admin__header">
         <h1>Envoyer une notification</h1>
         <p>
-          Diffusion à tous les appareils inscrits aux notifications Push,
-          sans distinction de saison. Un chanteur peut avoir plusieurs appareils.
+          Choisissez les choristes inscrits à la saison active qui recevront le message.
+          Un choriste peut avoir plusieurs appareils abonnés aux notifications Push.
         </p>
       </header>
 
       <form className="notifications-admin__form" onSubmit={simuler}>
+        <fieldset
+          className="notifications-admin__recipients"
+          disabled={enCours || chargementDestinataires}
+          aria-busy={chargementDestinataires}
+          aria-describedby="push-destinataires-description"
+        >
+          <legend>Destinataires de la saison active</legend>
+          <p id="push-destinataires-description">
+            Aucun choriste n'est sélectionné par défaut. La liste comprend aussi les choristes sans appareil abonné.
+          </p>
+          {chargementDestinataires && <p role="status">Chargement des destinataires…</p>}
+          {erreurDestinataires && (
+            <div>
+              <p className="notifications-admin__error" role="alert">{erreurDestinataires}</p>
+              <button
+                type="button"
+                className="notifications-admin__button notifications-admin__button--secondary"
+                onClick={rechargerDestinataires}
+              >
+                Réessayer le chargement
+              </button>
+            </div>
+          )}
+          {!chargementDestinataires && !erreurDestinataires && !saison && (
+            <p role="status">Aucune saison active : l'envoi est indisponible.</p>
+          )}
+          {!chargementDestinataires && !erreurDestinataires && saison && (
+            <>
+              <p>Saison active : <strong>{saison.nom}</strong></p>
+              {chanteurs.length === 0 ? (
+                <p role="status">Aucun choriste inscrit à cette saison : l'envoi est indisponible.</p>
+              ) : (
+                <>
+                  <div className="notifications-admin__selection-actions">
+                    <button
+                      type="button"
+                      className="notifications-admin__button notifications-admin__button--secondary"
+                      onClick={() => selectionner(chanteurs.map(chanteur => chanteur.id))}
+                      disabled={selection.length === chanteurs.length}
+                    >
+                      Tout sélectionner
+                    </button>
+                    <button
+                      type="button"
+                      className="notifications-admin__button notifications-admin__button--secondary"
+                      onClick={() => selectionner([])}
+                      disabled={selection.length === 0}
+                    >
+                      Tout désélectionner
+                    </button>
+                  </div>
+                  <div className="notifications-admin__recipient-list">
+                    {chanteurs.map(chanteur => (
+                      <label key={chanteur.id} className="notifications-admin__recipient">
+                        <input
+                          type="checkbox"
+                          name="destinataires"
+                          value={chanteur.id}
+                          checked={selection.includes(chanteur.id)}
+                          onChange={event => selectionner(event.target.checked
+                            ? [...selection, chanteur.id]
+                            : selection.filter(id => id !== chanteur.id))}
+                        />
+                        <span>{chanteur.nom} {chanteur.prenom}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="notifications-admin__selection-count" aria-live="polite">
+                    {selection.length} choriste(s) sélectionné(s) sur {chanteurs.length}.
+                  </p>
+                </>
+              )}
+            </>
+          )}
+        </fieldset>
+
         <div className="notifications-admin__field">
           <label htmlFor="push-titre">Titre de la notification</label>
           <input
@@ -124,7 +235,7 @@ export default function NotificationsAdminPage() {
         <button
           className="notifications-admin__button notifications-admin__button--secondary"
           type="submit"
-          disabled={enCours || !valide}
+          disabled={enCours || !valide || !destinatairesValides}
         >
           {action === "simulation" ? "Simulation en cours..." : "1. Simuler l'envoi"}
         </button>
@@ -136,9 +247,19 @@ export default function NotificationsAdminPage() {
         <div className="notifications-admin__result" aria-live="polite">
           <h2>Résultat de la simulation</h2>
           <p>
-            <strong>{nombreAppareils}</strong> appareil(s) destinataire(s).
+            <strong>{selection.length}</strong> choriste(s) sélectionné(s),
+            <strong> {nombreAppareils}</strong> appareil(s) destinataire(s).
             Aucune notification n'a été envoyée.
           </p>
+
+          {nombreSansAbonnement > 0 && (
+            <p className="notifications-admin__warning">
+              {nombreSansAbonnement} choriste(s) sélectionné(s) n'ont aucun appareil abonné et ne recevront pas de notification.
+            </p>
+          )}
+          {nombreAppareils === 0 && (
+            <p className="notifications-admin__warning">Aucun appareil abonné pour cette sélection : aucun envoi possible.</p>
+          )}
 
           {nombreAppareils > 200 && (
             <p className="notifications-admin__warning">
@@ -155,7 +276,7 @@ export default function NotificationsAdminPage() {
                   disabled={enCours}
                   onChange={(event) => setConfirmation(event.target.checked)}
                 />
-                Je confirme l'envoi de ce message aux {nombreAppareils} appareils.
+                Je confirme l'envoi de ce message aux {nombreAppareils} appareils des choristes sélectionnés.
               </label>
               <button
                 type="button"
@@ -174,7 +295,8 @@ export default function NotificationsAdminPage() {
         <div className="notifications-admin__result" aria-live="polite">
           <h2>Envoi terminé</h2>
           <p>
-            Appareils ciblés : <strong>{resultat.nombre_appareils ?? 0}</strong>
+            Choristes sélectionnés : <strong>{selection.length}</strong>
+            {" · "}Appareils ciblés : <strong>{resultat.nombre_appareils ?? 0}</strong>
             {" · "}Acceptés par les services Push : <strong>{resultat.acceptes ?? 0}</strong>
             {" · "}Échecs : <strong>{resultat.echecs ?? 0}</strong>
           </p>
@@ -190,7 +312,7 @@ export default function NotificationsAdminPage() {
             onClick={() => {
               setTitre("");
               setMessage("");
-              invaliderSimulation();
+              selectionner([]);
             }}
           >
             Rédiger une autre notification

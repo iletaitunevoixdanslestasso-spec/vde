@@ -44,8 +44,8 @@ export class SaisonChanteurRepository extends BaseRepository {
     /**
      * Liste les chanteurs associés à une saison
      */
-    async findBySaison(saisonId) {
-        return this.supabase
+    async findBySaison(saisonId, pagination = null) {
+        let query = this.supabase
             .from(this.table)
             .select(`
                 id,
@@ -63,10 +63,15 @@ export class SaisonChanteurRepository extends BaseRepository {
                     nom
                 )
                 
-            `)
+            `, pagination ? { count: "exact" } : undefined)
             .eq("saison_id", saisonId)
             .is("deleted_at", null)
             .is("chanteurs.deleted_at", null);
+        if (pagination) {
+            query = query.order("id", { ascending: true })
+                .range(pagination.offset, pagination.offset + pagination.limit - 1);
+        }
+        return query;
     }
     async findBySaison_convention(saisonId) {
         const { data, error } = await this.supabase

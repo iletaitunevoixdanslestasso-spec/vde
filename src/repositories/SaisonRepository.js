@@ -3,8 +3,18 @@ import { supabase } from "../core/supabase/client";
 
 export class SaisonRepository extends BaseRepository {
 
-    constructor(table) {
+    constructor(table = "saisons") {
         super(table);
+    }
+
+    // Une seule saison active et non supprimée ; une ambiguïté est une erreur.
+    async findActive() {
+        return this.supabase
+            .from(this.table)
+            .select("*")
+            .eq("active", true)
+            .is("deleted_at", null)
+            .maybeSingle();
     }
 
     async findAllActives(orderBy = "date_debut") {

@@ -2,8 +2,11 @@ import { autoriserEnvoiPush } from "./PushAuthorizationService.ts";
 import * as webpush from "jsr:@negrel/webpush@0.5.0";
 import {
   PushSubscriptionRepository,
+  PushSelectionError,
   type PushSubscriptionRow,
 } from "./PushSubscriptionRepository.ts";
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function env(name: string): string {
   const value = Deno.env.get(name);
@@ -110,6 +113,27 @@ function logPushError(error: unknown) {
   return pushStatus;
 }
 
+async function diffuser(subscriptions: PushSubscriptionRow[], notification: PushMessage) {
+  let acceptes = 0;
+  let echecs = 0;
+  if (!subscriptions.length) return { acceptes, echecs };
+  const appServer = await createApplicationServer();
+  // Petits lots pour limiter le nombre de requêtes simultanées.
+  for (let i = 0; i < subscriptions.length; i += 5) {
+    const results = await Promise.allSettled(
+      subscriptions.slice(i, i + 5).map(subscription => pushTo(appServer, subscription, notification)),
+    );
+    for (const result of results) {
+      if (result.status === "fulfilled") acceptes++;
+      else {
+        echecs++;
+        logPushError(result.reason);
+      }
+    }
+  }
+  return { acceptes, echecs };
+}
+
 Deno.serve(async (request: Request) => {
   // Le navigateur interroge d'abord les règles CORS via OPTIONS.
   if (request.method === "OPTIONS") {
@@ -139,6 +163,8 @@ Deno.serve(async (request: Request) => {
     confirmation?: unknown;
     titre?: unknown;
     message?: unknown;
+    saison_id?: unknown;
+    chanteur_ids?: unknown;
   };
   try {
     body = await request.json();
@@ -155,6 +181,45 @@ Deno.serve(async (request: Request) => {
     notification = lireMessage(body as Record<string, unknown>);
   } catch (error) {
     return respond(400, { error: error instanceof Error ? error.message : "Notification invalide." });
+  }
+
+  // Interface admin : sélection explicite de choristes de la saison active.
+  if (body.cible === "selection") {
+    if (typeof body.saison_id !== "string" || !UUID.test(body.saison_id) ||
+      !Array.isArray(body.chanteur_ids) || body.chanteur_ids.length === 0 ||
+      body.chanteur_ids.length > 1000 ||
+      body.chanteur_ids.some(id => typeof id !== "string" || !UUID.test(id))) {
+      return respond(400, { error: "Sélection invalide : saison et liste de 1 à 1 000 UUID chanteurs nécessaires." });
+    }
+    if (typeof body.simulation !== "boolean") {
+      return respond(400, { error: "Le champ simulation doit être un booléen." });
+    }
+    if (!body.simulation && body.confirmation !== "ENVOYER_LA_SELECTION") {
+      return respond(400, { error: "Confirmation explicite nécessaire pour l'envoi à la sélection." });
+    }
+    try {
+      const repository = new PushSubscriptionRepository();
+      const { subscriptions, ...compteurs } = await repository.prepareSelection(
+        body.saison_id.toLowerCase(),
+        [...new Set(body.chanteur_ids.map(id => id.toLowerCase()))],
+        !body.simulation,
+      );
+      if (body.simulation) {
+        return respond(200, {
+          success: true, simulation: true, ...compteurs,
+          message: "Simulation terminée : aucune notification envoyée.",
+        });
+      }
+      const { acceptes, echecs } = await diffuser(subscriptions, notification);
+      return respond(200, {
+        success: echecs === 0, ...compteurs, acceptes, echecs,
+        message: "Envoi terminé. 'Acceptés' signifie acceptés par les services Push, pas affichés avec certitude.",
+      });
+    } catch (error) {
+      if (error instanceof PushSelectionError) return respond(error.status, { success: false, error: error.message });
+      console.error("push-test: envoi à la sélection impossible", error);
+      return respond(502, { success: false, error: "Impossible de préparer ou d'envoyer la sélection." });
+    }
   }
 
   // Nouveau mode : tous les appareils abonnés (sans filtrage par saison).
@@ -185,24 +250,7 @@ Deno.serve(async (request: Request) => {
         return respond(200, { success: true, nombre_appareils: 0, acceptes: 0, echecs: 0 });
       }
 
-      const appServer = await createApplicationServer();
-      let acceptes = 0;
-      let echecs = 0;
-
-      // Petits lots pour limiter le nombre de requêtes simultanées.
-      for (let i = 0; i < subscriptions.length; i += 5) {
-        const lot = subscriptions.slice(i, i + 5);
-        const results = await Promise.allSettled(lot.map((subscription) => pushTo(appServer, subscription, notification)));
-
-        for (const result of results) {
-          if (result.status === "fulfilled") {
-            acceptes++;
-          } else {
-            echecs++;
-            logPushError(result.reason);
-          }
-        }
-      }
+      const { acceptes, echecs } = await diffuser(subscriptions, notification);
 
       return respond(200, {
         success: echecs === 0,
@@ -222,7 +270,7 @@ Deno.serve(async (request: Request) => {
 
   // Ancien mode : abonnement unique (inchangé).
   const id = body.subscription_id;
-  if (typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+  if (typeof id !== "string" || !UUID.test(id)) {
     return respond(400, { error: "subscription_id doit être un UUID." });
   }
 

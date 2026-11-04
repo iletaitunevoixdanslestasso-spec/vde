@@ -24,14 +24,12 @@ export class SaisonService extends BaseService {
     }
     async getActive() {
 
-        const { data, error } = await this.repository.findOneBy({
-            active: true
-        });
+        const { data, error } = await this.repository.findActive();
         if (error) {
             return BaseResponse.error([], error.message);
         }
 
-        return BaseResponse.success(this.mapper.toUi(data));
+        return BaseResponse.success(data && this.mapper ? this.mapper.toUi(data) : data);
     }
 
     // ⭐ spécifique métier

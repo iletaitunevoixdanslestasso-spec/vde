@@ -58,7 +58,8 @@
 .notifications-admin__field input:focus-visible,
 .notifications-admin__field textarea:focus-visible,
 .notifications-admin__button:focus-visible,
-.notifications-admin__confirmation input:focus-visible {
+.notifications-admin__confirmation input:focus-visible,
+.notifications-admin__recipient input:focus-visible {
   outline: 3px solid #90bff7;
   outline-offset: 2px;
 }
@@ -94,7 +95,7 @@
   align-items: center;
   justify-content: center;
   align-self: flex-start;
-  min-height: 42px;
+  min-height: 44px;
   border-radius: 8px;
   padding: 10px 18px;
   font: inherit;
@@ -131,6 +132,7 @@
 .notifications-admin__result p { line-height: 1.5; }
 
 .notifications-admin__confirmation {
+  min-height: 44px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -160,9 +162,31 @@
 
 .notifications-admin__note { color: #6a6977; }
 
+.notifications-admin__recipients {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #dedee6;
+  border-radius: 10px;
+}
+
+.notifications-admin__recipients legend { font-weight: 650; padding: 0 6px; }
+.notifications-admin__recipients p { line-height: 1.5; }
+.notifications-admin__selection-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.notifications-admin__recipient-list { max-height: 360px; overflow-y: auto; border: 1px solid #dedee6; border-radius: 8px; }
+.notifications-admin__recipient { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; box-sizing: border-box; cursor: pointer; }
+.notifications-admin__recipient + .notifications-admin__recipient { border-top: 1px solid #eeeef3; }
+.notifications-admin__recipient input { width: 20px; height: 20px; margin: 0; flex-shrink: 0; }
+.notifications-admin__recipient span { overflow-wrap: anywhere; }
+.notifications-admin__recipients:disabled .notifications-admin__recipient { cursor: wait; }
+.notifications-admin__selection-count { margin-bottom: 0; font-weight: 600; }
+
 @media (max-width: 600px) {
   .notifications-admin { padding: 18px 12px 32px; }
   .notifications-admin__form,
   .notifications-admin__result { padding: 16px; }
   .notifications-admin__button { width: 100%; }
+  .notifications-admin__recipients { padding: 12px; }
+  .notifications-admin__selection-actions { flex-direction: column; }
+  .notifications-admin__recipient-list { max-height: 300px; }
 }

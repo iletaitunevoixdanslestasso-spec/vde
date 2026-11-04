@@ -62,10 +62,10 @@ export class SaisonChanteurService extends BaseService {
     /**
      * Liste les chanteurs d'une saison
      */
-    async getBySaison(saisonId) {
+    async getBySaison(saisonId, pagination = null) {
 
-        const { data, error } =
-            await this.repository.findBySaison(saisonId);
+        const { data, error, count } =
+            await this.repository.findBySaison(saisonId, pagination);
 
 
         if (error) {
@@ -73,17 +73,54 @@ export class SaisonChanteurService extends BaseService {
         }
 
 
-        return BaseResponse.success(
-            data.map(item => ({
+        const result = BaseResponse.success(
+            (data ?? []).map(item => ({
                 id: item.id,
                 chanteur_id: item.chanteur_id,
                 saison_id: item.saison_id,
                 chanteur: item.chanteurs
             }))
         );
+        if (pagination) result.total = count ?? null;
+        return result;
     }
 
 
+
+    /** Réutilise les associations de saison, sans consulter tous les adhérents. */
+    async getDestinataires(saisonId) {
+        if (!saisonId) return BaseResponse.error([], "Saison non renseignée.");
+        const associations = [];
+        let offset = 0;
+        const limit = 500;
+        while (true) {
+            const result = await this.getBySaison(saisonId, { offset, limit });
+            if (!result.success) return result;
+            const page = result.data ?? [];
+            associations.push(...page);
+            offset += page.length;
+            if (result.total !== null && result.total !== undefined) {
+                if (offset >= result.total) break;
+                if (!page.length) return BaseResponse.error([], "Lecture incomplète des chanteurs de la saison.");
+            } else if (page.length < limit) break;
+        }
+        const uniques = new Map();
+        for (const association of associations) {
+            const chanteur = association.chanteur;
+            // Une jointure gauche peut renvoyer null pour un chanteur supprimé.
+            if (!chanteur?.id || chanteur.deleted_at) continue;
+            uniques.set(chanteur.id, {
+                id: chanteur.id,
+                nom: chanteur.nom ?? "",
+                prenom: chanteur.prenom ?? ""
+            });
+        }
+        const ordre = new Intl.Collator("fr", { sensitivity: "base" });
+        const chanteurs = [...uniques.values()].sort((a, b) =>
+            ordre.compare(a.nom, b.nom) || ordre.compare(a.prenom, b.prenom) || a.id.localeCompare(b.id)
+        );
+        return BaseResponse.success(chanteurs);
+    }
 
     /**
      * Liste des chanteurs pouvant être ajoutés
