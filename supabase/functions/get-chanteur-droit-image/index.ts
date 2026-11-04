@@ -1,7 +1,9 @@
+import { readStorageCacheConfig, versionStorageUrl } from "../_shared/storage-cache.ts";
 import { createSupabaseAdmin, validateChanteurToken } from "../_shared/chanteur.ts";
 import { createSignedDownloadUrl } from "../_shared/storage.ts";
 
 const corsHeaders = {
+    "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers":
         "authorization, x-client-info, apikey, content-type",
@@ -89,6 +91,8 @@ Deno.serve(async (req) => {
          * ----------------------------------------------------
          */
 
+        const storageCacheConfig = await readStorageCacheConfig(supabaseAdmin);
+
         const {
             url,
             error: signedUrlError
@@ -125,7 +129,8 @@ Deno.serve(async (req) => {
         return new Response(
             JSON.stringify({
                 path,
-                url,
+                url: versionStorageUrl(url, storageCacheConfig, "pdf_dai"),
+                storage_cache_config: storageCacheConfig,
                 workflow:
                     chanteur.droit_image_workflow
             }),

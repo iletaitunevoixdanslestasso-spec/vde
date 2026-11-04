@@ -1,0 +1,6 @@
+.storage-cache-admin { max-width: 780px; margin: 0 auto; padding: 24px; text-align: left; }
+.storage-cache-admin article { margin-top: 20px; padding: 20px; border: 1px solid #dedee6; border-radius: 10px; background: #fff; }
+.storage-cache-admin button { margin: 8px 8px 0 0; padding: 10px 14px; font: inherit; cursor: pointer; }
+.storage-cache-admin button:disabled { cursor: wait; opacity: .6; }
+.storage-cache-admin [role="alert"] { color: #9b2424; }
+.storage-cache-admin [role="status"] { color: #225c31; }

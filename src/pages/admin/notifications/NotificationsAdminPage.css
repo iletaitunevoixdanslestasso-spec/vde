@@ -1,0 +1,168 @@
+.notifications-admin {
+  box-sizing: border-box;
+  width: min(100%, 780px);
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  color: #282635;
+  text-align: left;
+}
+
+.notifications-admin__header h1 {
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+
+.notifications-admin__header p {
+  color: #5c5b69;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.notifications-admin__form,
+.notifications-admin__result {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid #dedee6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.notifications-admin__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notifications-admin__field label,
+.notifications-admin__preview > strong {
+  font-weight: 650;
+}
+
+.notifications-admin__field input,
+.notifications-admin__field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #bcbcca;
+  border-radius: 8px;
+  background: #fff;
+  color: #262631;
+  font: inherit;
+}
+
+.notifications-admin__field textarea { resize: vertical; }
+
+.notifications-admin__field input:focus-visible,
+.notifications-admin__field textarea:focus-visible,
+.notifications-admin__button:focus-visible,
+.notifications-admin__confirmation input:focus-visible {
+  outline: 3px solid #90bff7;
+  outline-offset: 2px;
+}
+
+.notifications-admin__field small {
+  align-self: flex-end;
+  color: #6a6977;
+}
+
+.notifications-admin__preview {
+  display: grid;
+  gap: 12px;
+}
+
+.notifications-admin__preview-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #f4f6fb;
+  border: 1px solid #e1e6f0;
+  border-radius: 10px;
+}
+
+.notifications-admin__preview-content p {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.notifications-admin__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 42px;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.notifications-admin__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.notifications-admin__button--secondary {
+  background: #fff;
+  border: 1px solid #9d9baa;
+  color: #343041;
+}
+
+.notifications-admin__button--primary {
+  border: 1px solid #244e99;
+  background: #244e99;
+  color: #fff;
+}
+
+.notifications-admin__result {
+  margin-top: 20px;
+}
+
+.notifications-admin__result h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.notifications-admin__result p { line-height: 1.5; }
+
+.notifications-admin__confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.notifications-admin__confirmation input {
+  margin: 4px 0 0;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.notifications-admin__error,
+.notifications-admin__warning {
+  color: #9b2424;
+}
+
+.notifications-admin__error {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #e3a3a3;
+  border-radius: 8px;
+  background: #fff5f5;
+}
+
+.notifications-admin__note { color: #6a6977; }
+
+@media (max-width: 600px) {
+  .notifications-admin { padding: 18px 12px 32px; }
+  .notifications-admin__form,
+  .notifications-admin__result { padding: 16px; }
+  .notifications-admin__button { width: 100%; }
+}

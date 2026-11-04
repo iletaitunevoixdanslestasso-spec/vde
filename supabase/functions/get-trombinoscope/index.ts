@@ -1,3 +1,4 @@
+import { readStorageCacheConfig, versionStorageUrl } from "../_shared/storage-cache.ts";
 import { withSupabase } from "npm:@supabase/server@1";
 
 const BUCKET = "photos-chanteurs";
@@ -121,6 +122,7 @@ export default {
                     c.photo.startsWith(`chanteurs/${c.id}/`))
                 .map((c) => c.photo);
 
+            const storageCacheConfig = await readStorageCacheConfig(ctx.supabaseAdmin);
             const urlParChemin = new Map<string, string | null>();
             if (chemins.length) {
                 const { data: urls, error: urlsErreur } =
@@ -131,7 +133,7 @@ export default {
                     return reponseErreur("Erreur de chargement des photos", 500);
                 }
                 chemins.forEach((chemin, i) => {
-                    urlParChemin.set(chemin, urls?.[i]?.signedUrl ?? null);
+                    urlParChemin.set(chemin, versionStorageUrl(urls?.[i]?.signedUrl ?? null, storageCacheConfig, "photos_choristes"));
                 });
             }
 
@@ -155,6 +157,7 @@ export default {
                     ? { id: saisonResult.data.id, nom: saisonResult.data.nom }
                     : null,
                 groupes,
+                storage_cache_config: storageCacheConfig,
                 chanteurs
             }, { headers: corsHeaders });
         }

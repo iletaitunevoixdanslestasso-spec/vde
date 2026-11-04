@@ -1,3 +1,4 @@
+import StorageCacheConfigService from "./StorageCacheConfigService";
 import { supabase } from "../core/supabase/client";
 
 /**
@@ -55,6 +56,7 @@ export default class TrombinoscopeService {
             throw new Error("Réponse du trombinoscope invalide.");
         }
 
+        if (data.storage_cache_config) await StorageCacheConfigService.ingest(data.storage_cache_config);
         return data;
     }
 }

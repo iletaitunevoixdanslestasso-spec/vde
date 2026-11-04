@@ -279,7 +279,7 @@ export default {
         .from(BUCKET)
         .upload(uploadedPath, image, {
           contentType: image.type,
-          cacheControl: "3600",
+          cacheControl: "12960000",
           upsert: false,
         });
       if (uploadError) throw uploadError;

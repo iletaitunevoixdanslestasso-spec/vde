@@ -10,6 +10,7 @@ import FileRenderer from "../../framework/form/renderers/FileRenderer";
 
 const FileUploader = forwardRef(function FileUploader({
     bucket,
+    cacheCategory = null,
     path,
     folder,
     accept = "*/*",
@@ -79,14 +80,16 @@ const FileUploader = forwardRef(function FileUploader({
             const result = await StorageService.upload(
                 bucket,
                 uploadPath,
-                file
+                file,
+                cacheCategory
             );
 
             const url =
                 await StorageService.createSignedUrl(
                     bucket,
                     result.path,
-                    3600
+                    3600,
+                    cacheCategory
                 );
 
             const uploadedResult = {

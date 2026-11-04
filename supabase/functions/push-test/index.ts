@@ -64,14 +64,42 @@ function respond(status: number, payload: Record<string, unknown>) {
   return Response.json(payload, { status, headers: corsHeaders });
 }
 
-function pushTo(appServer: Awaited<ReturnType<typeof createApplicationServer>>, subscription: PushSubscriptionRow) {
+type PushMessage = { title: string; body: string };
+
+// Les anciens tests peuvent continuer sans titre/message.
+// Pour un envoi personnalisé, les deux champs sont obligatoires.
+function lireMessage(body: Record<string, unknown>): PushMessage {
+  if (body.titre === undefined && body.message === undefined) {
+    return {
+      title: "Voix dans l’Est",
+      body: "Ceci est une notification Push de test.",
+    };
+  }
+
+  if (typeof body.titre !== "string" || typeof body.message !== "string") {
+    throw new Error("Les champs titre et message sont obligatoires.");
+  }
+
+  const title = body.titre.trim();
+  const message = body.message.trim();
+  if (!title || title.length > 80) {
+    throw new Error("Le titre doit contenir entre 1 et 80 caractères.");
+  }
+  if (!message || message.length > 500) {
+    throw new Error("Le message doit contenir entre 1 et 500 caractères.");
+  }
+  return { title, body: message };
+}
+
+function pushTo(
+  appServer: Awaited<ReturnType<typeof createApplicationServer>>,
+  subscription: PushSubscriptionRow,
+  message: PushMessage,
+) {
   return appServer.subscribe({
     endpoint: subscription.endpoint,
     keys: { p256dh: subscription.p256dh, auth: subscription.auth },
-  }).pushTextMessage(JSON.stringify({
-    title: "Voix dans l'Est",
-    body: "Ceci est une notification Push de test.",
-  }), { ttl: 60 });
+  }).pushTextMessage(JSON.stringify(message), { ttl: 60 });
 }
 
 function logPushError(error: unknown) {
@@ -109,6 +137,8 @@ Deno.serve(async (request: Request) => {
     cible?: unknown;
     simulation?: unknown;
     confirmation?: unknown;
+    titre?: unknown;
+    message?: unknown;
   };
   try {
     body = await request.json();
@@ -118,6 +148,13 @@ Deno.serve(async (request: Request) => {
 
   if (body === null || typeof body !== "object" || Array.isArray(body)) {
     return respond(400, { error: "Corps JSON invalide." });
+  }
+
+  let notification: PushMessage;
+  try {
+    notification = lireMessage(body as Record<string, unknown>);
+  } catch (error) {
+    return respond(400, { error: error instanceof Error ? error.message : "Notification invalide." });
   }
 
   // Nouveau mode : tous les appareils abonnés (sans filtrage par saison).
@@ -155,7 +192,7 @@ Deno.serve(async (request: Request) => {
       // Petits lots pour limiter le nombre de requêtes simultanées.
       for (let i = 0; i < subscriptions.length; i += 5) {
         const lot = subscriptions.slice(i, i + 5);
-        const results = await Promise.allSettled(lot.map((subscription) => pushTo(appServer, subscription)));
+        const results = await Promise.allSettled(lot.map((subscription) => pushTo(appServer, subscription, notification)));
 
         for (const result of results) {
           if (result.status === "fulfilled") {
@@ -195,7 +232,7 @@ Deno.serve(async (request: Request) => {
     if (!subscription) return respond(404, { error: "Abonnement introuvable." });
 
     const appServer = await createApplicationServer();
-    await pushTo(appServer, subscription);
+    await pushTo(appServer, subscription, notification);
 
     return respond(200, { success: true, message: "Acceptée par le service Push." });
   } catch (error) {

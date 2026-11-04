@@ -63,6 +63,8 @@ import CGU from "../pages/public/CGU";
 import RepetitionsChanteur from "../pages/chanteur/RepetitionsChanteur";
 import TrombiChanteur from "../pages/chanteur/TrombiChanteur";
 import TrombiAdmin from "../pages/admin/TrombiAdmin";
+import NotificationsAdminPage from "../pages/admin/notifications/NotificationsAdminPage";
+import StorageCacheAdminPage from "../pages/admin/cache/StorageCacheAdminPage";
 
 
 function AdminDefaultRoute() {
@@ -196,6 +198,13 @@ export default function Router() {
                                 path="test"
                                 element={<Testdivers />}
                             />
+
+                            <Route
+                                path="notifications"
+                                element={<NotificationsAdminPage />}
+                            />
+
+                            <Route path="cache" element={<StorageCacheAdminPage />} />
 
                             {/* saisons programme */}
                             <Route

@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const {stripTypeScriptTypes}=require('node:module');
+const root=require('node:path').resolve(__dirname,'..')+'/';let handler;let writes=0;
+const rows=[{code:'photos_choristes',cache_version:1,cache_seconds:12960000,updated_at:'2026-11-04'},{code:'pdf_dai',cache_version:1,cache_seconds:12960000,updated_at:'2026-11-04'}];
+const db={auth:{getUser:async jwt=>jwt==='admin'||jwt==='reader'?{data:{user:{id:jwt,is_anonymous:false}},error:null}:{data:{user:null},error:{message:'invalid'}}},from:()=>({select:()=>({in:async()=>({data:rows,error:null})})}),rpc:async(name,args)=>{assert.equal(name,'increment_storage_cache_version');writes++;rows.find(r=>r.code===args.p_code).cache_version++;return {error:null}}};
+const ctx=vm.createContext({console,Request,Response,Headers,URL,Set,Number,Deno:{env:{get:n=>({PUSH_TEST_SECRET:'secret',PUSH_ADMIN_USER_IDS:'admin',SUPABASE_URL:'https://example.com',SUPABASE_SERVICE_ROLE_KEY:'fake'})[n]},serve:fn=>handler=fn},createSupabaseAdmin:()=>db,validateChanteurToken:async(db,token)=>token==='chorister'?{error:null,status:200}:{error:'invalid',status:401},createClient:()=>db});
+const load=name=>{let s=fs.readFileSync(root+name,'utf8').replace(/^import[\s\S]*?from ["'][^"']+["'];\n/gm,'').replace(/^export /gm,'');vm.runInContext(stripTypeScriptTypes(s),ctx);};
+load('_shared/storage-cache.ts');load('push-test/PushAuthorizationService.ts');load('storage-cache-config/index.ts');
+const call=async(body,headers={})=>{const r=await handler(new Request('https://example.com',{method:'POST',headers,body:JSON.stringify(body)}));return [r.status,await r.json()]};
+(async()=>{
+ assert.equal((await call({}))[0],401);assert.equal((await call({token:'wrong'}))[0],401);
+ let [status,body]=await call({token:'chorister'});assert.equal(status,200);assert.equal(body.can_refresh,false);assert.equal(body.config.length,2);
+ assert.equal((await call({action:'refresh',code:'photos_choristes',token:'chorister'}))[0],401);
+ assert.equal((await call({action:'refresh',code:'photos_choristes'},{'x-push-test-secret':'secret'}))[0],401);
+ assert.equal((await call({action:'refresh',code:'photos_choristes'},{authorization:'Bearer reader'}))[0],403);assert.equal(writes,0);
+ [status,body]=await call({},{authorization:'Bearer reader'});assert.equal(status,200);assert.equal(body.can_refresh,false);
+ [status,body]=await call({},{authorization:'Bearer admin'});assert.equal(status,200);assert.equal(body.can_refresh,true);
+ [status,body]=await call({action:'refresh',code:'photos_choristes'},{authorization:'Bearer admin'});assert.equal(status,200);assert.equal(body.config[0].cache_version,2);assert.equal(body.config[1].cache_version,1);assert.equal(writes,1);
+ assert.equal((await call({action:'refresh',code:'unrelated'},{authorization:'Bearer admin'}))[0],400);assert.equal(writes,1);
+ const versioned=vm.runInContext('versionStorageUrl("https://example.com/a?token=secret&download=true", [{code:"pdf_dai",cache_version:3}], "pdf_dai")',ctx);let u=new URL(versioned);assert.equal(u.searchParams.get('token'),'secret');assert.equal(u.searchParams.get('download'),'true');assert.equal(u.searchParams.get('v'),'3');
+ console.log('PASS backend cache: authenticated/token reads, role restriction, manual secret rejected, per-category refresh, signed params preserved (no remote calls)');
+})().catch(e=>{console.error(e);process.exit(1)});

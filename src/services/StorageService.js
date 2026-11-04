@@ -1,4 +1,24 @@
 import { supabase } from "../core/supabase/client";
+import StorageCacheConfigService from "./StorageCacheConfigService";
+import PhotoCacheService, { scopeUtilisateur } from "./PhotoCacheService";
+import { categorieStorage, expirationSignee, STORAGE_CACHE_SECONDS, versionnerUrl } from "./storageCachePolicy";
+
+const signatures = new Map();
+const appelsEnCours = new Map();
+let generationSignatures = 0;
+let authUserId = null;
+
+supabase.auth.onAuthStateChange((event, session) => {
+    const nextId = session?.user?.id ?? null;
+    const changeCompte = authUserId !== null && authUserId !== nextId;
+    authUserId = nextId;
+    if (event === "SIGNED_OUT" || changeCompte) {
+        generationSignatures++;
+        signatures.clear();
+        appelsEnCours.clear();
+        void PhotoCacheService.clearAll().catch(() => {});
+    }
+});
 
 
 const sanitizeFileName = (fileName) => {
@@ -10,7 +30,7 @@ const sanitizeFileName = (fileName) => {
 
 class StorageService {
 
-    async upload(bucket, path, file) {
+    async upload(bucket, path, file, cacheCategory = null) {
 
         const parts = path.split("/");
         const fileName = parts.pop();
@@ -26,13 +46,22 @@ class StorageService {
             .from(bucket)
             .upload(safePath, file, {
                 upsert: true,
+                ...(cacheCategory || categorieStorage(bucket, safePath) ? { cacheControl: String(STORAGE_CACHE_SECONDS) } : {}),
             });
 
         if (error) {
             throw error;
         }
 
+        await this.invalidateFile(bucket, safePath);
         return data;
+    }
+
+    async invalidateFile(bucket, path) {
+        generationSignatures++;
+        signatures.clear();
+        appelsEnCours.clear();
+        try { await PhotoCacheService.invalidatePath(bucket, path); } catch { /* Cache facultatif. */ }
     }
 
     async remove(bucket, path) {
@@ -44,6 +73,7 @@ class StorageService {
             throw error;
         }
 
+        await this.invalidateFile(bucket, path);
         return data;
     }
 
@@ -58,7 +88,7 @@ class StorageService {
 
         return data.signedUrl;
     }
-    async createSignedUrl(bucket, path, expiresIn = 3600) {
+    async createSignedUrl(bucket, path, expiresIn = 3600, cacheCategory = null) {
         try {
             const cleanPath =
                 typeof path === "string"
@@ -70,20 +100,24 @@ class StorageService {
                 return null;
             }
 
-            const { data, error } = await supabase.storage
-                .from(bucket)
-                .createSignedUrl(cleanPath, expiresIn);
-
-            if (error) {
-                console.error(
-                    "Erreur création URL signée :",
-                    cleanPath,
-                    error
-                );
-                return null;
-            }
-
-            return data?.signedUrl ?? null;
+            const category = cacheCategory || categorieStorage(bucket, cleanPath);
+            const config = category ? await StorageCacheConfigService.get(category) : null;
+            const scope = category ? await scopeUtilisateur() : null;
+            const key = scope ? JSON.stringify([scope, bucket, cleanPath, expiresIn, config.cache_version]) : null;
+            const cached = key && signatures.get(key);
+            if (cached && cached.expiresAt > Date.now() + 30000) return cached.url;
+            if (key && appelsEnCours.has(key)) return appelsEnCours.get(key);
+            const generationDepart = generationSignatures;
+            const creation = (async () => {
+                const { data, error } = await supabase.storage.from(bucket).createSignedUrl(cleanPath, expiresIn);
+                if (error) throw error;
+                const url = data?.signedUrl ? config ? versionnerUrl(data.signedUrl, config.cache_version) : data.signedUrl : null;
+                if (generationDepart !== generationSignatures) return null;
+                if (url && key) signatures.set(key, { url, expiresAt: Math.min(Date.now() + expiresIn * 1000, expirationSignee(url) ?? Infinity) });
+                return url;
+            })();
+            if (key) appelsEnCours.set(key, creation);
+            try { return await creation; } finally { if (key && appelsEnCours.get(key) === creation) appelsEnCours.delete(key); }
 
         } catch (error) {
             console.error(
@@ -128,10 +162,6 @@ class StorageService {
     }
 
     async uploadToSignedUrl(bucket, path, token, file) {
-        console.error(bucket)
-        console.error( path)
-        console.error( token)
-        console.error( file)
         const cleanPath =
             typeof path === "string"
                 ? path
@@ -156,13 +186,15 @@ class StorageService {
             .uploadToSignedUrl(
                 cleanPath,
                 token,
-                file
+                file,
+                { contentType: file.type, ...(categorieStorage(bucket, cleanPath) ? { cacheControl: String(STORAGE_CACHE_SECONDS) } : {}) }
             );
 
         if (error) {
             throw error;
         }
 
+        await this.invalidateFile(bucket, cleanPath);
         return data;
     }
 
@@ -234,7 +266,29 @@ class StorageService {
             );
         }
 
+        if (result.storage_cache_config) await StorageCacheConfigService.ingest(result.storage_cache_config);
         return result;
+    }
+
+    async getDroitImageUrl(token, functionName) {
+        const config = await StorageCacheConfigService.get("pdf_dai");
+        // Le profil métier reste distinct même si un administrateur est connecté.
+        const empreinte = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
+        const scope = Array.from(new Uint8Array(empreinte), byte => byte.toString(16).padStart(2, "0")).join("");
+        const key = JSON.stringify([scope, functionName, config.cache_version]);
+        const cached = key && signatures.get(key);
+        if (cached && cached.expiresAt > Date.now() + 30000) return cached.url;
+        if (key && appelsEnCours.has(key)) return appelsEnCours.get(key);
+        const generationDepart = generationSignatures;
+        const creation = (async () => {
+            const result = await this.callChanteurFunction(functionName, token);
+            const url = result?.url;
+            if (generationDepart !== generationSignatures) return null;
+            if (url && key) signatures.set(key, { url, expiresAt: Math.min(Date.now() + 3600000, expirationSignee(url) ?? Infinity) });
+            return url ?? null;
+        })();
+        if (key) appelsEnCours.set(key, creation);
+        try { return await creation; } finally { if (key && appelsEnCours.get(key) === creation) appelsEnCours.delete(key); }
     }
 
     async getChansonParoles(token, chansonId) {

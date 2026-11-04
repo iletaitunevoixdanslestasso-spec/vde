@@ -98,7 +98,8 @@ export class ReferentielDocumentService extends BaseService {
                     await StorageService.createSignedUrl(
                         "referentiel-documents",
                         document.path,
-                        3600
+                        3600,
+                        document.document_types?.code === "droit_image" ? "pdf_dai" : null
                     );
 
                 return {
@@ -135,7 +136,8 @@ export class ReferentielDocumentService extends BaseService {
             await StorageService.createSignedUrl(
                 "referentiel-documents",
                 data.path,
-                3600
+                3600,
+                type === "droit_image" ? "pdf_dai" : null
             );
 
         return {

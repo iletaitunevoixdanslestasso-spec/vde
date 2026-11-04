@@ -1,3 +1,4 @@
+import PdfDaiLink from "../../components/PdfDaiLink";
 import { createEntityConfig } from "./createEntityConfig";
 
 
@@ -75,7 +76,7 @@ const columns = [
             }
 
             return React.createElement(
-                "a",
+                PdfDaiLink,
                 {
                     href: v,
                     target: "_blank",

@@ -114,27 +114,7 @@ export class ChanteurService extends BaseService {
 
         try {
 
-            const response = await fetch(
-                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-chanteur-droit-image`,
-                {
-                    method: "POST",
-                    headers: {
-                        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        token
-                    })
-                }
-            );
-
-            const templateResult = await response.json();
-
-            if (response.ok && templateResult?.url) {
-
-                droit_image_url =
-                    templateResult.url;
-            }
+            droit_image_url = await StorageService.getDroitImageUrl(token, "get-chanteur-droit-image");
 
         } catch (error) {
 
@@ -158,27 +138,7 @@ export class ChanteurService extends BaseService {
 
         try {
 
-            const response = await fetch(
-                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-chanteur-droit-image-template`,
-                {
-                    method: "POST",
-                    headers: {
-                        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        token
-                    })
-                }
-            );
-
-            const templateResult = await response.json();
-
-            if (response.ok && templateResult?.url) {
-
-                droit_image_template_url =
-                    templateResult.url;
-            }
+            droit_image_template_url = await StorageService.getDroitImageUrl(token, "get-chanteur-droit-image-template");
 
         } catch (error) {
 

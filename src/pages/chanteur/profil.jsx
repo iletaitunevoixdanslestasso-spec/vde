@@ -1,3 +1,4 @@
+import PdfDaiLink from "../../components/PdfDaiLink";
 import React, { useMemo } from "react";
 import { chanteurConfig } from "../../config/entities/chanteur.config";
 import CRUDItemPage from "../../framework/crud/CRUDItemPage";
@@ -54,7 +55,7 @@ const profilConfig = {
                 }
 
                 return React.createElement(
-                    "a",
+                    PdfDaiLink,
                     {
                         href: row.droit_image_template_url,
                         target: "_blank",
@@ -86,7 +87,7 @@ const profilConfig = {
                 }
 
                 let link = React.createElement(
-                    "a",
+                    PdfDaiLink,
                     {
                         href: row.droit_image_url,
                         target: "_blank",

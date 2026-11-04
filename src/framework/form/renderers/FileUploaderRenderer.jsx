@@ -133,6 +133,7 @@ const storagePath =
         <FileUploader
             ref={uploaderRef}
             bucket={field.bucket}
+            cacheCategory={isDroitImage ? "pdf_dai" : null}
             path={storagePath}
             accept={field.accept}
             folder={field.documentTypeCode}

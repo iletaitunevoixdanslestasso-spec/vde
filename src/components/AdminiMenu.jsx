@@ -82,7 +82,8 @@ export default function AdminMenu() {
         "/admin/documents",
         "/admin/concerts",
         "/admin/lieux",
-        "/admin/repetitions"
+        "/admin/repetitions",
+        "/admin/cache"
     ].some(isReferentielPageActive);
 
     const [openSaisons, setOpenSaisons] = useState(false);
@@ -639,6 +640,14 @@ export default function AdminMenu() {
                             ref={referentielsScroll.scrollRef}
                             className="admin-dropdown-content"
                         >
+
+                            <button
+                                type="button"
+                                className={`admin-menu-item icon-document ${isReferentielPageActive("/admin/cache") ? "active" : ""}`}
+                                onClick={() => handleClickReferentiel("/admin/cache")}
+                            >
+                                Cache des fichiers
+                            </button>
 
                             <button
                                 type="button"

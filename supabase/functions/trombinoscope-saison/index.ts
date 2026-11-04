@@ -1,3 +1,4 @@
+import { readStorageCacheConfig, versionStorageUrl, type StorageCacheConfig } from "../_shared/storage-cache.ts";
 // Supabase Edge Function : trombinoscope-saison
 // Vérification JWT désactivée à la passerelle, mais CONTRÔLE OBLIGATOIRE ici.
 // Ne transmettez jamais la clé de service au navigateur.
@@ -29,7 +30,7 @@ const SIGNED_URL_DURATION = 3600;
 
 // La vue transmet photo_path (chemin Storage) ; l'API renvoie photo_url (URL signée).
 // Une seule signature par chemin distinct, y compris chef et accompagnant.
-async function ajouterPhotosSignees(donnees: {
+async function ajouterPhotosSignees(config: StorageCacheConfig[], donnees: {
     chanteurs: Record<string, unknown>[];
     chef: Record<string, unknown> | null;
     accompagnant: Record<string, unknown> | null;
@@ -63,7 +64,7 @@ async function ajouterPhotosSignees(donnees: {
         }
         for (const [index, item] of (data || []).entries()) {
             if (item?.signedUrl) {
-                urlParChemin.set(item.path || lot[index], item.signedUrl);
+                urlParChemin.set(item.path || lot[index], versionStorageUrl(item.signedUrl, config, "photos_choristes")!);
             }
         }
     }
@@ -168,7 +169,8 @@ Deno.serve(async (req: Request) => {
         // La vue renvoie des chemins Storage privés (photo_path).
         // Comme le faisait get-trombinoscope, signer côté serveur avant
         // d'envoyer photo_url au composant purement visuel.
-        const photos = await ajouterPhotosSignees({
+        const storageCacheConfig = await readStorageCacheConfig(db);
+        const photos = await ajouterPhotosSignees(storageCacheConfig, {
             chanteurs: Array.isArray(data.chanteurs) ? data.chanteurs : [],
             chef: data.chef || null,
             accompagnant: data.accompagnant || null
@@ -177,6 +179,7 @@ Deno.serve(async (req: Request) => {
         return responseJson(req, {
             saison: data.saison,
             groupes: data.groupes || [],
+            storage_cache_config: storageCacheConfig,
             ...photos
         });
     } catch (error) {

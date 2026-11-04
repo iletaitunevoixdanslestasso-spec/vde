@@ -425,3 +425,8 @@ entrypoint = "./functions/sync-chanteur-photo/index.ts"
 # static_files = [ "./functions/sync-chanteur-photo/*.html" ]
 [functions.trombinoscope-saison]
 verify_jwt = false
+
+# Authorization is checked inside the function for both Auth JWTs and existing
+# chanteur tokens; administrative refresh always requires an allowlisted JWT.
+[functions.storage-cache-config]
+verify_jwt = false
