@@ -20,7 +20,9 @@ Le cache navigateur existant (`PhotoCacheService`, Cache Storage, séparation pa
 
 La migration `supabase/migrations/20261104120000_storage_cache_config.sql` crée la table si nécessaire, conserve les versions existantes et règle les deux durées à 150 jours. Les utilisateurs Supabase Auth ont uniquement le droit `SELECT`; `anon` n’a aucun droit direct. Aucune mise à jour n’est accordée à tous les utilisateurs authentifiés.
 
-La nouvelle fonction `storage-cache-config` valide soit la session Auth existante, soit le token chanteur avec la validation habituelle. Elle ne renvoie que les métadonnées de cache aux choristes. L’action `refresh` exige un JWT utilisateur vérifié et un UID dans la liste serveur `PUSH_ADMIN_USER_IDS`, comme l’autorisation administrateur déjà utilisée par l’envoi Push. Un token chanteur, une simple session non autorisée ou le secret de test Push ne permet pas l’invalidation.
+Les sessions Supabase Auth lisent directement `storage_cache_config` via le client Supabase, avec leur JWT et les RLS ci-dessus. Cette lecture ne dépend pas du déploiement de l’Edge Function `storage-cache-config`. Les choristes sans session Auth continuent de passer par cette fonction, qui valide leur token avec la validation habituelle et ne leur renvoie que les métadonnées de cache.
+
+Sur `/admin/cache`, une vérification séparée auprès de `storage-cache-config` détermine le droit d’actualisation. Si la fonction est absente ou indisponible, les versions lues en SQL restent affichées et un message signale l’indisponibilité de l’actualisation, sans conclure à un refus de droits du compte. L’action `refresh` exige toujours un JWT utilisateur vérifié et un UID dans la liste serveur `PUSH_ADMIN_USER_IDS`, comme l’autorisation administrateur déjà utilisée par l’envoi Push. Un token chanteur, une simple session non autorisée ou le secret de test Push ne permet pas l’invalidation.
 
 L’incrément est atomique via `increment_storage_cache_version(text)`, exécutable uniquement par `service_role`. Les clients ne peuvent ni écrire la table ni appeler ce RPC. Les secrets restent côté serveur.
 
@@ -83,11 +85,12 @@ Depuis la racine du dépôt :
 
 ```sh
 node tests/storage-cache.test.cjs
+node tests/storage-cache-config.test.cjs
 node tests/storage-cache-migration.test.mjs
 node supabase/functions/storage-cache-config/index.test.cjs
 npm run build
 ```
 
-Les deux premières commandes exécutent respectivement 7 et 3 tests. La troisième teste les autorisations et l’invalidation par catégorie avec Auth/Storage simulés. Les vérifications Chromium du formulaire d’administration ont également utilisé un service simulé sans appel distant. Elles ne constituent pas une validation des comptes ou des fichiers du projet Supabase réel. Le runtime Deno n’était pas installé : la syntaxe TypeScript a été vérifiée, sans contrôle de types Deno. Le lint ciblé des nouveaux services/pages est passé ; le lint global continue de signaler les défauts préexistants du dépôt.
+Les tests de configuration vérifient la lecture Auth sous RLS sans appel à l’Edge Function, la validation serveur des tokens chanteurs, les erreurs de lecture et la séparation des droits d’actualisation. Les tests backend vérifient les autorisations et l’invalidation par catégorie avec Auth/Storage simulés. Les vérifications Chromium du formulaire d’administration ont également utilisé un service simulé sans appel distant. Elles ne constituent pas une validation des comptes ou des fichiers du projet Supabase réel. Le runtime Deno n’était pas installé : la syntaxe TypeScript a été vérifiée, sans contrôle de types Deno. Le lint ciblé des nouveaux services/pages est passé ; le lint global continue de signaler les défauts préexistants du dépôt.
 
 Les entrées d’ancien format du cache photo sont nettoyées au prochain accès ; les anciennes versions et les copies expirées sont purgées lors de l’utilisation du cache. Une application fermée ne peut pas exécuter ce nettoyage : la limite locale d’une heure des PDF est une limite d’utilisation, pas une garantie d’effacement physique immédiat.

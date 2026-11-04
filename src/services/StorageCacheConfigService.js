@@ -53,6 +53,17 @@ async function invoke(body) {
     return data;
 }
 
+async function readConfig(actor) {
+    // Les sessions Auth disposent déjà de SELECT via les RLS. La fonction
+    // n'est nécessaire en lecture que pour valider les tokens chanteurs.
+    if (!actor.authenticated) return invoke({ token: actor.token });
+    const { data, error } = await supabase.from("storage_cache_config")
+        .select("code, cache_version, cache_seconds, updated_at")
+        .in("code", CODES);
+    if (error) throw error;
+    return { config: data };
+}
+
 class StorageCacheConfigService {
     entries = new Map();
     pending = new Map();
@@ -71,9 +82,15 @@ class StorageCacheConfigService {
             }
             let request = this.pending.get(actor.scope);
             if (!request) {
-                request = invoke(actor.token ? { token: actor.token } : {}).then(data => {
+                request = readConfig(actor).then(data => {
                     const rows = latestRows(this.entries.get(actor.scope)?.rows, normalize(data?.config));
-                    const entry = { rows, expires: Date.now() + CONFIG_TTL_MS, canRefresh: data.can_refresh === true };
+                    const entry = {
+                        rows,
+                        expires: Date.now() + CONFIG_TTL_MS,
+                        canRefresh: actor.authenticated
+                            ? this.entries.get(actor.scope)?.canRefresh === true
+                            : data.can_refresh === true
+                    };
                     this.entries.set(actor.scope, entry);
                     return entry;
                 }).catch(error => {
@@ -97,6 +114,23 @@ class StorageCacheConfigService {
     async get(code) {
         if (!CODES.includes(code)) throw new Error("Catégorie de cache inconnue.");
         return (await this.load()).find(row => row.code === code);
+    }
+
+    // Réservé à l'écran d'administration : ne pas faire dépendre la lecture
+    // des métadonnées de la disponibilité du service d'invalidation.
+    async checkRefreshPermission() {
+        const actor = await identity();
+        this.currentScope = actor.scope;
+        this.canRefresh = false;
+        const cached = this.entries.get(actor.scope);
+        if (cached) cached.canRefresh = false;
+        if (!actor.authenticated) return false;
+        const data = await invoke({ action: "read" });
+        const allowed = data?.can_refresh === true;
+        if (this.currentScope === actor.scope) this.canRefresh = allowed;
+        const entry = this.entries.get(actor.scope);
+        if (entry) entry.canRefresh = allowed;
+        return allowed;
     }
 
     // Les fonctions qui ont déjà validé l'accès peuvent fournir les mêmes lignes.

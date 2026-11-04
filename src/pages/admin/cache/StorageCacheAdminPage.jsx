@@ -7,20 +7,38 @@ const CATEGORIES = [
     { code: "pdf_dai", label: "PDF DAI" }
 ];
 
+async function readConfiguration() {
+    const rows = await StorageCacheConfigService.load({ force: true, strict: true });
+    try {
+        const canRefresh = await StorageCacheConfigService.checkRefreshPermission();
+        return { rows, canRefresh, permissionError: "" };
+    } catch {
+        return {
+            rows,
+            canRefresh: false,
+            permissionError: "La configuration est disponible, mais le service d’actualisation du cache est indisponible."
+        };
+    }
+}
+
 export default function StorageCacheAdminPage() {
     const [rows, setRows] = useState([]);
     const [canRefresh, setCanRefresh] = useState(false);
     const [busy, setBusy] = useState(true);
     const [confirmation, setConfirmation] = useState(null);
     const [error, setError] = useState("");
+    const [permissionError, setPermissionError] = useState("");
     const [message, setMessage] = useState("");
 
     async function load() {
         setBusy(true);
         setError("");
+        setPermissionError("");
         try {
-            setRows(await StorageCacheConfigService.load({ force: true, strict: true }));
-            setCanRefresh(StorageCacheConfigService.canRefresh);
+            const config = await readConfiguration();
+            setRows(config.rows);
+            setCanRefresh(config.canRefresh);
+            setPermissionError(config.permissionError);
         } catch (cause) {
             setCanRefresh(false);
             setError(cause instanceof Error ? cause.message : "Chargement impossible.");
@@ -31,10 +49,11 @@ export default function StorageCacheAdminPage() {
 
     useEffect(() => {
         let active = true;
-        StorageCacheConfigService.load({ force: true, strict: true }).then(config => {
+        readConfiguration().then(config => {
             if (!active) return;
-            setRows(config);
-            setCanRefresh(StorageCacheConfigService.canRefresh);
+            setRows(config.rows);
+            setCanRefresh(config.canRefresh);
+            setPermissionError(config.permissionError);
         }).catch(cause => {
             if (active) setError(cause instanceof Error ? cause.message : "Chargement impossible.");
         }).finally(() => {
@@ -65,9 +84,10 @@ export default function StorageCacheAdminPage() {
             <p>Actualiser une catégorie demande aux navigateurs de récupérer sa nouvelle version au prochain accès.</p>
             <p>Les fichiers restent privés. Un document déjà téléchargé ne peut pas être révoqué à distance.</p>
             {error && <p role="alert">{error}</p>}
+            {permissionError && <p role="alert">{permissionError}</p>}
             {message && <p role="status">{message}</p>}
             <button type="button" onClick={load} disabled={busy}>Relire la configuration</button>
-            {!busy && !error && !canRefresh && <p>Ce compte n'est pas autorisé à actualiser les caches.</p>}
+            {!busy && !error && !permissionError && !canRefresh && <p>Ce compte n'est pas autorisé à actualiser les caches.</p>}
             {CATEGORIES.map(category => {
                 const row = rows.find(value => value.code === category.code);
                 return (
