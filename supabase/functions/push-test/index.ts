@@ -4,6 +4,10 @@ import {
   NotificationHistoryError,
   type NotificationHistory,
 } from "../_shared/notification-messages.ts";
+import {
+  validerContenuNotification,
+  serialiserNotificationPush,
+} from "../_shared/notification-content.js";
 import * as webpush from "jsr:@negrel/webpush@0.5.0";
 import {
   PushSubscriptionRepository,
@@ -84,30 +88,19 @@ function lireMessage(body: Record<string, unknown>): PushMessage {
     };
   }
 
-  if (typeof body.titre !== "string" || typeof body.message !== "string") {
-    throw new Error("Les champs titre et message sont obligatoires.");
-  }
-
-  const title = body.titre.trim();
-  const message = body.message.trim();
-  if (!title || title.length > 80) {
-    throw new Error("Le titre doit contenir entre 1 et 80 caractères.");
-  }
-  if (!message || message.length > 500) {
-    throw new Error("Le message doit contenir entre 1 et 500 caractères.");
-  }
-  return { title, body: message };
+  const { titre, message } = validerContenuNotification(body.titre, body.message);
+  return { title: titre, body: message };
 }
 
 function pushTo(
   appServer: Awaited<ReturnType<typeof createApplicationServer>>,
   subscription: PushSubscriptionRow,
-  message: PushMessage,
+  payload: string,
 ) {
   return appServer.subscribe({
     endpoint: subscription.endpoint,
     keys: { p256dh: subscription.p256dh, auth: subscription.auth },
-  }).pushTextMessage(JSON.stringify(message), { ttl: 60 });
+  }).pushTextMessage(payload, { ttl: 60 });
 }
 
 function logPushError(error: unknown) {
@@ -122,11 +115,14 @@ async function diffuser(subscriptions: PushSubscriptionRow[], notification: Push
   let acceptes = 0;
   let echecs = 0;
   if (!subscriptions.length) return { acceptes, echecs };
+  // L'archive conserve le texte intégral. Seul le contenu transporté par Push
+  // est abrégé, une fois pour tous les appareils de cette diffusion.
+  const payload = serialiserNotificationPush(notification);
   const appServer = await createApplicationServer();
   // Petits lots pour limiter le nombre de requêtes simultanées.
   for (let i = 0; i < subscriptions.length; i += 5) {
     const results = await Promise.allSettled(
-      subscriptions.slice(i, i + 5).map(subscription => Promise.resolve().then(() => pushTo(appServer, subscription, notification))),
+      subscriptions.slice(i, i + 5).map(subscription => Promise.resolve().then(() => pushTo(appServer, subscription, payload))),
     );
     for (const result of results) {
       if (result.status === "fulfilled") acceptes++;
@@ -350,8 +346,9 @@ Deno.serve(async (request: Request) => {
     const subscription = await repository.findById(id);
     if (!subscription) return respond(404, { error: "Abonnement introuvable." });
 
+    const payload = serialiserNotificationPush(notification);
     const appServer = await createApplicationServer();
-    await pushTo(appServer, subscription, notification);
+    await pushTo(appServer, subscription, payload);
 
     return respond(200, { success: true, message: "Acceptée par le service Push." });
   } catch (error) {

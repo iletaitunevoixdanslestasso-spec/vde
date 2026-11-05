@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  MAX_TITLE_LENGTH, MAX_MESSAGE_BYTES, PUSH_PREVIEW_LENGTH,
+  messageByteLength, creerNotificationPush
+} from "../../../../supabase/functions/_shared/notification-content.js";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { pushAdminService } from "../../../services/PushAdminService";
 import "./NotificationsAdminPage.css";
 import NotificationHistory from "./NotificationHistory";
@@ -32,8 +36,15 @@ export default function NotificationsAdminPage() {
   }, [tentativeChargement]);
 
   const enCours = action !== null;
-  const valide = titre.trim().length > 0 && titre.trim().length <= 80 &&
-    message.trim().length > 0 && message.trim().length <= 500;
+  const tailleMessage = messageByteLength(message.trim());
+  const valide = titre.trim().length > 0 && titre.trim().length <= MAX_TITLE_LENGTH &&
+    message.trim().length > 0 && tailleMessage <= MAX_MESSAGE_BYTES;
+  const apercu = useMemo(() => creerNotificationPush({
+    title: titre.trim() || "Titre de la notification",
+    body: message.trim() || "Le début de votre message apparaîtra ici.",
+    // Même réserve de métadonnées que l'identifiant réel de publication.
+    notification_id: "00000000-0000-4000-8000-000000000000"
+  }), [titre, message]);
   const chanteurs = destinataires?.chanteurs ?? [];
   const saison = destinataires?.saison;
   const destinatairesValides = !chargementDestinataires && !erreurDestinataires &&
@@ -196,7 +207,7 @@ export default function NotificationsAdminPage() {
             name="titre"
             type="text"
             value={titre}
-            maxLength={80}
+            maxLength={MAX_TITLE_LENGTH}
             placeholder="Ex. : Répétition de jeudi"
             onChange={(event) => {
               setTitre(event.target.value);
@@ -205,17 +216,16 @@ export default function NotificationsAdminPage() {
             disabled={enCours}
             required
           />
-          <small>{titre.length}/80 caractères</small>
+          <small>{titre.length}/{MAX_TITLE_LENGTH} caractères</small>
         </div>
 
         <div className="notifications-admin__field">
-          <label htmlFor="push-message">Message</label>
+          <label htmlFor="push-message">Message complet</label>
           <textarea
             id="push-message"
             name="message"
             value={message}
-            maxLength={500}
-            rows={5}
+            rows={8}
             placeholder="Saisis le message à diffuser..."
             onChange={(event) => {
               setMessage(event.target.value);
@@ -224,16 +234,21 @@ export default function NotificationsAdminPage() {
             disabled={enCours}
             required
           />
-          <small>{message.length}/500 caractères</small>
+          <small>{Array.from(message).length} caractères · protection maximale : 1 Mio</small>
+          <p className="notifications-admin__note">Le texte complet sera conservé dans l'application. Seul un extrait court sera envoyé en Push.</p>
+          {tailleMessage > MAX_MESSAGE_BYTES && (
+            <p className="notifications-admin__warning" role="alert">Le message dépasse la limite de sécurité de 1 Mio.</p>
+          )}
         </div>
 
         <div className="notifications-admin__preview">
-          <strong>Aperçu du contenu</strong>
+          <strong>Aperçu de l’alerte Push</strong>
+          <small>Extrait d’environ {PUSH_PREVIEW_LENGTH} caractères. Le message complet reste consultable dans l’application.</small>
           <div className="notifications-admin__preview-content">
             <span aria-hidden="true">🔔</span>
             <div>
-              <strong>{titre.trim() || "Titre de la notification"}</strong>
-              <p>{message.trim() || "Le texte de ta notification apparaîtra ici."}</p>
+              <strong>{apercu.title}</strong>
+              <p>{apercu.body}</p>
             </div>
           </div>
         </div>
