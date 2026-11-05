@@ -1,7 +1,8 @@
 import { supabase } from "../core/supabase/client";
 import { expirationSignee } from "./storageCachePolicy";
 
-const STORAGE_KEY = "vde-signed-download-urls-v1";
+const STORAGE_KEY = "vde-signed-download-urls-v2";
+const EPOCH_KEY = "vde-signed-download-urls-epoch-v1";
 const MAX_ENTRIES = 500;
 const EXPIRY_MARGIN_MS = 30_000;
 const DOWNLOAD_PREFIXES = ["/storage/v1/object/sign/", "/storage/v1/render/image/sign/"];
@@ -42,47 +43,147 @@ function validEntry(entry) {
 class SignedUrlCacheService {
     entries = new Map();
     #generation = 0;
+    #epoch = "";
+    #dirty = new Map();
+    #blockedEpoch = null;
+    #decodedRaw;
+    #decodedEpoch;
+    #decodedEntries = new Map();
 
     get generation() {
+        this.sync();
         return this.#generation;
     }
 
     constructor() {
+        this.sync();
+    }
+
+    decode(raw, epoch) {
+        if (raw === this.#decodedRaw && epoch === this.#decodedEpoch) {
+            return new Map([...this.#decodedEntries].filter(([, entry]) => entry.expiresAt > Date.now() + EXPIRY_MARGIN_MS));
+        }
+        const entries = new Map();
         try {
-            const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
-            if (saved?.version !== 1 || !Array.isArray(saved.entries)) return;
-            for (const pair of saved.entries.slice(-MAX_ENTRIES)) {
-                if (!Array.isArray(pair) || typeof pair[0] !== "string" || !pair[0]) continue;
-                const entry = validEntry(pair[1]);
-                if (entry) this.entries.set(pair[0], entry);
+            const saved = JSON.parse(raw || "null");
+            if (saved?.version === 2 && saved.epoch === epoch && Array.isArray(saved.entries)) {
+                for (const pair of saved.entries.slice(-MAX_ENTRIES)) {
+                    if (!Array.isArray(pair) || typeof pair[0] !== "string" || !pair[0]) continue;
+                    const entry = validEntry(pair[1]);
+                    if (entry) entries.set(pair[0], entry);
+                }
             }
+        } catch { /* Ancien contenu ou stockage modifié : ne rien restaurer. */ }
+        this.#decodedRaw = raw;
+        this.#decodedEpoch = epoch;
+        this.#decodedEntries = new Map(entries);
+        return entries;
+    }
+
+    sync() {
+        try {
+            // Relire à chaque opération : les autres onglets peuvent ajouter des
+            // liens ou invalider une requête pendant que celui-ci est ouvert.
+            const epoch = localStorage.getItem(EPOCH_KEY) || "";
+            const raw = localStorage.getItem(STORAGE_KEY);
+            const observedEpoch = localStorage.getItem(EPOCH_KEY) || "";
+            if (observedEpoch !== epoch) {
+                // Une invalidation a réellement été observée pendant la lecture.
+                // Un repli mémoire ne doit pas renvoyer les anciennes signatures.
+                this.#epoch = observedEpoch;
+                this.#generation++;
+                this.#dirty.clear();
+                this.entries.clear();
+                this.#blockedEpoch = null;
+                return false;
+            }
+            if (this.#blockedEpoch !== null && epoch === this.#blockedEpoch) return false;
+            this.#blockedEpoch = null;
+            if (epoch !== this.#epoch) {
+                this.#epoch = epoch;
+                this.#generation++;
+                this.#dirty.clear();
+            }
+            const latest = this.decode(raw, epoch);
+            for (const [key, entry] of this.#dirty) {
+                if (entry.expiresAt > Date.now() + EXPIRY_MARGIN_MS) latest.set(key, entry);
+                else this.#dirty.delete(key);
+            }
+            this.entries = latest;
+            this.trim();
+            return true;
         } catch {
             // Le stockage peut être bloqué, saturé ou avoir un ancien contenu.
             // La réutilisation en mémoire reste disponible dans tous ces cas.
+            return false;
         }
     }
 
-    persist() {
+    trim() {
+        for (const [key, entry] of this.entries) {
+            if (entry.expiresAt <= Date.now() + EXPIRY_MARGIN_MS) {
+                this.entries.delete(key);
+                this.#dirty.delete(key);
+            }
+        }
+        while (this.entries.size > MAX_ENTRIES) {
+            const key = this.entries.keys().next().value;
+            this.entries.delete(key);
+            this.#dirty.delete(key);
+        }
+    }
+
+    persist(epoch) {
         try {
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, entries: [...this.entries] }));
+            if (this.#blockedEpoch !== null) return;
+            if ((localStorage.getItem(EPOCH_KEY) || "") !== epoch) {
+                this.sync();
+                return;
+            }
+            const latest = this.decode(localStorage.getItem(STORAGE_KEY), epoch);
+            for (const [key, entry] of this.#dirty) {
+                if (entry.expiresAt > Date.now() + EXPIRY_MARGIN_MS) latest.set(key, entry);
+            }
+            // Une écriture courante ne change jamais la barrière d'invalidation.
+            // Si un autre onglet invalide entre les deux accès, ce document garde
+            // l'ancien epoch et sera ignoré, même si son écriture finit après.
+            if ((localStorage.getItem(EPOCH_KEY) || "") !== epoch) {
+                this.sync();
+                return;
+            }
+            this.entries = latest;
+            this.trim();
+            const raw = JSON.stringify({ version: 2, epoch, entries: [...this.entries] });
+            localStorage.setItem(STORAGE_KEY, raw);
+            this.#decodedRaw = raw;
+            this.#decodedEpoch = epoch;
+            this.#decodedEntries = new Map(this.entries);
+            if ((localStorage.getItem(EPOCH_KEY) || "") !== epoch) {
+                this.sync();
+                return;
+            }
+            this.#dirty.clear();
         } catch {
-            // Éviter de restaurer après rechargement une ancienne copie devenue
-            // invalide quand une écriture échoue (quota du navigateur, etc.).
-            try { sessionStorage.removeItem(STORAGE_KEY); } catch { /* Stockage indisponible. */ }
+            // Garder les ajouts en mémoire si le navigateur refuse la persistance.
         }
     }
 
-    get(key) {
+    read(key) {
         const saved = this.entries.get(key);
         if (!saved) return null;
         const entry = validEntry(saved);
         if (!entry) {
             this.entries.delete(key);
-            this.persist();
+            this.#dirty.delete(key);
             return null;
         }
         // Le demandeur ne doit pas pouvoir prolonger une entrée par mutation.
         return { ...entry };
+    }
+
+    get(key) {
+        this.sync();
+        return this.read(key);
     }
 
     store(key, url, expiresAt = Infinity) {
@@ -90,30 +191,34 @@ class SignedUrlCacheService {
         const details = describe(url);
         const entry = details && validEntry({ url, expiresAt: Math.min(expiresAt, details.expiresAt) });
         if (!entry) return false;
-        for (const [oldKey, oldEntry] of this.entries) {
-            if (oldEntry.expiresAt <= Date.now() + EXPIRY_MARGIN_MS) this.entries.delete(oldKey);
-        }
         this.entries.delete(key);
         this.entries.set(key, entry);
-        while (this.entries.size > MAX_ENTRIES) this.entries.delete(this.entries.keys().next().value);
+        this.#dirty.set(key, entry);
+        this.trim();
         return true;
     }
 
-    set(key, url, expiresAt = Infinity) {
-        if (this.store(key, url, expiresAt)) this.persist();
+    set(key, url, expiresAt = Infinity, expectedGeneration) {
+        this.sync();
+        if (expectedGeneration !== undefined && expectedGeneration !== this.#generation) return;
+        const epoch = this.#epoch;
+        if (this.store(key, url, expiresAt)) this.persist(epoch);
     }
 
     // Les fonctions métier ont déjà contrôlé l'accès avant de fournir la réponse.
     // On conserve seulement les liens de téléchargement, séparés par identité,
     // pour réutiliser leur token exact pendant sa durée de validité restante.
-    reuseUrls(value, scope) {
+    reuseUrls(value, scope, expectedGeneration) {
+        this.sync();
+        const epoch = this.#epoch;
+        const canReuse = expectedGeneration === undefined || expectedGeneration === this.#generation;
         let changed = false;
         const visit = current => {
-            if (typeof current === "string" && typeof scope === "string" && scope) {
+            if (canReuse && typeof current === "string" && typeof scope === "string" && scope) {
                 const details = describe(current);
                 if (!details || details.expiresAt <= Date.now() + EXPIRY_MARGIN_MS) return current;
                 const key = JSON.stringify(["download-url", scope, details.identity]);
-                const cached = this.get(key);
+                const cached = this.read(key);
                 if (cached && cached.expiresAt <= details.expiresAt &&
                     describe(cached.url)?.identity === details.identity) return cached.url;
                 changed = this.store(key, current, details.expiresAt) || changed;
@@ -126,36 +231,66 @@ class SignedUrlCacheService {
             return current;
         };
         const result = visit(value);
-        if (changed) this.persist();
+        if (changed) this.persist(epoch);
         return result;
     }
 
     invalidatePath(bucket, path) {
-        this.#generation++;
         this.invalidateMatching(object => object === `${bucket}/${path}`);
     }
 
     invalidatePrefix(bucket, pathPrefix) {
-        this.#generation++;
         this.invalidateMatching(object => object.startsWith(`${bucket}/${pathPrefix}`));
     }
 
     invalidateMatching(matches) {
-        let changed = false;
+        this.sync();
         for (const [key, entry] of this.entries) {
             const details = describe(entry.url);
             if (!details || matches(details.object)) {
                 this.entries.delete(key);
-                changed = true;
             }
         }
-        if (changed) this.persist();
+        this.#dirty = new Map(this.entries);
+        this.advanceEpoch();
+        this.persist(this.#epoch);
+    }
+
+    advanceEpoch() {
+        let blockedEpoch = this.#blockedEpoch ?? this.#epoch;
+        try {
+            const observedEpoch = localStorage.getItem(EPOCH_KEY) || "";
+            if (observedEpoch !== blockedEpoch) {
+                // Un autre onglet a invalidé depuis notre instantané. Ne jamais
+                // republier les entrées conservées avant sa purge sous un epoch neuf.
+                this.entries.clear();
+                this.#dirty.clear();
+                blockedEpoch = observedEpoch;
+            }
+        } catch { /* Conserver le repli mémoire si le stockage est bloqué. */ }
+        this.#epoch = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        this.#generation++;
+        try {
+            localStorage.setItem(EPOCH_KEY, this.#epoch);
+            this.#blockedEpoch = null;
+        } catch {
+            // Sans barrière persistée, conserver l'invalidation locale et ne pas
+            // réimporter les anciennes entrées lors de la prochaine lecture.
+            this.#blockedEpoch = blockedEpoch;
+            try { localStorage.removeItem(STORAGE_KEY); } catch { /* Stockage indisponible. */ }
+        }
     }
 
     clearAll() {
-        this.#generation++;
+        this.sync();
         this.entries.clear();
-        try { sessionStorage.removeItem(STORAGE_KEY); } catch { /* Stockage indisponible. */ }
+        this.#dirty.clear();
+        this.advanceEpoch();
+        // Conserver l'epoch : même sans aucune entrée, il rejette les réponses
+        // commencées dans un autre onglet avant la déconnexion/invalidation.
+        try {
+            if ((localStorage.getItem(EPOCH_KEY) || "") === this.#epoch) localStorage.removeItem(STORAGE_KEY);
+        } catch { /* Stockage indisponible. */ }
     }
 }
 
