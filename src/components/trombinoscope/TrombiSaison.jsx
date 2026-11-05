@@ -4,6 +4,7 @@ import AffichePhotoProfil from "../photos/AffichePhotoProfil";
 import AffichePhotoTrombi from "../photos/AffichePhotoTrombi";
 import { initialesPhoto } from "../photos/photoUtils";
 import TrombinoscopeService from "../../services/TrombinoscopeService";
+import { FILTRE_CA, filtrerChanteursTrombi } from "./trombiUtils";
 import "../../styles/espaceChanteur_trombinoscope.css";
 
 const collator = new Intl.Collator("fr", {
@@ -43,6 +44,9 @@ function BlocInvite({ titre, personne, imageUrl, optionnel = false }) {
             <div className="trombi-invite-texte">
                 <span className="trombi-invite-fonction">{titre}</span>
                 {nom && <strong className="trombi-invite-nom">{nom}</strong>}
+                {personne?.fonction_ca && (
+                    <span className="trombi-personne-fonction-ca">{personne.fonction_ca}</span>
+                )}
                 {optionnel && !url && <span className="trombi-invite-option">Image à définir</span>}
             </div>
         </div>
@@ -105,11 +109,11 @@ export default function TrombiSaison({ saisonId }) {
     }, [donnees, chanteurs]);
 
     const groupeChoisi = groupes.find(g => g.id === groupeId);
-    const visibles = useMemo(() => (
-        groupeId === "tous"
-            ? chanteurs
-            : chanteurs.filter(c => c.groupe_id === groupeId)
-    ), [chanteurs, groupeId]);
+    const caSelectionne = groupeId === FILTRE_CA;
+    const visibles = useMemo(
+        () => filtrerChanteursTrombi(chanteurs, groupeId),
+        [chanteurs, groupeId]
+    );
 
     const sections = useMemo(() => {
         if (affichage === "alphabetique" || groupeId !== "tous") {
@@ -161,7 +165,9 @@ export default function TrombiSaison({ saisonId }) {
         <main className="trombinoscope-page">
             <div className="trombinoscope-feuille">
                 <header className="trombi-entete">
-                    <BlocInvite titre="Chef-fe de chœur" personne={chef} />
+                    {!caSelectionne || chef?.fonction_ca_id != null ? (
+                        <BlocInvite titre="Chef-fe de chœur" personne={chef} />
+                    ) : <div aria-hidden="true" />}
                     <div className="trombi-identite-chorale">
                         <img
                             className="trombi-logo"
@@ -170,16 +176,20 @@ export default function TrombiSaison({ saisonId }) {
                         />
                         <div className="trombi-identite-saison">
                             <h1><span>{saisonNom}</span></h1>
-                            <p>{groupeChoisi
-                                ? `Groupe ${descriptionGroupe || groupeChoisi.nom}`
-                                : "Tous les groupes"}</p>
+                            <p>{caSelectionne
+                                ? "Le CA"
+                                : groupeChoisi
+                                    ? `Groupe ${descriptionGroupe || groupeChoisi.nom}`
+                                    : "Tous les groupes"}</p>
                         </div>
                     </div>
-                    <BlocInvite
-                        titre="Accompagnant"
-                        personne={accompagnant}
-                        optionnel
-                    />
+                    {!caSelectionne || accompagnant?.fonction_ca_id != null ? (
+                        <BlocInvite
+                            titre="Accompagnant"
+                            personne={accompagnant}
+                            optionnel
+                        />
+                    ) : <div aria-hidden="true" />}
                 </header>
 
                 <div className="trombi-barre-outils">
@@ -195,6 +205,7 @@ export default function TrombiSaison({ saisonId }) {
                             Groupe
                             <select value={groupeId} onChange={e => setGroupeId(e.target.value)}>
                                 <option value="tous">Tous les groupes</option>
+                                <option value={FILTRE_CA}>Le CA</option>
                                 {groupes.map(g => (
                                     <option key={g.id} value={g.id}>
                                         {g.nom}{g.description ? ` — ${g.description}` : ""}
@@ -218,7 +229,9 @@ export default function TrombiSaison({ saisonId }) {
                 </div>
 
                 {!visibles.length ? (
-                    <p className="trombi-aucun">Aucun choriste à afficher.</p>
+                    <p className="trombi-aucun">{caSelectionne
+                        ? "Aucun membre du CA pour cette saison."
+                        : "Aucun choriste à afficher."}</p>
                 ) : (
                     <div className="trombi-sections">
                         {sections.map(section => (
@@ -235,7 +248,11 @@ export default function TrombiSaison({ saisonId }) {
                                 )}
                                 <div className="trombi-grille">
                                     {section.membres.map(c => (
-                                        <AffichePhotoTrombi key={c.id} personne={c} afficherGroupe={groupeId === "tous"} />
+                                        <AffichePhotoTrombi
+                                            key={c.id}
+                                            personne={c}
+                                            afficherGroupe={groupeId === "tous" || caSelectionne}
+                                        />
                                     ))}
                                 </div>
                             </section>

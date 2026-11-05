@@ -1,4 +1,5 @@
 import { readStorageCacheConfig, versionStorageUrl } from "../_shared/storage-cache.ts";
+import { ajouterFonctionCa, chargerFonctionsCa } from "../_shared/trombinoscope-ca.ts";
 import { withSupabase } from "npm:@supabase/server@1";
 
 const BUCKET = "photos-chanteurs";
@@ -115,6 +116,13 @@ export default {
             }
             const groupeParId = new Map(groupes.map((g) => [g.id, g]));
 
+            let fonctionsCa;
+            try {
+                fonctionsCa = await chargerFonctionsCa(ctx.supabaseAdmin, saisonId);
+            } catch {
+                return reponseErreur("Impossible de charger les fonctions du CA", 500);
+            }
+
             // Conservation de la sécurité Storage existante : chemins limités
             // à chanteurs/{id}/..., signature serveur et durée de 1 heure.
             const chemins = membresVisibles
@@ -141,7 +149,7 @@ export default {
                 const association = associationParChanteur.get(c.id);
                 const groupeId = association?.groupe_id ?? null;
                 const groupe = groupeId ? groupeParId.get(groupeId) : null;
-                return {
+                return ajouterFonctionCa({
                     id: c.id,
                     nom: c.nom,
                     prenom: c.prenom,
@@ -149,7 +157,7 @@ export default {
                     groupe_id: groupeId,
                     groupe_nom: groupe?.nom ?? null,
                     groupe_description: groupe?.description ?? null
-                };
+                }, fonctionsCa);
             });
 
             return Response.json({

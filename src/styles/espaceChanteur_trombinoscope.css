@@ -290,6 +290,14 @@
 }
 .trombi-personne-prenom { font-weight: 600; }
 .trombi-personne-nom { font-weight: 800; }
+.trombi-personne-fonction-ca {
+    max-width: 100%;
+    color: #294c44;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
 .trombi-personne-groupe {
     display: flex;
     align-items: center;
@@ -437,6 +445,7 @@
     .trombi-personne-photo { width: 66px; height: 66px; padding: 2px; border-width: 2px; }
     .trombi-personne-identite { font-size: 8px; }
     .trombi-personne-groupe { font-size: 7px; }
+    .trombi-personne-fonction-ca { font-size: 7px; }
     .trombi-personne { break-inside: avoid; }
     .trombi-section { break-inside: auto; }
 }
