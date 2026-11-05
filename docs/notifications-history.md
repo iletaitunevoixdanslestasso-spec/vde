@@ -6,7 +6,7 @@ Une publication depuis le formulaire administrateur crée désormais un message 
 
 Le bloc « Historique des messages » sous le formulaire montre les publications récentes, leur auteur et leur date, ainsi que le bilan Push. Une simulation n’enregistre rien. Les anciens envois non archivés ne peuvent pas être reconstitués. Les anciens modes manuels `tous` et abonnement individuel restent des outils de test et n’alimentent pas cet historique ; le formulaire utilise le mode `selection`.
 
-Chaque chanteur dispose de `/chanteur/:token/notifications`. La cloche du tableau de bord, du menu et du module d’activation ouvre cette page. Elle affiche un compteur de messages non lus dans l’application, indépendant du badge du navigateur Android. L’ouverture d’un message demande son marquage comme lu ; le bouton permet de le remettre en non lu. Une erreur de sauvegarde laisse l’état inchangé à l’écran. Le compteur et la liste sont actualisés au retour au premier plan et sur demande. Il n’y a pas de marquage automatique de tous les messages à l’ouverture de la liste.
+Chaque chanteur dispose de `/chanteur/:token/notifications`. La cloche du tableau de bord, du menu et du module d’activation ouvre cette page. Elle affiche un compteur de messages non lus dans l’application, indépendant du badge du navigateur Android. Le chevron à droite du titre affiche ou réduit le texte sans changer son état de lecture. L’indicateur « Lu / Non lu » en haut à droite est cliquable et permet de basculer cet état, même lorsque le message est réduit. Une erreur de sauvegarde laisse l’état inchangé à l’écran. Le compteur et la liste sont actualisés au retour au premier plan et sur demande. Il n’y a pas de marquage automatique de tous les messages à l’ouverture de la liste.
 
 La lecture est enregistrée par **chanteur**, pas par appareil. Les messages reçus lors des saisons précédentes restent dans son historique personnel. Un clic sur une alerte Push ouvre également la boîte personnelle lorsque l’appareil connaît encore son accès. Ouvrir la boîte ne signifie pas que chaque message a été lu.
 
@@ -82,7 +82,7 @@ Les fonctions effectuent elles-mêmes leurs contrôles d’identité et d’auto
 
 3. Vérifier la fin du déploiement Vercel de `develop`, puis accepter la mise à jour de l’application si elle est proposée.
 4. Simuler : aucune ligne ne doit être créée. Publier ensuite volontairement vers un chanteur de test. Vérifier une seule ligne d’historique et sa présence dans sa boîte ; un autre chanteur non destinataire ne doit pas le voir.
-5. Ouvrir le message, vérifier « Lu » sur le second appareil après actualisation, puis le remettre en « Non lu ».
+5. Déplier le message avec le chevron : son état de lecture ne doit pas changer. Cliquer sur l’indicateur « Lu / Non lu », vérifier l’état sur le second appareil après actualisation, puis cliquer à nouveau pour inverser l’état.
 
 Le nouveau formulaire refuse de publier lorsqu’une simulation ne confirme pas la présence du nouveau backend d’historique. Tant que les migrations/fonctions ne sont pas mises à jour, la boîte et l’historique peuvent afficher une indisponibilité.
 
