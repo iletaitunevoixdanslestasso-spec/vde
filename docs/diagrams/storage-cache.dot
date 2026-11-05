@@ -1,0 +1,34 @@
+digraph Cache {
+
+graph [fontname="DejaVu Sans", bgcolor="#ffffff", pad="0.35", nodesep="0.45", ranksep="0.42", labelloc="t", fontsize="22", fontcolor="#18324b"];
+node [shape=box, style="rounded,filled", fillcolor="#f0f5fa", color="#b4c9dc", penwidth="1.2", fontname="DejaVu Sans", fontsize="12", fontcolor="#16324b", margin="0.18,0.13"];
+edge [color="#607d96", penwidth="1.4", arrowsize="0.7", fontname="DejaVu Sans", fontsize="10", fontcolor="#405c73"];
+
+label="AFFICHER LE FICHIER : QUEL CACHE RÉPOND ?\nMême logique réseau pour l’admin et le chanteur";
+start [label="URL de lecture reçue après le contrôle d’accès\nStorageService / TrombinoscopeService"];
+url [label="SignedUrlCacheService\nlocalStorage : URL + échéance, pas les octets\nLien exact réutilisé, séparé par accès et variante",fillcolor="#e8f2fc"];
+eligible [label="Affichage photo via usePhotoLocale\nou clic DAI via PdfDaiLink ?",shape=diamond,fillcolor="#fff3df"];
+blob [label="PhotoCacheService.getBlob()\nCache Storage : vde-photos-privees-v2\nClé stable : scope + catégorie + version + chemin",fillcolor="#e8f2fc"];
+haveblob [label="Copie locale\nvalide ?",shape=diamond,fillcolor="#fff3df"];
+local [label="Lecture des octets locaux\nURL.createObjectURL() → blob:\nAucun transfert de ce fichier depuis Supabase",fillcolor="#e3f3df",color="#84ae78"];
+http [label="Cache HTTP du navigateur\nfetch / <img> / lecteur PDF / navigation\nDécision selon les en-têtes et le mode de requête",fillcolor="#e8f2fc"];
+havehttp [label="Le navigateur peut\nrépondre localement ?",shape=diamond,fillcolor="#fff3df"];
+httpbody [label="Réponse HTTP locale\nPas de téléchargement du contenu distant",fillcolor="#e3f3df",color="#84ae78"];
+cdn [label="GET vers le CDN Supabase\nMême URL complète, token compris",fillcolor="#e6f3f4"];
+havecdn [label="Copie CDN présente\net réutilisable ?",shape=diamond,fillcolor="#fff3df"];
+hit [label="HIT : octets fournis par le CDN\nConsomme l’egress caché",fillcolor="#e3f3df",color="#84ae78"];
+origin [label="Origine Supabase Storage\nPar exemple : MISS, BYPASS ou DYNAMIC\nEgress non caché selon le trafic transféré\nUne réponse éligible peut alimenter le CDN",fillcolor="#fcefe7",color="#cc9b7f"];
+receive [label="Octets reçus par le navigateur\nSi parcours Blob éligible : contrôle MIME / taille,\nenregistrement applicatif si possible, puis affichage"];
+end [label="Image visible / lecteur PDF ouvert\nLa page peut toujours effectuer d’autres appels SQL, Auth ou Edge",fillcolor="#edf6e7"];
+start -> url -> eligible;
+eligible -> blob [label="oui"]; eligible -> http [label="non : lien direct"];
+blob -> haveblob;
+haveblob -> local [label="oui"]; haveblob -> http [label="non : fetch"];
+http -> havehttp; havehttp -> httpbody [label="oui"]; havehttp -> cdn [label="non / revalidation distante"];
+cdn -> havecdn; havecdn -> hit [label="oui"]; havecdn -> origin [label="non"];
+hit -> receive; origin -> receive; local -> end; httpbody -> receive; receive -> end;
+{rank=same;local;http;}
+{rank=same;hit;origin;}
+note304 [label="Revalidation HTTP : une requête peut recevoir 304 Not Modified.\nLe navigateur utilise alors sa copie, sans retélécharger tout le fichier.\nL’absence de transfert du contenu n’exclut pas toute requête réseau.",shape=note,fillcolor="#f4f7fa"];
+end -> note304 [style=dashed,arrowhead=none];
+}

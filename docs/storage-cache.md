@@ -1,5 +1,7 @@
 # Cache Storage : photos et droits à l’image
 
+Pour suivre le parcours complet, du dépôt du fichier à son affichage, consulter [le workflow Storage admin et chanteur](storage-workflow.md), avec ses schémas et son index des fichiers et fonctions.
+
 ## Périmètre et durées
 
 Les noms viennent des usages existants du dépôt :
