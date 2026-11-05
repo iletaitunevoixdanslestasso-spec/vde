@@ -1,4 +1,6 @@
 import StorageCacheConfigService from "./StorageCacheConfigService";
+import SignedUrlCacheService from "./SignedUrlCacheService";
+import { scopeTokenChanteur } from "./PhotoCacheService";
 import { supabase } from "../core/supabase/client";
 
 /**
@@ -8,6 +10,7 @@ import { supabase } from "../core/supabase/client";
  */
 export default class TrombinoscopeService {
     static async getBySaisonId(saisonId) {
+        const cacheGeneration = SignedUrlCacheService.generation;
         if (!saisonId) {
             throw new Error("Saison non renseignée.");
         }
@@ -27,6 +30,10 @@ export default class TrombinoscopeService {
         if (!estAdminConnecte && !tokenChanteur) {
             throw new Error("Aucun accès valide au trombinoscope.");
         }
+
+        const scope = estAdminConnecte
+            ? `admin-${sessionData.session.user.id}`
+            : await scopeTokenChanteur(tokenChanteur);
 
         const { data, error } = await supabase.functions.invoke(
             "trombinoscope-saison",
@@ -57,6 +64,7 @@ export default class TrombinoscopeService {
         }
 
         if (data.storage_cache_config) await StorageCacheConfigService.ingest(data.storage_cache_config);
-        return data;
+        if (cacheGeneration !== SignedUrlCacheService.generation) return data;
+        return SignedUrlCacheService.reuseUrls(data, scope);
     }
 }

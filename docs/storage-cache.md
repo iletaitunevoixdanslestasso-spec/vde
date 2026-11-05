@@ -14,6 +14,22 @@ Les autres documents du bucket `referentiel-documents` et les autres catégories
 
 Le cache navigateur existant (`PhotoCacheService`, Cache Storage, séparation par session ou empreinte du token chanteur, déduplication des téléchargements) est réutilisé. La version de catégorie entre dans sa clé stable. Les paramètres des URL signées sont conservés avec `URL.searchParams`; aucun timestamp n’est ajouté à chaque rendu.
 
+## Réutilisation des liens signés après rechargement
+
+`SignedUrlCacheService` conserve les URL de téléchargement Supabase dans `sessionStorage` (`vde-signed-download-urls-v1`, au plus 500 entrées). Les liens restent identiques après un rechargement du même onglet, jusqu’à leur expiration avec une marge de renouvellement de 30 secondes. La durée réelle inscrite dans le token reste la limite, y compris pour les PDF privés : la conservation des liens ne les prolonge pas à 150 jours. Si le stockage est bloqué ou saturé, le cache fonctionne en mémoire pendant la page courante.
+
+Tous les téléchargements des services existants sont couverts : photos administrateur et trombinoscopes, DAI personnel, modèle DAI, documents choriste/adhérent, documents du référentiel et paroles. Les liens publics ou externes sont laissés tels quels. Les autorisations et tokens d’upload signés ne sont jamais mis en cache par ce service.
+
+Les entrées sont séparées par UID Auth ou empreinte du token chanteur explicitement utilisé, y compris lorsqu’un administrateur est également connecté. L’origine, le chemin et tous les paramètres autres que `token` (notamment `v`, `download` et les transformations) distinguent les variantes. Les appels directs distinguent également la durée demandée. Une URL nouvellement autorisée pour une échéance plus courte ne reprend pas une ancienne signature plus longue.
+
+Les fonctions métier continuent de vérifier les accès et de renvoyer des métadonnées fraîches : le client réutilise seulement les URL reçues, sans remettre en circulation un document absent ou un ancien workflow DAI. Elles peuvent encore fabriquer une nouvelle signature côté serveur, mais cette nouvelle URL n’est pas utilisée pour télécharger les octets lorsqu’une URL autorisée équivalente est déjà conservée. Les signatures obtenues directement avec le SDK sont également réutilisées jusqu’à expiration dans la session du compte.
+
+Un upload, remplacement ou retrait de fichier invalide ses liens conservés. Le changement de version photos/DAI utilise une nouvelle clé. La déconnexion Auth et le changement de token chanteur purgent ce cache ; les requêtes déjà en vol ne peuvent pas repeupler les entrées invalidées. Un événement `INITIAL_SESSION` ou `SIGNED_IN` répété ne le vide pas.
+
+Supprimer uniquement `Cache Storage → vde-photos-privees-v2` conserve les URL dans `sessionStorage` : un nouveau téléchargement peut ainsi réutiliser le même lien et bénéficier du CDN. Fermer l’onglet ou effacer toutes les données du site supprime aussi les URL conservées. Un `HIT` reste conditionné à la présence de cette URL dans le nœud CDN ; ce mécanisme ne préchauffe pas le CDN et ne partage pas les liens entre utilisateurs.
+
+Cette amélioration est entièrement côté navigateur : elle demande de publier le frontend mis à jour, sans nouvelle migration SQL ni fonction Supabase à redéployer.
+
 **Confidentialité DAI :** le `Cache-Control` des objets est demandé à 150 jours mais la copie applicative des PDF privés est volontairement limitée à une heure et à l’expiration de l’URL signée. La validité existante des signatures reste d’une heure. Un navigateur/CDN peut néanmoins conserver les octets selon sa politique et les en-têtes reçus : l’expiration d’un lien n’efface pas un fichier déjà téléchargé. Une révocation immédiate des copies téléchargées n’est jamais garantie. Si cette exigence est requise, il faut réduire aussi le cache HTTP des DAI (par exemple à 3600 secondes, voire `no-store`) dans un changement de politique explicite, sans rendre le bucket public. Le script de migration ci-dessous applique 150 jours ; ne pas l’exécuter pour les DAI avant d’avoir accepté cette conséquence.
 
 ## Autorisation et configuration
@@ -86,11 +102,15 @@ Depuis la racine du dépôt :
 ```sh
 node tests/storage-cache.test.cjs
 node tests/storage-cache-config.test.cjs
+node tests/signed-url-cache.test.cjs
+node tests/signed-url-integration.test.cjs
 node tests/storage-cache-migration.test.mjs
 node supabase/functions/storage-cache-config/index.test.cjs
 npm run build
 ```
 
 Les tests de configuration vérifient la lecture Auth sous RLS sans appel à l’Edge Function, la validation serveur des tokens chanteurs, les erreurs de lecture et la séparation des droits d’actualisation. Les tests backend vérifient les autorisations et l’invalidation par catégorie avec Auth/Storage simulés. Les vérifications Chromium du formulaire d’administration ont également utilisé un service simulé sans appel distant. Elles ne constituent pas une validation des comptes ou des fichiers du projet Supabase réel. Le runtime Deno n’était pas installé : la syntaxe TypeScript a été vérifiée, sans contrôle de types Deno. Le lint ciblé des nouveaux services/pages est passé ; le lint global continue de signaler les défauts préexistants du dépôt.
+
+Les tests de liens signés recréent les modules dans un nouvel environnement de page avec le même `sessionStorage`, pour vérifier la stabilité des URL après rechargement, leur expiration, les variantes, les comptes et tokens distincts, les réponses métier fraîches, les invalidations et les déconnexions pendant une requête. Ils utilisent un SDK et un serveur simulés ; ils ne démontrent pas un taux de `HIT` CDN distant.
 
 Les entrées d’ancien format du cache photo sont nettoyées au prochain accès ; les anciennes versions et les copies expirées sont purgées lors de l’utilisation du cache. Une application fermée ne peut pas exécuter ce nettoyage : la limite locale d’une heure des PDF est une limite d’utilisation, pas une garantie d’effacement physique immédiat.

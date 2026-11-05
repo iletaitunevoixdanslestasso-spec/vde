@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { getChanteurByToken } from "../supabase/chanteur.api";
 import { getSaisonActive } from "../supabase/saison.api";
+import PhotoCacheService from "../../services/PhotoCacheService";
 
 export default function TokenGuard() {
 
@@ -41,6 +42,9 @@ export default function TokenGuard() {
       }
 
       // 3. Stocker les informations
+      if (localStorage.getItem("token") !== token) {
+        await PhotoCacheService.clearAll().catch(() => {});
+      }
       localStorage.setItem("token", token);
       // localStorage.setItem("chanteur", JSON.stringify(user));
       localStorage.setItem(
