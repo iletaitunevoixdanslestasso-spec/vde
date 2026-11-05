@@ -29,14 +29,16 @@ const columns = [
         field: "groupe_id",
         header: "Groupes",
         type: "select",
+        dbType: "uuid",
         source: "availableGroupes",
-        required: true,
+        required: false,
+        emptyOptionLabel: "Aucun groupe",
         render: (v, row) => {
 
-            return `${row.groupes?.nom || "doit choisir"}`;
+            return `${row.groupes?.nom || "Sans groupe"}`;
         },
         sortValue: (row) => {
-            return `${row.groupes?.nom || "doit choisir"}`;
+            return `${row.groupes?.nom || "Sans groupe"}`;
         },
 
 

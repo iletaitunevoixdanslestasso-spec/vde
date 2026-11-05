@@ -110,6 +110,9 @@ export class ChanteurSaisonService extends BaseService {
             }
         }
         // Un champ absent d'une modification partielle garde sa valeur actuelle.
+        const groupe = data.groupe_id === undefined
+            ? {}
+            : { groupe_id: data.groupe_id || null };
         const fonctionCa = data.fonction_ca_id === undefined
             ? {}
             : { fonction_ca_id: data.fonction_ca_id || null };
@@ -118,7 +121,7 @@ export class ChanteurSaisonService extends BaseService {
             const { data: updated, error } = await this.repository.update(
                 data.id,
                 {
-                    groupe_id: data.groupe_id,
+                    ...groupe,
                     ...fonctionCa
                 }
             );
@@ -164,7 +167,7 @@ export class ChanteurSaisonService extends BaseService {
             await this.repository.insert({
                 saison_id: saisonId,
                 chanteur_id: chanteurId,
-                groupe_id: groupeId,
+                groupe_id: groupeId || null,
                 fonction_ca_id: fonctionCaId || null
             });
 

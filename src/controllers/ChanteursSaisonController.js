@@ -12,7 +12,18 @@ export class ChanteursSaisonController extends BaseController {
         this.mailService = new MailService();
     }
 
+    async save(entity, onSuccess, onError) {
+        const result = await super.save(entity, onSuccess, onError);
 
+        if (result.success && result.data?.groupe_id === null) {
+            return {
+                ...result,
+                warning: "Le choriste a été enregistré sans groupe."
+            };
+        }
+
+        return result;
+    }
 
     /**
      * Liste les chanteurs d'une saison

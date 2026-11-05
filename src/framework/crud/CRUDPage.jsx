@@ -317,10 +317,14 @@ export default function CRUDPage({ config, context = {} }) {
 
             setOpen(false);
 
-            NotificationService.success(
-                result.message ||
-                "Enregistrement effectué avec succès."
-            );
+            if (result.warning) {
+                NotificationService.warning(result.warning, 5000);
+            } else {
+                NotificationService.success(
+                    result.message ||
+                    "Enregistrement effectué avec succès."
+                );
+            }
 
             setEditItem(null);
 
