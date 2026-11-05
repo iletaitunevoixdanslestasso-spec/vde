@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ChevronDown, Mail, MailOpen } from "lucide-react";
 import EspaceChanteurPageHeader from "../../components/EspaceChanteurPageHeader";
 import { notificationMessageService } from "../../services/NotificationMessageService";
 import { formatMessageDate } from "../../helper/helper";
@@ -107,9 +108,7 @@ function BoiteNotifications({ token }) {
   }
 
   function ouvrirMessage(message) {
-    const ouvrir = messageOuvert !== message.id;
-    setMessageOuvert(ouvrir ? message.id : null);
-    if (ouvrir && !message.lu_le) definirLecture(message, true);
+    setMessageOuvert(messageOuvert === message.id ? null : message.id);
   }
 
   const nombrePages = Math.max(1, Math.ceil(etat.total / TAILLE_PAGE));
@@ -172,9 +171,29 @@ function BoiteNotifications({ token }) {
                   >
                     <div className="notifications-chanteur-message-heading">
                       <h2 className="notifications-chanteur-title">{message.titre}</h2>
-                      <span className={`notifications-chanteur-read-state ${lu ? "notifications-chanteur-read-state--lu" : ""}`}>
-                        {lu ? "Lu" : "Non lu"}
-                      </span>
+                      <button
+                        type="button"
+                        className={`notifications-chanteur-chevron ${ouvert ? "notifications-chanteur-chevron--ouvert" : ""}`.trim()}
+                        aria-label={`${ouvert ? "Réduire" : "Afficher"} le message : ${message.titre}`}
+                        title={ouvert ? "Réduire le message" : "Afficher le message"}
+                        aria-expanded={ouvert}
+                        aria-controls={`notification-contenu-${message.id}`}
+                        onClick={() => ouvrirMessage(message)}
+                      >
+                        <ChevronDown size={22} aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        className={`notifications-chanteur-read-state ${lu ? "notifications-chanteur-read-state--lu" : ""}`.trim()}
+                        aria-label={`État de lecture : ${message.titre}`}
+                        aria-pressed={lu}
+                        title={lu ? "Marquer comme non lu" : "Marquer comme lu"}
+                        disabled={Boolean(enregistrement)}
+                        onClick={() => definirLecture(message, !lu)}
+                      >
+                        {lu ? <MailOpen size={17} aria-hidden="true" /> : <Mail size={17} aria-hidden="true" />}
+                        <span>{lu ? "Lu" : "Non lu"}</span>
+                      </button>
                     </div>
                     <p className="notifications-chanteur-meta">
                       <span>{message.auteur_nom || "Auteur non renseigné"}</span>
@@ -186,28 +205,6 @@ function BoiteNotifications({ token }) {
                     >
                       {message.contenu}
                     </p>
-                    <div className="notifications-chanteur-actions">
-                      <button
-                        type="button"
-                        className="notifications-chanteur-button"
-                        aria-expanded={ouvert}
-                        aria-controls={`notification-contenu-${message.id}`}
-                        disabled={Boolean(enregistrement)}
-                        onClick={() => ouvrirMessage(message)}
-                      >
-                        {ouvert ? "Réduire le message" : "Ouvrir le message"}
-                      </button>
-                      {ouvert && (
-                        <button
-                          type="button"
-                          className="notifications-chanteur-button notifications-chanteur-button--secondary"
-                          disabled={Boolean(enregistrement)}
-                          onClick={() => definirLecture(message, !lu)}
-                        >
-                          {enCours ? "Enregistrement…" : lu ? "Marquer comme non lu" : "Marquer comme lu"}
-                        </button>
-                      )}
-                    </div>
                   </article>
                 </li>
               );
