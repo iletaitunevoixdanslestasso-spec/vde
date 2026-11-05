@@ -1,60 +1,65 @@
 @echo off
-setlocal
+setlocal EnableExtensions DisableDelayedExpansion
 
-REM Ce script doit etre place a la racine du depot Git.
-cd /d "%~dp0"
+REM ------------------------------------------------------------
+REM IMPORTANT : le fichier est versionne dans Git.
+REM Le passage develop -> main peut le remplacer pendant
+REM son execution. On travaille donc depuis une copie TEMP.
+REM ------------------------------------------------------------
+if /I "%~1"=="--copie-temporaire" goto :publication
 
-set "SUPABASE_PROJECT_REF=lqgkxpvkauoaeqtbndoy"
-set "SUPABASE_CLI="
-set "FONCTIONS_DEPLOYEES=NON"
-set "PUSH_EFFECTUE=NON"
+set "DOSSIER_DEPOT=%~dp0"
+set "SCRIPT_TEMP=%TEMP%\vde-publier-prod-%RANDOM%-%RANDOM%.bat"
+copy /Y "%~f0" "%SCRIPT_TEMP%" >nul
+if errorlevel 1 (
+    echo ERREUR : impossible de creer la copie temporaire du script.
+    exit /b 1
+)
+
+cmd /D /C ""%SCRIPT_TEMP%" --copie-temporaire "%DOSSIER_DEPOT%""
+set "CODE_RETOUR=%ERRORLEVEL%"
+del /Q "%SCRIPT_TEMP%" >nul 2>&1
+exit /b %CODE_RETOUR%
+
+:publication
+set "DOSSIER_DEPOT=%~2"
+cd /D "%DOSSIER_DEPOT%"
+if errorlevel 1 (
+    echo ERREUR : impossible d'acceder au repertoire Git.
+    exit /b 1
+)
+
+set "PROJET_SUPABASE=lqgkxpvkauoaeqtbndoy"
+set "SUPABASE_DEPLOYE=0"
 
 echo.
 echo === Publication de develop vers main + Supabase Edge Functions ===
-echo Projet Supabase : %SUPABASE_PROJECT_REF%
+echo Projet Supabase : %PROJET_SUPABASE%
 echo.
 
+REM Verifier le depot et l'absence de modifications locales.
 git rev-parse --is-inside-work-tree >nul 2>&1
 if errorlevel 1 (
-    echo ERREUR : ce fichier doit etre place dans le depot Git.
+    echo ERREUR : le script doit se trouver dans un depot Git.
     goto :echec
 )
+for /f "delims=" %%L in ('git status --porcelain') do goto :arbre-sale
 
-REM Evite de changer de branche avec des modifications locales.
-for /f "delims=" %%L in ('git status --porcelain') do (
-    echo ERREUR : des modifications locales ne sont pas enregistrees.
-    git status --short
-    goto :echec
-)
-
-REM Cherche la CLI Supabase installee dans ce projet ou dans le PATH.
-if exist "node_modules\.bin\supabase.cmd" (
-    set "SUPABASE_CLI=%~dp0node_modules\.bin\supabase.cmd"
-) else (
-    for /f "delims=" %%S in ('where supabase 2^>nul') do (
-        if not defined SUPABASE_CLI set "SUPABASE_CLI=%%S"
-    )
-)
-if not defined SUPABASE_CLI (
-    echo ERREUR : Supabase CLI introuvable.
-    echo Installer la CLI : npm install --save-dev supabase
-    echo Puis se connecter une fois : npx supabase login
-    goto :echec
-)
-
-REM Les fonctions doivent exister dans le depot et etre versionnees.
-if not exist "supabase\functions\" (
-    echo ERREUR : dossier supabase\functions introuvable.
-    echo Placer les sources des Edge Functions dans ce dossier avant publication.
+REM La CLI locale prime sur une installation globale.
+set "SUPABASE_CLI=%CD%\node_modules\.bin\supabase.cmd"
+if not exist "%SUPABASE_CLI%" (
+    echo ERREUR : Supabase CLI n'est pas installee localement.
+    echo Installer avec : npm install --save-dev supabase
     goto :echec
 )
 
 echo CLI Supabase detectee : %SUPABASE_CLI%
+REM CALL est necessaire pour revenir ici apres l'execution d'un .cmd.
 call "%SUPABASE_CLI%" --version
 if errorlevel 1 goto :echec
 
 echo.
-echo ATTENTION : les fonctions seront deployees sur le projet Supabase indique.
+echo ATTENTION : les Edge Functions seront deployees sur le projet de production.
 choice /C ON /N /M "Confirmer la mise en production (Supabase + Vercel) ? [O/N] "
 if errorlevel 2 (
     echo Publication annulee.
@@ -81,56 +86,54 @@ echo [4/6] Fusion de origin/develop dans main...
 git merge --no-edit origin/develop
 if errorlevel 1 goto :echec
 
-REM Le deploiement se fait depuis le contenu fusionne de main.
+echo.
+echo [5/6] Deploiement des Supabase Edge Functions...
 if not exist "supabase\functions\" (
-    echo ERREUR : dossier supabase\functions absent apres la fusion.
+    echo ERREUR : dossier supabase\functions introuvable.
+    echo Les fonctions doivent se trouver dans ce dossier du depot.
     goto :echec
 )
+call "%SUPABASE_CLI%" functions deploy --project-ref "%PROJET_SUPABASE%"
+if errorlevel 1 goto :echec
+set "SUPABASE_DEPLOYE=1"
 
 echo.
-echo [5/6] Deploiement des Edge Functions sur Supabase...
-REM --use-api evite de necessiter Docker pour le bundling.
-REM Pas de --prune : les fonctions distantes absentes en local ne sont pas supprimees.
-call "%SUPABASE_CLI%" functions deploy --project-ref %SUPABASE_PROJECT_REF% --use-api
-if errorlevel 1 (
-    echo ERREUR : deploiement Supabase echoue.
-    echo Verifier la connexion avec : "%SUPABASE_CLI%" login
-    goto :echec
-)
-set "FONCTIONS_DEPLOYEES=OUI"
-
-echo.
-echo [6/6] Envoi de main sur GitHub (deploiement Vercel)...
+echo [6/6] Envoi de main sur GitHub pour Vercel Production...
 git push origin main
 if errorlevel 1 goto :echec
-set "PUSH_EFFECTUE=OUI"
 
 echo.
 echo Retour sur develop...
 git switch develop
-if errorlevel 1 goto :echec
+if errorlevel 1 (
+    echo ATTENTION : deploiement effectue, mais retour sur develop impossible.
+    git status --short --branch
+    exit /b 1
+)
 
 echo.
-echo SUCCES : fonctions Supabase deployees et main envoyee sur GitHub.
-echo Verifiez le statut du deploiement de production dans Vercel.
+echo SUCCES : fonctions Supabase deployees et branche main publiee.
+echo Controlez le deploiement Production dans Vercel.
 exit /b 0
+
+:arbre-sale
+echo.
+echo ERREUR : modifications locales detectees. Enregistrez-les d'abord.
+git status --short
+goto :echec
 
 :echec
 echo.
-echo ECHEC : processus interrompu.
-if /I "%FONCTIONS_DEPLOYEES%"=="OUI" (
+echo ECHEC : publication interrompue.
+if "%SUPABASE_DEPLOYE%"=="1" (
     echo ATTENTION : les fonctions Supabase ont deja ete deployees.
+    echo Le push GitHub n'a pas abouti.
 ) else (
-    echo Les fonctions Supabase n'ont pas ete deployees avec succes par ce script.
-)
-if /I "%PUSH_EFFECTUE%"=="OUI" (
-    echo ATTENTION : main a deja ete pousse sur GitHub. Verifiez Vercel.
-) else (
-    echo Aucun push de main vers GitHub n'a reussi pendant cette execution.
+    echo Le deploiement Supabase n'a pas ete confirme comme reussi.
 )
 echo Branche actuelle et etat Git :
 git status --short --branch
 echo.
-echo En cas de conflit pendant le merge, le corriger ou lancer git merge --abort.
-echo Ne relancez pas le script avant d'avoir resolu le probleme.
+echo En cas de conflit pendant le merge, corrigez-le ou lancez git merge --abort.
+echo Ne relancez pas avant d'avoir resolu le probleme.
 exit /b 1
