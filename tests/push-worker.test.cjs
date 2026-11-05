@@ -32,6 +32,7 @@ test('réception du titre/message personnalisés avec attente de showNotificatio
   await f.dispatch('push', { data: { json: () => ({ title: 'Répétition', body: 'Rendez-vous jeudi' }) } });
   assert.equal(f.notifications[0].title, 'Répétition');
   assert.equal(f.notifications[0].body, 'Rendez-vous jeudi');
+  assert.equal(f.notifications[0].icon, new URL('pwa-192x192.png', f.scope).href);
   assert.equal(f.notifications[0].data.url, f.scope);
 });
 

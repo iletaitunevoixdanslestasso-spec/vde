@@ -21,6 +21,7 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
+      icon: new URL("pwa-192x192.png", self.registration.scope).href,
       data: { url: self.registration.scope }
     })
   );
