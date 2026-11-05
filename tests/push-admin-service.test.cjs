@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { webcrypto } = require('node:crypto');
+const { validerContenuNotification, MAX_MESSAGE_BYTES } = require('../supabase/functions/_shared/notification-content.js');
 
 const SEASON = '11111111-1111-4111-8111-111111111111';
 const A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -24,7 +25,7 @@ const SaisonService = load('src/services/SaisonService.js', 'SaisonService', { B
 const SaisonChanteurService = load('src/services/SaisonChanteurService.js', 'SaisonChanteurService', {
     BaseService, BaseResponse, ChanteurRepository: class {}, SaisonChanteurRepository: class {}, SaisonChanteursValidator: class {}
 });
-const PushAdminService = load('src/services/PushAdminService.js', 'PushAdminService');
+const PushAdminService = load('src/services/PushAdminService.js', 'PushAdminService', { validerContenuNotification });
 const plain = value => JSON.parse(JSON.stringify(value));
 
 function fixture({ active = { id: SEASON, nom: '2026–2027' }, associations = [] } = {}) {
@@ -131,4 +132,15 @@ test('une nouvelle tentative réutilise le même identifiant d’envoi fourni pa
     await f.service.envoyer('Titre', 'Message', [A], SEASON, envoi);
     assert.equal(f.calls[0].envoi_id, envoi);
     assert.deepEqual(f.calls[0], f.calls[1]);
+});
+
+
+test('message complet au-delà de 500 caractères transmis sans troncature et garde-fou UTF-8 partagé', async () => {
+    const f = fixture();
+    const full = 'Premier paragraphe.\n\n' + 'Message complet 🎵 é '.repeat(60) + 'Fin du message.';
+    await f.service.simuler('Titre', full, [A], SEASON);
+    assert.equal(f.calls[0].message, full);
+    assert(full.length > 500);
+    await assert.rejects(() => f.service.simuler('Titre', 'é'.repeat(MAX_MESSAGE_BYTES / 2 + 1), [A], SEASON), /1 Mio/);
+    assert.equal(f.calls.length, 1);
 });

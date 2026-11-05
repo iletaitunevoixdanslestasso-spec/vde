@@ -21,6 +21,7 @@ fi
 container_id="$(docker_local run --pull never --rm -d --network none \
     --tmpfs /var/lib/postgresql/data:rw \
     --mount "type=bind,src=$repo_dir/supabase/migrations/20261105140000_notification_messages.sql,dst=/tmp/vde-notification-migration.sql,readonly" \
+    --mount "type=bind,src=$repo_dir/supabase/migrations/20261105160000_notification_full_content.sql,dst=/tmp/vde-notification-full-content-migration.sql,readonly" \
     --mount "type=bind,src=$repo_dir/tests/notification-history-sql.sql,dst=/tmp/vde-notification-tests.sql,readonly" \
     -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=vde_notification_history_sql_test "$image")"
 psql_local() {

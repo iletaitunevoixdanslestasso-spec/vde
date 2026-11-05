@@ -192,6 +192,21 @@ test('history uses stable newest-first pagination without exposing other recipie
   assert.equal(second.body.page_size, 1);
 });
 
+test('personal and admin history return the full long Unicode message with its original line breaks', async () => {
+  const contenu = `Bonjour aux choristes 👨‍👩‍👧‍👦 !\n\n${'Partitions et programme de la répétition 🎶\n'.repeat(40)}\nÀ jeudi !`;
+  assert(contenu.length > 500);
+  for (const endpoint of ['notifications', 'notifications-admin']) {
+    const { state, call } = fixture(endpoint);
+    state.notification_messages.find(message => message.id === newestMessage).contenu = contenu;
+    const response = endpoint === 'notifications'
+      ? await call({ token: 'token-a', action: 'list' })
+      : await call({}, { authorization: 'Bearer admin-session' });
+    assert.equal(response.status, 200);
+    assert.equal(response.body.messages.find(message => message.id === newestMessage).contenu, contenu);
+    assert.equal(state.mutations.length, 0);
+  }
+});
+
 test('read and unread change only the token owner, preserve first-read time and ignore client timestamps', async () => {
   const { state, call } = fixture();
   const read = await call({ token: 'token-a', action: 'read', notification_id: newestMessage,

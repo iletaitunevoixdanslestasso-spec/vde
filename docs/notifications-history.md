@@ -10,6 +10,18 @@ Chaque chanteur dispose de `/chanteur/:token/notifications`. La cloche du tablea
 
 La lecture est enregistrée par **chanteur**, pas par appareil. Les messages reçus lors des saisons précédentes restent dans son historique personnel. Un clic sur une alerte Push ouvre également la boîte personnelle lorsque l’appareil connaît encore son accès. Ouvrir la boîte ne signifie pas que chaque message a été lu.
 
+## Message intégral et aperçu Push
+
+Le champ « Message complet » accepte désormais plus de 500 caractères. Les paragraphes, accents et emojis sont conservés dans l’historique et la boîte personnelle (avec le nettoyage habituel des espaces de début/fin). Seule la copie envoyée aux fournisseurs Push est raccourcie : environ 160 caractères visibles, avec une ellipse si nécessaire et les espaces / retours à la ligne normalisés pour l’alerte.
+
+La règle est factorisée dans `supabase/functions/_shared/notification-content.js`, module pur utilisé par React et par l’Edge Function. Le formulaire affiche le même aperçu que celui préparé côté serveur. La charge JSON Push entière — titre, aperçu et identifiant de message compris — est limitée volontairement à 3 000 octets UTF-8, avec une marge pour le chiffrement et les fournisseurs. Les emojis composés ne sont pas coupés au milieu lorsque `Intl.Segmenter` est disponible ; le repli préserve les paires UTF-16.
+
+La limite de 500 caractères du corps a été supprimée. Un garde-fou explicite de **1 Mio UTF-8** reste appliqué au texte complet pour les ressources serveur. Le titre conserve sa limite existante de 80 caractères. Ces paramètres sont des choix applicatifs centralisés, pas des seuils imposés à l’identique par Supabase.
+
+Pour les installations ayant déjà l’historique, appliquer la migration additive `supabase/migrations/20261105160000_notification_full_content.sql` : elle remplace uniquement la contrainte sur `contenu`, sans changer les messages existants, leurs destinataires ou les états lu/non lu. Il faut ensuite redéployer `push-test` ; les fonctions de lecture ne nécessitent pas de changement. Une installation neuve applique d’abord la migration de l’historique, puis cette nouvelle migration.
+
+L’historique et la vérification des nouvelles tentatives comparent toujours le **texte complet** : deux messages ayant le même aperçu mais des fins différentes ne sont jamais considérés comme identiques.
+
 ## Données et autorisations
 
 La migration `supabase/migrations/20261105140000_notification_messages.sql` ajoute :
@@ -38,6 +50,8 @@ Une erreur de base avant archivage interdit tout Push. Un échec des services Pu
 | --- | --- |
 | `supabase/migrations/20261105140000_notification_messages.sql` | Tables, index, RLS et RPC atomique/idempotent ; les tables métier existantes sont réutilisées. |
 | `supabase/functions/_shared/notification-messages.ts` | Repository serveur commun à la publication, à l’historique et à la boîte personnelle. |
+| `supabase/functions/_shared/notification-content.js` | Validation et aperçu communs à l’interface et au serveur ; contrôle du JSON Push en octets sans raccourcir l’archive. |
+| `supabase/migrations/20261105160000_notification_full_content.sql` | Évolution de la contrainte du corps complet, sans modifier la migration précédente ni les données existantes. |
 | `supabase/functions/push-test/index.ts`, `PushAuthorizationService.ts` | Auteur issu de l’authentification existante, archivage avant Push, absence de doublons et référence au message dans l’alerte. |
 | `supabase/functions/notifications/index.ts` | Liste, compteur et lecture propres au chanteur validé par le mécanisme de token existant. |
 | `supabase/functions/notifications-admin/index.ts` | Historique paginé protégé par l’autorisation administrateur existante. |
@@ -55,7 +69,7 @@ Une erreur de base avant archivage interdit tout Push. Un échec des services Pu
 
 L’intégration Git ne modifie pas votre base ni les fonctions déployées. Pour activer la fonctionnalité :
 
-1. Relire puis appliquer **la migration** `20261105140000_notification_messages.sql` dans le projet Supabase concerné, via votre procédure habituelle ou l’éditeur SQL. Vérifier les autres migrations en attente avant d’utiliser une commande globale de migration.
+1. Relire puis appliquer **les migrations** `20261105140000_notification_messages.sql`, puis `20261105160000_notification_full_content.sql` dans le projet Supabase concerné, via votre procédure habituelle ou l’éditeur SQL. Vérifier les autres migrations en attente avant d’utiliser une commande globale de migration.
 2. Déployer les fonctions dans ce même projet :
 
 ```sh
@@ -77,6 +91,7 @@ Le nouveau formulaire refuse de publier lorsqu’une simulation ne confirme pas 
 ```sh
 npm run build
 node tests/push-admin-service.test.cjs
+node tests/notification-content.test.mjs
 node tests/notification-message-service.test.cjs
 node tests/notification-navigation.test.cjs
 node tests/push-worker.test.cjs
@@ -95,4 +110,4 @@ bash tests/notification-history-sql.sh
 
 La validation locale ne remplace pas le test après application de la migration et déploiement dans votre projet réel. Aucun envoi réel n’est effectué par cette procédure de tests automatisés.
 
-Les vérifications de types Deno des trois fonctions (`push-test`, `notifications`, `notifications-admin`) passent aussi. Les validations Node couvrent 56 tests au total dans les commandes ci-dessus ; elles comprennent des régressions sur les compteurs périmés, les onglets de deux chanteurs et les nouvelles tentatives d’envoi. Les défauts ESLint préexistants des anciens fichiers ne sont pas corrigés dans cette évolution ; les nouveaux fichiers passent le contrôle ciblé.
+Les vérifications de types Deno des trois fonctions (`push-test`, `notifications`, `notifications-admin`) passent aussi. Les validations Node comprennent des régressions sur les compteurs périmés, les onglets de deux chanteurs et les nouvelles tentatives d’envoi. Les défauts ESLint préexistants des anciens fichiers ne sont pas corrigés dans cette évolution ; les nouveaux fichiers passent le contrôle ciblé.

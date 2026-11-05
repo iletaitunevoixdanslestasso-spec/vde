@@ -1,4 +1,4 @@
-// Run with Node.js 24: node --test supabase/functions/push-test/selection.test.cjs
+// Run with Node.js 24: node supabase/functions/push-test/selection.test.cjs
 // Exercises the real handler, authorization and repository against an in-memory
 // PostgREST double. No credentials, Supabase calls or actual Push sends.
 const test = require('node:test');
@@ -114,7 +114,7 @@ function fixture() {
     VAPID_PRIVATE_KEY: btoa(String.fromCharCode(1).repeat(32)), VAPID_SUBJECT: 'mailto:test@example.com',
   };
   const context = vm.createContext({
-    console: { error() {} }, Request, Response, Headers, URL, Uint8Array, atob, btoa, crypto: webcrypto,
+    console: { error() {} }, Request, Response, Headers, URL, Uint8Array, TextEncoder, Intl, atob, btoa, crypto: webcrypto,
     Deno: { env: { get: name => env[name] }, serve: fn => { handler = fn; } },
     createClient: () => db,
     webpush: {
@@ -128,14 +128,14 @@ function fixture() {
           if (state.syncFailures.has(subscription.endpoint)) throw new Error('Invalid subscription');
           return { pushTextMessage: async payload => {
           if (JSON.parse(payload).notification_id) assert(state.notification_messages.some(message => message.id === JSON.parse(payload).notification_id));
-          state.sends.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload) });
+          state.sends.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload), bytes: Buffer.byteLength(payload, 'utf8') });
           if (state.failures.has(subscription.endpoint)) throw new Error('Push unavailable');
           } };
         } };
       } },
     },
   });
-  for (const file of ['../_shared/chanteur.ts', '../_shared/notification-messages.ts', 'PushAuthorizationService.ts', 'PushSubscriptionRepository.ts', 'index.ts']) {
+  for (const file of ['../_shared/chanteur.ts', '../_shared/notification-messages.ts', '../_shared/notification-content.js', 'PushAuthorizationService.ts', 'PushSubscriptionRepository.ts', 'index.ts']) {
     const source = fs.readFileSync(path.join(__dirname, file), 'utf8')
       .replace(/^import[\s\S]*?from ["'][^"']+["'];\n/gm, '').replace(/^export /gm, '');
     vm.runInContext(stripTypeScriptTypes(source), context);
@@ -263,6 +263,64 @@ test('only selected subscriptions receive personalized payload; partial failures
   assert(state.sends.every(s => s.payload.title === 'Répétition' && s.payload.body === 'Venez jeudi'));
 });
 
+test('the full multiline message is archived while every Push carries only a bounded Unicode preview', async () => {
+  const { state, call } = fixture();
+  const titre = 'Programme de la chorale 🎶';
+  const message = `Bonjour à toutes et à tous 👨‍👩‍👧‍👦 !\n\n${'Notre prochaine répétition prépare le concert. 🎵\n'.repeat(30)}\nÀ jeudi, avec vos partitions !`;
+  assert(message.length > 500);
+  const result = await call({ titre, message: `  ${message}\n `, simulation: false,
+    confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.acceptes, 3);
+  assert.equal(state.notification_messages.length, 1);
+  assert.equal(state.notification_messages[0].titre, titre);
+  assert.equal(state.notification_messages[0].contenu, message);
+  const archive = state.writes.find(write => write.rpc === 'creer_notification_message');
+  assert.equal(archive.args.p_contenu, message);
+  for (const send of state.sends) {
+    assert.equal(send.payload.title, titre);
+    assert.equal(send.payload.notification_id, id(300));
+    assert(send.payload.body.length < message.length);
+    assert(send.payload.body.startsWith('Bonjour à toutes et à tous 👨‍👩‍👧‍👦 !'));
+    assert(send.bytes <= 3000);
+  }
+  assert(state.sends.every(send => JSON.stringify(send.payload) === JSON.stringify(state.sends[0].payload)));
+});
+
+test('actual Push JSON respects its UTF-8 budget with large graphemes and escaped characters', async () => {
+  const { state, call } = fixture();
+  const titre = '"'.repeat(80);
+  const message = `👨‍👩‍👧‍👦${'\u0301'.repeat(2000)}${' 🎶\n'.repeat(200)}`.trim();
+  const result = await call({ titre, message, simulation: false,
+    confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.acceptes, 3);
+  assert.equal(state.notification_messages[0].contenu, message);
+  for (const send of state.sends) {
+    assert.equal(send.payload.title, titre);
+    assert.equal(send.payload.notification_id, id(300));
+    assert.equal(typeof send.payload.body, 'string');
+    assert(send.payload.body.length < message.length);
+    assert(send.bytes <= 3000);
+  }
+});
+
+test('content above the full-message UTF-8 byte limit is rejected before any query, archive or Push', async () => {
+  const { state, call } = fixture();
+  const message = 'é'.repeat(524289);
+  assert(Buffer.byteLength(message, 'utf8') > 1048576);
+  for (const simulation of [true, false]) {
+    const result = await call({ message, simulation, confirmation: 'ENVOYER_LA_SELECTION' });
+    assert.equal(result.status, 400);
+  }
+  assert.equal(state.queries.length, 0);
+  assert.equal(state.writes.length, 0);
+  assert.equal(state.notification_messages.length, 0);
+  assert.equal(state.notification_destinataires.length, 0);
+  assert.equal(state.sends.length, 0);
+  assert.equal(state.signatures, 0);
+});
+
 test('selected choristers with no subscriptions return zero sends without signing', async () => {
   const { state, call } = fixture();
   const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', chanteur_ids: [third] });
@@ -359,6 +417,24 @@ test('an ID cannot be reused with changed content, season, author or recipients'
   }
 });
 
+test('retry matching compares the complete message, including changes beyond the identical Push preview', async () => {
+  const { state, call } = fixture();
+  const prefix = 'La prochaine répétition aura lieu jeudi. '.repeat(30);
+  const send = { simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300),
+    message: `${prefix}\nMerci de venir à 19 h.` };
+  const initial = await call(send);
+  assert.equal(initial.status, 200);
+  assert.equal(initial.body.acceptes, 3);
+  assert.equal((await call(send)).body.duplique, true);
+  const changed = await call({ ...send, message: `${prefix}\nMerci de venir à 20 h.` });
+  assert.equal(changed.status, 409);
+  assert.equal(state.notification_messages[0].contenu, send.message);
+  assert.equal(state.notification_messages.length, 1);
+  assert.equal(state.sends.length, 3);
+  assert.equal(state.sends[0].payload.body.includes('19 h'), false);
+  assert.equal(state.sends[0].payload.body.includes('20 h'), false);
+});
+
 test('concurrent requests sharing one ID produce one inbox and at most one Push per subscription', async () => {
   const { state, call } = fixture();
   const send = { simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) };
@@ -436,4 +512,23 @@ test('legacy all and individual manual tests remain available', async () => {
   assert.equal(state.sends.length, 4);
   assert.equal(state.notification_messages.length, 0);
   assert.equal(state.notification_destinataires.length, 0);
+});
+
+test('legacy all and individual sends share the short Push preview and keep their default test message', async () => {
+  const { state, call } = fixture();
+  const headers = { 'x-push-test-secret': 'manual-secret' };
+  const message = 'Texte long 🎶, destiné à un aperçu court.\n'.repeat(30);
+  const all = await call({ cible: 'tous', message, simulation: false, confirmation: 'ENVOYER_A_TOUS' }, headers);
+  assert.equal(all.status, 200);
+  assert.equal(all.body.acceptes, 3);
+  const individual = await call({ cible: undefined, subscription_id: id(200), message }, headers);
+  assert.equal(individual.status, 200);
+  assert.equal(state.sends.length, 4);
+  assert(state.sends.every(send => send.payload.body.length < message.length && send.bytes <= 3000));
+  assert(state.sends.every(send => send.payload.body === state.sends[0].payload.body));
+  assert.equal(state.notification_messages.length, 0);
+  const legacy = await call({ cible: undefined, subscription_id: id(200), titre: undefined, message: undefined }, headers);
+  assert.equal(legacy.status, 200);
+  assert.equal(state.sends[4].payload.title, 'Voix dans l’Est');
+  assert.equal(state.sends[4].payload.body, 'Ceci est une notification Push de test.');
 });

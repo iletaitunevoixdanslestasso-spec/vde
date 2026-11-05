@@ -1,10 +1,9 @@
+import { validerContenuNotification } from "../../supabase/functions/_shared/notification-content.js";
 import { pushAdminRepository } from "../repositories/PushAdminRepository";
 import { SaisonRepository } from "../repositories/SaisonRepository";
 import { SaisonService } from "./SaisonService";
 import { SaisonChanteurService } from "./SaisonChanteurService";
 
-const MAX_TITRE = 80;
-const MAX_MESSAGE = 500;
 const MAX_DESTINATAIRES = 1000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -29,16 +28,7 @@ export class PushAdminService {
   }
 
   valider(titre, message) {
-    const titreNettoye = typeof titre === "string" ? titre.trim() : "";
-    const messageNettoye = typeof message === "string" ? message.trim() : "";
-
-    if (!titreNettoye || titreNettoye.length > MAX_TITRE) {
-      throw new Error(`Le titre doit contenir entre 1 et ${MAX_TITRE} caractères.`);
-    }
-    if (!messageNettoye || messageNettoye.length > MAX_MESSAGE) {
-      throw new Error(`Le message doit contenir entre 1 et ${MAX_MESSAGE} caractères.`);
-    }
-    return { titre: titreNettoye, message: messageNettoye };
+    return validerContenuNotification(titre, message);
   }
 
   preparerSelection(titre, message, chanteurIds, saisonId) {

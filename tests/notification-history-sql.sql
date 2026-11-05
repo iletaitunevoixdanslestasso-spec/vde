@@ -71,6 +71,26 @@ CREATE FUNCTION pg_temp.publish(
 SELECT public.creer_notification_message(message_id,saison,title,content,author,author_name,recipients,devices,unsubscribed)
 $$;
 
+-- Upgrade a populated original schema, including a recipient already marked read.
+SET ROLE service_role;
+SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000009', content=>E'  Message existant\nRépétition 🎶  ');
+UPDATE notification_destinataires SET lu_le='2026-11-01 20:15:00+00'
+WHERE notification_id='30000000-0000-4000-8000-000000000009'
+  AND chanteur_id='20000000-0000-4000-8000-000000000001';
+SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000010', content=>repeat('x',501))$q$,'23514');
+RESET ROLE;
+CREATE TEMP TABLE messages_before_upgrade AS TABLE notification_messages;
+CREATE TEMP TABLE recipients_before_upgrade AS TABLE notification_destinataires;
+\i /tmp/vde-notification-full-content-migration.sql
+\set ON_ERROR_STOP on
+SELECT pg_temp.assert(
+  NOT EXISTS ((TABLE notification_messages EXCEPT TABLE messages_before_upgrade)
+              UNION ALL (TABLE messages_before_upgrade EXCEPT TABLE notification_messages))
+  AND NOT EXISTS ((TABLE notification_destinataires EXCEPT TABLE recipients_before_upgrade)
+                  UNION ALL (TABLE recipients_before_upgrade EXCEPT TABLE notification_destinataires)),
+  'upgrade preserves existing messages and recipients exactly, including read states');
+DELETE FROM notification_messages WHERE id='30000000-0000-4000-8000-000000000009';
+
 -- Privileges and RLS are checked independently of application mocks.
 SELECT pg_temp.assert(bool_and(relrowsecurity), 'RLS enabled on both tables')
 FROM pg_class WHERE oid IN ('public.notification_messages'::regclass,'public.notification_destinataires'::regclass);
@@ -122,7 +142,8 @@ SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000
 SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', recipients=>ARRAY['20000000-0000-4000-8000-000000000001',NULL]::uuid[])$q$,'P0001','NOTIFICATION_RECIPIENTS');
 SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', recipients=>ARRAY[]::uuid[])$q$,'P0001','NOTIFICATION_RECIPIENTS');
 SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', title=>' ')$q$,'23514');
-SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', content=>repeat('x',501))$q$,'23514');
+SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', content=>' ')$q$,'23514');
+SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', content=>repeat('x',1048577))$q$,'23514');
 SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', author=>'00000000-0000-4000-8000-000000000099')$q$,'23503');
 SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', devices=>201)$q$,'23514');
 SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000002', unsubscribed=>3)$q$,'23514');
@@ -159,5 +180,28 @@ DELETE FROM auth.users WHERE id='00000000-0000-4000-8000-000000000002';
 SELECT pg_temp.assert((SELECT auteur_id IS NULL AND auteur_nom='Administrateur vérifié' FROM notification_messages WHERE id='30000000-0000-4000-8000-000000000003'),'author snapshot survives Auth deletion');
 DELETE FROM notification_messages WHERE id='30000000-0000-4000-8000-000000000003';
 SELECT pg_temp.assert((SELECT count(*)=2 FROM notification_destinataires),'deleting message cascades only its recipients');
+
+-- Full messages retain Unicode, line breaks and their exact content beyond 500 chars.
+SET ROLE service_role;
+DO $$ DECLARE full_content text := E'  Début\n' || repeat(E'🎶 Répétition : voix, cœur, café.\n',30) || E'Fin 👨‍👩‍👧‍👦  '; result jsonb; BEGIN
+  PERFORM pg_temp.assert(char_length(full_content)>500,'long-content fixture exceeds the former character limit');
+  result := pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000011',content=>full_content);
+  PERFORM pg_temp.assert((result->>'created')::boolean AND result->'message'->>'contenu'=full_content,'RPC returns exact full Unicode message');
+  PERFORM pg_temp.assert((SELECT contenu=full_content FROM notification_messages WHERE id='30000000-0000-4000-8000-000000000011'),'database stores full message without truncating or normalizing');
+  PERFORM pg_temp.assert((SELECT count(*)=2 FROM notification_destinataires WHERE notification_id='30000000-0000-4000-8000-000000000011'),'long message creates all recipient entries');
+  PERFORM pg_temp.assert(NOT (pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000011',content=>full_content)->>'created')::boolean,'full-content retry remains idempotent');
+  PERFORM pg_temp.assert_error(format('SELECT pg_temp.publish(message_id=>%L,content=>%L)', '30000000-0000-4000-8000-000000000011',full_content || ' modifié'),'P0001','NOTIFICATION_CONFLICT');
+END $$;
+
+-- The bound is UTF-8 bytes: one-byte and four-byte code points fit exactly at 1 Mio.
+SELECT pg_temp.assert((pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000012', content=>repeat('x',1048576))->>'created')::boolean,'exact 1 Mio ASCII message accepted');
+SELECT pg_temp.assert((pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000013', content=>repeat('🎶',262144))->>'created')::boolean,'exact 1 Mio multibyte message accepted');
+SELECT pg_temp.assert((SELECT bool_and(octet_length(contenu)=1048576) FROM notification_messages WHERE id IN ('30000000-0000-4000-8000-000000000012','30000000-0000-4000-8000-000000000013')),'boundary messages retain every byte');
+SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000014', content=>repeat('🎶',262144) || 'x')$q$,'23514','notification_messages_contenu_check');
+SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000014', content=>repeat('🎶',262145))$q$,'23514','notification_messages_contenu_check');
+SELECT pg_temp.assert((SELECT count(*)=0 FROM notification_messages WHERE id='30000000-0000-4000-8000-000000000014')
+  AND (SELECT count(*)=0 FROM notification_destinataires WHERE notification_id='30000000-0000-4000-8000-000000000014'),'oversized UTF-8 attempts leave neither a message nor recipients');
+SELECT pg_temp.assert_error($q$SELECT pg_temp.publish(message_id=>'30000000-0000-4000-8000-000000000014', title=>repeat('x',81))$q$,'23514','notification_messages_titre_check');
+RESET ROLE;
 \o
-SELECT 'PASS: PostgreSQL permissions, RLS, zero-device inbox, idempotency, conflicts, constraints, membership/season rollback and foreign keys' AS result;
+SELECT 'PASS: upgrade preserves history, full Unicode content and 1 Mio byte boundary, PostgreSQL permissions, RLS, zero-device inbox, idempotency, conflicts, rollback and foreign keys' AS result;
