@@ -14,6 +14,7 @@ import RepetitionParticipationControllerChanteur
 import { Check, CircleHelp, X } from "lucide-react";
 import "../../components/repetition_participation/RepetitionParticipationBoutons.css";
 import NotificationPermission from "../../components/notifications/NotificationPermission";
+import NotificationInboxLink from "../../components/notifications/NotificationInboxLink";
 
 function formatRendezvousDate(date) {
   if (!date) {
@@ -721,6 +722,8 @@ export default function DashboardChanteur() {
           </p>
 
         </div>
+
+        <NotificationInboxLink token={token} className="dashboard-notification-inbox-link" />
 
       </header>
 

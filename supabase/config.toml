@@ -430,3 +430,11 @@ verify_jwt = false
 # chanteur tokens; administrative refresh always requires an allowlisted JWT.
 [functions.storage-cache-config]
 verify_jwt = false
+
+# Le token métier chanteur est vérifié par get_mon_profil dans la fonction.
+[functions.notifications]
+verify_jwt = false
+
+# JWT Auth vérifié auprès de Supabase puis UID comparé à PUSH_ADMIN_USER_IDS.
+[functions.notifications-admin]
+verify_jwt = false

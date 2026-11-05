@@ -130,7 +130,8 @@ export class PushSubscriptionRepository {
             : "id,chanteur_id", { count: "exact" })
           .in("chanteur_id", lot)
           .order("id", { ascending: true })
-          .range(offset, offset + 99);
+          .range(offset, offset + 99)
+          .returns<(PushSubscriptionRow & { chanteur_id: string })[]>();
         if (error) throw error;
         if (count === null) throw new Error("Comptage des abonnements indisponible.");
         for (const row of data ?? []) {

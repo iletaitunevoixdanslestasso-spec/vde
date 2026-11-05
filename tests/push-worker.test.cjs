@@ -82,3 +82,26 @@ test('le worker de production charge réellement le même script Push et conserv
   assert.match(production, /precacheAndRoute/);
   assert.match(production, /push-handlers\.js[^}]*revision/);
 });
+
+test('un message archivé conserve son identifiant sans token personnel dans le Push', async () => {
+  const f = fixture();
+  const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  await f.dispatch('push', { data: { json: () => ({ title: 'Message', body: 'Contenu', notification_id: id }) } });
+  assert.equal(f.notifications[0].data.notification_id, id);
+  assert.equal(f.notifications[0].data.url, f.scope);
+  assert.equal('token' in f.notifications[0].data, false);
+});
+
+test('un clic sur un message archivé demande la boîte personnelle à la fenêtre ouverte', async () => {
+  const received = [];
+  const f = fixture([{ url: 'https://app.example/chanteur/test', focus: async () => {}, postMessage: message => received.push(message.type) }]);
+  await f.dispatch('notificationclick', { notification: { data: { notification_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' }, close() {} } });
+  assert.deepEqual(received, ['OPEN_NOTIFICATIONS']);
+  assert.equal(f.opened.length, 0);
+});
+
+test('application fermée : le clic ouvre une demande de boîte sans URL personnelle', async () => {
+  const f = fixture();
+  await f.dispatch('notificationclick', { notification: { data: { notification_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' }, close() {} } });
+  assert.deepEqual(f.opened, ['https://app.example/?pwa=1&notifications=1']);
+});

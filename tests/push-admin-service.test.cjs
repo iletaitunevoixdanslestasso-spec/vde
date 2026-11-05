@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const { webcrypto } = require('node:crypto');
 
 const SEASON = '11111111-1111-4111-8111-111111111111';
 const A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -13,7 +14,7 @@ function load(file, name, dependencies = {}) {
         .replace(/^import .*;\n/gm, '')
         .replace(/export class /g, 'class ')
         .replace(/^export const pushAdminService = .*;\n/gm, '');
-    const context = vm.createContext({ console, Intl, ...dependencies });
+    const context = vm.createContext({ console, Intl, crypto: webcrypto, ...dependencies });
     vm.runInContext(source + `\nglobalThis.loaded = ${name};`, context);
     return context.loaded;
 }
@@ -36,7 +37,7 @@ function fixture({ active = { id: SEASON, nom: '2026–2027' }, associations = [
     } };
     const repository = { executer: async body => {
         calls.push(plain(body));
-        return body.simulation ? { success: true, simulation: true, nombre_chanteurs: 2, nombre_appareils: 3, nombre_sans_abonnement: 0 }
+        return body.simulation ? { success: true, simulation: true, historique_disponible: true, nombre_chanteurs: 2, nombre_appareils: 3, nombre_sans_abonnement: 0 }
             : { success: true, nombre_appareils: 3, acceptes: 3, echecs: 0 };
     } };
     return { service: new PushAdminService({ repository, saisonService: saison, saisonChanteurService: membership }), saison, membership, calls, repository };
@@ -63,9 +64,9 @@ test('absence de saison active et erreurs de lecture bloquent la sélection', as
 test('simulation et envoi utilisent uniquement les chanteurs explicitement choisis', async () => {
     const f = fixture();
     await f.service.simuler(' Titre ', ' Message ', [A, A.toUpperCase(), B], SEASON);
-    await f.service.envoyer('Titre', 'Message', [B], SEASON);
+    await f.service.envoyer('Titre', 'Message', [B], SEASON, 'cccccccc-cccc-4ccc-8ccc-cccccccccccc');
     assert.deepEqual(f.calls[0], { titre: 'Titre', message: 'Message', cible: 'selection', saison_id: SEASON, chanteur_ids: [A, B], simulation: true });
-    assert.deepEqual(f.calls[1], { titre: 'Titre', message: 'Message', cible: 'selection', saison_id: SEASON, chanteur_ids: [B], simulation: false, confirmation: 'ENVOYER_LA_SELECTION' });
+    assert.deepEqual(f.calls[1], { titre: 'Titre', message: 'Message', cible: 'selection', saison_id: SEASON, chanteur_ids: [B], envoi_id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', simulation: false, confirmation: 'ENVOYER_LA_SELECTION' });
 });
 
 test('sélection vide, UUID invalides et texte invalide ne déclenchent aucun appel', async () => {
@@ -114,4 +115,20 @@ test('la liste de saison est paginée et ne tronque pas les inscrits à la premi
     assert.deepEqual(offsets, [0, 1]);
     f.membership.repository.findBySaison = async () => ({ data: [], count: 2, error: null });
     await assert.rejects(() => f.service.getDestinataires(), /Lecture incomplète/);
+});
+
+
+test('un ancien serveur sans historique bloque la simulation du nouveau formulaire', async () => {
+    const f = fixture();
+    f.repository.executer = async () => ({ success: true, simulation: true, nombre_appareils: 1 });
+    await assert.rejects(() => f.service.simuler('Titre', 'Message', [A], SEASON), /Redéployez/);
+});
+
+test('une nouvelle tentative réutilise le même identifiant d’envoi fourni par le formulaire', async () => {
+    const f = fixture();
+    const envoi = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+    await f.service.envoyer('Titre', 'Message', [A], SEASON, envoi);
+    await f.service.envoyer('Titre', 'Message', [A], SEASON, envoi);
+    assert.equal(f.calls[0].envoi_id, envoi);
+    assert.deepEqual(f.calls[0], f.calls[1]);
 });

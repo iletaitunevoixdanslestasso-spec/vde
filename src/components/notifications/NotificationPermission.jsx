@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Bell } from "lucide-react";
 import { pushSubscriptionService } from "../../services/PushSubscriptionService";
+import NotificationInboxLink from "./NotificationInboxLink";
 import "./NotificationPermission.css";
 
 function lirePermission() {
@@ -106,9 +106,7 @@ export default function NotificationPermission() {
 
   return (
     <section className="notification-permission" aria-label="Notifications">
-      <div className="notification-permission-icon" aria-hidden="true">
-        <Bell size={22} />
-      </div>
+      <NotificationInboxLink />
 
       <div className="notification-permission-content" aria-live="polite">
         <h2 className="notification-permission-title">Notifications</h2>

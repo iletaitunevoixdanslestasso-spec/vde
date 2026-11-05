@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { pushAdminService } from "../../../services/PushAdminService";
 import "./NotificationsAdminPage.css";
+import NotificationHistory from "./NotificationHistory";
 
 export default function NotificationsAdminPage() {
   const [titre, setTitre] = useState("");
@@ -15,6 +16,8 @@ export default function NotificationsAdminPage() {
   const [erreurDestinataires, setErreurDestinataires] = useState("");
   const [tentativeChargement, setTentativeChargement] = useState(0);
   const [selection, setSelection] = useState([]);
+  const envoiId = useRef(null);
+  const [actualisationHistorique, setActualisationHistorique] = useState(0);
 
   useEffect(() => {
     let actif = true;
@@ -37,10 +40,11 @@ export default function NotificationsAdminPage() {
     Boolean(saison?.id) && selection.length > 0;
   const nombreAppareils = simulation?.nombre_appareils ?? 0;
   const nombreSansAbonnement = simulation?.nombre_sans_abonnement ?? 0;
-  const peutEnvoyer = Boolean(simulation) && nombreAppareils > 0 &&
+  const peutEnvoyer = Boolean(simulation) && nombreAppareils >= 0 &&
     nombreAppareils <= 200 && confirmation && valide && destinatairesValides && !enCours && !resultat;
 
   function invaliderSimulation() {
+    envoiId.current = null;
     setSimulation(null);
     setConfirmation(false);
     setResultat(null);
@@ -86,13 +90,15 @@ export default function NotificationsAdminPage() {
     setErreur("");
     setConfirmation(false);
     try {
-      setResultat(await pushAdminService.envoyer(titre, message, selection, saison.id));
+      if (!envoiId.current) envoiId.current = crypto.randomUUID();
+      setResultat(await pushAdminService.envoyer(titre, message, selection, saison.id, envoiId.current));
       setSimulation(null); // empêche un second envoi accidentel
     } catch (e) {
       setSimulation(null);
       setErreur(e instanceof Error ? e.message : "Erreur pendant l'envoi.");
     } finally {
       setAction(null);
+      setActualisationHistorique(value => value + 1);
     }
   }
 
@@ -101,8 +107,8 @@ export default function NotificationsAdminPage() {
       <header className="notifications-admin__header">
         <h1>Envoyer une notification</h1>
         <p>
-          Choisissez les choristes inscrits à la saison active qui recevront le message.
-          Un choriste peut avoir plusieurs appareils abonnés aux notifications Push.
+          Choisissez les choristes de la saison active qui retrouveront le message dans leur espace.
+          Une notification Push est aussi envoyée à leurs appareils abonnés.
         </p>
       </header>
 
@@ -254,11 +260,11 @@ export default function NotificationsAdminPage() {
 
           {nombreSansAbonnement > 0 && (
             <p className="notifications-admin__warning">
-              {nombreSansAbonnement} choriste(s) sélectionné(s) n'ont aucun appareil abonné et ne recevront pas de notification.
+              {nombreSansAbonnement} choriste(s) sélectionné(s) n'ont aucun appareil abonné. Ils retrouveront le message dans leur espace, sans alerte Push.
             </p>
           )}
           {nombreAppareils === 0 && (
-            <p className="notifications-admin__warning">Aucun appareil abonné pour cette sélection : aucun envoi possible.</p>
+            <p className="notifications-admin__warning">Aucun appareil abonné pour cette sélection : le message sera disponible dans l'espace des choristes, sans alerte Push.</p>
           )}
 
           {nombreAppareils > 200 && (
@@ -267,7 +273,7 @@ export default function NotificationsAdminPage() {
             </p>
           )}
 
-          {nombreAppareils > 0 && nombreAppareils <= 200 && (
+          {nombreAppareils >= 0 && nombreAppareils <= 200 && (
             <>
               <label className="notifications-admin__confirmation">
                 <input
@@ -276,7 +282,7 @@ export default function NotificationsAdminPage() {
                   disabled={enCours}
                   onChange={(event) => setConfirmation(event.target.checked)}
                 />
-                Je confirme l'envoi de ce message aux {nombreAppareils} appareils des choristes sélectionnés.
+                Je confirme la publication pour les {selection.length} choristes sélectionnés et l'alerte Push sur {nombreAppareils} appareils.
               </label>
               <button
                 type="button"
@@ -284,7 +290,7 @@ export default function NotificationsAdminPage() {
                 onClick={envoyer}
                 disabled={!peutEnvoyer}
               >
-                {action === "envoi" ? "Envoi en cours..." : "2. Envoyer la notification"}
+                {action === "envoi" ? "Envoi en cours..." : "2. Publier le message"}
               </button>
             </>
           )}
@@ -293,7 +299,7 @@ export default function NotificationsAdminPage() {
 
       {resultat && (
         <div className="notifications-admin__result" aria-live="polite">
-          <h2>Envoi terminé</h2>
+          <h2>Message publié</h2>
           <p>
             Choristes sélectionnés : <strong>{selection.length}</strong>
             {" · "}Appareils ciblés : <strong>{resultat.nombre_appareils ?? 0}</strong>
@@ -319,6 +325,7 @@ export default function NotificationsAdminPage() {
           </button>
         </div>
       )}
+      <NotificationHistory key={actualisationHistorique} />
     </section>
   );
 }

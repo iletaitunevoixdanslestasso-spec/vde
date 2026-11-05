@@ -1,0 +1,75 @@
+.notification-inbox-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 11px;
+  color: var(--color-brand, #7047a6);
+  text-decoration: none;
+}
+
+.notification-inbox-link svg {
+  flex-shrink: 0;
+}
+
+.notification-inbox-link:hover {
+  background: var(--color-surface-muted, #eeebf4);
+}
+
+.notification-inbox-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.notification-inbox-link-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 2px solid var(--color-surface, #fff);
+  border-radius: 12px;
+  background: #a62d46;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.chanteur-menu-item.notification-inbox-link {
+  justify-content: flex-start;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.chanteur-menu-item.notification-inbox-link .notification-inbox-link-badge {
+  top: 1px;
+  right: 2px;
+}
+
+.dashboard-notification-inbox-link {
+  flex: 0 0 44px;
+  margin-left: auto;
+  background: var(--color-surface-muted, #eeebf4);
+}
+
+.notification-permission .notification-inbox-link {
+  flex: 0 0 44px;
+  background: #e7efff;
+  color: #2856a3;
+}
+
+@media (max-width: 768px) {
+  .chanteur-menu-item.notification-inbox-link {
+    justify-content: center;
+  }
+}

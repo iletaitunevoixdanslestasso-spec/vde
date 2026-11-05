@@ -35,7 +35,29 @@ function getChanteurPath() {
 }
 
 
+function getNotificationsPath() {
+    const current = /^\/chanteur\/([^/?#]+)/.exec(window.location.pathname);
+    if (current) return `/chanteur/${current[1]}/notifications`;
+    const token = localStorage.getItem("token");
+    if (token) return `/chanteur/${encodeURIComponent(token)}/notifications`;
+    const saved = getChanteurPath();
+    const match = typeof saved === "string" && /^\/chanteur\/([^/?#]+)/.exec(saved);
+    return match ? `/chanteur/${match[1]}/notifications` : null;
+}
+
 export default function PwaStartRedirect() {
+
+    useEffect(() => {
+        const worker = navigator.serviceWorker;
+        if (!worker) return;
+        const ouvrir = event => {
+            if (event.data?.type !== "OPEN_NOTIFICATIONS") return;
+            const path = getNotificationsPath();
+            if (path) window.location.assign(path);
+        };
+        worker.addEventListener("message", ouvrir);
+        return () => worker.removeEventListener("message", ouvrir);
+    }, []);
 
     useEffect(() => {
 
@@ -77,6 +99,14 @@ export default function PwaStartRedirect() {
 
         const params =
             new URLSearchParams(search);
+
+        if (params.get("notifications") === "1") {
+            const inbox = getNotificationsPath();
+            if (inbox) {
+                window.location.replace(inbox);
+                return;
+            }
+        }
 
         if (params.get("pwa") !== "1") {
             return;
