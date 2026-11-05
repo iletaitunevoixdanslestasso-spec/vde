@@ -8,7 +8,8 @@ export class ReferentielFonctionCaRepository extends BaseRepository {
     async findAll() {
         return this.supabase
             .from(this.table)
-            .select("id, libelle")
+            .select("id, libelle, ordre")
+            .order("ordre", { ascending: true })
             .order("libelle", { ascending: true });
     }
 
@@ -20,7 +21,7 @@ export class ReferentielFonctionCaRepository extends BaseRepository {
         return this.supabase
             .from(this.table)
             .insert(data)
-            .select("id, libelle")
+            .select("id, libelle, ordre")
             .single();
     }
 

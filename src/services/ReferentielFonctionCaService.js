@@ -3,19 +3,26 @@ import { BaseResponse } from "../core/framework/BaseResponse";
 
 export class ReferentielFonctionCaService extends BaseService {
     async save(entity) {
+        const conserverOrdre = Boolean(entity.id) && entity.ordre === undefined;
+        const ordreVide = typeof entity.ordre === "string" && entity.ordre.trim() === "";
         const normalizedEntity = {
             ...entity,
             libelle: typeof entity.libelle === "string"
                 ? entity.libelle.trim()
-                : ""
+                : "",
+            // Un champ explicitement vidé reprend la valeur par défaut, même en édition.
+            ordre: ordreVide || (!entity.id && entity.ordre === undefined)
+                ? 1000
+                : entity.ordre
         };
         const validation = this.validator.validate(normalizedEntity);
 
         if (!validation.valid) {
-            return BaseResponse.error(validation.errors, "Le libellé est obligatoire.");
+            return BaseResponse.error(validation.errors, validation.errors[0]?.message);
         }
 
         const dbEntity = this.mapper.toDb(normalizedEntity);
+        if (conserverOrdre) delete dbEntity.ordre;
         const { data, error } = entity.id
             ? await this.repository.update(entity.id, dbEntity)
             : await this.repository.insert(dbEntity);

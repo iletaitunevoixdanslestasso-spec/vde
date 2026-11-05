@@ -30,15 +30,15 @@ function fixture() {
         queries: [], signatures: [], rpc: [], caError: null,
         vue_trombinoscope_saison: [
             { saison_id: saison, saison: { id: saison, nom: '2026–2027' }, groupes: [{ id: id(30), nom: 'Groupe A' }],
-                chanteurs: [person(anne, 'Anne', photo), { ...person(bob, 'Bob'), fonction_ca_id: secretaire, fonction_ca: 'Ancienne fonction' }],
+                chanteurs: [person(anne, 'Anne', photo), { ...person(bob, 'Bob'), fonction_ca_id: secretaire, fonction_ca: 'Ancienne fonction', fonction_ca_ordre: 99 }],
                 chef: person(anne, 'Anne', photo), accompagnant: null },
             { saison_id: autreSaison, saison: { id: autreSaison, nom: '2027–2028' }, groupes: [],
                 chanteurs: [person(anne, 'Anne')], chef: null, accompagnant: null }
         ],
         ca_saison: [
-            { saison_id: saison, chanteur_id: anne, fonction_ca_id: president, fonction: 'président' },
-            { saison_id: saison, chanteur_id: invisible, fonction_ca_id: secretaire, fonction: 'secrétaire' },
-            { saison_id: autreSaison, chanteur_id: anne, fonction_ca_id: secretaire, fonction: 'secrétaire' }
+            { saison_id: saison, chanteur_id: anne, fonction_ca_id: president, fonction: 'président', ordre: 0 },
+            { saison_id: saison, chanteur_id: invisible, fonction_ca_id: secretaire, fonction: 'secrétaire', ordre: 10 },
+            { saison_id: autreSaison, chanteur_id: anne, fonction_ca_id: secretaire, fonction: 'secrétaire', ordre: 10 }
         ],
         acces: [{ token: 'chanteur-valid', actif: true, deleted_at: null, saison_chanteur_id: id(40) }],
         saison_chanteurs: [
@@ -113,7 +113,9 @@ test('accès admin : fonction CA de la saison, liste inchangée et photos signé
     const data = await response.json();
     assert.deepEqual(data.chanteurs.map(c => c.id), [anne, bob]);
     assert.deepEqual(data.chanteurs.map(c => [c.fonction_ca_id, c.fonction_ca]), [[president, 'président'], [null, null]]);
+    assert.deepEqual(data.chanteurs.map(c => c.fonction_ca_ordre), [0, null]);
     assert.equal(data.chef.fonction_ca, 'président');
+    assert.equal(data.chef.fonction_ca_ordre, 0);
     assert.equal(data.accompagnant, null);
     assert.equal(data.chanteurs[0].photo_url, `https://storage.test/chanteurs/${anne}/photo.jpg?token=signed&v=3`);
     assert.equal('photo_path' in data.chanteurs[0], false);
@@ -121,6 +123,7 @@ test('accès admin : fonction CA de la saison, liste inchangée et photos signé
     assert.equal(f.state.signatures[0].paths.length, 1);
     assert.equal(f.state.signatures[0].duration, 3600);
     assert.deepEqual(f.caQueries().map(q => q.filters), [[['saison_id', saison, 'eq']]]);
+    assert.equal(f.caQueries()[0].columns, 'chanteur_id, fonction_ca_id, fonction, ordre');
     assert.equal(f.state.vue_trombinoscope_saison[0].chanteurs[1].fonction_ca, 'Ancienne fonction');
 });
 
@@ -154,6 +157,7 @@ test('même choriste dans deux saisons : la fonction vient uniquement de la sais
     const data = await response.json();
     assert.equal(data.chanteurs[0].fonction_ca_id, secretaire);
     assert.equal(data.chanteurs[0].fonction_ca, 'secrétaire');
+    assert.equal(data.chanteurs[0].fonction_ca_ordre, 10);
     assert.deepEqual(f.caQueries()[0].filters, [['saison_id', autreSaison, 'eq']]);
 });
 
@@ -162,8 +166,9 @@ test('CA vide ou affectation retirée : valeurs nulles, tous les choristes reste
     f.state.ca_saison = [];
     const data = await (await f.main()).json();
     assert.equal(data.chanteurs.length, 2);
-    assert.ok(data.chanteurs.every(c => c.fonction_ca_id === null && c.fonction_ca === null));
+    assert.ok(data.chanteurs.every(c => c.fonction_ca_id === null && c.fonction_ca === null && c.fonction_ca_ordre === null));
     assert.equal(data.chef.fonction_ca, null);
+    assert.equal(data.chef.fonction_ca_ordre, null);
 });
 
 test('erreur de lecture CA : erreur serveur et aucune signature, pas de faux CA vide', async () => {
@@ -182,6 +187,7 @@ test('ancien endpoint : enrichit uniquement les identités autorisées par le RP
     const data = await response.json();
     assert.deepEqual(data.chanteurs.map(c => c.id), [anne, bob]);
     assert.deepEqual(data.chanteurs.map(c => [c.fonction_ca_id, c.fonction_ca]), [[president, 'président'], [null, null]]);
+    assert.deepEqual(data.chanteurs.map(c => c.fonction_ca_ordre), [0, null]);
     assert.equal(data.chanteurs[0].groupe_nom, 'Groupe A');
     assert.match(data.chanteurs[0].photo_url, /token=signed&v=3$/);
     assert.equal(f.state.rpc[0].queriesBefore, 0);
