@@ -362,3 +362,20 @@ test('une purge publiée après l’instantané d’une invalidation ne peut pas
     assert.equal(second.cache.get('admin-a/document'), null);
     assert.equal(browser(first.storage).cache.get('admin-a/document'), null);
 });
+
+test('une invalidation détectée avant une écriture vide le repli mémoire même si la relecture suivante échoue', () => {
+    const options = {};
+    const first = browser(new Map(), options);
+    const second = browser(first.storage);
+    first.cache.set('admin-a/photo', signed());
+    let reads = 0;
+    options.beforeGet = key => {
+        if (key === EPOCH_KEY && ++reads === 3) {
+            second.cache.clearAll();
+            options.readError = true;
+        }
+    };
+    first.cache.set('admin-a/new', signed('documents/a.pdf'));
+    assert.equal(first.cache.get('admin-a/photo'), null);
+    assert.equal(first.cache.get('admin-a/new'), null);
+});

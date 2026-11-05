@@ -90,11 +90,7 @@ class SignedUrlCacheService {
             if (observedEpoch !== epoch) {
                 // Une invalidation a réellement été observée pendant la lecture.
                 // Un repli mémoire ne doit pas renvoyer les anciennes signatures.
-                this.#epoch = observedEpoch;
-                this.#generation++;
-                this.#dirty.clear();
-                this.entries.clear();
-                this.#blockedEpoch = null;
+                this.discardForEpoch(observedEpoch);
                 return false;
             }
             if (this.#blockedEpoch !== null && epoch === this.#blockedEpoch) return false;
@@ -119,6 +115,14 @@ class SignedUrlCacheService {
         }
     }
 
+    discardForEpoch(epoch) {
+        this.#epoch = epoch;
+        this.#generation++;
+        this.#dirty.clear();
+        this.entries.clear();
+        this.#blockedEpoch = null;
+    }
+
     trim() {
         for (const [key, entry] of this.entries) {
             if (entry.expiresAt <= Date.now() + EXPIRY_MARGIN_MS) {
@@ -136,7 +140,9 @@ class SignedUrlCacheService {
     persist(epoch) {
         try {
             if (this.#blockedEpoch !== null) return;
-            if ((localStorage.getItem(EPOCH_KEY) || "") !== epoch) {
+            let observedEpoch = localStorage.getItem(EPOCH_KEY) || "";
+            if (observedEpoch !== epoch) {
+                this.discardForEpoch(observedEpoch);
                 this.sync();
                 return;
             }
@@ -147,7 +153,9 @@ class SignedUrlCacheService {
             // Une écriture courante ne change jamais la barrière d'invalidation.
             // Si un autre onglet invalide entre les deux accès, ce document garde
             // l'ancien epoch et sera ignoré, même si son écriture finit après.
-            if ((localStorage.getItem(EPOCH_KEY) || "") !== epoch) {
+            observedEpoch = localStorage.getItem(EPOCH_KEY) || "";
+            if (observedEpoch !== epoch) {
+                this.discardForEpoch(observedEpoch);
                 this.sync();
                 return;
             }
@@ -158,7 +166,9 @@ class SignedUrlCacheService {
             this.#decodedRaw = raw;
             this.#decodedEpoch = epoch;
             this.#decodedEntries = new Map(this.entries);
-            if ((localStorage.getItem(EPOCH_KEY) || "") !== epoch) {
+            observedEpoch = localStorage.getItem(EPOCH_KEY) || "";
+            if (observedEpoch !== epoch) {
+                this.discardForEpoch(observedEpoch);
                 this.sync();
                 return;
             }
