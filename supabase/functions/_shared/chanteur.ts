@@ -8,7 +8,7 @@ export function createSupabaseAdmin() {
 }
 
 export async function validateChanteurToken(
-    supabaseAdmin,
+    supabaseAdmin: ReturnType<typeof createSupabaseAdmin>,
     token: string
 ) {
 

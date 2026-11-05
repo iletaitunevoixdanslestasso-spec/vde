@@ -1,4 +1,5 @@
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import NotificationInboxLink from "../../components/notifications/NotificationInboxLink";
 
 export default function ChanteurMenu({chanteur}) {
 
@@ -165,6 +166,13 @@ export default function ChanteurMenu({chanteur}) {
                 <div className="chanteur-menu-section-title">
                     Mon espace
                 </div>
+
+                <NotificationInboxLink
+                    token={token}
+                    className="chanteur-menu-item"
+                    showLabel
+                    labelClassName="chanteur-menu-label"
+                />
 
                 <button
                     type="button"

@@ -1,3 +1,7 @@
+function estNotificationMessageId(value) {
+  return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
 // Réception d'une notification Push
 self.addEventListener("push", (event) => {
   let message = {};
@@ -22,7 +26,10 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(title, {
       body,
       icon: new URL("pwa-192x192.png", self.registration.scope).href,
-      data: { url: self.registration.scope }
+      data: {
+        url: self.registration.scope,
+        ...(estNotificationMessageId(message.notification_id) ? { notification_id: message.notification_id } : {})
+      }
     })
   );
 });
@@ -41,11 +48,17 @@ self.addEventListener("notificationclick", (event) => {
       client => new URL(client.url).origin === self.location.origin
     );
 
+    const ouvrirMessages = estNotificationMessageId(event.notification.data?.notification_id);
     if (page) {
       await page.focus();
+      if (ouvrirMessages) page.postMessage({ type: "OPEN_NOTIFICATIONS" });
       return;
     }
 
-    await self.clients.openWindow(self.registration.scope);
+    // Le token personnel reste sur l'appareil, jamais dans le contenu Push.
+    const destination = ouvrirMessages
+      ? new URL("?pwa=1&notifications=1", self.registration.scope).href
+      : self.registration.scope;
+    await self.clients.openWindow(destination);
   })());
 });

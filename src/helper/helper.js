@@ -201,3 +201,14 @@ export function openGoogleMaps(lieu) {
         "noopener,noreferrer"
     );
 }
+/** Date/heure des messages, identique dans l'historique et l'espace chanteur. */
+export function formatMessageDate(value) {
+    if (!value) return "Date inconnue";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Date inconnue";
+    return date.toLocaleString("fr-FR", {
+        timeZone: "Europe/Paris",
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+    });
+}

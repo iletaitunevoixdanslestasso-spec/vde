@@ -1,0 +1,15 @@
+.notifications-admin-history { margin-top: 32px; min-width: 0; }
+.notifications-admin-history__header, .notifications-admin-history__pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.notifications-admin-history__header h2 { margin: 0; }
+.notifications-admin-history button { min-height: 44px; padding: 10px 16px; border: 1px solid #9d9baa; border-radius: 8px; background: #fff; color: #343041; font: inherit; cursor: pointer; }
+.notifications-admin-history button:disabled { opacity: .5; cursor: default; }
+.notifications-admin-history button:focus-visible { outline: 3px solid #90bff7; outline-offset: 2px; }
+.notifications-admin-history__message { border: 1px solid #dedee6; border-radius: 12px; padding: 20px; margin: 16px 0; background: #fff; overflow-wrap: anywhere; }
+.notifications-admin-history__message h3 { margin: 0 0 10px; }
+.notifications-admin-history__meta { color: #5c5b69; }
+.notifications-admin-history__content { white-space: pre-wrap; line-height: 1.6; }
+@media (max-width: 600px) {
+    .notifications-admin-history__message { padding: 16px; }
+    .notifications-admin-history__pagination { flex-direction: column; }
+    .notifications-admin-history__pagination button { width: 100%; }
+}

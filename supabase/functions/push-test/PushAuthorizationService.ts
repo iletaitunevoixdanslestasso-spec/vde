@@ -1,7 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 type Autorisation =
-  | { autorise: true }
+  | { autorise: true; auteur: { id: string | null; nom: string } }
   | { autorise: false; status: 401 | 403; message: string };
 
 /**
@@ -16,7 +16,7 @@ export async function autoriserEnvoiPush(request: Request): Promise<Autorisation
   const providedSecret = request.headers.get("x-push-test-secret");
 
   if (testSecret && providedSecret && providedSecret === testSecret) {
-    return { autorise: true };
+    return { autorise: true, auteur: { id: null, nom: "Test manuel" } };
   }
 
   const token = /^Bearer\s+(.+)$/i.exec(request.headers.get("Authorization") ?? "")?.[1];
@@ -56,5 +56,11 @@ export async function autoriserEnvoiPush(request: Request): Promise<Autorisation
     return { autorise: false, status: 403, message: "Droits administrateur insuffisants." };
   }
 
-  return { autorise: true };
+  const metadata = data.user.user_metadata ?? {};
+  const nom = [metadata.full_name, metadata.name, data.user.email]
+    .find(value => typeof value === "string" && value.trim());
+  return {
+    autorise: true,
+    auteur: { id: data.user.id, nom: typeof nom === "string" ? nom.trim().slice(0, 320) : "Administration" },
+  };
 }

@@ -65,6 +65,7 @@ import RepetitionsChanteur from "../pages/chanteur/RepetitionsChanteur";
 import TrombiChanteur from "../pages/chanteur/TrombiChanteur";
 import TrombiAdmin from "../pages/admin/TrombiAdmin";
 import NotificationsAdminPage from "../pages/admin/notifications/NotificationsAdminPage";
+import NotificationsChanteur from "../pages/chanteur/NotificationsChanteur";
 import StorageCacheAdminPage from "../pages/admin/cache/StorageCacheAdminPage";
 
 
@@ -133,6 +134,11 @@ export default function Router() {
                                 <Route
                                     path="profil"
                                     element={<Profil />}
+                                />
+
+                                <Route
+                                    path="notifications"
+                                    element={<NotificationsChanteur />}
                                 />
 
                                 <Route

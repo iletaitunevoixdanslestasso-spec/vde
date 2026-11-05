@@ -69,13 +69,18 @@ export class PushAdminService {
     if (result.success !== true || result.simulation !== true) {
       throw new Error(result.error || "La simulation n'a pas abouti.");
     }
+    if (result.historique_disponible !== true) {
+      throw new Error("Redéployez la fonction push-test avec l'historique avant de publier un message.");
+    }
     return result;
   }
 
-  async envoyer(titre, message, chanteurIds, saisonId) {
+  async envoyer(titre, message, chanteurIds, saisonId, envoiId = crypto.randomUUID()) {
     const selection = this.preparerSelection(titre, message, chanteurIds, saisonId);
+    if (typeof envoiId !== "string" || !UUID.test(envoiId)) throw new Error("Identifiant d'envoi invalide.");
     const result = await this.repository.executer({
       ...selection,
+      envoi_id: envoiId,
       simulation: false,
       confirmation: "ENVOYER_LA_SELECTION"
     });

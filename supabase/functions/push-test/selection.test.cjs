@@ -7,6 +7,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const { stripTypeScriptTypes } = require('node:module');
+const { webcrypto } = require('node:crypto');
 const id = n => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
 const season = id(1);
 const first = id(11);
@@ -24,16 +25,22 @@ function fixture() {
       id: id(200 + i), chanteur_id, endpoint: `mock:${i}`, p256dh: 'key', auth: 'auth',
     })),
     queries: [], sends: [], signatures: 0, failures: new Set(), pageLimit: Infinity,
+    notification_messages: [], notification_destinataires: [], writes: [],
+    failCreate: false, failFinish: false, failVapid: false,
+    syncFailures: new Set(),
+    admin: { id: 'admin', email: 'admin@example.com', user_metadata: { full_name: 'Chef de chœur' } },
   };
   class Query {
     constructor(table) { this.table = table; this.filters = []; }
     select(columns, options = {}) { this.columns = columns; this.options = options; return this; }
+    update(values) { this.values = values; return this; }
     eq(field, value) { this.filters.push([field, value, 'eq']); return this; }
     is(field, value) { this.filters.push([field, value, 'eq']); return this; }
     in(field, value) { this.filters.push([field, value, 'in']); return this; }
     order() { return this; }
     limit(value) { this.to = value - 1; return this; }
     range(from, to) { this.from = from; this.to = to; return this; }
+    returns() { return this; }
     maybeSingle() { this.single = true; return this; }
     then(resolve, reject) {
       try {
@@ -44,15 +51,20 @@ function fixture() {
             : row[field];
           return operator === 'in' ? value.includes(actual) : actual === value;
         }));
+        if (this.values) {
+          if (state.failFinish) return Promise.resolve({ data: null, error: new Error('finish DB failed') }).then(resolve, reject);
+          rows.forEach(row => Object.assign(row, this.values));
+          state.writes.push({ table: this.table, values: this.values });
+        }
         if (this.columns.includes('!inner')) {
           rows = rows.filter(row => state.chanteurs.some(singer => singer.id === row.chanteur_id));
         }
-        rows.sort((a, b) => a.id.localeCompare(b.id));
+        rows.sort((a, b) => (a.id ?? a.chanteur_id).localeCompare(b.id ?? b.chanteur_id));
         const count = rows.length;
         const from = this.from || 0;
         rows = rows.slice(from, Math.min(this.to === undefined ? Infinity : this.to + 1, from + state.pageLimit));
         // Respect selected fields so simulation cannot accidentally read keys.
-        const columns = this.columns.split(',');
+        const columns = this.columns.split(',').map(column => column.trim());
         const data = this.options.head ? null : rows.map(row => Object.fromEntries(
           Object.entries(row).filter(([name]) => columns.includes(name)),
         ));
@@ -63,8 +75,34 @@ function fixture() {
   }
   const db = {
     from: table => new Query(table),
+    rpc: async (name, args) => {
+      assert.equal(name, 'creer_notification_message');
+      if (state.beforeCreate) state.beforeCreate();
+      if (state.failCreate) return { data: null, error: new Error('archive DB failed') };
+      const ids = [...new Set(args.p_chanteur_ids)].sort();
+      const existing = state.notification_messages.find(row => row.id === args.p_id);
+      if (existing) {
+        const previousIds = state.notification_destinataires.filter(row => row.notification_id === args.p_id).map(row => row.chanteur_id).sort();
+        if (existing.saison_id !== args.p_saison_id || existing.titre !== args.p_titre ||
+          existing.contenu !== args.p_contenu || existing.auteur_id !== args.p_auteur_id ||
+          JSON.stringify(previousIds) !== JSON.stringify(ids)) return { data: null, error: { message: 'NOTIFICATION_CONFLICT' } };
+        return { data: { created: false, message: { ...existing } }, error: null };
+      }
+      const active = state.saisons.filter(row => row.active && !row.deleted_at);
+      if (active.length !== 1 || active[0].id !== args.p_saison_id) return { data: null, error: { message: 'NOTIFICATION_SEASON' } };
+      if (ids.some(id => !state.saison_chanteurs.some(row => row.chanteur_id === id && row.saison_id === args.p_saison_id && !row.deleted_at &&
+        state.chanteurs.some(singer => singer.id === id && !singer.deleted_at)))) return { data: null, error: { message: 'NOTIFICATION_RECIPIENTS' } };
+      const message = { id: args.p_id, saison_id: args.p_saison_id, titre: args.p_titre, contenu: args.p_contenu,
+        auteur_id: args.p_auteur_id, auteur_nom: args.p_auteur_nom, created_at: '2026-11-05T12:00:00Z', statut_push: 'en_cours',
+        nombre_chanteurs: ids.length, nombre_appareils: args.p_nombre_appareils, nombre_sans_abonnement: args.p_nombre_sans_abonnement,
+        acceptes: 0, echecs: 0 };
+      state.notification_messages.push(message);
+      state.notification_destinataires.push(...ids.map(chanteur_id => ({ notification_id: args.p_id, chanteur_id, lu_le: null })));
+      state.writes.push({ rpc: name, args });
+      return { data: { created: true, message: { ...message } }, error: null };
+    },
     auth: { getUser: async token => token === 'admin'
-      ? { data: { user: { id: 'admin' } }, error: null }
+      ? { data: { user: state.admin }, error: null }
       : token === 'reader' ? { data: { user: { id: 'reader' } }, error: null }
       : { data: { user: null }, error: new Error('invalid') } },
   };
@@ -76,21 +114,28 @@ function fixture() {
     VAPID_PRIVATE_KEY: btoa(String.fromCharCode(1).repeat(32)), VAPID_SUBJECT: 'mailto:test@example.com',
   };
   const context = vm.createContext({
-    console: { error() {} }, Request, Response, Headers, URL, Uint8Array, atob, btoa,
+    console: { error() {} }, Request, Response, Headers, URL, Uint8Array, atob, btoa, crypto: webcrypto,
     Deno: { env: { get: name => env[name] }, serve: fn => { handler = fn; } },
     createClient: () => db,
     webpush: {
-      PushMessageError: class extends Error {}, importVapidKeys: async () => ({}),
+      PushMessageError: class extends Error {}, importVapidKeys: async () => {
+        if (state.failVapid) throw new Error('VAPID unavailable');
+        return {};
+      },
       ApplicationServer: { new: async () => {
         state.signatures++;
-        return { subscribe: subscription => ({ pushTextMessage: async payload => {
+        return { subscribe: subscription => {
+          if (state.syncFailures.has(subscription.endpoint)) throw new Error('Invalid subscription');
+          return { pushTextMessage: async payload => {
+          if (JSON.parse(payload).notification_id) assert(state.notification_messages.some(message => message.id === JSON.parse(payload).notification_id));
           state.sends.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload) });
           if (state.failures.has(subscription.endpoint)) throw new Error('Push unavailable');
-        } }) };
+          } };
+        } };
       } },
     },
   });
-  for (const file of ['PushAuthorizationService.ts', 'PushSubscriptionRepository.ts', 'index.ts']) {
+  for (const file of ['../_shared/chanteur.ts', '../_shared/notification-messages.ts', 'PushAuthorizationService.ts', 'PushSubscriptionRepository.ts', 'index.ts']) {
     const source = fs.readFileSync(path.join(__dirname, file), 'utf8')
       .replace(/^import[\s\S]*?from ["'][^"']+["'];\n/gm, '').replace(/^export /gm, '');
     vm.runInContext(stripTypeScriptTypes(source), context);
@@ -125,9 +170,12 @@ test('simulation deduplicates singers/subscriptions, reports missing subscriptio
   assert.equal(result.body.nombre_sans_abonnement, 1);
   assert.equal(result.body.saison_id, season);
   assert.equal(result.body.simulation, true);
+  assert.equal(result.body.historique_disponible, true);
   assert.equal('subscriptions' in result.body, false);
   assert.equal(state.sends.length, 0);
   assert.equal(state.signatures, 0);
+  assert.equal(state.writes.length, 0);
+  assert.equal(state.notification_messages.length, 0);
   const reads = state.queries.filter(q => q.table === 'push_subscriptions');
   assert(reads.length >= 4);
   assert(reads.every(q => q.columns === 'id,chanteur_id'));
@@ -140,6 +188,7 @@ test('malformed, empty, oversized selections and missing explicit simulation are
     { chanteur_ids: Array(1001).fill(first) }, { saison_id: 'bad' },
     { simulation: undefined }, { simulation: 'true' },
     { simulation: false }, { simulation: false, confirmation: 'ENVOYER_A_TOUS' },
+    { envoi_id: 'bad' },
   ]) assert.equal((await call(overrides)).status, 400);
   assert.equal(state.queries.length, 0);
   assert.equal(state.signatures, 0);
@@ -223,6 +272,154 @@ test('selected choristers with no subscriptions return zero sends without signin
   assert.equal(result.body.acceptes, 0);
   assert.equal(result.body.echecs, 0);
   assert.equal(state.signatures, 0);
+  assert.equal(state.notification_messages.length, 1);
+  assert.equal(state.notification_messages[0].statut_push, 'termine');
+  assert.equal(state.notification_destinataires.length, 1);
+  assert.equal(state.notification_destinataires[0].chanteur_id, third);
+});
+
+test('real sends archive verified author and every recipient before Push, without accepting client authorship', async () => {
+  const { state, call } = fixture();
+  const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300),
+    auteur_id: 'forged', auteur_nom: 'Fake', created_at: '1900-01-01' });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.notification_id, id(300));
+  assert.equal(result.body.historique_disponible, true);
+  const message = state.notification_messages[0];
+  assert.equal(message.auteur_id, 'admin');
+  assert.equal(message.auteur_nom, 'Chef de chœur');
+  assert.equal(message.titre, 'Répétition');
+  assert.equal(message.contenu, 'Venez jeudi');
+  assert.equal(message.created_at, '2026-11-05T12:00:00Z');
+  assert.equal(message.statut_push, 'termine');
+  assert.equal(state.notification_destinataires.length, 3);
+  assert(state.sends.every(send => send.payload.notification_id === id(300)));
+  assert(state.sends.every(send => !('url' in send.payload) && !('token' in send.payload) && !('chanteur_id' in send.payload)));
+});
+
+test('database failure before archival blocks all Push sends and leaves no partial inbox', async () => {
+  const { state, call } = fixture();
+  state.failCreate = true;
+  const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) });
+  assert.equal(result.status, 502);
+  assert.equal(state.sends.length, 0);
+  assert.equal(state.signatures, 0);
+  assert.equal(state.notification_messages.length, 0);
+  assert.equal(state.notification_destinataires.length, 0);
+});
+
+test('atomic archival rechecks eligibility after subscriptions were prepared', async () => {
+  for (const scenario of ['membership', 'season']) {
+    const { state, call } = fixture();
+    state.beforeCreate = () => {
+      if (scenario === 'membership') state.saison_chanteurs[0].deleted_at = '2026-11-05';
+      else state.saisons[0].active = false;
+    };
+    const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) });
+    assert.equal(result.status, scenario === 'membership' ? 400 : 409);
+    assert.equal(state.sends.length, 0);
+    assert.equal(state.notification_messages.length, 0);
+    assert.equal(state.notification_destinataires.length, 0);
+  }
+});
+
+test('retrying the same completed ID returns original counters without sending after season/device changes', async () => {
+  const { state, call } = fixture();
+  const send = { simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) };
+  assert.equal((await call(send)).body.acceptes, 3);
+  state.saisons[0].active = false;
+  state.push_subscriptions.length = 0;
+  state.admin.user_metadata.full_name = 'Nom changé';
+  state.pageLimit = 1; // Existing-recipient matching must also paginate fully.
+  const result = await call({ ...send, chanteur_ids: [third, second, first, first] });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.duplique, true);
+  assert.equal(result.body.acceptes, 3);
+  assert.equal(result.body.nombre_appareils, 3);
+  assert.equal(result.body.nombre_sans_abonnement, 1);
+  assert.equal(state.sends.length, 3);
+  assert.equal(state.notification_messages.length, 1);
+  assert.equal(state.notification_messages[0].auteur_nom, 'Chef de chœur');
+});
+
+test('an ID cannot be reused with changed content, season, author or recipients', async () => {
+  for (const scenario of ['title', 'body', 'season', 'author', 'recipients']) {
+    const { state, call } = fixture();
+    const send = { simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) };
+    await call(send);
+    const changes = {};
+    if (scenario === 'title') changes.titre = 'Autre titre';
+    if (scenario === 'body') changes.message = 'Autre contenu';
+    if (scenario === 'season') changes.saison_id = id(2);
+    if (scenario === 'author') state.notification_messages[0].auteur_id = 'another-admin';
+    if (scenario === 'recipients') changes.chanteur_ids = [first];
+    assert.equal((await call({ ...send, ...changes })).status, 409);
+    assert.equal(state.sends.length, 3);
+    assert.equal(state.notification_messages.length, 1);
+  }
+});
+
+test('concurrent requests sharing one ID produce one inbox and at most one Push per subscription', async () => {
+  const { state, call } = fixture();
+  const send = { simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) };
+  const results = await Promise.all([call(send), call(send)]);
+  assert(results.every(result => [200, 409].includes(result.status)));
+  assert(results.some(result => result.status === 200));
+  assert.equal(state.notification_messages.length, 1);
+  assert.equal(state.notification_destinataires.length, 3);
+  assert.equal(state.sends.length, 3);
+});
+
+test('Push initialization failure keeps the inbox and records errors instead of deleting the message', async () => {
+  const { state, call } = fixture();
+  state.failVapid = true;
+  const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.success, false);
+  assert.equal(result.body.echecs, 3);
+  assert.equal(state.notification_messages[0].statut_push, 'erreur');
+  assert.equal(state.notification_destinataires.length, 3);
+  assert.equal(state.sends.length, 0);
+});
+
+test('a synchronous subscription failure after a successful batch preserves all earlier Push counters', async () => {
+  const { state, call } = fixture();
+  state.push_subscriptions = Array.from({ length: 6 }, (_, i) => ({
+    id: id(200 + i), chanteur_id: first, endpoint: `mock:${i}`, p256dh: 'key', auth: 'auth',
+  }));
+  state.syncFailures.add('mock:5');
+  const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.acceptes, 5);
+  assert.equal(result.body.echecs, 1);
+  assert.equal(result.body.statut_push, 'partiel');
+  assert.equal(state.sends.length, 5);
+  assert.equal(state.notification_messages[0].acceptes, 5);
+  assert.equal(state.notification_messages[0].echecs, 1);
+});
+
+test('failure to save the Push outcome never permits retrying a possibly sent message', async () => {
+  const { state, call } = fixture();
+  state.failFinish = true;
+  const send = { simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) };
+  const result = await call(send);
+  assert.equal(result.status, 200);
+  assert.equal(result.body.success, false);
+  assert.equal(typeof result.body.avertissement, 'string');
+  assert.equal(result.body.statut_push, 'en_cours');
+  assert.equal(state.notification_messages[0].statut_push, 'en_cours');
+  assert.equal(state.sends.length, 3);
+  assert.equal((await call(send)).status, 409);
+  assert.equal(state.sends.length, 3);
+  assert.equal(state.notification_messages.length, 1);
+});
+
+test('the legacy manual actor is named by the server when publishing a selection', async () => {
+  const { state, call } = fixture();
+  const result = await call({ simulation: false, confirmation: 'ENVOYER_LA_SELECTION', envoi_id: id(300) }, { 'x-push-test-secret': 'manual-secret' });
+  assert.equal(result.status, 200);
+  assert.equal(state.notification_messages[0].auteur_id, null);
+  assert.equal(state.notification_messages[0].auteur_nom, 'Test manuel');
 });
 
 test('legacy all and individual manual tests remain available', async () => {
@@ -237,4 +434,6 @@ test('legacy all and individual manual tests remain available', async () => {
   result = await call({ cible: undefined, subscription_id: id(200) }, headers);
   assert.equal(result.status, 200);
   assert.equal(state.sends.length, 4);
+  assert.equal(state.notification_messages.length, 0);
+  assert.equal(state.notification_destinataires.length, 0);
 });

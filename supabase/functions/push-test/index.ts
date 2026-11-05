@@ -1,4 +1,9 @@
 import { autoriserEnvoiPush } from "./PushAuthorizationService.ts";
+import {
+  NotificationMessagesRepository,
+  NotificationHistoryError,
+  type NotificationHistory,
+} from "../_shared/notification-messages.ts";
 import * as webpush from "jsr:@negrel/webpush@0.5.0";
 import {
   PushSubscriptionRepository,
@@ -67,7 +72,7 @@ function respond(status: number, payload: Record<string, unknown>) {
   return Response.json(payload, { status, headers: corsHeaders });
 }
 
-type PushMessage = { title: string; body: string };
+type PushMessage = { title: string; body: string; notification_id?: string };
 
 // Les anciens tests peuvent continuer sans titre/message.
 // Pour un envoi personnalisé, les deux champs sont obligatoires.
@@ -107,7 +112,7 @@ function pushTo(
 
 function logPushError(error: unknown) {
   const pushStatus = error instanceof webpush.PushMessageError
-    ? error.response.status
+    ? error.response?.status
     : null;
   console.error("push-test: échec d'envoi", pushStatus ?? error);
   return pushStatus;
@@ -121,7 +126,7 @@ async function diffuser(subscriptions: PushSubscriptionRow[], notification: Push
   // Petits lots pour limiter le nombre de requêtes simultanées.
   for (let i = 0; i < subscriptions.length; i += 5) {
     const results = await Promise.allSettled(
-      subscriptions.slice(i, i + 5).map(subscription => pushTo(appServer, subscription, notification)),
+      subscriptions.slice(i, i + 5).map(subscription => Promise.resolve().then(() => pushTo(appServer, subscription, notification))),
     );
     for (const result of results) {
       if (result.status === "fulfilled") acceptes++;
@@ -132,6 +137,23 @@ async function diffuser(subscriptions: PushSubscriptionRow[], notification: Push
     }
   }
   return { acceptes, echecs };
+}
+
+function repondreEnvoiExistant(message: NotificationHistory) {
+  if (message.statut_push === "en_cours") {
+    return respond(409, {
+      success: false, notification_id: message.id, historique_disponible: true,
+      error: "Ce message est déjà archivé et son résultat Push n'est pas confirmé. Consultez l'historique ; aucun nouvel envoi n'a été déclenché.",
+    });
+  }
+  return respond(200, {
+    success: message.echecs === 0, duplique: true, historique_disponible: true,
+    notification_id: message.id, saison_id: message.saison_id,
+    nombre_chanteurs: message.nombre_chanteurs, nombre_appareils: message.nombre_appareils,
+    nombre_sans_abonnement: message.nombre_sans_abonnement,
+    acceptes: message.acceptes, echecs: message.echecs, statut_push: message.statut_push,
+    message: "Ce message a déjà été publié. Résultat enregistré ; aucun nouvel envoi Push.",
+  });
 }
 
 Deno.serve(async (request: Request) => {
@@ -146,11 +168,13 @@ Deno.serve(async (request: Request) => {
 
   // Deux méthodes : secret pour les tests manuels existants, ou
   // JWT Supabase d'un compte administrateur autorisé pour React.
+  let auteur: { id: string | null; nom: string };
   try {
     const autorisation = await autoriserEnvoiPush(request);
     if (!autorisation.autorise) {
       return respond(autorisation.status, { error: autorisation.message });
     }
+    auteur = autorisation.auteur;
   } catch (error) {
     console.error("push-test: erreur de vérification d'autorisation", error);
     return respond(503, { error: "Vérification d'autorisation indisponible." });
@@ -165,6 +189,7 @@ Deno.serve(async (request: Request) => {
     message?: unknown;
     saison_id?: unknown;
     chanteur_ids?: unknown;
+    envoi_id?: unknown;
   };
   try {
     body = await request.json();
@@ -197,28 +222,74 @@ Deno.serve(async (request: Request) => {
     if (!body.simulation && body.confirmation !== "ENVOYER_LA_SELECTION") {
       return respond(400, { error: "Confirmation explicite nécessaire pour l'envoi à la sélection." });
     }
+    if (body.envoi_id !== undefined && (typeof body.envoi_id !== "string" || !UUID.test(body.envoi_id))) {
+      return respond(400, { error: "L'identifiant d'envoi doit être un UUID." });
+    }
     try {
+      const chanteurIds = [...new Set((body.chanteur_ids as string[]).map(id => id.toLowerCase()))];
+      // Les anciens formulaires restent utilisables, mais seul un ID conservé
+      // par le client permet de reconnaître leurs tentatives après une coupure.
+      const publication = !body.simulation ? {
+        id: typeof body.envoi_id === "string" ? body.envoi_id.toLowerCase() : crypto.randomUUID(),
+        saisonId: body.saison_id.toLowerCase(), titre: notification.title, contenu: notification.body,
+        auteur, chanteurIds,
+      } : null;
+      const history = publication ? new NotificationMessagesRepository() : null;
+      if (publication && history) {
+        const existing = await history.findExisting(publication);
+        if (existing) return repondreEnvoiExistant(existing);
+      }
       const repository = new PushSubscriptionRepository();
       const { subscriptions, ...compteurs } = await repository.prepareSelection(
         body.saison_id.toLowerCase(),
-        [...new Set(body.chanteur_ids.map(id => id.toLowerCase()))],
+        chanteurIds,
         !body.simulation,
       );
       if (body.simulation) {
         return respond(200, {
-          success: true, simulation: true, ...compteurs,
+          success: true, simulation: true, historique_disponible: true, ...compteurs,
           message: "Simulation terminée : aucune notification envoyée.",
         });
       }
-      const { acceptes, echecs } = await diffuser(subscriptions, notification);
+      if (!publication || !history) throw new Error("Contexte d'archivage manquant.");
+      // Tout échec d'insertion interdit l'envoi. Le RPC publie le message et
+      // tous les destinataires ensemble, y compris sans abonnement Push.
+      const archived = await history.create({
+        ...publication, nombreAppareils: compteurs.nombre_appareils,
+        nombreSansAbonnement: compteurs.nombre_sans_abonnement,
+      });
+      if (!archived.created) return repondreEnvoiExistant(archived.message);
+      let acceptes = 0;
+      let echecs = 0;
+      try {
+        ({ acceptes, echecs } = await diffuser(subscriptions, { ...notification, notification_id: publication.id }));
+      } catch (error) {
+        console.error("push-test: service Push indisponible après archivage", error);
+        echecs = subscriptions.length;
+      }
+      const statutPush = echecs === 0 ? "termine" : acceptes > 0 ? "partiel" : "erreur";
+      try {
+        await history.finish(publication.id, acceptes, echecs);
+      } catch (error) {
+        console.error("push-test: résultat Push non enregistré", error);
+        // Réponse explicite : le message est disponible, les Push ont pu partir.
+        // L'ID demeure en_cours : une nouvelle tentative ne renverra rien.
+        return respond(200, {
+          success: false, historique_disponible: true, notification_id: publication.id,
+          ...compteurs, acceptes, echecs, statut_push: "en_cours",
+          avertissement: "Message archivé, mais résultat Push non enregistré. Consultez l'historique avant toute autre action.",
+          message: "Message publié. Le résultat Push reste à vérifier ; ne renvoyez pas le message.",
+        });
+      }
       return respond(200, {
-        success: echecs === 0, ...compteurs, acceptes, echecs,
+        success: echecs === 0, historique_disponible: true, notification_id: publication.id,
+        ...compteurs, acceptes, echecs, statut_push: statutPush,
         message: "Envoi terminé. 'Acceptés' signifie acceptés par les services Push, pas affichés avec certitude.",
       });
     } catch (error) {
-      if (error instanceof PushSelectionError) return respond(error.status, { success: false, error: error.message });
+      if (error instanceof PushSelectionError || error instanceof NotificationHistoryError) return respond(error.status, { success: false, error: error.message });
       console.error("push-test: envoi à la sélection impossible", error);
-      return respond(502, { success: false, error: "Impossible de préparer ou d'envoyer la sélection." });
+      return respond(502, { success: false, error: "Impossible de préparer ou d'archiver le message. Aucun Push n'a été envoyé." });
     }
   }
 
