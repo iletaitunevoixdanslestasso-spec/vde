@@ -2,6 +2,7 @@ import { createEntityConfig } from "./createEntityConfig";
 import { ReferentielFonctionCaRepository } from "../../repositories/ReferentielFonctionCaRepository";
 import { ReferentielFonctionCaService } from "../../services/ReferentielFonctionCaService";
 import { ReferentielFonctionCaController } from "../../controllers/ReferentielFonctionCaController";
+import { ReferentielFonctionCaValidator } from "../../validators/ReferentielFonctionCaValidator";
 
 export const ReferentielFonctionCaConfig = createEntityConfig({
     entity: "fonctionCa",
@@ -12,12 +13,22 @@ export const ReferentielFonctionCaConfig = createEntityConfig({
     Repository: ReferentielFonctionCaRepository,
     Service: ReferentielFonctionCaService,
     Controller: ReferentielFonctionCaController,
+    Validator: ReferentielFonctionCaValidator,
     columns: [
         {
             field: "libelle",
             header: "Libellé",
             type: "text",
             required: true
+        },
+        {
+            field: "ordre",
+            header: "Ordre",
+            type: "number",
+            min: 0,
+            max: 2147483647,
+            step: 1,
+            placeholder: "1000"
         }
     ]
 });

@@ -213,9 +213,17 @@ export default function Trombinoscope({
                     <div className="trombi-filtres">
                         <label>
                             Présentation
-                            <select value={affichage} onChange={e => setAffichage(e.target.value)}>
-                                <option value="alphabetique">Tous par ordre alphabétique</option>
-                                <option value="groupes">Regrouper par groupe</option>
+                            <select
+                                value={caSelectionne ? "fonctions" : affichage}
+                                disabled={caSelectionne}
+                                onChange={e => setAffichage(e.target.value)}
+                            >
+                                {caSelectionne ? (
+                                    <option value="fonctions">Par ordre des fonctions</option>
+                                ) : <>
+                                    <option value="alphabetique">Tous par ordre alphabétique</option>
+                                    <option value="groupes">Regrouper par groupe</option>
+                                </>}
                             </select>
                         </label>
                         <label>
