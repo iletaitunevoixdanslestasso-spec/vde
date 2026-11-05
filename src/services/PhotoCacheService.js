@@ -122,6 +122,8 @@ class PhotoCacheService {
         } else if (categorie !== "photos_choristes") return null;
         if (!chemin || typeof caches === "undefined") return null;
 
+        const generationDepart = generation;
+        const cacheGeneration = SignedUrlCacheService.generation;
         const scope = await obtenirScope();
         if (!scope) return null;
 
@@ -135,6 +137,7 @@ class PhotoCacheService {
             cache = await caches.open(CACHE_NAME);
             await nettoyerCache(cache);
             const image = await lireImage(cache, cle, maxAge, mime);
+            if (generationDepart !== generation || cacheGeneration !== SignedUrlCacheService.generation) return null;
             if (image) return image;
         } catch (erreur) {
             console.warn("Cache local des photos indisponible :", erreur);
@@ -143,7 +146,6 @@ class PhotoCacheService {
 
         if (requetesEnCours.has(cle)) return requetesEnCours.get(cle);
 
-        const generationDepart = generation;
         const requete = (async () => {
             try {
                 const response = await fetch(versionnerUrl(url, config.cache_version), {
@@ -154,7 +156,7 @@ class PhotoCacheService {
                 if (!response.ok) return null;
                 const blob = await response.blob();
                 if (!blob.size || !blob.type.startsWith(mime)) return null;
-                if (generationDepart !== generation) return null;
+                if (generationDepart !== generation || cacheGeneration !== SignedUrlCacheService.generation) return null;
                 cheminsInvalides.delete(chemin);
 
                 if (blob.size <= MAX_IMAGE_BYTES) {
@@ -174,6 +176,10 @@ class PhotoCacheService {
                                 "X-VDE-Expires-At": String(expiresAt)
                             }
                         }));
+                        if (generationDepart !== generation || cacheGeneration !== SignedUrlCacheService.generation) {
+                            await cache.delete(cle);
+                            return null;
+                        }
                     } catch (erreur) {
                         // Quota insuffisant : l'image s'affiche tout de même.
                         console.warn("Enregistrement photo impossible :", erreur);

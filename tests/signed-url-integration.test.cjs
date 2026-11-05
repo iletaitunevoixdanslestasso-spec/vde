@@ -28,6 +28,11 @@ function state() {
     };
 }
 
+function persistedUrls(s) {
+    const saved = s.stored.get('vde-signed-download-urls-v2');
+    return saved ? JSON.parse(saved).entries : [];
+}
+
 function signed(s, bucket, file, options = {}) {
     const token = [
         Buffer.from(JSON.stringify({ alg: 'HS256' })).toString('base64url'),
@@ -68,11 +73,16 @@ function page(s) {
         console: { ...console, error() {} },
         Date: class extends Date { static now() { return s.now; } },
         location: { origin: 'https://app.test' },
-        localStorage: { getItem: key => key === 'token' ? s.singer : null },
-        sessionStorage: {
-            getItem: key => s.stored.get(key) ?? null,
-            setItem: (key, value) => s.stored.set(key, value),
-            removeItem: key => s.stored.delete(key)
+        localStorage: {
+            getItem: key => key === 'token' ? s.singer : s.stored.get(key) ?? null,
+            setItem: (key, value) => {
+                if (key === 'token') s.singer = String(value);
+                else s.stored.set(key, String(value));
+            },
+            removeItem: key => {
+                if (key === 'token') s.singer = null;
+                else s.stored.delete(key);
+            }
         },
         caches: {
             open: async () => ({
@@ -138,7 +148,7 @@ function page(s) {
     };
 }
 
-test('tous les liens directs survivent au rechargement : photos, DAI, documents et paroles', async () => {
+test('les liens de photos, DAI, documents et paroles survivent au rechargement et à la réouverture', async () => {
     const s = state();
     let p = page(s);
     const files = [
@@ -154,6 +164,41 @@ test('tous les liens directs survivent au rechargement : photos, DAI, documents 
     const reloaded = await Promise.all(files.map(args => p.storage.createSignedUrl(...args)));
     assert.deepEqual(reloaded, first);
     assert.equal(s.signatures.length, files.length, 'aucune nouvelle signature après rechargement');
+    s.now += 120000;
+    p = page(s);
+    const reopened = await Promise.all(files.map(args => p.storage.createSignedUrl(...args)));
+    assert.deepEqual(reopened, first);
+    assert.equal(s.signatures.length, files.length, 'aucune nouvelle signature après réouverture de l’application');
+});
+
+test('deux onglets déjà ouverts partagent les signatures directes dans les deux sens', async () => {
+    const s = state();
+    const a = page(s);
+    const b = page(s);
+    const photo = await a.storage.createSignedUrl('photos-chanteurs', 'chanteurs/a/photo.jpg');
+    assert.equal(await b.storage.createSignedUrl('photos-chanteurs', 'chanteurs/a/photo.jpg'), photo);
+    const document = await b.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf');
+    assert.equal(await a.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf'), document);
+    assert.equal(s.signatures.length, 2, 'chaque fichier est signé une seule fois pour les deux onglets');
+});
+
+test('les photos signées directement et celles du trombinoscope partagent aussi leurs URL entre onglets', async () => {
+    const s = state();
+    const a = page(s);
+    const b = page(s);
+    s.invoke = async () => ({ data: {
+        saison: { id: 'saison-a' },
+        chanteurs: ['a', 'b'].map(id => ({
+            id,
+            photo_url: signed(s, 'photos-chanteurs', `chanteurs/${id}/photo.jpg`, { version: 1 })
+        }))
+    }, error: null });
+    const direct = await a.storage.createSignedUrl('photos-chanteurs', 'chanteurs/a/photo.jpg');
+    const trombi = await b.trombi.getBySaisonId('saison-a');
+    assert.equal(trombi.chanteurs[0].photo_url, direct, 'l’URL directe est réutilisée par la réponse métier autorisée');
+    assert.equal(await a.storage.createSignedUrl('photos-chanteurs', 'chanteurs/b/photo.jpg'), trombi.chanteurs[1].photo_url,
+        'le lien retourné par la fonction est réutilisé dans le service de signature directe');
+    assert.equal(s.invokes.length, 1);
 });
 
 test('expiration, version, durée et compte imposent chacun une nouvelle signature', async () => {
@@ -185,19 +230,22 @@ test('réponses métier fraîches et liens imbriqués stables, sans réutilisati
         data: [{ downloadUrl: signed(s, 'referentiel-documents', 'adherent/reglement.pdf') }],
         document: { url: signed(s, 'referentiel-documents', 'paroles/chanson.pdf') }
     } });
-    let p = page(s);
-    const first = await p.storage.callChanteurFunction('documents', 'singer-a');
-    p = page(s);
-    const second = await p.storage.callChanteurFunction('documents', 'singer-a');
+    const a = page(s);
+    const b = page(s);
+    const first = await a.storage.callChanteurFunction('documents', 'singer-a');
+    const second = await b.storage.callChanteurFunction('documents', 'singer-a');
     assert.equal(second.workflow, 'workflow-2');
     assert.equal(second.chanteurs[0].photo_url, first.chanteurs[0].photo_url);
     assert.equal(second.data[0].downloadUrl, first.data[0].downloadUrl);
     assert.equal(second.document.url, first.document.url);
     assert.equal(s.requests.length, 2, 'la validation serveur est répétée');
-    const anotherSinger = await p.storage.callChanteurFunction('documents', 'singer-b');
+    const anotherSinger = await a.storage.callChanteurFunction('documents', 'singer-b');
     assert.notEqual(anotherSinger.document.url, first.document.url, 'tokens métier isolés malgré la même session Auth');
+    const reverse = await b.storage.callChanteurFunction('documents', 'singer-b');
+    assert.equal(reverse.document.url, anotherSinger.document.url, 'réutilisation aussi de l’onglet A vers B pour le second accès');
+    assert.equal(reverse.workflow, 'workflow-4', 'les métadonnées fraîches ne sont pas remplacées par le cache');
     s.fetch = async () => ({ status: 403, body: { error: 'Accès refusé' } });
-    await assert.rejects(() => p.storage.callChanteurFunction('documents', 'singer-a'), /Accès refusé/);
+    await assert.rejects(() => b.storage.callChanteurFunction('documents', 'singer-a'), /Accès refusé/);
 });
 
 test('DAI : lien conservé après rechargement, workflow frais, remplacement et absence respectés', async () => {
@@ -263,6 +311,23 @@ test('upload, upload signé et suppression invalident les liens persistants des 
     assert.notEqual(await p.storage.createSignedUrl('photos-chanteurs', 'chanteurs/a/photo.jpg'), photo);
 });
 
+test('un upload et un effacement invalident aussi les URL déjà connues dans un autre onglet ouvert', async () => {
+    const s = state();
+    const a = page(s);
+    const b = page(s);
+    const first = await a.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf');
+    const unaffected = await a.storage.createSignedUrl('referentiel-documents', 'paroles/chanson.pdf');
+    assert.equal(await b.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf'), first);
+    await b.storage.upload('referentiel-documents', 'adherent/reglement.pdf', new Blob(['replacement']));
+    const replaced = await a.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf');
+    assert.notEqual(replaced, first, 'l’onglet déjà ouvert ne réutilise pas son ancienne entrée mémoire');
+    assert.equal(await b.storage.createSignedUrl('referentiel-documents', 'paroles/chanson.pdf'), unaffected);
+    assert.equal(await b.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf'), replaced);
+    await a.photo.clearAll();
+    assert.equal(persistedUrls(s).length, 0);
+    assert.notEqual(await b.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf'), replaced);
+});
+
 test('INITIAL_SESSION et SIGNED_IN répété préservent les liens, SIGNED_OUT les purge', async () => {
     const s = state();
     let p = page(s);
@@ -272,7 +337,7 @@ test('INITIAL_SESSION et SIGNED_IN répété préservent les liens, SIGNED_OUT l
     p = page(s);
     assert.equal(await p.storage.createSignedUrl('referentiel-documents', 'paroles/chanson.pdf'), first);
     p.event('SIGNED_OUT', null);
-    assert.equal(s.stored.size, 0);
+    assert.equal(persistedUrls(s).length, 0);
     p = page(s);
     assert.notEqual(await p.storage.createSignedUrl('referentiel-documents', 'paroles/chanson.pdf'), first);
 });
@@ -288,7 +353,7 @@ test('une signature et une réponse métier en vol ne repeuplent pas le cache ap
     p.event('SIGNED_OUT', null);
     signReply.resolve({ data: { signedUrl: signed(s, 'referentiel-documents', 'paroles/chanson.pdf') }, error: null });
     assert.equal(await signing, null);
-    assert.equal(s.stored.size, 0);
+    assert.equal(persistedUrls(s).length, 0);
     const edgeStarted = deferred();
     const edgeReply = deferred();
     s.fetch = () => { edgeStarted.resolve(); return edgeReply.promise; };
@@ -298,7 +363,7 @@ test('une signature et une réponse métier en vol ne repeuplent pas le cache ap
     p.event('SIGNED_OUT', null);
     edgeReply.resolve({ body: { url: signed(s, 'referentiel-documents', 'adherent/reglement.pdf') } });
     await request;
-    assert.equal(s.stored.size, 0);
+    assert.equal(persistedUrls(s).length, 0);
 });
 
 test('un DAI en attente de configuration est abandonné si le cache est effacé avant la requête serveur', async () => {
@@ -316,5 +381,57 @@ test('un DAI en attente de configuration est abandonné si le cache est effacé 
     configReply.resolve({ code: 'pdf_dai', cache_version: 1, cache_seconds: 12960000 });
     assert.equal(await pending, null);
     assert.equal(s.requests.length, 0, 'aucune requête métier ne démarre avec une ancienne génération');
-    assert.equal(s.stored.size, 0, 'aucune URL ne repeuple le cache après effacement');
+    assert.equal(persistedUrls(s).length, 0, 'aucune URL ne repeuple le cache après effacement');
+});
+
+test('une signature en vol ne repeuple pas le cache après un upload dans un autre onglet, même initialement vide', async () => {
+    const s = state();
+    const a = page(s);
+    const b = page(s);
+    const started = deferred();
+    const reply = deferred();
+    s.signer = () => { started.resolve(); return reply.promise; };
+    const pending = a.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf');
+    await started.promise;
+    assert.equal(persistedUrls(s).length, 0);
+    await b.storage.upload('referentiel-documents', 'adherent/reglement.pdf', new Blob(['replacement']));
+    reply.resolve({ data: { signedUrl: signed(s, 'referentiel-documents', 'adherent/reglement.pdf') }, error: null });
+    assert.equal(await pending, null);
+    assert.equal(persistedUrls(s).length, 0);
+    assert.equal(a.cache.entries.size, 0);
+});
+
+test('une réponse DAI en vol ne repeuple pas le cache après effacement depuis un autre onglet vide', async () => {
+    const s = state();
+    const a = page(s);
+    const b = page(s);
+    const started = deferred();
+    const reply = deferred();
+    s.fetch = () => { started.resolve(); return reply.promise; };
+    const pending = a.storage.getDroitImageUrl('singer-a', 'get-chanteur-droit-image');
+    await started.promise;
+    assert.equal(persistedUrls(s).length, 0);
+    await b.photo.clearAll();
+    reply.resolve({ body: { url: signed(s, 'chanteur-documents', 'a/droit_image.pdf', { download: true, version: 1 }) } });
+    assert.equal(await pending, null);
+    assert.equal(persistedUrls(s).length, 0);
+    assert.equal(a.cache.entries.size, 0);
+});
+
+test('une invalidation intercalée juste avant la réutilisation bloque aussi une signature déjà reçue', async () => {
+    const s = state();
+    const a = page(s);
+    const b = page(s);
+    const reuse = a.cache.reuseUrls.bind(a.cache);
+    let invalidations = 0;
+    a.cache.reuseUrls = (value, scope, expectedGeneration) => {
+        invalidations++;
+        b.cache.invalidatePath('referentiel-documents', 'adherent/reglement.pdf');
+        return reuse(value, scope, expectedGeneration);
+    };
+    assert.equal(await a.storage.createSignedUrl('referentiel-documents', 'adherent/reglement.pdf'), null);
+    assert.equal(invalidations, 1, 'invalidation après le contrôle du service, avant celui du cache');
+    assert.equal(s.signatures.length, 1);
+    assert.equal(persistedUrls(s).length, 0, 'la nouvelle époque ne doit pas recevoir l’ancienne signature');
+    assert.equal(a.cache.entries.size, 0);
 });

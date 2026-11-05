@@ -38,9 +38,8 @@ function fixture() {
         URL, URLSearchParams, Request, Response, Blob, TextEncoder, atob, crypto: webcrypto, console,
         Date: class extends Date { static now() { return now; } },
         location: { origin: 'https://app.test' },
-        localStorage: { getItem: () => 'chorister-token' },
-        sessionStorage: {
-            getItem: key => signedStorage.get(key) ?? null,
+        localStorage: {
+            getItem: key => key === 'token' ? 'chorister-token' : signedStorage.get(key) ?? null,
             setItem: (key, value) => signedStorage.set(key, value),
             removeItem: key => signedStorage.delete(key)
         },
@@ -183,4 +182,23 @@ test('une signature en vol ne repeuple pas le cache après remplacement', async 
     assert.equal(await pending, null);
     service.callChanteurFunction = async () => ({ url: 'https://storage.test/new' });
     assert.equal(await service.getDroitImageUrl('token-A', 'dai'), 'https://storage.test/new');
+});
+
+test('une invalidation des liens pendant un téléchargement empêche de remettre les anciens octets en cache', async () => {
+    const f = fixture();
+    let finish;
+    let ready;
+    const started = new Promise(resolve => { ready = resolve; });
+    f.ctx.fetch = async () => {
+        ready();
+        return new Promise(resolve => { finish = resolve; });
+    };
+    const downloading = f.photo.getBlob(photoUrl);
+    await started;
+    // L'autre onglet change la révision partagée des liens, pas la génération
+    // locale du cache Blob de cet onglet.
+    f.ctx.SignedUrlCacheService.invalidatePath('photos-chanteurs', 'chanteurs/one/photo.jpg');
+    finish(new Response(new Blob(['old photo'], { type: 'image/jpeg' })));
+    assert.equal(await downloading, null);
+    assert.equal(f.cache.size, 0);
 });

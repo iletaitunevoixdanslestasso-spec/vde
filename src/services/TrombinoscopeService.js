@@ -65,6 +65,6 @@ export default class TrombinoscopeService {
 
         if (data.storage_cache_config) await StorageCacheConfigService.ingest(data.storage_cache_config);
         if (cacheGeneration !== SignedUrlCacheService.generation) return data;
-        return SignedUrlCacheService.reuseUrls(data, scope);
+        return SignedUrlCacheService.reuseUrls(data, scope, cacheGeneration);
     }
 }

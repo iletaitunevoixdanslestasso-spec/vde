@@ -105,10 +105,11 @@ class StorageService {
                 if (error) throw error;
                 const signedUrl = data?.signedUrl ? config ? versionnerUrl(data.signedUrl, config.cache_version) : data.signedUrl : null;
                 if (generationDepart !== generationSignatures || cacheGeneration !== SignedUrlCacheService.generation) return null;
-                const url = SignedUrlCacheService.reuseUrls(signedUrl, scope);
+                const url = SignedUrlCacheService.reuseUrls(signedUrl, scope, cacheGeneration);
+                if (cacheGeneration !== SignedUrlCacheService.generation) return null;
                 if (url && key) {
                     const expiresAt = Math.min(Date.now() + expiresIn * 1000, expirationSignee(url) ?? Infinity);
-                    SignedUrlCacheService.set(key, url, expiresAt);
+                    SignedUrlCacheService.set(key, url, expiresAt, cacheGeneration);
                 }
                 return url;
             })();
@@ -265,7 +266,7 @@ class StorageService {
 
         if (result.storage_cache_config) await StorageCacheConfigService.ingest(result.storage_cache_config);
         if (cacheGeneration !== SignedUrlCacheService.generation) return result;
-        return SignedUrlCacheService.reuseUrls(result, scope);
+        return SignedUrlCacheService.reuseUrls(result, scope, cacheGeneration);
     }
 
     async getDroitImageUrl(token, functionName) {
