@@ -42,6 +42,17 @@ const columns = [
 
     },
     {
+        field: "fonction_ca_id",
+        header: "Fonction",
+        type: "select",
+        dbType: "uuid",
+        source: "availableFonctionsCa",
+        required: false,
+        emptyOptionLabel: "Aucune",
+        render: (v, row) => row.referentiel_fonction_ca?.libelle ?? "—",
+        sortValue: (row) => row.referentiel_fonction_ca?.libelle ?? ""
+    },
+    {
         field: "mail",
         header: "E-mail",
         type: "text",

@@ -60,6 +60,11 @@ export class ChanteurSaisonRepository extends BaseRepository {
                 id,
                 nom
                 ),
+                fonction_ca_id,
+                referentiel_fonction_ca (
+                    id,
+                    libelle
+                ),
                 acces(
                 token
                 )

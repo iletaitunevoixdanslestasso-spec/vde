@@ -18,8 +18,8 @@ ChanteurRepository
 import { BaseService } from "./BaseService";
 import { ChanteurRepository } from "../repositories/ChanteurRepository";
 import { BaseResponse } from "../core/framework/BaseResponse";
-import { ChanteurSaisonRepository } from "../repositories/ChanteurSaisonRepository";
 import { GroupeRepository } from "../repositories/GroupeRepository";
+import { ReferentielFonctionCaRepository } from "../repositories/ReferentielFonctionCaRepository";
 
 
 export class ChanteurSaisonService extends BaseService {
@@ -28,6 +28,7 @@ export class ChanteurSaisonService extends BaseService {
         super(repository, validator, mapper);
         this.chanteurRepository = new ChanteurRepository('chanteurs');
         this.groupeRepository = new GroupeRepository("groupes");
+        this.fonctionCaRepository = new ReferentielFonctionCaRepository();
     }
     async getAll() {
         const saisonId = this.context.saisonId;
@@ -71,7 +72,9 @@ export class ChanteurSaisonService extends BaseService {
                 id: item.id,
                 chanteur_id: item.chanteur_id,
                 saison_id: item.saison_id,
-                chanteur: item.chanteurs
+                chanteur: item.chanteurs,
+                fonction_ca_id: item.fonction_ca_id,
+                referentiel_fonction_ca: item.referentiel_fonction_ca
             }))
         );
     }
@@ -99,36 +102,44 @@ export class ChanteurSaisonService extends BaseService {
     }
 
     async save(data) {
-        console.error(data)
         if (this.validator) {
             const validation = this.validator.validate(data);
 
             if (!validation.valid) {
                 return BaseResponse.error(validation.errors);
             }
-        } else {
-            alert("pas de validateuir")
-            return
         }
-       // ✏️ Modification
+        // Un champ absent d'une modification partielle garde sa valeur actuelle.
+        const fonctionCa = data.fonction_ca_id === undefined
+            ? {}
+            : { fonction_ca_id: data.fonction_ca_id || null };
+
         if (data.id) {
-            return this.repository.update(
+            const { data: updated, error } = await this.repository.update(
                 data.id,
                 {
-                    groupe_id: data.groupe_id
+                    groupe_id: data.groupe_id,
+                    ...fonctionCa
                 }
             );
+
+            if (error) {
+                return BaseResponse.error([], error.message);
+            }
+
+            return BaseResponse.success(updated);
         }
 
         return this.addChanteur(
             data.chanteur_id,
-            data.groupe_id
+            data.groupe_id,
+            data.fonction_ca_id || null
         );
     }
     /**
      * Ajout d'un chanteur dans une saison
      */
-    async addChanteur(chanteurId, groupeId) {
+    async addChanteur(chanteurId, groupeId, fonctionCaId = null) {
 
         const saisonId = this.context.saisonId;
 
@@ -153,7 +164,8 @@ export class ChanteurSaisonService extends BaseService {
             await this.repository.insert({
                 saison_id: saisonId,
                 chanteur_id: chanteurId,
-                groupe_id: groupeId
+                groupe_id: groupeId,
+                fonction_ca_id: fonctionCaId || null
             });
 
         if (error) {
@@ -206,6 +218,16 @@ export class ChanteurSaisonService extends BaseService {
     async getAvailableGroupes(saisonId) {
         const { data, error } =
             await this.groupeRepository.findBySaison(saisonId);
+
+        if (error) {
+            return BaseResponse.error([], error.message);
+        }
+
+        return BaseResponse.success(data);
+    }
+
+    async getAvailableFonctionsCa() {
+        const { data, error } = await this.fonctionCaRepository.findAll();
 
         if (error) {
             return BaseResponse.error([], error.message);

@@ -16,7 +16,7 @@ export default function SelectRenderer({
         >
 
             <option value="">
-                -- Choisir --
+                {field.emptyOptionLabel ?? "-- Choisir --"}
             </option>
 
             {options.map(option => (

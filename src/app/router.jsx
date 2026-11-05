@@ -46,6 +46,7 @@ import ChansonsChanteur from "../pages/chanteur/ChansonsChanteur";
 import Profil from "../pages/chanteur/profil";
 import Testdivers from "../pages/admin/Testdivers";
 import ReferentielDocumentPage from "../pages/admin/referentiels/ReferentielDocument/ReferentielDocumentPage";
+import FonctionCaPage from "../pages/admin/referentiels/fonctionCa/FonctionCaPage";
 import ConcertSaisonPage from "../pages/admin/saisons/ConcertSaisonPage";
 
 import { ConcertProvider } from "../components/contexts/ConcertContext";
@@ -289,6 +290,11 @@ export default function Router() {
                             <Route
                                 path="documents"
                                 element={<ReferentielDocumentPage />}
+                            />
+
+                            <Route
+                                path="fonctions-ca"
+                                element={<FonctionCaPage />}
                             />
 
                             <Route

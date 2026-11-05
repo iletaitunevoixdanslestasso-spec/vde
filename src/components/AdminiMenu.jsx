@@ -80,6 +80,7 @@ export default function AdminMenu() {
         "/admin/chansons",
         "/admin/pupitres",
         "/admin/documents",
+        "/admin/fonctions-ca",
         "/admin/concerts",
         "/admin/lieux",
         "/admin/repetitions",
@@ -672,6 +673,14 @@ export default function AdminMenu() {
                                 }
                             >
                                 Adhérents
+                            </button>
+
+                            <button
+                                type="button"
+                                className={`admin-menu-item icon-groupe ${isReferentielPageActive("/admin/fonctions-ca") ? "active" : ""}`}
+                                onClick={() => handleClickReferentiel("/admin/fonctions-ca")}
+                            >
+                                Fonctions du CA
                             </button>
 
 

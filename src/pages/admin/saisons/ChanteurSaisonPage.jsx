@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -12,7 +12,6 @@ import { ChanteursSaisonConfig } from "../../../config/entities/chanteursSaison.
 
 export default function ChanteurSaisonPage() {
     const navigate = useNavigate();
-    const [session, setSession] = useState(null);
     const { saisonSelectionne } = useSaison();
   useEffect(() => {
         if (!saisonSelectionne) {

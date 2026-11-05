@@ -1,6 +1,5 @@
-import { ChanteurSaisonService } from "../services/ChanteurSaisonService";
-import { ChanteurService } from "../services/ChanteurService";
 import { MailService } from "../services/MailService";
+import NotificationService from "../services/NotificationService";
 
 import { AccesController } from "./AccesController";
 import { BaseController } from "./BaseController";
@@ -29,9 +28,10 @@ export class ChanteursSaisonController extends BaseController {
         const saisonId = this.context.saisonId;
 
 
-        const [res, groupesRes] = await Promise.all([
+        const [res, groupesRes, fonctionsCaRes] = await Promise.all([
             this.service.getAvailableChanteurs(saisonId),
-            this.service.getAvailableGroupes(saisonId)
+            this.service.getAvailableGroupes(saisonId),
+            this.service.getAvailableFonctionsCa()
         ]);
         if (!res.success) {
             return {};
@@ -72,7 +72,20 @@ export class ChanteursSaisonController extends BaseController {
             }))
             : [];
 
-        return { availableChanteurs, availableGroupes }
+        if (!fonctionsCaRes.success) {
+            NotificationService.error(
+                fonctionsCaRes.message || "Impossible de charger les fonctions du CA."
+            );
+        }
+
+        const availableFonctionsCa = fonctionsCaRes.success
+            ? fonctionsCaRes.data.map(fonction => ({
+                id: fonction.id,
+                value: fonction.libelle
+            }))
+            : [];
+
+        return { availableChanteurs, availableGroupes, availableFonctionsCa };
     }
 
 
