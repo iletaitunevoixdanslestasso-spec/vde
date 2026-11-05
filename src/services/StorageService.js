@@ -1,9 +1,9 @@
 import { supabase } from "../core/supabase/client";
 import StorageCacheConfigService from "./StorageCacheConfigService";
-import PhotoCacheService, { scopeUtilisateur } from "./PhotoCacheService";
+import SignedUrlCacheService from "./SignedUrlCacheService";
+import PhotoCacheService, { scopeUtilisateur, scopeTokenChanteur } from "./PhotoCacheService";
 import { categorieStorage, expirationSignee, STORAGE_CACHE_SECONDS, versionnerUrl } from "./storageCachePolicy";
 
-const signatures = new Map();
 const appelsEnCours = new Map();
 let generationSignatures = 0;
 let authUserId = null;
@@ -14,7 +14,6 @@ supabase.auth.onAuthStateChange((event, session) => {
     authUserId = nextId;
     if (event === "SIGNED_OUT" || changeCompte) {
         generationSignatures++;
-        signatures.clear();
         appelsEnCours.clear();
         void PhotoCacheService.clearAll().catch(() => {});
     }
@@ -59,7 +58,6 @@ class StorageService {
 
     async invalidateFile(bucket, path) {
         generationSignatures++;
-        signatures.clear();
         appelsEnCours.clear();
         try { await PhotoCacheService.invalidatePath(bucket, path); } catch { /* Cache facultatif. */ }
     }
@@ -78,15 +76,7 @@ class StorageService {
     }
 
     async createSignedUrl_old(bucket, path, expiresIn = 3600) {
-        const { data, error } = await supabase.storage
-            .from(bucket)
-            .createSignedUrl(path, expiresIn);
-
-        if (error) {
-            throw error;
-        }
-
-        return data.signedUrl;
+        return this.createSignedUrl(bucket, path, expiresIn);
     }
     async createSignedUrl(bucket, path, expiresIn = 3600, cacheCategory = null) {
         try {
@@ -100,20 +90,26 @@ class StorageService {
                 return null;
             }
 
+            const generationDepart = generationSignatures;
+            const cacheGeneration = SignedUrlCacheService.generation;
             const category = cacheCategory || categorieStorage(bucket, cleanPath);
             const config = category ? await StorageCacheConfigService.get(category) : null;
-            const scope = category ? await scopeUtilisateur() : null;
-            const key = scope ? JSON.stringify([scope, bucket, cleanPath, expiresIn, config.cache_version]) : null;
-            const cached = key && signatures.get(key);
-            if (cached && cached.expiresAt > Date.now() + 30000) return cached.url;
+            const scope = await scopeUtilisateur();
+            if (generationDepart !== generationSignatures || cacheGeneration !== SignedUrlCacheService.generation) return null;
+            const key = scope ? JSON.stringify([scope, bucket, cleanPath, expiresIn, config?.cache_version ?? null]) : null;
+            const persisted = key && SignedUrlCacheService.get(key);
+            if (persisted) return persisted.url;
             if (key && appelsEnCours.has(key)) return appelsEnCours.get(key);
-            const generationDepart = generationSignatures;
             const creation = (async () => {
                 const { data, error } = await supabase.storage.from(bucket).createSignedUrl(cleanPath, expiresIn);
                 if (error) throw error;
-                const url = data?.signedUrl ? config ? versionnerUrl(data.signedUrl, config.cache_version) : data.signedUrl : null;
-                if (generationDepart !== generationSignatures) return null;
-                if (url && key) signatures.set(key, { url, expiresAt: Math.min(Date.now() + expiresIn * 1000, expirationSignee(url) ?? Infinity) });
+                const signedUrl = data?.signedUrl ? config ? versionnerUrl(data.signedUrl, config.cache_version) : data.signedUrl : null;
+                if (generationDepart !== generationSignatures || cacheGeneration !== SignedUrlCacheService.generation) return null;
+                const url = SignedUrlCacheService.reuseUrls(signedUrl, scope);
+                if (url && key) {
+                    const expiresAt = Math.min(Date.now() + expiresIn * 1000, expirationSignee(url) ?? Infinity);
+                    SignedUrlCacheService.set(key, url, expiresAt);
+                }
                 return url;
             })();
             if (key) appelsEnCours.set(key, creation);
@@ -241,7 +237,8 @@ class StorageService {
     }
 
     async callChanteurFunction(functionName, token, body = {}) {
-
+        const cacheGeneration = SignedUrlCacheService.generation;
+        const scope = await scopeTokenChanteur(token);
         const response = await fetch(
             `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${functionName}`,
             {
@@ -267,24 +264,25 @@ class StorageService {
         }
 
         if (result.storage_cache_config) await StorageCacheConfigService.ingest(result.storage_cache_config);
-        return result;
+        if (cacheGeneration !== SignedUrlCacheService.generation) return result;
+        return SignedUrlCacheService.reuseUrls(result, scope);
     }
 
     async getDroitImageUrl(token, functionName) {
+        const generationDepart = generationSignatures;
+        const cacheGeneration = SignedUrlCacheService.generation;
         const config = await StorageCacheConfigService.get("pdf_dai");
         // Le profil métier reste distinct même si un administrateur est connecté.
-        const empreinte = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
-        const scope = Array.from(new Uint8Array(empreinte), byte => byte.toString(16).padStart(2, "0")).join("");
-        const key = JSON.stringify([scope, functionName, config.cache_version]);
-        const cached = key && signatures.get(key);
-        if (cached && cached.expiresAt > Date.now() + 30000) return cached.url;
+        const scope = await scopeTokenChanteur(token);
+        if (generationDepart !== generationSignatures || cacheGeneration !== SignedUrlCacheService.generation) return null;
+        const key = scope ? JSON.stringify([scope, functionName, config.cache_version]) : null;
         if (key && appelsEnCours.has(key)) return appelsEnCours.get(key);
-        const generationDepart = generationSignatures;
         const creation = (async () => {
+            // Relire la réponse autorisée pour détecter un DAI remplacé ou un
+            // droit modifié ; callChanteurFunction réutilise seulement son URL.
             const result = await this.callChanteurFunction(functionName, token);
             const url = result?.url;
-            if (generationDepart !== generationSignatures) return null;
-            if (url && key) signatures.set(key, { url, expiresAt: Math.min(Date.now() + 3600000, expirationSignee(url) ?? Infinity) });
+            if (generationDepart !== generationSignatures || cacheGeneration !== SignedUrlCacheService.generation) return null;
             return url ?? null;
         })();
         if (key) appelsEnCours.set(key, creation);
