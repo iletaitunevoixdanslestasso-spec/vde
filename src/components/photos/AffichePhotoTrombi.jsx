@@ -39,6 +39,9 @@ export default function AffichePhotoTrombi({ personne, afficherGroupe = true }) 
                 <span className="trombi-personne-prenom">{personne.prenom}</span>
                 <strong className="trombi-personne-nom">{personne.nom}</strong>
             </div>
+            {personne.fonction_ca && (
+                <span className="trombi-personne-fonction-ca">{personne.fonction_ca}</span>
+            )}
             {afficherGroupe && (
                 <span className="trombi-personne-groupe" title={groupeNom}>
                     <span className="trombi-personne-point" aria-hidden="true" />

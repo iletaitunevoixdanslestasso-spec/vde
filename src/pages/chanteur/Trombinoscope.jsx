@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { useSaison } from "../../components/contexts/SaisonContext";
 import { getCouleurGroupe } from "../../helper/helper";
 import AvatarChanteur from "../../components/AvatarChanteur";
+import AffichePhotoTrombi from "../../components/photos/AffichePhotoTrombi";
+import { FILTRE_CA, filtrerChanteursTrombi } from "../../components/trombinoscope/trombiUtils";
 import StorageService from "../../services/StorageService";
 import "../../styles/espaceChanteur_trombinoscope.css";
 
@@ -24,37 +26,6 @@ function groupeCouleur(groupeId, groupeNom) {
 function afficherInitiales(prenom, nom) {
     return `${(prenom || "").trim().charAt(0)}${(nom || "").trim().charAt(0)}`
         .toLocaleUpperCase("fr") || "👤";
-}
-
-function PhotoEntouree({ personne, afficherGroupe = true }) {
-    const groupeNom = personne.groupe_nom || "Groupe non défini";
-    const couleur = groupeCouleur(personne.groupe_id, personne.groupe_nom);
-
-    return (
-        <article
-            className={`trombi-personne${afficherGroupe ? "" : " trombi-personne--groupe-selectionne"}`}
-            style={{ "--trombi-couleur-groupe": couleur }}
-        >
-            <div className="trombi-personne-photo">
-                <AvatarChanteur
-                    photoUrl={personne.photo_url ?? null}
-                    size={88}
-                    fallback={afficherInitiales(personne.prenom, personne.nom)}
-                    alt={`Photo de ${personne.prenom || ""} ${personne.nom || ""}`.trim()}
-                />
-            </div>
-            <div className="trombi-personne-identite" title={`${personne.prenom || ""} ${personne.nom || ""}`}>
-                <span className="trombi-personne-prenom">{personne.prenom}</span>
-                <strong className="trombi-personne-nom">{personne.nom}</strong>
-            </div>
-            {afficherGroupe && (
-                <span className="trombi-personne-groupe" title={groupeNom}>
-                    <span className="trombi-personne-point" aria-hidden="true" />
-                    {groupeNom}
-                </span>
-            )}
-        </article>
-    );
 }
 
 function BlocInvite({ titre, personne, imageUrl, optionnel = false }) {
@@ -79,6 +50,9 @@ function BlocInvite({ titre, personne, imageUrl, optionnel = false }) {
             <div className="trombi-invite-texte">
                 <span className="trombi-invite-fonction">{titre}</span>
                 {nom && <strong className="trombi-invite-nom">{nom}</strong>}
+                {personne?.fonction_ca && (
+                    <span className="trombi-personne-fonction-ca">{personne.fonction_ca}</span>
+                )}
                 {optionnel && !url && <span className="trombi-invite-option">Image à définir</span>}
             </div>
         </div>
@@ -149,11 +123,11 @@ export default function Trombinoscope({
     }, [donnees, chanteurs]);
 
     const groupeChoisi = groupes.find(g => g.id === groupeId);
-    const visibles = useMemo(() => (
-        groupeId === "tous"
-            ? chanteurs
-            : chanteurs.filter(c => c.groupe_id === groupeId)
-    ), [chanteurs, groupeId]);
+    const caSelectionne = groupeId === FILTRE_CA;
+    const visibles = useMemo(
+        () => filtrerChanteursTrombi(chanteurs, groupeId),
+        [chanteurs, groupeId]
+    );
 
     const sections = useMemo(() => {
         if (affichage === "alphabetique" || groupeId !== "tous") {
@@ -173,10 +147,18 @@ export default function Trombinoscope({
 
     const saisonNom = donnees?.saison?.nom || saisonSelectionne?.nom || "Saison";
     const chefContexte = chefDeChoeur || saisonSelectionne?.chef_choeur || donnees?.chef || null;
-    const photoChefDansListe = chanteurs.find(c => c.id === chefContexte?.id)?.photo_url;
+    const chefDansListe = chanteurs.find(c => c.id === chefContexte?.id);
     const chef = chefContexte && {
         ...chefContexte,
-        photo_url: chefContexte.photo_url || photoChefDansListe || null
+        photo_url: chefContexte.photo_url || chefDansListe?.photo_url || null,
+        fonction_ca_id: chefDansListe?.fonction_ca_id ?? null,
+        fonction_ca: chefDansListe?.fonction_ca ?? null
+    };
+    const inviteDansListe = chanteurs.find(c => c.id === inviteDroite?.id);
+    const invite = inviteDroite && {
+        ...inviteDroite,
+        fonction_ca_id: inviteDansListe?.fonction_ca_id ?? null,
+        fonction_ca: inviteDansListe?.fonction_ca ?? null
     };
     const descriptionGroupe = groupeChoisi?.description || "";
 
@@ -199,7 +181,9 @@ export default function Trombinoscope({
         <main className="trombinoscope-page">
             <div className="trombinoscope-feuille">
                 <header className="trombi-entete">
-                    <BlocInvite titre="Chef de chœur" personne={chef} />
+                    {caSelectionne && !chef?.fonction_ca_id
+                        ? <div aria-hidden="true" />
+                        : <BlocInvite titre="Chef de chœur" personne={chef} />}
                     <div className="trombi-identite-chorale">
                         <img
                             className="trombi-logo"
@@ -208,17 +192,21 @@ export default function Trombinoscope({
                         />
                         <div className="trombi-identite-saison">
                             <h1><span>{saisonNom}</span></h1>
-                            <p>{groupeChoisi
-                                ? `Groupe ${descriptionGroupe || groupeChoisi.nom}`
-                                : "Tous les groupes"}</p>
+                            <p>{caSelectionne
+                                ? "Le CA"
+                                : groupeChoisi
+                                    ? `Groupe ${descriptionGroupe || groupeChoisi.nom}`
+                                    : "Tous les groupes"}</p>
                         </div>
                     </div>
-                    <BlocInvite
-                        titre={inviteDroite?.titre || "Invité"}
-                        personne={inviteDroite}
-                        imageUrl={imageDroiteUrl}
-                        optionnel
-                    />
+                    {caSelectionne && !invite?.fonction_ca_id
+                        ? <div aria-hidden="true" />
+                        : <BlocInvite
+                            titre={invite?.titre || "Invité"}
+                            personne={invite}
+                            imageUrl={imageDroiteUrl}
+                            optionnel
+                        />}
                 </header>
 
                 <div className="trombi-barre-outils">
@@ -234,6 +222,7 @@ export default function Trombinoscope({
                             Groupe
                             <select value={groupeId} onChange={e => setGroupeId(e.target.value)}>
                                 <option value="tous">Tous les groupes</option>
+                                <option value={FILTRE_CA}>Le CA</option>
                                 {groupes.map(g => (
                                     <option key={g.id} value={g.id}>
                                         {g.nom}{g.description ? ` — ${g.description}` : ""}
@@ -257,7 +246,9 @@ export default function Trombinoscope({
                 </div>
 
                 {!visibles.length ? (
-                    <p className="trombi-aucun">Aucun choriste à afficher.</p>
+                    <p className="trombi-aucun">{caSelectionne
+                        ? "Aucun membre du CA pour cette saison."
+                        : "Aucun choriste à afficher."}</p>
                 ) : (
                     <div className="trombi-sections">
                         {sections.map(section => (
@@ -274,7 +265,7 @@ export default function Trombinoscope({
                                 )}
                                 <div className="trombi-grille">
                                     {section.membres.map(c => (
-                                        <PhotoEntouree key={c.id} personne={c} afficherGroupe={groupeId === "tous"} />
+                                        <AffichePhotoTrombi key={c.id} personne={c} afficherGroupe={groupeId === "tous" || caSelectionne} />
                                     ))}
                                 </div>
                             </section>

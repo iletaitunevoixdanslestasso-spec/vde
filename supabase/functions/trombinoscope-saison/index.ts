@@ -1,4 +1,5 @@
 import { readStorageCacheConfig, versionStorageUrl, type StorageCacheConfig } from "../_shared/storage-cache.ts";
+import { ajouterFonctionCa, chargerFonctionsCa } from "../_shared/trombinoscope-ca.ts";
 // Supabase Edge Function : trombinoscope-saison
 // Vérification JWT désactivée à la passerelle, mais CONTRÔLE OBLIGATOIRE ici.
 // Ne transmettez jamais la clé de service au navigateur.
@@ -166,14 +167,18 @@ Deno.serve(async (req: Request) => {
         if (error) throw error;
         if (!data) return responseJson(req, { error: "Saison introuvable." }, 404);
 
+        const fonctionsCa = await chargerFonctionsCa(db, saisonId);
+
         // La vue renvoie des chemins Storage privés (photo_path).
         // Comme le faisait get-trombinoscope, signer côté serveur avant
         // d'envoyer photo_url au composant purement visuel.
         const storageCacheConfig = await readStorageCacheConfig(db);
         const photos = await ajouterPhotosSignees(storageCacheConfig, {
-            chanteurs: Array.isArray(data.chanteurs) ? data.chanteurs : [],
-            chef: data.chef || null,
-            accompagnant: data.accompagnant || null
+            chanteurs: Array.isArray(data.chanteurs)
+                ? data.chanteurs.map(personne => ajouterFonctionCa(personne, fonctionsCa))
+                : [],
+            chef: data.chef ? ajouterFonctionCa(data.chef, fonctionsCa) : null,
+            accompagnant: data.accompagnant ? ajouterFonctionCa(data.accompagnant, fonctionsCa) : null
         });
 
         return responseJson(req, {
