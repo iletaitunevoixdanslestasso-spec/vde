@@ -44,6 +44,12 @@ Une erreur de base avant archivage interdit tout Push. Un échec des services Pu
 
 « Accepté » décrit la réponse du fournisseur Push ; cela ne garantit ni l’affichage ni la lecture. La limite de 200 appareils Push par publication est conservée. Une publication avec zéro appareil est permise pour alimenter les boîtes personnelles.
 
+## Délai de livraison des alertes Push
+
+La fonction active `push-test` demande une conservation de **24 heures (86 400 secondes)** au fournisseur Push lorsque l’appareil est momentanément indisponible. La constante `PUSH_TTL_SECONDS` est centralisée dans `supabase/functions/push-test/index.ts` et utilisée pour tous ses modes d’envoi. Il faut redéployer cette fonction pour remplacer l’ancien délai de 60 secondes.
+
+Ce TTL n’est ni un délai avant l’envoi, ni la durée d’affichage de l’alerte sur le téléphone, ni la durée de conservation du message en BDD. Le fournisseur peut livrer dès que l’appareil redevient joignable, sans garantie si Android restreint Firefox ou si son arrêt a été forcé. Les anciennes alertes déjà expirées ne sont pas récupérées par ce changement : faire un **nouvel envoi de test** après déploiement.
+
 ## Fichiers et factorisation
 
 | Fichier / groupe | Responsabilité |

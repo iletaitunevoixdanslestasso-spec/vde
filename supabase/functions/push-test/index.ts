@@ -16,6 +16,8 @@ import {
 } from "./PushSubscriptionRepository.ts";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// Conservation maximale chez le fournisseur si l'appareil est indisponible.
+const PUSH_TTL_SECONDS = 24 * 60 * 60;
 
 function env(name: string): string {
   const value = Deno.env.get(name);
@@ -100,7 +102,7 @@ function pushTo(
   return appServer.subscribe({
     endpoint: subscription.endpoint,
     keys: { p256dh: subscription.p256dh, auth: subscription.auth },
-  }).pushTextMessage(payload, { ttl: 60 });
+  }).pushTextMessage(payload, { ttl: PUSH_TTL_SECONDS });
 }
 
 function logPushError(error: unknown) {

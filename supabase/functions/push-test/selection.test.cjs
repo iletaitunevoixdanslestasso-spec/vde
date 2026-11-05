@@ -126,9 +126,9 @@ function fixture() {
         state.signatures++;
         return { subscribe: subscription => {
           if (state.syncFailures.has(subscription.endpoint)) throw new Error('Invalid subscription');
-          return { pushTextMessage: async payload => {
+          return { pushTextMessage: async (payload, options) => {
           if (JSON.parse(payload).notification_id) assert(state.notification_messages.some(message => message.id === JSON.parse(payload).notification_id));
-          state.sends.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload), bytes: Buffer.byteLength(payload, 'utf8') });
+          state.sends.push({ endpoint: subscription.endpoint, payload: JSON.parse(payload), bytes: Buffer.byteLength(payload, 'utf8'), ttl: options?.ttl });
           if (state.failures.has(subscription.endpoint)) throw new Error('Push unavailable');
           } };
         } };
@@ -261,6 +261,7 @@ test('only selected subscriptions receive personalized payload; partial failures
   assert.equal(result.body.echecs, 1);
   assert.deepEqual(state.sends.map(s => s.endpoint), ['mock:0', 'mock:1']);
   assert(state.sends.every(s => s.payload.title === 'Répétition' && s.payload.body === 'Venez jeudi'));
+  assert(state.sends.every(s => s.ttl === 86400), 'Selected Push must request 24h retention in seconds');
 });
 
 test('the full multiline message is archived while every Push carries only a bounded Unicode preview', async () => {
@@ -510,6 +511,7 @@ test('legacy all and individual manual tests remain available', async () => {
   result = await call({ cible: undefined, subscription_id: id(200) }, headers);
   assert.equal(result.status, 200);
   assert.equal(state.sends.length, 4);
+  assert(state.sends.every(s => s.ttl === 86400), 'Legacy broadcast and individual Push must also request 24h retention');
   assert.equal(state.notification_messages.length, 0);
   assert.equal(state.notification_destinataires.length, 0);
 });
