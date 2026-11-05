@@ -56,6 +56,8 @@ export default defineConfig({
       },
 
       workbox: {
+        // generateSW remplace public/sw.js : charger explicitement le code Push partagé.
+        importScripts: ["push-handlers.js"],
         cleanupOutdatedCaches: true
       }
     })
