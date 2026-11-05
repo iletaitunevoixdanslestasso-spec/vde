@@ -1,5 +1,6 @@
 import { supabase } from "../core/supabase/client";
 import StorageCacheConfigService from "./StorageCacheConfigService";
+import SignedUrlCacheService from "./SignedUrlCacheService";
 import { categorieStorage, expirationSignee, PRIVATE_DAI_CACHE_SECONDS, versionnerUrl } from "./storageCachePolicy";
 
 // Une photo = une clé stable (bucket + chemin du fichier), quel que soit
@@ -28,16 +29,8 @@ export function cheminPhotoSignee(url) {
     }
 }
 
-export async function scopeUtilisateur() {
-    const { data, error } = await supabase.auth.getSession();
-    if (!error && data?.session?.user?.id) {
-        return `admin-${data.session.user.id}`;
-    }
-
-    const token = localStorage.getItem("token");
+export async function scopeTokenChanteur(token) {
     if (!token || !globalThis.crypto?.subtle) return null;
-
-    // Ne jamais inscrire le token d'accès en clair dans Cache Storage.
     const empreinte = await crypto.subtle.digest(
         "SHA-256", new TextEncoder().encode(token)
     );
@@ -45,6 +38,16 @@ export async function scopeUtilisateur() {
         b.toString(16).padStart(2, "0")
     ).join("");
     return `chanteur-${hash}`;
+}
+
+export async function scopeUtilisateur() {
+    const { data, error } = await supabase.auth.getSession();
+    if (!error && data?.session?.user?.id) {
+        return `admin-${data.session.user.id}`;
+    }
+
+    // Ne jamais inscrire le token d'accès en clair dans Cache Storage.
+    return scopeTokenChanteur(localStorage.getItem("token"));
 }
 
 function obtenirScope() {
@@ -195,6 +198,7 @@ class PhotoCacheService {
     }
 
     async invalidatePath(bucket, path) {
+        SignedUrlCacheService.invalidatePath(bucket, path);
         if (typeof caches === "undefined") return;
         generation++;
         requetesEnCours.clear();
@@ -208,7 +212,9 @@ class PhotoCacheService {
 
     /** A appeler après une modification de photo (même chemin inclus). */
     async invalidateChanteur(chanteurId) {
-        if (!chanteurId || typeof caches === "undefined") return;
+        if (!chanteurId) return;
+        SignedUrlCacheService.invalidatePrefix("photos-chanteurs", `chanteurs/${chanteurId}/`);
+        if (typeof caches === "undefined") return;
         generation++;
         requetesEnCours.clear();
         const cache = await caches.open(CACHE_NAME);
@@ -223,6 +229,7 @@ class PhotoCacheService {
 
     /** A appeler lors de la déconnexion / du changement de compte. */
     async clearAll() {
+        SignedUrlCacheService.clearAll();
         generation++;
         requetesEnCours.clear();
         if (typeof caches !== "undefined") {

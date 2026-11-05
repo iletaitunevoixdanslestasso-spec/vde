@@ -10,6 +10,7 @@ function load(file, context) {
     const source = fs.readFileSync(path.join(root, file), 'utf8')
         .replace(/^import .*;\n/gm, '')
         .replace(/PhotoCacheService(?=\s*\{|\(\);)/g, 'PhotoCacheImplementation')
+        .replace(/SignedUrlCacheService(?=\s*\{|\(\);)/g, 'SignedUrlCacheImplementation')
         .replace(/import\.meta\.env/g, '({})')
         .replace(/export (async )?function /g, '$1function ')
         .replace(/export const /g, 'const ')
@@ -26,6 +27,7 @@ function fixture() {
     let signatures = 0;
     let options;
     const cache = new Map();
+    const signedStorage = new Map();
     const storage = {
         async match(key) { return cache.get(key.url || key)?.clone(); },
         async put(key, response) { cache.set(key.url || key, response.clone()); },
@@ -33,16 +35,25 @@ function fixture() {
         async keys() { return [...cache.keys()].map(url => new Request(url)); }
     };
     const ctx = vm.createContext({
-        URL, Request, Response, Blob, TextEncoder, atob, crypto: webcrypto, console,
+        URL, URLSearchParams, Request, Response, Blob, TextEncoder, atob, crypto: webcrypto, console,
         Date: class extends Date { static now() { return now; } },
         location: { origin: 'https://app.test' },
         localStorage: { getItem: () => 'chorister-token' },
+        sessionStorage: {
+            getItem: key => signedStorage.get(key) ?? null,
+            setItem: (key, value) => signedStorage.set(key, value),
+            removeItem: key => signedStorage.delete(key)
+        },
         caches: { open: async () => storage, delete: async () => cache.clear() },
         supabase: {
             supabaseUrl: 'https://storage.test',
             auth: { getSession: async () => ({ data: { session: { user: { id: user } } } }), onAuthStateChange: callback => { ctx.authEvent = callback; } },
             storage: { from: bucket => ({
-                createSignedUrl: async p => { signatures++; return { data: { signedUrl: `https://storage.test/storage/v1/object/sign/${bucket}/${p}?token=stable` } }; },
+                createSignedUrl: async (p, expiresIn) => {
+                    signatures++;
+                    const payload = Buffer.from(JSON.stringify({ iat: now / 1000, exp: now / 1000 + expiresIn })).toString('base64url');
+                    return { data: { signedUrl: `https://storage.test/storage/v1/object/sign/${bucket}/${p}?token=header.${payload}.signature` } };
+                },
                 upload: async (p, file, opts) => { options = opts; return { data: { path: p } }; },
                 uploadToSignedUrl: async (p, token, file, opts) => { options = opts; return { data: { path: p } }; }
             }) }
@@ -51,6 +62,7 @@ function fixture() {
         fetch: async (url, opts) => { downloads++; options = opts; return new Response(new Blob(['file'], { type: url.includes('droit_image.pdf') ? 'application/pdf' : 'image/png' })); }
     });
     load('src/services/storageCachePolicy.js', ctx);
+    ctx.SignedUrlCacheService = load('src/services/SignedUrlCacheService.js', ctx);
     const photo = load('src/services/PhotoCacheService.js', ctx);
     ctx.PhotoCacheService = photo;
     return { ctx, photo, cache, now: value => { now += value; }, version: value => { version = value; }, user: value => { user = value; }, counts: () => ({ downloads, signatures }), options: () => options };
@@ -135,7 +147,7 @@ test('liens DAI: deux tokens métier restent séparés même avec une session ad
     assert.equal(await service.getDroitImageUrl('token-A', 'dai'), 'https://storage.test/token-A');
     assert.equal(await service.getDroitImageUrl('token-B', 'dai'), 'https://storage.test/token-B');
     await service.getDroitImageUrl('token-A', 'dai');
-    assert.equal(calls, 2);
+    assert.equal(calls, 3, 'chaque lecture DAI vérifie encore la réponse autorisée du serveur');
 });
 
 test('un événement SIGNED_IN répété ne vide pas les caches, la déconnexion oui', async () => {
