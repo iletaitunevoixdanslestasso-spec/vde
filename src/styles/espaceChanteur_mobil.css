@@ -1,4 +1,6 @@
-@media (max-width: 768px) {
+/* Conserver la navigation mobile sur les téléphones en paysage. */
+@media (max-width: 768px),
+       (orientation: landscape) and (max-height: 600px) and (pointer: coarse) {
 
     /* =========================================================
        LAYOUT
@@ -54,6 +56,7 @@
         min-height: 0;
 
         position: static;
+        padding: 0;
     }
 
 
@@ -65,16 +68,18 @@
     .chanteur-menu {
         display: flex;
         flex-direction: row;
+        flex-wrap: nowrap;
         align-items: stretch;
+        justify-content: center;
 
         width: 100%;
         min-width: 0;
 
-        padding: 6px 8px;
+        padding: 6px 4px;
 
         box-sizing: border-box;
 
-        gap: 4px;
+        gap: 2px;
 
         overflow-x: auto;
         overflow-y: hidden;
@@ -113,11 +118,11 @@
        ========================================================= */
 
     .chanteur-menu-item {
-        flex: 0 0 56px;
+        flex: 1 1 0;
 
-        width: 56px;
-        min-width: 56px;
-        max-width: 56px;
+        width: auto;
+        min-width: 0;
+        max-width: 48px;
 
         height: 52px;
         min-height: 52px;
