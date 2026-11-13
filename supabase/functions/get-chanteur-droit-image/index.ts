@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
             "chanteur-documents",
             path,
             3600,
-            true
+            false
         );
 
         if (signedUrlError) {

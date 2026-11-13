@@ -175,7 +175,7 @@ Deno.serve(async (req) => {
             "referentiel-documents",
             template.path,
             3600,
-            true
+            false
         );
 
         if (signedUrlError) {
