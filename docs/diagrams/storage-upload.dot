@@ -1,0 +1,39 @@
+digraph Upload {
+
+graph [fontname="DejaVu Sans", bgcolor="#ffffff", pad="0.35", nodesep="0.45", ranksep="0.42", labelloc="t", fontsize="22", fontcolor="#18324b"];
+node [shape=box, style="rounded,filled", fillcolor="#f0f5fa", color="#b4c9dc", penwidth="1.2", fontname="DejaVu Sans", fontsize="12", fontcolor="#16324b", margin="0.18,0.13"];
+edge [color="#607d96", penwidth="1.4", arrowsize="0.7", fontname="DejaVu Sans", fontsize="10", fontcolor="#405c73"];
+
+label="DÉPÔT D’UN PDF → DONNÉES MÉTIER → CONSULTATION\nDeux accès, un même stockage de fichiers";
+subgraph cluster_admin {
+ label="ESPACE ADMIN · Document du référentiel"; fontsize="16"; color="#85b6de"; style="rounded";
+ a0 [label="ADMIN · DOCUMENT DU RÉFÉRENTIEL",fontsize="14",fillcolor="#204f78",fontcolor="white",color="#204f78"];
+ a1 [label="1 · Session Supabase Auth\nAdminGuard → ReferentielDocumentPage",fillcolor="#e8f2fc"];
+ a2 [label="2 · Choisir le PDF, puis Enregistrer\nFormModal → FileUploaderRenderer\n→ FileUploader.upload()"];
+ a3 [label="3 · Upload direct avec la session Auth\nStorageService.upload()\nSDK upload(..., upsert: true)"];
+ a4 [label="4 · Octets écrits dans Storage\nBucket : referentiel-documents\nModèle DAI : droit_image/droit_image.pdf",fillcolor="#e6f3f4"];
+ a5 [label="5 · Invalider les copies locales du chemin\nStorageService.invalidateFile()\n→ PhotoCacheService.invalidatePath()"];
+ a6 [label="6 · Sauver le chemin en SQL\nReferentielDocumentService.save()\n→ BaseService → BaseRepository\nTable : referentiel_documents",fillcolor="#fff3df"];
+ a7 [label="7 · Relire le document et obtenir son URL\nReferentielDocumentService.getAll()\n→ StorageService.createSignedUrl()\nAncienne URL valide ou nouvelle signature"];
+ a8 [label="8 · Lien direct dans la table admin\nReferentielDocument.config.js\n→ <a href=document_url>\nPas de cache Blob pour ce lien",fillcolor="#edf6e7"];
+ a0 -> a1 -> a2 -> a3 -> a4 -> a5 -> a6 -> a7 -> a8;
+}
+subgraph cluster_chanteur {
+ label="ESPACE CHANTEUR · DAI personnel"; fontsize="16"; color="#80b9ad"; style="rounded";
+ s0 [label="CHANTEUR · DAI PERSONNEL",fontsize="14",fillcolor="#246f62",fontcolor="white",color="#246f62"];
+ s1 [label="1 · Token métier chanteur\nTokenGuard → profil.jsx\nSans session Auth obligatoire",fillcolor="#e6f5ef"];
+ s2 [label="2 · Choisir le PDF, puis Enregistrer\nCRUDItemPage → FileUploaderRenderer\n→ StorageService.createChanteurDroitImageUpload()"];
+ s3 [label="3 · Autoriser l’upload côté serveur\nEdge : create-chanteur-droit-image-upload\nvalidateChanteurToken() → token d’upload\nFileUploader.uploadWithSignedToken()"];
+ s4 [label="4 · Octets envoyés directement à Storage\nStorageService.uploadToSignedUrl()\nBucket : chanteur-documents\nChemin imposé : <id>/droit_image.pdf",fillcolor="#e6f3f4"];
+ s5 [label="5 · Invalider les copies locales du chemin\nStorageService.invalidateFile()\n→ PhotoCacheService.invalidatePath()"];
+ s6 [label="6 · Sauver le chemin en SQL\nChanteurService.updateByToken()\n→ ChanteurRepository → update_mon_profil\nChamp : chanteurs.droit_image",fillcolor="#fff3df"];
+ s7 [label="7 · Relire le profil et le droit d’accès\ngetDroitImageUrl() → Edge get-chanteur-droit-image\nRéponse métier fraîche, URL éventuellement réutilisée\nSignedUrlCacheService.reuseUrls()"];
+ s8 [label="8 · Clic normal sur le lien DAI\nPdfDaiLink.ouvrir()\n→ PhotoCacheService.getBlob(..., pdf_dai)\nBlob local ou téléchargement",fillcolor="#edf6e7"];
+ s0 -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8;
+}
+{rank=same; a0;s0;}
+{rank=same; a1;s1;} {rank=same; a2;s2;} {rank=same; a3;s3;} {rank=same; a4;s4;}
+{rank=same; a5;s5;} {rank=same; a6;s6;} {rank=same; a7;s7;} {rank=same; a8;s8;}
+note [label="Les URL conservées sont dans localStorage ; les octets applicatifs dans Cache Storage.\nUpload et sauvegarde SQL sont deux opérations distinctes, sans transaction commune.\nLe parcours des photos Drive est présenté dans le troisième schéma.",shape=note,fillcolor="#fff9eb",color="#d7be85"];
+a8 -> note [style=invis]; s8 -> note [style=invis];
+}

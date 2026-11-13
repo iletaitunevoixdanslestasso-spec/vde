@@ -1,0 +1,25 @@
+digraph Photo {
+
+graph [fontname="DejaVu Sans", bgcolor="#ffffff", pad="0.35", nodesep="0.45", ranksep="0.42", labelloc="t", fontsize="22", fontcolor="#18324b"];
+node [shape=box, style="rounded,filled", fillcolor="#f0f5fa", color="#b4c9dc", penwidth="1.2", fontname="DejaVu Sans", fontsize="12", fontcolor="#16324b", margin="0.18,0.13"];
+edge [color="#607d96", penwidth="1.4", arrowsize="0.7", fontname="DejaVu Sans", fontsize="10", fontcolor="#405c73"];
+
+label="PHOTO : DRIVE → STORAGE → LES DEUX ESPACES";
+edit [label="Admin : modifier photo_drive_url\nchanteurConfig → CRUD → chanteurs"];
+external [label="Configuration extérieure au dépôt\nTrigger / webhook + état pending + version de synchronisation",shape=note,fillcolor="#fff3df",color="#d7be85"];
+sync [label="Edge : sync-chanteur-photo\nwithSupabase(auth: secret)\nContrôle de l’événement et de la version"];
+drive [label="extractDriveFile() → downloadDriveImage()\nobtenirAccessToken() → API Google Drive\nLecture de l’image : formats autorisés, maximum 10 Mio"];
+put [label="SDK Storage.upload(upsert: false)\nphotos-chanteurs/chanteurs/<id>/<UUID>.<ext>\ncacheControl demandé : 150 jours",fillcolor="#e6f3f4"];
+db [label="guardedUpdate() publie chanteurs.photo\ndeleteOwnedFile() retire l’ancienne photo gérée\nNouveau chemin UUID = nouvelle ressource",fillcolor="#fff3df"];
+subgraph cluster_admin {label="ADMIN · Table"; color="#85b6de";
+ a [label="ChanteurPhoto(mode: admin, path)\nStorageService.createSignedUrl()\nAffichePhotoDatatable"];
+}
+subgraph cluster_singer {label="CHANTEUR + TROMBINOSCOPE ADMIN"; color="#80b9ad";
+ s [label="TrombiChanteur / TrombiAdmin → TrombiSaison\nTrombinoscopeService → trombinoscope-saison\nContrôle d’accès + signature par lots\nAffichePhotoTrombi / AffichePhotoProfil"];
+}
+render [label="SrcPhoto → usePhotoLocale → PhotoCacheService.getBlob()\nCopie locale → blob: ; sinon HTTP → CDN → origine\nRéutilisation des URL : SignedUrlCacheService",fillcolor="#edf6e7"];
+edit -> external -> sync -> drive -> put -> db; db -> a; db -> s; a -> render; s -> render;
+{rank=same;a;s;}
+note [label="Autre parcours actif : AvatarChanteur / RepresentationChoeur\n→ getPhotoProfil() ou getTrombinoscope() → Edge get-trombinoscope\n→ SrcPhoto ou SrcPhotoSvg → le même usePhotoLocale()",shape=note,fillcolor="#f4f7fa"];
+render -> note [style=dashed,arrowhead=none];
+}
