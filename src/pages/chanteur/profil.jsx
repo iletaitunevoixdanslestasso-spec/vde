@@ -4,11 +4,12 @@ import { chanteurConfig } from "../../config/entities/chanteur.config";
 import CRUDItemPage from "../../framework/crud/CRUDItemPage";
 import { useChanteur } from "../../components/contexts/ChanteurContext";
 import AvatarChanteur from "../../components/AvatarChanteur";
+import { Link } from "lucide-react";
 
 const profilConfig = {
     ...chanteurConfig,
     title: "Profil",
-    icon:"profil",
+    icon: "profil",
     columns: [
         { field: "nom", header: "Nom", type: "text", required: true },
         { field: "prenom", header: "Prénom", type: "text", required: true },
@@ -22,7 +23,7 @@ const profilConfig = {
             field: "groupe_id",
             header: "Groupe",
             type: "text",
-            className:"icon-groupe",
+            className: "icon-groupe",
             source: "availableGroupes",
             required: true,
             editType: "readonly",
@@ -35,7 +36,7 @@ const profilConfig = {
             field: "pupitre_id",
             header: "Pupitre par défaut",
             type: "select",
-            className:"icon-pupitre",
+            className: "icon-pupitre",
             source: "availablePupitres",
             required: true,
             render: (v, row) => {
@@ -53,16 +54,17 @@ const profilConfig = {
                 if (!row.droit_image_template_url) {
                     return "Modèle indisponible";
                 }
-
+                console.log("row", row)
+                console.log("row", row.droit_image_template_url)
                 return React.createElement(
-                    PdfDaiLink,
+                    "a",
                     {
                         href: row.droit_image_template_url,
                         target: "_blank",
                         rel: "noopener noreferrer"
                     },
-                    "Télécharger le modèle"
-                );
+                    `📄template du Droit à l'Image`
+                )
             }
         },
         {
@@ -87,13 +89,13 @@ const profilConfig = {
                 }
 
                 let link = React.createElement(
-                    PdfDaiLink,
+                    "a",
                     {
                         href: row.droit_image_url,
                         target: "_blank",
                         rel: "noopener noreferrer"
                     },
-                    `📄 ${row.droit_image}`
+                    `📄 mon Droit à l'Image`
                 );
                 let dai = ''
                 switch (row.droit_image_workflow) {
